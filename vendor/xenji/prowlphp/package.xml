@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.4.10" version="2.0"
+		 xmlns="http://pear.php.net/dtd/package-2.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://pear.php.net/dtd/package-2.0
+                      http://pear.php.net/dtd/package-2.0.xsd">
+	<name>Prowl</name>
+	<channel>pear.xenji.com</channel>
+	<summary>The PHP Prowl client library</summary>
+	<description>PHP class for Prowls iPhone notificaton service using API key authentication.</description>
+	<lead>
+		<name>Mario Mueller</name>
+		<user>xenji</user>
+		<email>mario.mueller@xenji.com</email>
+		<active>yes</active>
+	</lead>
+	<date>#date#</date>
+	<version>
+		<release>1.0.2</release>
+		<api>1.0.2</api>
+	</version>
+	<stability>
+		<release>stable</release>
+		<api>stable</api>
+	</stability>
+	<license>Apache 2.0 License</license>
+	<notes>http://github.com/xenji/ProwlPHP/tree</notes>
+	<contents>
+		<dir name="/">
+			<dir name="Prowl">
+				<file name="Connector.php" role="php"/>
+				<file name="Message.php" role="php"/>
+				<file name="Response.php" role="php"/>
+				<dir name="Security">
+					<file name="PassthroughFilterImpl.php" role="php"/>
+					<file name="Secureable.php" role="php"/>
+				</dir>
+			</dir>
+		</dir>
+	</contents>
+	<dependencies>
+		<required>
+			<php>
+				<min>5.3.0RC1</min>
+			</php>
+			<pearinstaller>
+				<min>1.9.1</min>
+			</pearinstaller>
+		</required>
+	</dependencies>
+	<phprelease/>
+</package>

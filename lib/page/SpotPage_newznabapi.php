@@ -70,7 +70,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
 
 		$searchParams = array();
-
+        $tvInfo = new Dto_MediaInformation();
+        $tvInfo -> setTitle("");
+        $tvInfo -> setValid(true);
         /**
          * Now determine what type of information we are searching for using sabnzbd
          */
@@ -122,9 +124,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         			$this->showApiError(300);
         			return ;
         		}
-        		$tvInfo = new Dto_MediaInformation();
-        		$tvInfo -> setTitle("");
-        		$tvInfo -> setValid(true);
         	}
 
         	/*
@@ -157,6 +156,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
              * And try to add an episode parameter, basically the same set of rules
              * as for the season
              */
+            $title = $tvInfo->getTitle();
 			if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
@@ -170,10 +170,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				return ;
 			} else {
                 // Complete season search, add wildcard character to season
-            	if (!empty($tvInfo->getTitle())) {
-                $seasonSearch .= '*';
-                // and search for the text 'Season ' ...
-                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +\"Season " . (int) $this->_params['season'] . "\"";
+            	if (!empty($title)) {
+                    $seasonSearch .= '*';
+                    // and search for the text 'Season ' ...
+                    $searchParams['value'][] = "Titel:=:OR:+\"" . $title . "\" +\"Season " . (int) $this->_params['season'] . "\"";
             	}
             } # else
 
@@ -182,11 +182,14 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 *
 			 * We search both for S04E17 and S04 E17 (with a space)
 			 */
-            if (!empty($tvInfo->getTitle())) {
+            if (!empty($title)) {
 				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
 	            if (!empty($episodeSearch)) {
 	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
 	            } # if
+            }
+            if (empty($this->_params['cat'] )) {
+				$this->_params['cat'] = 5000;
             }
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
@@ -215,7 +218,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
             $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
 
             if (!$imdbInfo->isValid()) {
-				$this->showApiError(300);
+				$this->showApiError(301);
 
 				return ;
 			} # if
@@ -326,7 +329,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			foreach($spots['list'] as $spot) {
 				$data = array();
 				$data['ID']				= $spot['messageid'];
-				$data['name']			= $spot['title'];
+				$data['name']			= html_entity_decode ($spot['title'],ENT_QUOTES,'UTF-8');
 				$data['size']			= $spot['filesize'];
 				$data['adddate']		= date('Y-m-d H:i:s', $spot['stamp']);
 				$data['guid']			= $spot['messageid'];
@@ -334,10 +337,17 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$data['completion']		= 100;
 
                 $cat = array();
+                if( !empty($spot["subcatz"])) {
+					$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+					if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+						$cat = $nabCat[0];
+					} # if
+				} # if
+				
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$data['categoryID'] = $nabCat[0];
-					$cat = implode(",", $nabCat);
+					$cat .= implode(",", $nabCat);
 				} # if
 
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
@@ -406,7 +416,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$guid->setAttribute('isPermaLink', 'false');
 
 				$item = $doc->createElement('item');
-				$item->appendChild($doc->createElement('title', htmlspecialchars($spot['title'], ENT_QUOTES, "UTF-8")));
+ 				$item->appendChild($doc->createElement('title', htmlspecialchars(html_entity_decode ($spot['title'],ENT_QUOTES,'UTF-8'), ENT_XHTML, "UTF-8")));
 				$item->appendChild($guid);
 				$item->appendChild($doc->createElement('link', $nzbUrl));
 				$item->appendChild($doc->createElement('pubDate', date('r', $spot['stamp'])));
@@ -421,7 +431,17 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					default		: $enclosure->setAttribute('type', 'application/x-nzb');
 				} # switch
 				$item->appendChild($enclosure);
-
+				
+				if( !empty($spot["subcatz"])) {
+					$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+					if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+						$attr = $doc->createElement('newznab:attr');
+						$attr->setAttribute('name', 'category');
+						$attr->setAttribute('value', $nabCat[0]);
+						$item->appendChild($attr);
+					} # if
+				} # if
+				
 				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$attr = $doc->createElement('newznab:attr');
@@ -502,7 +522,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$fullSpot = $this->_tplHelper->getFullSpot($this->_params['messageid'], true);
 		}
 		catch(Exception $x) {
-			$this->showApiError(300);
+			$this->showApiError(302);
 
 			return ;
 		} # catch
@@ -523,10 +543,17 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			$doc['fromname']		= $spot['poster'];
 			$doc['completion']		= 100;
 
+			if( !empty($spot["subcatz"])) {
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+					$cat = $nabCat[0];
+				} # if
+			} # if
+
 			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 				$doc['categoryID'] = $nabCat[0];
-				$cat = implode(",", $nabCat);
+				$cat .= implode(",", $nabCat);
 			} # if
 
 			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
@@ -595,6 +622,16 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				default		: $enclosure->setAttribute('type', 'application/x-nzb');
 			} # switch
 			$item->appendChild($enclosure);
+
+			if( !empty($spot["subcatz"])) {
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
+				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+					$attr = $doc->createElement('newznab:attr');
+					$attr->setAttribute('name', 'category');
+					$attr->setAttribute('value', $nabCat[0]);
+					$item->appendChild($attr);
+				} # if
+			} # if
 
 			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
 			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
@@ -723,7 +760,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		echo $doc->saveXML();
 	} # caps
 
-	function Cat2NewznabCat($hcat, $cat) {
+	function Cat2NewznabCat($hcat, $cat, $catZCompanion = "") {
 		$result = "-";
 		$catList = explode("|", $cat);
 		$cat = $catList[0];
@@ -735,6 +772,28 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			switch ($cat[0]) {
 				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr]; break;
 				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
+				case "z"	: 
+					switch($nr) {
+						case "1":
+							if(!empty($catZCompanion)) {
+								$catZCompanionList = explode("|", $catZCompanion);
+								$catZCompanion = $catZCompanionList[0];
+								
+								if(in_array($catZCompanion, $this->spotHdCat())) {
+									return 5040;
+								}
+								elseif(in_array($catZCompanion, $this->spotSdCat())) {
+									return 5030;
+								}
+							}
+						break;
+						default: 
+							$newznabcat = $this->spotZcat2nabcat(); 
+							return @$newznabcat[$nr]; 						
+						break;
+					}
+
+				break;
 			} # switch
 		} # if
 
@@ -757,7 +816,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 202: $errtext = "No such function"; break;
 			case 203: $errtext = "Function not available"; break;
 
-			case 300: $errtext = "No such item"; break;
+			case 300: $errtext = "On TVSearch no q, tvmaze or rid parameter present"; break;
+			case 301: $errtext = "IMDB information returned is invalid"; break;
+			case 302: $errtext = "Error in fetching spot information"; break;
 
 			case 500: $errtext = "Request limit reached"; break;
 			case 501: $errtext = "Download limit reached"; break;
@@ -934,5 +995,19 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					 9 => "",
 					 10 => "");
 	} # spotBcat2nabcat
+	
+	function spotZcat2nabcat() {
+		return Array (
+			3 => "6000"
+		);
+	} # spotZcat2nabcat
+	
+	function spotHdCat() {
+		return Array("a4", "a6", "a7", "a8", "a9");
+	} # spotHdCat
+	
+	function spotSdCat() {
+		return Array("a1", "a2", "a3", "a10");
+	} # spotSdCat
 
 } # class SpotPage_api

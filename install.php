@@ -1,8 +1,7 @@
 <?php
 	error_reporting(2147483647);
 
-	require_once "lib/SpotClassAutoload.php";
-    SpotClassAutoload::register();
+	require_once 'vendor/autoload.php';
 
 	try {
 		@include('settings.php');
@@ -53,9 +52,6 @@
         /*
          * Load all the SSL signing code, we need it to create a private key
          */
-        require_once "lib/services/Signing/Services_Signing_Base.php";
-        require_once "lib/services/Signing/Services_Signing_Php.php";
-        require_once "lib/services/Signing/Services_Signing_Openssl.php";
         $spotSigning = Services_Signing_Base::factory();
         $privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
 
@@ -304,7 +300,6 @@
                 /*
                  * Get the schema version and other constants
                  */
-                require_once "lib/Bootstrap.php";
                 $bootstrap = new Bootstrap();
 
                 /*
@@ -357,7 +352,6 @@
 			/*
 			 * Get the schema version and other constants
 			 */
-			require_once "lib/Bootstrap.php";
 			$bootstrap = new Bootstrap();
 
 			/*

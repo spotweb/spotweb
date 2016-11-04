@@ -27,6 +27,7 @@
     <tr> <th colspan="2"> Database support </th> <td> <?php showResult(extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'), true); ?> </td> </tr>
     <tr> <td colspan="2"> MySQL (PDO) </td> <td> <?php showResult(extension_loaded('pdo_mysql'), false); ?> </td> </tr>
     <tr> <td colspan="2"> PostgreSQL (PDO) </td> <td> <?php showResult(extension_loaded('pdo_pgsql'), false); ?> </td> </tr>
+    <tr> <td colspan="2"> SQLite (PDO) </td> <td> <?php showResult(extension_loaded('pdo_sqlite'), false); ?> </td> </tr>
 
     <?php if (extension_loaded('gd')) $gdInfo = gd_info(); ?>
     <tr> <th colspan="2"> GD </th> <td> <?php showResult(extension_loaded('gd'), true); ?> </td> </tr>

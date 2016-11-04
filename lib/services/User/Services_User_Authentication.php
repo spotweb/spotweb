@@ -262,7 +262,7 @@ class Services_User_Authentication {
 		 * the unread count for the user doesn't get unset all of a sudden
 		 * during a browsing session.
 		 */
-		if ($sessionValid['lasthit'] < (time() - 900)) {
+		if ($sessionValid['lasthit'] < (time() - (15*60))) {
 			$userRecord['lastvisit'] = $sessionValid['lasthit'];
 			
 			/*

@@ -1,0 +1,30 @@
+filter:
+    excluded_paths:
+        - 'tests/*'
+    dependency_paths:
+        - 'vendor/*'
+
+checks:
+    php: true
+    javascript: true
+
+tools:
+    php_analyzer: true
+    php_code_sniffer:
+        config:
+            standard: "PSR2"
+    php_cs_fixer:
+        enabled: true
+        config: { level: psr2 }
+    php_mess_detector: true
+    php_loc:
+        enabled: true
+        excluded_dirs: [vendor]
+
+build:
+    environment:
+        timezone: "Europe/Amsterdam"
+        php: "7.0"
+        mysql: false
+        postgresql: false
+        redis: false

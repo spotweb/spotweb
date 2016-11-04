@@ -1,6 +1,6 @@
 <?php
 	$spot = $tplHelper->formatSpot($spot);
-	$comments = $tplHelper->getSpotComments($spot['messageid'], 0, 99999);
+	$comments = $tplHelper->getSpotComments($spot['messageid'], $spot['prevMsgids'], 0, 99999);
 	$comments = $tplHelper->formatComments($comments);
 
 	$setpath = $tplHelper->makeBaseUrl("path");
@@ -54,22 +54,21 @@
 				</table>
             	<h4>Omschrijving</h4>
             	
-            	<?php
+           	<?php
             	$tmp = $spot['description'];
-	
-	$tmp = str_replace('[b]', '', $tmp);
-	$tmp = str_replace('[/b]', '', $tmp);
-		$tmp = str_replace('<b>', '', $tmp);
-	$tmp = str_replace('[i]', '', $tmp);
-	$tmp = str_replace('[/i]', '', $tmp);
-	$tmp = str_replace('[br]', '', $tmp);
-	$tmp = str_replace('[u]', '', $tmp);
-	$tmp = str_replace('[/u]', '', $tmp);
-	$tmp = str_replace('[strong]', '', $tmp);	
-	$tmp = str_replace('[/u]', '', $tmp);
-	$tmp = str_replace('&lt;br&gt;', '<br>', $tmp);
-	$tmp = str_replace('&lt;br /&gt;', '<br>', $tmp);
-	echo "<p>$tmp</p>";
+	            $tmp = str_replace('[b]', '', $tmp);
+	            $tmp = str_replace('[/b]', '', $tmp);
+	            $tmp = str_replace('<b>', '', $tmp);
+	            $tmp = str_replace('[i]', '', $tmp);
+	            $tmp = str_replace('[/i]', '', $tmp);
+	            $tmp = str_replace('[br]', '', $tmp);
+	            $tmp = str_replace('[u]', '', $tmp);
+	            $tmp = str_replace('[/u]', '', $tmp);
+	            $tmp = str_replace('[strong]', '', $tmp);	
+	            $tmp = str_replace('[/u]', '', $tmp);
+	            $tmp = str_replace('&lt;br&gt;', '<br>', $tmp);
+	            $tmp = str_replace('&lt;br /&gt;', '<br>', $tmp);
+	            echo "<p>$tmp</p>";
             ?>	
             	
 

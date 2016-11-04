@@ -1,4 +1,7 @@
 <?php
+
+use \phpseclib\Crypt\RSA;
+
 abstract class Services_Signing_Base {
 
 	/* 
@@ -15,7 +18,7 @@ abstract class Services_Signing_Base {
          * Trigger the autoloader to load Crypt_RSA as
          * we need it for
          */
-        if (class_exists('Crypt_RSA')) {
+        if (class_exists('RSA')) {
 
         } # if
 
@@ -25,14 +28,14 @@ abstract class Services_Signing_Base {
 		 */
 		if (!defined('CRYPT_RSA_MODE')) {
 			if (extension_loaded("openssl")) {
-				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
+				define('CRYPT_RSA_MODE', RSA::MODE_OPENSSL);
 			} else {
-				define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_INTERNAL);
+				define('CRYPT_RSA_MODE', RSA::MODE_INTERNAL);
  			} # else
 		} # if not defined
 
 
-		if (CRYPT_RSA_MODE == CRYPT_RSA_MODE_OPENSSL) {
+		if (CRYPT_RSA_MODE == RSA::MODE_OPENSSL) {
 			return new Services_Signing_Openssl(); 
 		} else {
 			return new Services_Signing_Php(); 
@@ -61,7 +64,7 @@ abstract class Services_Signing_Base {
 		/**
 		 * Test code:
 		 * 
-		 * $rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		 * $rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
 		 * extract($rsa->createKey());
 		 * $spotSigning = new SpotSigning();
 		 * $x = $spotSigning->signMessage($privatekey, 'testmessage');
@@ -73,13 +76,13 @@ abstract class Services_Signing_Base {
 			throw new InvalidPrivateKeyException();
 		} # if
 		 
-		$rsa = new Crypt_RSA();
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		$rsa = new RSA();
+		$rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
 		$rsa->loadKey($privatekey);
 
 		# extract de public key
 		$signature = $rsa->sign($message);
-		$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
+		$publickey = $rsa->getPublicKey(RSA::PUBLIC_FORMAT_RAW);
 
 		return array('signature' => base64_encode($signature),
 					 'publickey' => array('modulo' => base64_encode($publickey['n']->toBytes()), 'exponent' => base64_encode($publickey['e']->toBytes())),
@@ -90,8 +93,8 @@ abstract class Services_Signing_Base {
 	 * Returns a public key
 	 */
 	function getPublicKey($privateKey) {
-		$rsa = new Crypt_RSA();
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		$rsa = new RSA();
+		$rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
         $rsa->loadKey($privateKey);
 
         /*
@@ -103,7 +106,7 @@ abstract class Services_Signing_Base {
         } # if
 
 		# extract the public key
-		$publicKey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
+		$publicKey = $rsa->getPublicKey(RSA::PUBLIC_FORMAT_RAW);
 
 		return array('modulo' => base64_encode($publicKey['n']->toBytes()), 'exponent' => base64_encode($publicKey['e']->toBytes()));
 	} # getPublicKey
