@@ -1,0 +1,8 @@
+<IfModule mod_authz_host.c>
+    Require all granted
+</IfModule>
+
+<IfModule !mod_authz_host.c>
+    order deny,allow
+    allow from all
+</IfModule>

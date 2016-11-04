@@ -1,0 +1,22 @@
+{
+    "name": "jean-damien/pchart",
+    "type": "library",
+    "description": "pChart is a PHP class oriented framework designed to create anti-aliased charts.",
+    "keywords": ["charts", "pchart", "pogolotti"],
+    "homepage": "http://www.pchart.net/",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Jean-Damien Pogolotti",
+            "homepage": "http://www.pchart.net/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "ext-gd": "*"
+    },
+    "autoload": {
+        "classmap": ["class/"]
+    }
+}

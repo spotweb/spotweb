@@ -1,0 +1,23 @@
+{
+    "name": "xenji/ProwlPHP",
+    "type": "library",
+    "description": "PHP library to access the webserives of Prowl (http://www.prowlapp.com/)",
+    "keywords": ["api","webservices"],
+    "homepage": "https://github.com/xenji/ProwlPHP",
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Mario Mueller",
+            "email": "mario@xenji.com",
+            "homepage": "http://xenji.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Prowl": "src"
+        }
+    }
+}

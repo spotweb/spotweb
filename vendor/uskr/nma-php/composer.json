@@ -1,0 +1,23 @@
+{
+    "name": "uskr/nma-php",
+    "type": "library",
+    "description": "This library provides an easy to use API for PHP that interfaces with Notify My Android public API.",
+    "keywords": ["nma", "notifymyandroid", "push", "notifications", "android"],
+    "homepage": "http://www.notifymyandroid.com/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adriano Maia",
+            "email": "adriano@locked.io",
+            "homepage": "https://github.com/uskr",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=4.0.0",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "classmap": ["class.nma.php"]
+    }
+}
