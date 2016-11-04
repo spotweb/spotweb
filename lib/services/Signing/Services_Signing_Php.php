@@ -1,5 +1,8 @@
 <?php
 
+use \phpseclib\Crypt\RSA;
+use \phpseclib\Math\BigInteger;
+
 class Services_Signing_Php extends Services_Signing_Base {
 
 	/* 
@@ -16,13 +19,13 @@ class Services_Signing_Php extends Services_Signing_Base {
 		$signature = base64_decode($signature);
 
 		# Initialize the public key to verify with
-		$pubKey['n'] = new Math_BigInteger(base64_decode($rsaKey['modulo']), 256);
-		$pubKey['e'] = new Math_BigInteger(base64_decode($rsaKey['exponent']), 256);
+		$pubKey['n'] = new BigInteger(base64_decode($rsaKey['modulo']), 256);
+		$pubKey['e'] = new BigInteger(base64_decode($rsaKey['exponent']), 256);
 				
 		# and verify the signature
-		$rsa = new Crypt_RSA();
-		$rsa->loadKey($pubKey, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		$rsa = new RSA();
+		$rsa->loadKey($pubKey, RSA::PUBLIC_FORMAT_RAW);
+		$rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
 
 		# Supress notice if the signature was invalid
 		$saveErrorReporting = error_reporting(E_ERROR);
@@ -36,8 +39,8 @@ class Services_Signing_Php extends Services_Signing_Base {
 	 * Creates a private and public keypair
 	 */
 	public function createPrivateKey($sslCnfPath) {
-		$rsa = new Crypt_RSA();
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		$rsa = new RSA();
+		$rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
 			
 		$keyPair = $rsa->createKey();
 		return array('public' => $keyPair['publickey'],

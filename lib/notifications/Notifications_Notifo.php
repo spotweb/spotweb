@@ -1,5 +1,4 @@
 <?php
-require_once "lib/notifications/notifo/Notifo_API.php"; // https://github.com/notifo/Notifo-API-Libraries/tree/master/php
 
 class Notifications_Notifo extends Notifications_abs {
 	private $_appName;

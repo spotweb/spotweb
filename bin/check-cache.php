@@ -9,9 +9,7 @@ try {
      */
     chdir(__DIR__ . '/../');
 
-    require_once __DIR__ . '/../lib/SpotClassAutoload.php';
-    SpotClassAutoload::register();
-    require_once __DIR__ . '/../lib/Bootstrap.php';
+    require_once __DIR__ . '/../vendor/autoload.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,

@@ -6,19 +6,6 @@ class Notifications_Prowl extends Notifications_abs {
 
 	function __construct($appName, array $dataArray) {
 		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-			/*
-			 * We includen de libraries hier en in deze volgorde om te voorkomen
-			 * dat de autoclass loader triggered, die snapt namelijk op dit moment
-			 * nog niets van namespaces en dan gaat het mis
-			 *
-			 * https://github.com/xenji/ProwlPHP
-			 */
-			require_once "lib/notifications/prowl/Connector.php";
-			require_once "lib/notifications/prowl/Message.php";
-			require_once "lib/notifications/prowl/Security/Secureable.php";
-			require_once "lib/notifications/prowl/Response.php";
-			require_once "lib/notifications/prowl/Security/PassthroughFilterImpl.php";
-
 			$this->prowlObj = new \Prowl\Connector();
 		} # if
 

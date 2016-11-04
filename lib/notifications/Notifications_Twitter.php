@@ -1,5 +1,5 @@
 <?php
-require_once "lib/notifications/twitter/twitteroauth.php";
+use \Abraham\TwitterOAuth\TwitterOAuth;
 
 class Notifications_Twitter extends Notifications_abs {
 	private $dataArray;

@@ -1,5 +1,4 @@
 <?php
-require_once "lib/notifications/nma/class.nma.php"; // https://github.com/uskr/NMAPHP
 
 class Notifications_NMA extends Notifications_abs {
 	private $_api;

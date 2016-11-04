@@ -1,5 +1,7 @@
 <?php
 
+use \phpseclib\Crypt\RSA;
+
 class Services_Signing_Openssl extends Services_Signing_Base {
 	/*
 	 * Public key cache prevent us to acually decode and call OpenSSL
@@ -46,8 +48,8 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 	 * Creates a public and private key
 	 */
 	public function createPrivateKey($sslCnfPath) {
-		$rsa = new Crypt_RSA();
-		$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
+		$rsa = new RSA();
+		$rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
 			
 		$opensslPrivKey = openssl_pkey_new(array('private_key_bits' => 1024, 'config' => realpath($sslCnfPath)));
 		openssl_pkey_export($opensslPrivKey, $privateKey, null, array('config' => realpath($sslCnfPath)));
@@ -120,15 +122,15 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 		$publicExponent = $pubKey['e'];
 		$modulus = $pubKey['n'];
 		$components = array(
-			'modulus' => pack('Ca*a*', CRYPT_RSA_ASN1_INTEGER, $this->_encodeLength(strlen($modulus)), $modulus),
-			'publicExponent' => pack('Ca*a*', CRYPT_RSA_ASN1_INTEGER, $this->_encodeLength(strlen($publicExponent)), $publicExponent)
+			'modulus' => pack('Ca*a*', RSA::ASN1_INTEGER, $this->_encodeLength(strlen($modulus)), $modulus),
+			'publicExponent' => pack('Ca*a*', RSA::ASN1_INTEGER, $this->_encodeLength(strlen($publicExponent)), $publicExponent)
 		);
 
 		/* 
 		 * First encoden we de keys in een bitstring 
 		 */		 
 		$encodedKeys = pack('Ca*a*a*',
-					CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
+					RSA::ASN1_SEQUENCE, 		 # Sequence
 					$this->_encodeLength(strlen($components['modulus']) + strlen($components['publicExponent'])),
 					$components['modulus'], 
 					$components['publicExponent']
@@ -166,7 +168,7 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 		 *
 		 *		# en de encryptiontype pakken we in in een sequence
 		 *		$encryptionType = pack('Ca*a*',
-		 *			CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
+		 *			RSA::ASN1_SEQUENCE, 		 # Sequence
 		 *			$this->_encodeLength(strlen($encryptionType)),
 		 *			$encryptionType
 		 *		);
@@ -175,7 +177,7 @@ class Services_Signing_Openssl extends Services_Signing_Base {
 		
 		# en ook dit alles pakken we in een sequence in
 		$endResult = pack('Ca*a*',
-					CRYPT_RSA_ASN1_SEQUENCE, 		 # Sequence
+					RSA::ASN1_SEQUENCE, 		 # Sequence
 					$this->_encodeLength(15 + strlen($encodedKeys)), # 15 == strlen($encryptionType)
 					$encryptionType . $encodedKeys
 		);

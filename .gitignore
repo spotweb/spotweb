@@ -16,3 +16,4 @@ dbsettings.inc.php
 .idea
 reallymyownsettings.php
 cache/
+/composer.phar
