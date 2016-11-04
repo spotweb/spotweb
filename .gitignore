@@ -7,14 +7,12 @@ server-settings.php
 retrieve.sh
 tests/*.jpg
 tests/*.nzb
-.htaccess
 .htpasswd
 .buildpath
 .project
 .settings/
 .DS_Store
 dbsettings.inc.php
-reallymyownsettings.php
 .idea
 reallymyownsettings.php
 cache/

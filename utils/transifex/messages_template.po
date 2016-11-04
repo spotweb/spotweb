@@ -782,7 +782,7 @@ msgstr ""
 msgid "Portnumber of nzbget?"
 msgstr ""
 
-msgid "Username for nzbget? Attention: At this moment only <u>nzbget</u> is a valid name!"
+msgid "Username for nzbget?"
 msgstr ""
 
 msgid "Password for nzbget?"

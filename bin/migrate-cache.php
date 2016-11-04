@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 error_reporting(2147483647);
 
@@ -6,11 +7,9 @@ try {
      * If we are run from another directory, try to change the current
      * working directory to a directory the script is in
      */
-    if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-        chdir(dirname(__FILE__));
-    } # if
+    chdir(__DIR__ . '/../');
 
-    require_once 'vendor/autoload.php';
+    require_once __DIR__ . '/../vendor/autoload.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,
@@ -26,11 +25,12 @@ try {
      * it cannot be made configurable in the database anyway
      * and this is just the lazy way out, really
      */
-    $daoFactory->setCachePath('./cache/');
+    $dirCache = __DIR__.'/../cache/';
+    $daoFactory->setCachePath($dirCache);
     $cacheDao = $daoFactory->getCacheDao();
 
-    if (!is_dir('./cache')) {
-        mkdir('./cache', 0777);
+    if (!file_exists($dirCache)) {
+        mkdir($dirCache, 0777);
     } # if
 
     /*
@@ -39,7 +39,7 @@ try {
     $dbConnection = $daoFactory->getConnection();
 
     # Update old blacklisttable
-    $schemaVer = $dbConnection->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'", array());
+    $schemaVer = $dbConnection->singleQuery("SELECT `value` FROM `settings` WHERE `name` = 'schemaversion'", array());
     if ($schemaVer >= 0.60) {
         throw new Exception("Your schemaversion is already upgraded");
     } # if
