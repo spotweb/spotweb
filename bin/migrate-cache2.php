@@ -32,7 +32,9 @@ try {
      */
     chdir(__DIR__.'/../');
 
-    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__.'/../lib/SpotClassAutoload.php';
+    SpotClassAutoload::register();
+    require_once __DIR__.'/../lib/Bootstrap.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,

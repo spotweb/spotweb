@@ -1,4 +1,5 @@
 <?php
+require_once "lib/notifications/boxcar/boxcar_api.php"; // https://github.com/boxcar/Boxcar-PHP-Provider
 
 class Notifications_Boxcar extends Notifications_abs {
 	private $_dataArray;

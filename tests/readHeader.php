@@ -1,6 +1,14 @@
 <?php
 
-require 'vendor/autoload.php';
+require "lib/SpotNntp.php";
+require "lib/SpotParser.php";
+require "NNTP/Protocol/Responsecode.php";
+require "NNTP/Protocol/Client.php";
+require "NNTP/Client.php";
+require "lib/SpotSigning.php";	
+require "lib/exceptions/CustomException.php";
+require "lib/exceptions/NntpException.php";
+require "lib/SpotSeclibToOpenSsl.php";	
 
 $server = array('host' => $argv[1],
 				'enc' => false,
