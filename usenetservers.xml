@@ -560,14 +560,14 @@
 
 		<server name='Tweaknews'>
 			<ssl>
-				<header ssl='yes' port='563'>news.tweaknews.nl</header>
-				<nzb ssl='yes' port='563'>news.tweaknews.nl</nzb>
-				<post ssl='yes' port='563'>news.tweaknews.nl</post>
+				<header ssl='yes' port='563'>news.tweaknews.eu</header>
+				<nzb ssl='yes' port='563'>news.tweaknews.eu</nzb>
+				<post ssl='yes' port='563'>news.tweaknews.eu</post>
 			</ssl>
 			<plain>
-				<header ssl='' port='119'>news.tweaknews.nl</header>
-				<nzb ssl='' port='119'>news.tweaknews.nl</nzb>
-				<post ssl='' port='119'>news.tweaknews.nl</post>
+				<header ssl='' port='119'>news.tweaknews.eu</header>
+				<nzb ssl='' port='119'>news.tweaknews.eu</nzb>
+				<post ssl='' port='119'>news.tweaknews.eu</post>
 			</plain>
 		</server>		
 
