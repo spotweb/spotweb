@@ -541,16 +541,15 @@ class SpotInstall
         return true;
     }
 
-    public static function testInclude($fname)
+    public static function testInclude($filename)
     {
-        @include_once($fname);
-        foreach (get_included_files() as $filename) {
-            if (strpos($filename, $fname, strlen($filename) - strlen($fname)) !== false) {
-                return dirname($filename);
-            }
+        if (!file_exists($filename)) {
+            return false;
         }
-
-        return false;
+        
+        require_once $filename;
+        
+        return dirname(realpath($filename));
     }
 
     /**

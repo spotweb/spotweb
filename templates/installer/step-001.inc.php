@@ -1,6 +1,6 @@
 <?php
 
-require_once "includes/header.inc.php";
+require_once __DIR__ . '/includes/header.inc.php' ;
 
 global $_testInstall_Ok;
 
@@ -180,12 +180,12 @@ global $_testInstall_Ok;
     </tr>
     <tr>
         <td> Settings file</td>
-        <td><?php $result = SpotInstall::testInclude("settings.php");
+        <td><?php $result = SpotInstall::testInclude(__DIR__ . '/../../settings.php');
             echo SpotInstall::showResult($result, true, $result); ?></td>
     </tr>
     <tr>
         <td> Own settings file</td>
-        <td><?php $result = SpotInstall::testInclude("ownsettings.php");
+        <td><?php $result = SpotInstall::testInclude(__DIR__ . '/../../ownsettings.php');
             echo SpotInstall::showResult($result, true, $result, "optional"); ?></td>
     </tr>
 </table>

@@ -2,8 +2,8 @@
 
 	/* Render de header en filter templates */
 	if (!isset($data['spotsonly'])) {
-		require_once "includes/header.inc.php";
-		require_once "includes/filters.inc.php";
+		require_once __DIR__ . '/includes/header.inc.php';
+		require_once __DIR__ . '/includes/filters.inc.php';
 	} # if
 
     SpotTiming::start('tpl:spotsinc-afterinclude');
@@ -273,7 +273,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 	/* Render de header en filter templates */
 	if (!isset($data['spotsonly'])) {
 		/* Render de footer template */
-		require_once "includes/footer.inc.php";
+		require_once __DIR__ . '/includes/footer.inc.php';
 	} # if
 
     SpotTiming::stop('tpl:spotsinc-afterinclude');

@@ -1,5 +1,5 @@
 <?php
-	require_once "includes/basic-html-header.inc.php";
+	require_once __DIR__ . '/includes/basic-html-header.inc.php';
 ?>
 <?php
         if ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) {
@@ -55,7 +55,7 @@
 			$loginform = array('username' => '', 'password' => '');
 			$http_referer = $tplHelper->makeSelfUrl('');
 
-			require "login.inc.php";
+			require __DIR__ . '/login.inc.php';
 		} else {
 			echo "</body></html>";
 		} # else
