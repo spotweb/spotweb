@@ -39,7 +39,7 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
  * for OpenSSL to function. OpenSSL greatly speeds up the verifying and
  * signing of new keys.
  */
-$settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
+$settings['openssl_cnf_path'] = __DIR__ . '/lib/openssl/openssl.cnf';
 
 /*
  * Define a cookie host. We try to automtaically set this, but feel
