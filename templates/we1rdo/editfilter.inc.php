@@ -1,5 +1,5 @@
 <?php
-include "includes/form-messages.inc.php";
+require __DIR__ . '/includes/form-messages.inc.php';
 
 /*
  * If this page is rendered without an result variable

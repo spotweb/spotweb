@@ -1,5 +1,5 @@
 <?php
-    include "includes/form-messages.inc.php";
+    require __DIR__ . '/includes/form-messages.inc.php';
 
     $pagetitle = _('Change user preferences');
 
@@ -12,7 +12,7 @@
             return ;
         } # if
 
-        require "includes/header.inc.php";
+        require __DIR__ . '/includes/header.inc.php';
         echo '</div>';
     } else {
         if ($result->isSubmitted()) {
@@ -559,6 +559,6 @@ if (!$dialogembedded) { ?>
 // Initialzie the user preferences screen
 if (!$dialogembedded) {
     $toRunJsCode = 'initializeUserPreferencesScreen();';
-    require_once "includes/footer.inc.php";
+    require_once __DIR__ . '/includes/footer.inc.php';
 
 } # if

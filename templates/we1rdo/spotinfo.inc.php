@@ -1,5 +1,5 @@
 <?php
-	require_once "includes/header.inc.php";
+	require_once __DIR__ . '/includes/header.inc.php';
 	$spot = $tplHelper->formatSpot($spot);
 
 	// We definieeren hier een aantal settings zodat we niet steeds dezelfde check hoeven uit te voeren
@@ -163,7 +163,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 	if ($currentSession['user']['userid'] > 2) { 
 		echo "<li class='addComment'>";
 		echo "<a class='togglePostComment' title='" . _('Add comment (open/close windows)') . "'>" . _('Add comment') . "<span></span></a><div><div></div>";
-		include "postcomment.inc.php"; 
+		require __DIR__ . '/postcomment.inc.php'; 
 		echo "</div></li>";
 	}
 } ?>
@@ -174,7 +174,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 		
 		<input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
 <?php
-require_once "includes/footer.inc.php";
+require_once __DIR__ . '/includes/footer.inc.php';
 ?>
 
 <script type="text/javascript">

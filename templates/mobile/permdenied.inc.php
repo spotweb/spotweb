@@ -42,7 +42,7 @@
 			$data['performredirect'] = true;
 			$loginform = array('username' => '', 'password' => '');
 			
-			require_once "login.inc.php";
+			require_once __DIR__ . '/login.inc.php';
 		} # if
 	?>
 	</body>

@@ -9,8 +9,8 @@
         } # else
     } # if
 
-    require "includes/header.inc.php";
-    require "includes/form-messages.inc.php";
+    require __DIR__ . '/includes/header.inc.php';
+    require __DIR__ . '/includes/form-messages.inc.php';
     
     $nntp_nzb = $this->_settings->get('nntp_nzb');
     $nntp_hdr = $this->_settings->get('nntp_hdr');
@@ -276,4 +276,4 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 </form>
 <?php
     $toRunJsCode = 'initializeSettingsPage();';
-	require_once "includes/footer.inc.php";
+	require_once __DIR__ . '/includes/footer.inc.php';
