@@ -21,6 +21,8 @@ tools:
     php_loc:
         enabled: true
         excluded_dirs: [vendor]
+    php_code_coverage:
+        test_command: "vendor/bin/phpunit"
 
 build:
     environment:
@@ -31,4 +33,8 @@ build:
         redis: false
     tests:
         override:
-            - vendor/bin/phpunit
+            -
+                command: "vendor/bin/phpunit"
+                coverage:
+                    file: "clover.xml"
+                    format: "clover"
