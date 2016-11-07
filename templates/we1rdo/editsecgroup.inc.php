@@ -1,5 +1,5 @@
 <?php
-    require "includes/form-messages.inc.php";
+    require __DIR__ . '/includes/form-messages.inc.php';
 
     if (!showResults($result)) {
 

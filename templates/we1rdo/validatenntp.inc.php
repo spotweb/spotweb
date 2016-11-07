@@ -1,5 +1,5 @@
 <?php
-	include 'includes/form-xmlresult.inc.php';
+	require __DIR__ . '/includes/form-xmlresult.inc.php';
 
 	if (!$tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) {
 		$postresult = array('result' => 'failure');

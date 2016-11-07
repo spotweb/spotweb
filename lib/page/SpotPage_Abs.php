@@ -121,9 +121,9 @@ abstract class SpotPage_Abs {
 
         # and include the template
 		foreach($this->_templatePaths as $tplPath) {
-			if (file_exists($tplPath . $tpl . '.inc.php')) {
-				require_once($tplPath . $tpl . '.inc.php');
-
+			$path = sprintf('%s%s.inc.php', $tplPath, $tpl);
+			if (file_exists($path)) {
+				require_once $path;
 				break;
 			} # if
 		} # foreach

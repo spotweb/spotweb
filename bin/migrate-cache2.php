@@ -26,12 +26,6 @@ function cleanupDirs($dir, $curlevel) {
 } # cleanupDirs
 
 try {
-    /*
-     * If we are run from another directory, try to change the current
-     * working directory to a directory the script is in
-     */
-    chdir(__DIR__.'/../');
-
     require_once __DIR__ . '/../vendor/autoload.php';
 
     /*

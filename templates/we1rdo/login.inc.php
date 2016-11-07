@@ -1,5 +1,5 @@
 <?php
-    include "includes/form-messages.inc.php";
+    require __DIR__ . '/includes/form-messages.inc.php';
 
     /*
      * Do we need to redirect on success? If so, perform this
@@ -28,7 +28,7 @@
      * we send them to the client
      */
     if (!isset($data['htmlheaderssent'])) {
-        include_once "includes/basic-html-header.inc.php";
+        require_once __DIR__ . '/includes/basic-html-header.inc.php';
 
         $data['renderhtml'] = true;
     } # if

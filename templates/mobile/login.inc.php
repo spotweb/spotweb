@@ -10,7 +10,7 @@ if (!empty($loginresult)) {
 } # if
 
 if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) {
-	include "includes/form-messages.inc.php"; 
+	require __DIR__ . '/includes/form-messages.inc.php'; 
 
 ?>
 <!DOCTYPE html> 

@@ -1,7 +1,7 @@
 <?php
 	$pagetitle = _('User &amp; group management');
 	
-	require "includes/header.inc.php";
+	require __DIR__ . '/includes/header.inc.php';
 ?>
 </div>
 	<div id='toolbar'>
@@ -19,4 +19,4 @@
 <?php
     $toRunJsCode = 'initializeUserManagementPage();';
 
-	require_once "includes/footer.inc.php";
+	require_once __DIR__ . '/includes/footer.inc.php';
