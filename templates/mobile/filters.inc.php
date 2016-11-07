@@ -4,7 +4,7 @@
  ?>
 <div data-role="page" id="search"> 
 	<div data-role="header" data-backbtn="false">
-	<h1>Zoek<?php require "logincontrol.inc.php"; ?></h1>
+	<h1>Zoek<?php require __DIR__ . '/logincontrol.inc.php'; ?></h1>
 	
 	<div data-role="navbar">
 		<ul>
@@ -45,7 +45,7 @@
  </div>
 <div data-role="page" id="filters"> 
 	<div data-role="header" data-backbtn="false">
-	<h1>Spotweb<?php require "logincontrol.inc.php"; ?></h1>
+	<h1>Spotweb<?php require __DIR__ . '/logincontrol.inc.php'; ?></h1>
 
 	<div data-role="navbar">
 		<ul>

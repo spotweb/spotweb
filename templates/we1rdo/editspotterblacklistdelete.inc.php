@@ -4,7 +4,7 @@
 
 	# bereid alvast een UL voor voor de errors e.d., worden er later
 	# via AJAX ingegooid
-	include "includes/form-messages.inc.php";
+	require __DIR__ . '/includes/form-messages.inc.php';
 ?>
 
 	<!-- Security group wissen -->

@@ -1,14 +1,14 @@
 <?php
 /* Render de header en filter templates */
-require_once "header.inc.php";
-require_once "filters.inc.php";
+require_once __DIR__ . 'header.inc.php';
+require_once __DIR__ . 'filters.inc.php';
 
 $setpath = $tplHelper->makeBaseUrl("path");
 ?>
 
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">
-	<h1>Spotweb<?php require "logincontrol.inc.php"; ?></h1>
+	<h1>Spotweb<?php require __DIR__ . '/logincontrol.inc.php'; ?></h1>
 	<a href='<?php echo $setpath; ?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
 	<div data-role="navbar">
 		<ul>
@@ -49,4 +49,4 @@ $count = 0;
 </fieldset>
 <?php
 /* Render de footer template */
-require_once "footer.inc.php";
+require_once __DIR__ . '/footer.inc.php';

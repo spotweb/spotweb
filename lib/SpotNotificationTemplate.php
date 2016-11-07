@@ -26,7 +26,11 @@ class SpotNotificationTemplate {
 		ob_start(); 
 		
 		# en we spelen de template af
-		require 'templates/notifications/' . $tpl . '.inc.php';
+		require sprintf(
+			'%s/../templates/notifications/%s.inc.php',
+			__DIR__,
+			$tpl
+		);
 		
 		# nu vraag de inhoud van de output buffer op
 		$notificationContent = ob_get_contents();

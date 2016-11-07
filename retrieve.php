@@ -2,10 +2,7 @@
 error_reporting(2147483647);
 
 try {
-
-    chdir(__DIR__);
-
-    require_once 'vendor/autoload.php';
+    require_once __DIR__ . '/vendor/autoload.php';
 
 	/*
 	 * Initialize the Spotweb base classes
