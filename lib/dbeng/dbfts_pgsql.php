@@ -50,7 +50,7 @@ class dbfts_pgsql extends dbfts_abs {
 			$tmpSortCounter = count($additionalFields) + count($addFields);
 
             # Prepare the to_tsvector and to_tsquery strings
-            $ts_vector = "to_tsvector('Dutch', " . $field . ")";
+            $ts_vector = "to_tsvector('english',regexp_replace(".$field.",'(.)\\.(.)','\\1 \\2','g'))";
 
             /*
              * Inititialize Digital Stratum's FTS2 parser so we can
@@ -60,7 +60,7 @@ class dbfts_pgsql extends dbfts_abs {
             $o_parse->debug = false;
             $o_parse->upper_op_only = true;
             $o_parse->use_prepared_sql = false;
-            $o_parse->set_default_op('AND');
+            $o_parse->set_default_op('OR');
 
             /*
              * Do some preparation for the searchvalue, test cases:
@@ -82,13 +82,16 @@ class dbfts_pgsql extends dbfts_abs {
                 $queryPart = array();
 
                 if (!empty($o_parse->tsearch)) {
-                    $ts_query = "to_tsquery('Dutch', " . $this->_db->safe($o_parse->tsearch.":*") . ")";
+                    //$ts_query = "to_tsquery('Dutch', " . $this->_db->safe($o_parse->tsearch.":*") . ")";
+                    $ts_query = "to_tsquery('english', " . $this->_db->safe($o_parse->tsearch) . ")";
                     $queryPart[] = " " . $ts_vector . " @@ " . $ts_query;
                     $addFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
                 } # if
 
                 if (!empty($o_parse->ilike)) {
-                    $queryPart[] = $o_parse->ilike;
+                    $re = '/(\'%\S+?)([ ])(\S+?%\')/';
+                    $ne = preg_replace($re,"$1_$3", $o_parse->ilike);
+                    $queryPart[] = $ne;
                 } # if
 
                 /*
