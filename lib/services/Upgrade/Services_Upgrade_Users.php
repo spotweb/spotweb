@@ -267,6 +267,9 @@ class Services_Upgrade_Users {
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'username', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'timeout', 15);
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'host', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'port', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'apikey', '');
 
 			$this->setSettingIfNot($user['prefs']['notifications']['boxcar'], 'email', '');
 			$this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
@@ -457,6 +460,14 @@ class Services_Upgrade_Users {
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_show_spot_was_edited . ")");
 			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, " . SpotSecurity::spotsec_delete_spot . ")");
 		} # if
+		
+		########################################################################
+		## Security level 0.32
+		########################################################################
+		if (($forceReset) || ($this->_settings->get('securityversion') < 0.32)) {
+			$dbCon->rawExec("INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, " . SpotSecurity::spotsec_download_integration . ", 'nzbvortex')");
+		} # if
+
 	} # updateSecurityGroups
 
 	/*

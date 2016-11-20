@@ -487,7 +487,7 @@ function initializeUserPreferencesScreen() {
 	});	
 
 	$('#nzbhandlingselect').change(function() {
-	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget').hide();
+	   $('#nzbhandling-fieldset-localdir, #nzbhandling-fieldset-runcommand, #nzbhandling-fieldset-sabnzbd, #nzbhandling-fieldset-nzbget, #nzbhandling-fieldset-nzbvortex').hide();
 	   
 	   var selOpt = $(this).find('option:selected').data('fields').split(' ');
 	   $.each(selOpt, function(index) {

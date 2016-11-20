@@ -227,6 +227,7 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
         'Services_NzbHandler_Display' => __DIR__ . '/../..' . '/lib/services/NzbHandler/Services_NzbHandler_Display.php',
         'Services_NzbHandler_Factory' => __DIR__ . '/../..' . '/lib/services/NzbHandler/Services_NzbHandler_Factory.php',
         'Services_NzbHandler_Nzbget' => __DIR__ . '/../..' . '/lib/services/NzbHandler/Services_NzbHandler_Nzbget.php',
+        'Services_NzbHandler_NZBVortex' => __DIR__ . '/../..' . '/lib/services/NzbHandler/Services_NzbHandler_NZBVortex.php',
         'Services_NzbHandler_Pushsabnzbd' => __DIR__ . '/../..' . '/lib/services/NzbHandler/Services_NzbHandler_Pushsabnzbd.php',
         'Services_NzbHandler_Runcommand' => __DIR__ . '/../..' . '/lib/services/NzbHandler/Services_NzbHandler_Runcommand.php',
         'Services_NzbHandler_Save' => __DIR__ . '/../..' . '/lib/services/NzbHandler/Services_NzbHandler_Save.php',

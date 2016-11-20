@@ -180,6 +180,7 @@ return array(
     'Services_NzbHandler_Display' => $baseDir . '/lib/services/NzbHandler/Services_NzbHandler_Display.php',
     'Services_NzbHandler_Factory' => $baseDir . '/lib/services/NzbHandler/Services_NzbHandler_Factory.php',
     'Services_NzbHandler_Nzbget' => $baseDir . '/lib/services/NzbHandler/Services_NzbHandler_Nzbget.php',
+    'Services_NzbHandler_NZBVortex' => $baseDir . '/lib/services/NzbHandler/Services_NzbHandler_NZBVortex.php',
     'Services_NzbHandler_Pushsabnzbd' => $baseDir . '/lib/services/NzbHandler/Services_NzbHandler_Pushsabnzbd.php',
     'Services_NzbHandler_Runcommand' => $baseDir . '/lib/services/NzbHandler/Services_NzbHandler_Runcommand.php',
     'Services_NzbHandler_Save' => $baseDir . '/lib/services/NzbHandler/Services_NzbHandler_Save.php',
