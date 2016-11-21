@@ -792,6 +792,18 @@ msgstr "Username voor nzbget? Let op: op dit moment is all&eacute;&eacute;n <u>n
 msgid "Password for nzbget?"
 msgstr "Wachtwoord voor nzbget?"
 
+msgid "Call NZBVortex through HTTP by SpotWeb"
+msgstr "Roep NZBVortex aan via HTTP door SpotWeb"
+
+msgid "Hostname of NZBVortex?"
+msgstr "Host naam van NZBVortex"
+
+msgid "Portnumber of NZBVortex?"
+msgstr "Poortnummer van NZBVortex"
+
+msgid "API-Key for NZBVortex?"
+msgstr "API-Key van NZBVortex"
+
 msgid "Use Boxcar?"
 msgstr "Boxcar gebruiken?"
 

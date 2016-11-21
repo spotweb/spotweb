@@ -788,6 +788,18 @@ msgstr ""
 msgid "Password for nzbget?"
 msgstr ""
 
+msgid "Call NZBVortex through HTTP by SpotWeb"
+msgstr ""
+
+msgid "Hostname of NZBVortex?"
+msgstr ""
+
+msgid "Portnumber of NZBVortex?"
+msgstr ""
+
+msgid "API-Key for NZBVortex?"
+msgstr ""
+
 msgid "Use Boxcar?"
 msgstr ""
 

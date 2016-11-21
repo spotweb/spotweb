@@ -16,6 +16,7 @@ class Services_NzbHandler_Factory
 			case 'push-sabnzbd' 	: $handler = new Services_NzbHandler_Pushsabnzbd($settings, $nzbHandling); break;
 			case 'client-sabnzbd' 	: $handler = new Services_NzbHandler_Clientsabnzbd($settings, $nzbHandling); break;
 			case 'nzbget'			: $handler = new Services_NzbHandler_Nzbget($settings, $nzbHandling); break;
+			case 'nzbvortex'		: $handler = new Services_NzbHandler_NZBVortex($settings, $nzbHandling); break;
 			default					: $handler = new Services_NzbHandler_Display($settings, $nzbHandling); break;
 		} # switch
 
