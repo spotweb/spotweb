@@ -51,7 +51,10 @@ class SpotCategories {
             7 => "HD-DVD",
             8 => "WMVHD",
             9 => "x264HD",
-            10 => "DVD9"),
+            10 => "DVD9",
+            11 => "PDF",
+            12 => "Bitmap",
+            13 => "Vector"),
             1 =>
             Array(0	=> "MP3",
                 1 => "WMA",
@@ -113,7 +116,10 @@ class SpotCategories {
             7 => array("HD-DVD", array(), array("z0", "z1", "z3")),
             8 => array("WMVHD", array(), array("z0", "z1", "z3")),
             9 => array("x264", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
-            10 => array("DVD9", array("z0", "z1", "z3"), array("z0", "z1", "z3"))),
+            10 => array("DVD9", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
+            11 => array("PDF", array("z2"), array("z2")),
+            12 => array("Bitmap", array("z4"), array("z4")),
+            13 => array("Vector", array("z4"), array("z4"))),
             'b' =>
             Array(0	=> array("CAM", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
                 1 => array("(S)VCD", array(), array("z0", "z1", "z3")),
@@ -125,7 +131,10 @@ class SpotCategories {
                 7 => array("R5", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
                 8 => array("Telecine", array(), array("z0", "z1", "z3")),
                 9 => array("Telesync", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
-                10 => array("Scan", array("z2"), array("z2"))),
+                10 => array("Scan", array("z2"), array("z2")),
+                11 => array("WEB-DL", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
+                12 => array("WEBRip", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
+                13 => array("HDRip", array("z0", "z1", "z3"), array("z0", "z1", "z3"))),
             'c' =>
             Array(0 => array("No subtitles", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
                 1 => array("Dutch subtitles (external)", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
@@ -227,7 +236,8 @@ class SpotCategories {
             Array(0	=> "Movie",
                 1 => "Series",
                 2 => "Book",
-                3 => "Erotica")
+                3 => "Erotica",
+                4 => "Picture")
         ),
             1 => Array(
                 'a' =>
@@ -486,9 +496,12 @@ class SpotCategories {
                 } elseif (stripos('b4|d11|', ($subCatVal . '|')) !== false) {
                     # Series
                     $subcatz = 'z1|';
-                } elseif (stripos('a5|', ($subCatVal . '|')) !== false) {
+                } elseif (stripos('a5|a11|', ($subCatVal . '|')) !== false) {
                     # Boeken
                     $subcatz = 'z2|';
+                } elseif (stripos('a12|a13|', ($subCatVal . '|')) !== false) {
+                    # Plaatjes
+                    $subcatz = 'z4|';
                 } elseif (empty($subcatz)) {
                     # default, film
                     $subcatz = 'z0|';
