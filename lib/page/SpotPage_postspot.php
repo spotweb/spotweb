@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(0);
 class SpotPage_postspot extends SpotPage_Abs {
 	private $_spotForm;
 	
