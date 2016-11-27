@@ -1,7 +1,7 @@
 <?php
 /* Render de header en filter templates */
-require_once __DIR__ . '\header.inc.php';
-require_once __DIR__ . '\filters.inc.php';
+require_once __DIR__ . '/header.inc.php';
+require_once __DIR__ . '/filters.inc.php';
 
 $setpath = $tplHelper->makeBaseUrl("path");
 ?>
