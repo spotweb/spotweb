@@ -352,6 +352,21 @@ class Services_User_Record {
             } # if
         } # if
 
+        # when an nzbvortex host is entered, it has to be a valid URL
+        if ($prefs['nzbhandling']['action'] == 'nzbvortex') {
+            if (empty($prefs['nzbhandling']['nzbvortex']['host'])) {
+                $result->addError(_("Host entered for NZBVortex is not valid"));
+            } # if
+
+            if (empty($prefs['nzbhandling']['nzbvortex']['port'])) {
+                $result->addError(_("Port entered for NZBVortex is not valid"));
+            } # if
+
+            if (empty($prefs['nzbhandling']['nzbvortex']['apikey'])) {
+                $result->addError(_("API-Key entered for NZBVortex is not valid"));
+            } # if
+        } # if
+
         # Twitter tokens are never posted by the form, but they shouldn't be tossed out
 		$prefs['notifications']['twitter']['screen_name'] = $currentPrefs['notifications']['twitter']['screen_name'];
 		$prefs['notifications']['twitter']['access_token'] = $currentPrefs['notifications']['twitter']['access_token'];

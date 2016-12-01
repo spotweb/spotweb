@@ -99,6 +99,7 @@ class SpotNotifications {
 			case 'push-sabnzbd' 	: 
 			case 'client-sabnzbd'	: $notification = $this->_notificationTemplate->template('nzb_sabnzbd', array('spot' => $spot)); break;
 			case 'nzbget'			: $notification = $this->_notificationTemplate->template('nzb_nzbget', array('spot' => $spot)); break;
+			case 'nzbvortex'		: $notification = $this->_notificationTemplate->template('nzb_nzbvortex', array('spot' => $spot)); break;
 			default					: return;
 		} # switch
 		

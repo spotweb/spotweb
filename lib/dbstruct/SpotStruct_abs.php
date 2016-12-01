@@ -688,6 +688,16 @@ abstract class SpotStruct_abs {
 			} # if
 		} # if
 
+        # drop PostGreSQL FTS indices
+        if ($schemaVer < 0.68) {
+            if ($this instanceof SpotStruct_pgsql) {
+                $this->dropFts ("idx_fts_spots","spots",array(1 => "poster",
+					                                          2 => 'title',
+						                                      3 => 'tag'));
+                
+            }
+        }
+
 		# Create several indexes
 		# ---- Indexes on spots -----
 		$this->validateIndex("idx_spots_1", "UNIQUE", "spots", array("messageid"));
@@ -695,10 +705,9 @@ abstract class SpotStruct_abs {
 		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
 		$this->validateIndex("idx_spots_4", "", "spots", array("category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz"));
 		$this->validateIndex("idx_spots_5", "", "spots", array("spotterid"));
-		$this->validateFts("idx_fts_spots", "spots", 
-					array(1 => "poster",
-					      2 => 'title',
-						  3 => 'tag'));
+		$this->validateFts("idx_fts_spots", "spots",  array(1 => "poster",
+					                                        2 => 'title',
+						                                    3 => 'tag'));
 
 		# ---- Indexes on nntp ----
 		$this->validateIndex("idx_usenetstate_1", "UNIQUE", "usenetstate", array("infotype"));

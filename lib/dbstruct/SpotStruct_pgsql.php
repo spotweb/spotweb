@@ -148,7 +148,7 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 				} # case
 				
 				case 'FULLTEXT' : {
-					$this->_dbcon->rawExec("CREATE INDEX " . $idxname . " ON " . $tablename . " USING gin(to_tsvector('dutch', " . implode(",", $colList) . "))");
+                    $this->_dbcon->rawExec("CREATE INDEX " . $idxname . " ON " . $tablename . " USING gin(to_tsvector('english', regexp_replace(".implode(",", $colList).",'(.)\\.(.)','\\1 \\2','g') ))");
 					break;
 				} # case
 				
@@ -458,7 +458,7 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 			} # foreach
 		} else {
 			# extract the column name
-			preg_match_all("/\((.*)\)/U", $colList[1], $tmpAr);
+			preg_match_all("/[\(]+(.*?)\)/", $colList[1], $tmpAr);
 			
 			# and create the index info
 			$idxInfo[] = array('column_name' => $tmpAr[1][0],
