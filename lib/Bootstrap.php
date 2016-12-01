@@ -39,7 +39,7 @@ class Bootstrap {
          * Set the cache path
          */
         if ($settings->exists('cache_path')) {
-            $daoFactory->setCachePath($settings->get('cache_path'));
+            $daoFactory->setCacheStore(new Dao_Base_ZipCacheStore($settings->get('cache_path')));
         } # if
 
 		/*
