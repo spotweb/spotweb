@@ -2,15 +2,7 @@
 
  class Dao_Postgresql_Factory extends Dao_Factory {
  	private $_conn;
-    private $_cachePath;
-
-    /*
-     * Actual cachepath to use
-     */
-    public function setCachePath($cachePath) {
-        $this->_cachePath = $cachePath;
-    } # setCachePath
-
+    
     /*
      * Returns the currently configured cachepath
      */
@@ -43,7 +35,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Postgresql_Cache($this->_conn, $this->getCachePath());
+		return new Dao_Mysql_Cache($this->_conn, $this->getCacheStore());
 	} # getCacheDao
 
 	public function getAuditDao() {
