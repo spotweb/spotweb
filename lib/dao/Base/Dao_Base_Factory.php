@@ -2,19 +2,9 @@
 
  class Dao_Base_Factory extends Dao_Factory {
 
-     /*
-      * Actual cachepath to use
-      */
-     public function setCachePath($cachePath) {
-         throw new NotImplementedException();
-     } # setCachePath
-
-     /*
-      * Returns the currently configured cachepath
-      */
-     public function getCachePath() {
-         throw new NotImplementedException();
-     } # getCachePath
+    public function setCacheStore(Dao_CacheStore $cacheStore, $cachePath) {
+       throw new NotImplementedException();
+     } # setCacheStore
 
  	/*
  	 * Actual connection object to be used in
