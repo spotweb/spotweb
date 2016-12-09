@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 error_reporting(2147483647);
 
