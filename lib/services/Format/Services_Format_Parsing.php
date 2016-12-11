@@ -144,6 +144,9 @@ class Services_Format_Parsing
                     $tpl_spot['image']['segment'] = array();
                     break;
                 } else {
+                    if (!isset($tpl_spot['image']['segment']) || !is_array($tpl_spot['image']['segment'])) {
+                        $tpl_spot['image']['segment'] = array();
+                    }
                     $tpl_spot['image']['segment'][] = (string)$seg;
                 }
             }
@@ -155,6 +158,9 @@ class Services_Format_Parsing
                 $tpl_spot['nzb'] = array();
                 break;
             } else {
+                if (!isset($tpl_spot['nzb']) || !is_array($tpl_spot['nzb'])) {
+                    $tpl_spot['nzb'] = array();
+                }
                 $tpl_spot['nzb'][] = (string)$seg;
             }
         }
