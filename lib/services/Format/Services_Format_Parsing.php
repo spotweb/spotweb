@@ -3,36 +3,6 @@
 class Services_Format_Parsing
 {
     /**
-     * Create a template array so we always have the full fields to prevent ugly notices.
-     */
-    const TEMPLATE_SPOT = array(
-        'category'    => '',
-        'website'     => '',
-        'image'       => '',
-        'sabnzbdurl'  => '',
-        'messageid'   => '',
-        'searchurl'   => '',
-        'description' => '',
-        'sub'         => '',
-        'filesize'    => '',
-        'poster'      => '',
-        'tag'         => '',
-        'nzb'         => '',
-        'title'       => '',
-        'filename'    => '',
-        'newsgroup'   => '',
-        'subcata'     => '',
-        'subcatb'     => '',
-        'subcatc'     => '',
-        'subcatd'     => '',
-        'subcatz'     => '',
-        'created'     => '',
-        'key'         => '',
-        'prevMsgids'  => array(),
-        'newsreader'  => ''
-    );
-
-    /**
      * There are currently two known methods to which Spots are signed,
      * each having different charachteristics, making it a bit difficult
      * to work with this.
@@ -65,7 +35,35 @@ class Services_Format_Parsing
      */
     public function parseFull($xmlStr)
     {
-        $tpl_spot = static::TEMPLATE_SPOT;
+        /**
+         * Create a template array so we always have the full fields to prevent ugly notices.
+         */
+        $tpl_spot = array(
+            'category'    => '',
+            'website'     => '',
+            'image'       => '',
+            'sabnzbdurl'  => '',
+            'messageid'   => '',
+            'searchurl'   => '',
+            'description' => '',
+            'sub'         => '',
+            'filesize'    => '',
+            'poster'      => '',
+            'tag'         => '',
+            'nzb'         => '',
+            'title'       => '',
+            'filename'    => '',
+            'newsgroup'   => '',
+            'subcata'     => '',
+            'subcatb'     => '',
+            'subcatc'     => '',
+            'subcatd'     => '',
+            'subcatz'     => '',
+            'created'     => '',
+            'key'         => '',
+            'prevMsgids'  => array(),
+            'newsreader'  => ''
+        );
 
         // Some legacy spotNet clients create incorrect/invalid multiple segments,
         // we use this crude way to workaround this. GH issue #1608
