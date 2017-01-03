@@ -286,6 +286,7 @@ class dbfts_mysql extends dbfts_abs {
                     $filteredTerm = rtrim($filteredTerm, "*");
 
                     if (!empty($filteredTerm)) {
+                        $filteredTerm = str_replace(' ','_',$filteredTerm );
                         $queryPart[] = ' ' . $field . " LIKE " . $this->_db->safe('%' . $filteredTerm . '%');
                     } # if
                 } # foreach

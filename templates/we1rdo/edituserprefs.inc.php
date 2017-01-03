@@ -255,6 +255,9 @@ if (!$dialogembedded) { ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'nzbget')) { ?>
 							<option data-fields="nzbget" <?php if ($edituserprefsform['nzbhandling']['action'] == "nzbget") { echo 'selected="selected"'; } ?> value="nzbget"><?php echo _('Call NZBGet through HTTP by SpotWeb'); ?></option>
 <?php } ?>
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'nzbvortex')) { ?>
+							<option data-fields="nzbvortex" <?php if ($edituserprefsform['nzbhandling']['action'] == "nzbvortex") { echo 'selected="selected"'; } ?> value="nzbvortex"><?php echo _('Call NZBVortex through HTTP by SpotWeb'); ?></option>
+<?php } ?>
 						</select>
 					</dd>
 
@@ -313,6 +316,20 @@ if (!$dialogembedded) { ?>
 
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][password]"><?php echo _('Password for nzbget?'); ?></label></dt>
 						<dd><input type="password" name="edituserprefsform[nzbhandling][nzbget][password]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['password']); ?>"></dd>
+					</fieldset>
+<?php } ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_download_integration, 'nzbvortex')) { ?>
+					<fieldset id="nzbhandling-fieldset-nzbvortex">
+						<!-- NZBVortex -->
+						<dt><label for="edituserprefsform[nzbhandling][nzbvortex][host]"><?php echo _('Hostname of NZBVortex?'); ?></label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbvortex][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbvortex']['host']); ?>"></dd>
+
+						<dt><label for="edituserprefsform[nzbhandling][nzbvortex][port]"><?php echo _('Portnumber of NZBVortex?'); ?></label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbvortex][port]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbvortex']['port']); ?>"></dd>
+
+						<dt><label for="edituserprefsform[nzbhandling][nzbvortex][apikey]"><?php echo _('API-Key for NZBVortex?'); ?></label></dt>
+						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbvortex][apikey]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbvortex']['apikey']); ?>"></dd>
 					</fieldset>
 <?php } ?>
 				</dl>

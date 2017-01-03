@@ -171,9 +171,11 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} else {
                 // Complete season search, add wildcard character to season
             	if (!empty($title)) {
-                    $seasonSearch .= '*';
-                    // and search for the text 'Season ' ...
-                    $searchParams['value'][] = "Titel:=:OR:+\"" . $title . "\" +\"Season " . (int) $this->_params['season'] . "\"";
+                    if (!empty($seasonSearch )) {
+                        $seasonSearch .= '*';
+                        // and search for the text 'Season ' ...
+                        $searchParams['value'][] = "Titel:=:OR:+\"" . $title . "\" +\"Season " . (int) $this->_params['season'] . "\"";
+                    }
             	}
             } # else
 

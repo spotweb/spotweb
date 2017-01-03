@@ -1,8 +1,9 @@
 filter:
     excluded_paths:
-        - 'tests/*'
+        - "tests/*"
+        - "vendor/*"
     dependency_paths:
-        - 'vendor/*'
+        - "vendor/*"
 
 checks:
     php: true
@@ -20,6 +21,8 @@ tools:
     php_loc:
         enabled: true
         excluded_dirs: [vendor]
+    php_code_coverage:
+        test_command: "vendor/bin/phpunit"
 
 build:
     environment:
@@ -28,3 +31,10 @@ build:
         mysql: false
         postgresql: false
         redis: false
+    tests:
+        override:
+            -
+                command: "vendor/bin/phpunit"
+                coverage:
+                    file: "clover.xml"
+                    format: "clover"

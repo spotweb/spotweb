@@ -79,7 +79,7 @@
 				marked as spam in the spotoverview.<br />
 				By default the threshold is set to 1 spam report meaning that nothing changes for the user unless he/she 
 				chooses to use a different threshold.<br />
-				Please run <i>upgrade-db.php</i> to update your database schema. 
+				Please run <i>bin/upgrade-db.php</i> to update your database schema. 
 			]]></description>
 			<link>https://github.com/spotweb/spotweb/</link>
 			<guid>11</guid>
