@@ -64,8 +64,8 @@ class Services_Image_Util {
 	 * Creates an empty spotweb base image
 	 */
 	public function createDefaultSpotwebImage() {
-		$imageFile = 'images/spotnet.gif';
-		$ttfFont = 'images/ttf/liberation-sans/LiberationSans-Bold.ttf';
+		$imageFile = __DIR__.'/../../../images/spotnet.gif';
+		$ttfFont = __DIR__.'/../../../images/ttf/liberation-sans/LiberationSans-Bold.ttf';
 		$fontColor = 'ffffff';
 
 		// Create image

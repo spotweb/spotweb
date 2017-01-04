@@ -55,7 +55,7 @@ class Services_Format_Parsing {
 	function parseFull($xmlStr) {
 		# Create a template array so we always have the full fields to prevent ugly notices
 		$tpl_spot = array('category' => '', 'website' => '', 'image' => '', 'sabnzbdurl' => '', 'messageid' => '', 'searchurl' => '', 'description' => '',
-						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => '', 'title' => '', 
+						  'sub' => '', 'filesize' => '', 'poster' => '', 'tag' => '', 'nzb' => array(), 'title' => '',
 						  'filename' => '', 'newsgroup' => '', 'subcata' => '', 'subcatb' => '',
 						  'subcatc' => '', 'subcatd' => '', 'subcatz' => '', 'created' => '', 'key' => '', 'prevMsgids' => array(), 'newsreader' => '');
 
