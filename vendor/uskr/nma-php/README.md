@@ -1,17 +1,23 @@
 Notify My Android (PHP Library)
 ================================
 
-	Notify My Android (http://nma.usk.bz)
+	Notify My Android (http://www.notifymyandroid.com)
 	NMAPHP - PHP Library to access NMA public API (php4 compatible)
-	Last Stable Version: 0.0.2-php4
+	Last Stable Version: 0.0.3-php4
 	For developers: http://github.com/uskr/NMALib.Net
 	Author: Unknown
-	Refactoring and Modifications: Adriano Maia (adriano@usk.bz)
+	Refactoring and Modifications: Adriano Maia (adriano@locked.io)
 
 	This library provides an easy to use API for PHP that interfaces with Notify My Android public API.
 	
-	This is a preliminary version. But it works. Eventually I will release a second version more polished and with better code. If anyone want to fork and support, be my guest!
+	This is a preliminary version, but it works. 
+	
+	This version was designed to be compatible with php4. If you use php5, please consider using this version: https://github.com/snider/php-notifyMyAndroid
+	
+### Requirements
 
+	This library requires php version 4 or superior with libcurl support.
+	
 ### More Information
 
 	Example application on how to use and source code available

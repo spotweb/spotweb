@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e5ea20e298c0936fea0895bdd994d90c",
-    "content-hash": "8e4a905cf8885cfd64102c1b326f52e2",
+    "content-hash": "5b18a62ee4dee005974671324145aeec",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -53,7 +52,7 @@
                 "oauth",
                 "twitter"
             ],
-            "time": "2014-11-18 00:05:59"
+            "time": "2014-11-18T00:05:59+00:00"
         },
         {
             "name": "boxcar/boxcar",
@@ -99,7 +98,7 @@
                 "notifications",
                 "push"
             ],
-            "time": "2016-08-12 20:03:30"
+            "time": "2016-08-12T20:03:30+00:00"
         },
         {
             "name": "digitalstratum/fts_parser",
@@ -143,7 +142,7 @@
                 "postgresql",
                 "tsearch2"
             ],
-            "time": "2016-08-12 10:43:23"
+            "time": "2016-08-12T10:43:23+00:00"
         },
         {
             "name": "gdwebs/nntp",
@@ -194,7 +193,7 @@
             ],
             "description": "A package that adds support for the NNTP protocol in PHP.",
             "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol",
-            "time": "2016-11-04 15:48:31"
+            "time": "2016-11-04T15:48:31+00:00"
         },
         {
             "name": "jean-damien/pchart",
@@ -238,7 +237,7 @@
                 "pchart",
                 "pogolotti"
             ],
-            "time": "2014-01-19 20:08:29"
+            "time": "2014-01-19T20:08:29+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
@@ -292,7 +291,7 @@
                 "mobile detector",
                 "php mobile detect"
             ],
-            "time": "2016-04-24 09:47:16"
+            "time": "2016-04-24T09:47:16+00:00"
         },
         {
             "name": "notifo/notifo-php",
@@ -333,7 +332,7 @@
                 "notifo",
                 "push"
             ],
-            "time": "2016-08-12 21:11:31"
+            "time": "2016-08-12T21:11:31+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -425,20 +424,20 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2016-10-04 00:57:04"
+            "time": "2016-10-04T00:57:04+00:00"
         },
         {
             "name": "uskr/nma-php",
-            "version": "v0.0.2",
+            "version": "v0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mbirth/nma-php.git",
-                "reference": "d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847"
+                "reference": "862c559327d722cf5e36f77d32608eece19f00fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mbirth/nma-php/zipball/d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847",
-                "reference": "d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847",
+                "url": "https://api.github.com/repos/mbirth/nma-php/zipball/862c559327d722cf5e36f77d32608eece19f00fe",
+                "reference": "862c559327d722cf5e36f77d32608eece19f00fe",
                 "shasum": ""
             },
             "require": {
@@ -472,7 +471,7 @@
                 "notifymyandroid",
                 "push"
             ],
-            "time": "2016-08-12 20:29:39"
+            "time": "2016-08-12T20:36:54+00:00"
         },
         {
             "name": "xenji/prowlphp",
@@ -514,7 +513,7 @@
                 "api",
                 "webservices"
             ],
-            "time": "2016-10-02 12:30:45"
+            "time": "2016-10-02T12:30:45+00:00"
         }
     ],
     "packages-dev": [
@@ -570,7 +569,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2015-06-14 21:17:01"
+            "time": "2015-06-14T21:17:01+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -612,7 +611,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2016-10-31 17:19:45"
+            "time": "2016-10-31T17:19:45+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -666,7 +665,7 @@
                 "reflection",
                 "static analysis"
             ],
-            "time": "2015-12-27 11:43:31"
+            "time": "2015-12-27T11:43:31+00:00"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -711,7 +710,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2016-09-30 07:12:33"
+            "time": "2016-09-30T07:12:33+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -758,7 +757,7 @@
                     "email": "me@mikevanriel.com"
                 }
             ],
-            "time": "2016-06-10 07:14:17"
+            "time": "2016-06-10T07:14:17+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -820,7 +819,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2016-06-07 08:13:47"
+            "time": "2016-06-07T08:13:47+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -883,7 +882,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-11-01 05:06:24"
+            "time": "2016-11-01T05:06:24+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -930,7 +929,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2015-06-21 13:08:43"
+            "time": "2015-06-21T13:08:43+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -971,7 +970,7 @@
             "keywords": [
                 "template"
             ],
-            "time": "2015-06-21 13:50:34"
+            "time": "2015-06-21T13:50:34+00:00"
         },
         {
             "name": "phpunit/php-timer",
@@ -1015,7 +1014,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2016-05-12 18:03:57"
+            "time": "2016-05-12T18:03:57+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -1064,7 +1063,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2015-09-15 10:49:45"
+            "time": "2015-09-15T10:49:45+00:00"
         },
         {
             "name": "phpunit/phpunit",
@@ -1146,7 +1145,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-10-25 07:40:25"
+            "time": "2016-10-25T07:40:25+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1205,7 +1204,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2016-10-09 07:01:45"
+            "time": "2016-10-09T07:01:45+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -1250,7 +1249,7 @@
             ],
             "description": "Looks up which function or method a line of code belongs to",
             "homepage": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/",
-            "time": "2016-02-13 06:45:14"
+            "time": "2016-02-13T06:45:14+00:00"
         },
         {
             "name": "sebastian/comparator",
@@ -1314,7 +1313,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2015-07-26 15:48:44"
+            "time": "2015-07-26T15:48:44+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -1366,7 +1365,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2015-12-08 07:14:41"
+            "time": "2015-12-08T07:14:41+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -1416,7 +1415,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2016-08-18 05:49:44"
+            "time": "2016-08-18T05:49:44+00:00"
         },
         {
             "name": "sebastian/exporter",
@@ -1483,7 +1482,7 @@
                 "export",
                 "exporter"
             ],
-            "time": "2016-06-17 09:04:28"
+            "time": "2016-06-17T09:04:28+00:00"
         },
         {
             "name": "sebastian/global-state",
@@ -1534,7 +1533,7 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2015-10-12 03:26:01"
+            "time": "2015-10-12T03:26:01+00:00"
         },
         {
             "name": "sebastian/object-enumerator",
@@ -1580,7 +1579,7 @@
             ],
             "description": "Traverses array structures and object graphs to enumerate all referenced objects",
             "homepage": "https://github.com/sebastianbergmann/object-enumerator/",
-            "time": "2016-01-28 13:25:10"
+            "time": "2016-01-28T13:25:10+00:00"
         },
         {
             "name": "sebastian/recursion-context",
@@ -1633,7 +1632,7 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
-            "time": "2015-11-11 19:50:13"
+            "time": "2015-11-11T19:50:13+00:00"
         },
         {
             "name": "sebastian/resource-operations",
@@ -1675,7 +1674,7 @@
             ],
             "description": "Provides a list of PHP built-in functions that operate on resources",
             "homepage": "https://www.github.com/sebastianbergmann/resource-operations",
-            "time": "2015-07-28 20:34:47"
+            "time": "2015-07-28T20:34:47+00:00"
         },
         {
             "name": "sebastian/version",
@@ -1718,7 +1717,7 @@
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
-            "time": "2016-02-04 12:56:52"
+            "time": "2016-02-04T12:56:52+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -1767,7 +1766,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-10-24 18:41:13"
+            "time": "2016-10-24T18:41:13+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -1817,7 +1816,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2016-08-09 15:02:57"
+            "time": "2016-08-09T15:02:57+00:00"
         }
     ],
     "aliases": [],

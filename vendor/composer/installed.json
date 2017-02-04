@@ -21,7 +21,7 @@
         "require-dev": {
             "phpunit/phpunit": "4.2.*"
         },
-        "time": "2014-11-18 00:05:59",
+        "time": "2014-11-18T00:05:59+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -68,7 +68,7 @@
             "ext-curl": "*",
             "php": ">=5.3.0"
         },
-        "time": "2016-08-12 20:03:30",
+        "time": "2016-08-12T20:03:30+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -115,7 +115,7 @@
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2016-08-12 10:43:23",
+        "time": "2016-08-12T10:43:23+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -161,7 +161,7 @@
         "require": {
             "php": ">=5.3"
         },
-        "time": "2016-11-04 15:48:31",
+        "time": "2016-11-04T15:48:31+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -215,7 +215,7 @@
             "ext-gd": "*",
             "php": ">=5.3.0"
         },
-        "time": "2014-01-19 20:08:29",
+        "time": "2014-01-19T20:08:29+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -265,7 +265,7 @@
             "johnkary/phpunit-speedtrap": "~1.0@dev",
             "phpunit/phpunit": "*"
         },
-        "time": "2016-04-24 09:47:16",
+        "time": "2016-04-24T09:47:16+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -316,7 +316,7 @@
         "require": {
             "php": ">=5.0.0"
         },
-        "time": "2016-08-12 21:11:31",
+        "time": "2016-08-12T21:11:31+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -371,7 +371,7 @@
             "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
             "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
         },
-        "time": "2016-10-04 00:57:04",
+        "time": "2016-10-04T00:57:04+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -436,25 +436,69 @@
         ]
     },
     {
-        "name": "uskr/nma-php",
-        "version": "v0.0.2",
-        "version_normalized": "0.0.2.0",
+        "name": "xenji/prowlphp",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/mbirth/nma-php.git",
-            "reference": "d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847"
+            "url": "https://github.com/xenji/ProwlPHP.git",
+            "reference": "f3220b62c68ec017d0fa2e87bf2f601ecf550f83"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mbirth/nma-php/zipball/d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847",
-            "reference": "d9a6dcb99ebc9d8d7d2631c9e77284c0c80ec847",
+            "url": "https://api.github.com/repos/xenji/ProwlPHP/zipball/f3220b62c68ec017d0fa2e87bf2f601ecf550f83",
+            "reference": "f3220b62c68ec017d0fa2e87bf2f601ecf550f83",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-10-02T12:30:45+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Prowl": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache 2.0"
+        ],
+        "authors": [
+            {
+                "name": "Mario Mueller",
+                "email": "mario@xenji.com",
+                "homepage": "http://xenji.com"
+            }
+        ],
+        "description": "PHP library to access the webserives of Prowl (http://www.prowlapp.com/)",
+        "homepage": "https://github.com/xenji/ProwlPHP",
+        "keywords": [
+            "api",
+            "webservices"
+        ]
+    },
+    {
+        "name": "uskr/nma-php",
+        "version": "v0.0.4",
+        "version_normalized": "0.0.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/nma-php.git",
+            "reference": "862c559327d722cf5e36f77d32608eece19f00fe"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/nma-php/zipball/862c559327d722cf5e36f77d32608eece19f00fe",
+            "reference": "862c559327d722cf5e36f77d32608eece19f00fe",
             "shasum": ""
         },
         "require": {
             "ext-curl": "*",
             "php": ">=4.0.0"
         },
-        "time": "2016-08-12 20:29:39",
+        "time": "2016-08-12T20:36:54+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -482,50 +526,6 @@
             "notifications",
             "notifymyandroid",
             "push"
-        ]
-    },
-    {
-        "name": "xenji/prowlphp",
-        "version": "1.0.4",
-        "version_normalized": "1.0.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/xenji/ProwlPHP.git",
-            "reference": "f3220b62c68ec017d0fa2e87bf2f601ecf550f83"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/xenji/ProwlPHP/zipball/f3220b62c68ec017d0fa2e87bf2f601ecf550f83",
-            "reference": "f3220b62c68ec017d0fa2e87bf2f601ecf550f83",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2016-10-02 12:30:45",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Prowl": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache 2.0"
-        ],
-        "authors": [
-            {
-                "name": "Mario Mueller",
-                "email": "mario@xenji.com",
-                "homepage": "http://xenji.com"
-            }
-        ],
-        "description": "PHP library to access the webserives of Prowl (http://www.prowlapp.com/)",
-        "homepage": "https://github.com/xenji/ProwlPHP",
-        "keywords": [
-            "api",
-            "webservices"
         ]
     }
 ]
