@@ -477,6 +477,7 @@ class SpotInstall
     {
         $val = trim($val);
         $last = strtolower($val[strlen($val) - 1]);
+        $val = filter_var($val, FILTER_SANITIZE_NUMBER_INT);
         switch ($last) {
             // The 'G' modifier is available since PHP 5.1.0
             case 'g':
@@ -546,9 +547,9 @@ class SpotInstall
         if (!file_exists($filename)) {
             return false;
         }
-        
+
         require_once $filename;
-        
+
         return dirname(realpath($filename));
     }
 
