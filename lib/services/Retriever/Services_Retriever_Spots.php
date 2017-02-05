@@ -95,14 +95,18 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
     function hasMemoryPressure() {
         $val = trim(ini_get('memory_limit'));
         $last = strtolower($val[strlen($val)-1]);
+        $val = filter_var($val, FILTER_SANITIZE_NUMBER_INT);
         switch($last) {
             // The 'G' modifier is available since PHP 5.1.0
             case 'g':
-                $val *= 1024;
+                $val *= 1024 * 1024 * 1024;
+                break;
             case 'm':
-                $val *= 1024;
+                $val *= 1024 * 1024;
+                break;
             case 'k':
                 $val *= 1024;
+                break;
         }
 
 
@@ -125,7 +129,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
 
 		/*
-		 * Returns the status in either xml or text format 
+		 * Returns the status in either xml or text format
 		 */
 		function displayStatus($cat, $txt) {
 				switch($cat) {
@@ -151,11 +155,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					case 'searchmsgidstatus': echo "Searching from " . $txt . PHP_EOL; break;
                     case 'slowphprsa'       : echo 'WARNING: Using slow PHP based RSA, please enable the PHP OpenSSL extension whenever possible' . PHP_EOL; break;
 					case ''					: echo PHP_EOL; break;
-					
+
 					default					: echo $cat . $txt;
 				} # switch
 		} # displayStatus
-		
+
 		/*
 		 * Remove any extraneous spots from the database because we assume
 		 * the highest messgeid in the database is the latest on the server.
@@ -168,7 +172,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			 * the highest messgeid in the database is the latest on the server.
 			 *
 			 * If the server is marked as buggy, the last 'x' amount of spot are
-			 * always checked so we do not have to do this 
+			 * always checked so we do not have to do this
 			 */
 			if (!$this->_textServer['buggy']) {
 				$this->_spotDao->removeExtraSpots($highestMessageId);
@@ -197,7 +201,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			$processingStartTime = time();
 
 			/*
-			 * Determine the cutoff date (unixtimestamp) from whereon we do not want to 
+			 * Determine the cutoff date (unixtimestamp) from whereon we do not want to
 			 * load the spots
 			 */
 			if ($this->_settings->get('retention') > 0) {
@@ -207,7 +211,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			} # else
 			SpotDebug::msg(SpotDebug::DEBUG, 'retentionStamp=' . $retentionStamp);
 			SpotDebug::msg(SpotDebug::TRACE, 'hdrList=' . serialize($hdrList));
-			
+
 			/**
 			 * We ask the database to match our messageid's we just retrieved with
 			 * the list of id's we have just retrieved from the server
@@ -234,7 +238,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				$msgCounter++;
 				SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop, start. msgId= ' . $msgCounter);
 
-				/* 
+				/*
 				 * Keep te usenet server alive when processing is slow.
 				 */
 				if (($processingStartTime - time()) > 30) {
@@ -252,7 +256,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				 */
 				$didFetchHeader = false;
 				$didFetchFullSpot = false;
-				
+
 				# Reset timelimit
 				set_time_limit(120);
 
@@ -285,7 +289,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				 * If the header is present, but we don't have the fullspot yet or we are
 				 * running in 'retro' mode, parse the header as well because some fields
 				 * are only in the header and not in the full.
-				 * 
+				 *
 				 * We need some of those fields (for example KeyID)
 				 */
 				if (!$header_isInDb || ((!$fullspot_isInDb || $this->_retro) && $this->_retrieveFull)) {
@@ -293,7 +297,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, parsingXover, start. msgId= ' . $msgCounter);
                     SpotTiming::start(__CLASS__ . '::' . __FUNCTION__ . ':parseHeader');
 					$spot = $this->_svcSpotParser->parseHeader($msgheader['Subject'],
-															$msgheader['From'], 
+															$msgheader['From'],
 															$msgheader['Date'],
 															$msgheader['Message-ID'],
 															$this->_rsakeys);
@@ -314,7 +318,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 					/*
 					 * Special moderator commands always have keyid 2 or 7
 					 */
-                    
+
                     $commandAr = explode(' ', $spot['title']);
                     $validCommands = array('delete', 'dispose', 'remove');
 
@@ -326,7 +330,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 							$moderationList[$commandAr[1]] = array('spotterid' => $spot['spotterid'], 'stamp' => $spot['stamp']);
 							$modCount++;
 						} # if
-						
+
 					} else {
 						/*
 						 * Don't add spots older than specified for the retention stamp
@@ -336,7 +340,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
                             $skipCount++;
 							continue;
-						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) { 
+						} elseif ($spot['stamp'] < $this->_settings->get('retrieve_newer_than')) {
 							$skipCount++;
 						} else {
 							/*
@@ -360,9 +364,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 								if ($spot['wassigned']) {
 									$signedCount++;
 								} # if
-							} # if 
+							} # if
 						} # if
-					
+
 					} # else
 				} else {
 					$lastProcessedId = $msgId;
@@ -558,7 +562,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-getNzbOrImage');
                 SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':forEach-to-ParseHeader');
-                
+
 
             /*
              * If we are under memory pressure, flush the cache to disk in advance so we
@@ -601,7 +605,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 				$this->displayStatus("loopcount", 0);
 			} # else
 
-			/* 
+			/*
 			 * Add the spots to the database and update the last article
 			 * number found
 			 */
@@ -616,16 +620,16 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			switch($this->_settings->get('spot_moderation')) {
 				case 'disable'	: break;
 				case 'markspot'	: {
-                    
+
                     $moderationList = $this->removeInvalidDisposes($moderationList);
-					$this->_commentDao->markCommentsModerated($moderationList); 
-					$this->_spotDao->markSpotsModerated($moderationList); 
-					
+					$this->_commentDao->markCommentsModerated($moderationList);
+					$this->_spotDao->markSpotsModerated($moderationList);
+
 					break;
-				} # case 'markspot' 
-				default			: { 
+				} # case 'markspot'
+				default			: {
                     $moderationList = $this->removeInvalidDisposes($moderationList);
-					$this->_spotDao->removeSpots($moderationList); 
+					$this->_spotDao->removeSpots($moderationList);
 					$this->_commentDao->removeComments($moderationList);
                     /*
                      * If the spots actually get removed, we want to make
@@ -633,11 +637,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                      * us from retrieving and deleting them over and over again
                      */
                     $this->_modListDao->addToRingBuffer($moderationList);
-					
+
 					break;
 				} # default
 			} # switch
-			
+
 			# update the maximum article id
             if (!empty($lastProcessedId) && ($lastProcessedArtNr > 0)) {
                 $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Spots, $lastProcessedArtNr, $lastProcessedId);
@@ -654,10 +658,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
 			return array('count' => count($hdrList), 'headercount' => $hdrsParsed, 'lastmsgid' => $lastProcessedId);
 		} # process()
 
-        /* 
+        /*
          * Remove invalid disposes from list
          * This prevents invalid personal disposes from being executed
-         * Checked is : dispose spotterid is the same as spot spotterid 
+         * Checked is : dispose spotterid is the same as spot spotterid
          * and timestamp of dispose is not older than 5 days
          */
         function removeInvalidDisposes($moderationList) {
@@ -667,7 +671,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
                 if (!empty($moderationList [$value['messageid']]['spotterid'])) {
                     if ($moderationList [$value['messageid']]['spotterid'] <> $value['spotterid']) {
                         unset($moderationList [$value['messageid']]);
-                    } 
+                    }
                     else {
                         $stmod = $moderationList [$value['messageid']]['stamp'];
                         $stspot = $value['stamp'];
