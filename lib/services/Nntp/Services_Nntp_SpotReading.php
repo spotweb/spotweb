@@ -85,7 +85,7 @@ class Services_Nntp_SpotReading {
 		foreach($commentList as $comment) {
 			try {
 				$commentTpl = array('fromhdr' => '', 'stamp' => 0, 'user-signature' => '',
-									'user-key' => '', 'spotterid' => '', 'verified' => false,
+									'user-key' => array('exponent' =>'', 'Modulo' => ''), 'spotterid' => '', 'verified' => false,
 									'user-avatar' => '', 'fullxml' => '', 'messageid' => $comment['messageid']);
 
                 SpotTiming::start('NntpSpotReading::readComments()->getArticle call');
@@ -163,7 +163,7 @@ class Services_Nntp_SpotReading {
 		
 		$spot = array('fullxml' => '',
 					  'user-signature' => '',
-					  'user-key' => '',
+					  'user-key' => array('exponent' => '', modulo => ''),
 					  'verified' => false,
 					  'messageid' => $msgId,
 					  'spotterid' => '',
