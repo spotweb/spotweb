@@ -163,7 +163,7 @@ class Services_Nntp_SpotReading {
 		
 		$spot = array('fullxml' => '',
 					  'user-signature' => '',
-					  'user-key' => array('exponent' => '', modulo => ''),
+					  'user-key' => array('exponent' => '', 'modulo' => ''),
 					  'verified' => false,
 					  'messageid' => $msgId,
 					  'spotterid' => '',
