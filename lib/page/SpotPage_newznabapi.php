@@ -726,8 +726,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$search = $doc->createElement('search');
 		$search->setAttribute('available', 'yes');
-                $search->setAttribute('supportedParams', 'q');
-        	$searching->appendChild($search);
+		$search->setAttribute('supportedParams', 'q');
+		$searching->appendChild($search);
 
 		$tvsearch = $doc->createElement('tv-search');
 		$tvsearch->setAttribute('available', 'yes');
@@ -737,7 +737,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$moviesearch = $doc->createElement('movie-search');
 		$moviesearch->setAttribute('available', 'yes');
 		$moviesearch->setAttribute('supportedParams', 'q,imdbid');
-                $searching->appendChild($moviesearch);
+		$searching->appendChild($moviesearch);
 
 		$audiosearch = $doc->createElement('audio-search');
 		$audiosearch->setAttribute('available', 'yes');
