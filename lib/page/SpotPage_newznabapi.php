@@ -200,48 +200,67 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$searchParams['value'][] = "Titel:=:DEF:\"" . $this->_params['artist'] . "\"";
 			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
-			# validate input
-			if ($this->_params['imdbid'] == "") {
-				$this->showApiError(200);
+			/*
+			* Query by IMDB id
+			*/
+			if (!empty($this->_params['imdbid'])) {
+				# validate input
+				if ($this->_params['imdbid'] == "") {
+					$this->showApiError(200);
 
-				return ;
-			} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
-				$this->showApiError(201);
+					return ;
+				} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
+					$this->showApiError(201);
 
-				return ;
-			} # if
+					return ;
+				} # if
+
+				/*
+				* Actually retrieve the information from imdb, based on the
+				* imdbid passed by the API
+				*/
+				$svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
+				$svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
+				$imdbInfo = $svcMediaInfoImdb->retrieveInfo();
+
+				if (!$imdbInfo->isValid()) {
+					$this->showApiError(301);
+
+					return ;
+				} # if
+
+				/* Extract the release date from the IMDB info page */
+				if ($imdbInfo->getReleaseYear() != null) {
+					$movieReleaseDate = '+(' . $imdbInfo->getReleaseYear() . ')';
+				} else {
+					$movieReleaseDate = '';
+				} # else
+
+				/*
+				* Add movie title to the query
+				*/
+				$searchParams['value'][] = "Titel:=:OR:+\"" . $imdbInfo->getTitle()  . "\" " . $movieReleaseDate;
+
+				// imdb sometimes returns the title translated, if so, pass the original title as well
+				if ($imdbInfo->getAlternateTitle() != null) {
+					$searchParams['value'][] = "Title:=:OR:+\"" . $imdbInfo->getAlternateTitle() . "\" " . $movieReleaseDate;
+				} # if
+			}
 
 			/*
-             * Actually retrieve the information from imdb, based on the
-			 * imdbid passed by the API
+			 * Free search query
 			 */
-            $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
-            $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
-            $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
+			if (!empty($this->_params['q'])) {
+				$searchTerm = str_replace(" ", " +", $this->_params['q']);
+				$searchParams['value'][] = "Titel:=:OR:+" . $searchTerm;				
+			}
 
-            if (!$imdbInfo->isValid()) {
-				$this->showApiError(301);
-
-				return ;
-			} # if
-
-			/* Extract the release date from the IMDB info page */
-			if ($imdbInfo->getReleaseYear() != null) {
-				$movieReleaseDate = '+(' . $imdbInfo->getReleaseYear() . ')';
-			} else {
-                $movieReleaseDate = '';
-            } # else
-
-            /*
-             * Add movie title to the query
-             */
-			$searchParams['value'][] = "Titel:=:OR:+\"" . $imdbInfo->getTitle()  . "\" " . $movieReleaseDate;
-
-			// imdb sometimes returns the title translated, if so, pass the original title as well
-            if ($imdbInfo->getAlternateTitle() != null) {
-                $searchParams['value'][] = "Title:=:OR:+\"" . $imdbInfo->getAlternateTitle() . "\" " . $movieReleaseDate;
-            } # if
-
+			/*
+             * List movies category by default
+			 */
+            if (empty($this->_params['cat'] )) {
+				$this->_params['cat'] = 2000;
+            }
 		} elseif (!empty($this->_params['q'])) {
 			$searchTerm = str_replace(" ", " +", $this->_params['q']);
 			$searchParams['value'][] = "Titel:=:OR:+" . $searchTerm;
@@ -735,6 +754,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$moviesearch = $doc->createElement('movie-search');
 		$moviesearch->setAttribute('available', 'yes');
+		$moviesearch->setAttribute('supportedParams', 'q,imdbid');
 		$searching->appendChild($moviesearch);
 
 		$audiosearch = $doc->createElement('audio-search');
