@@ -205,10 +205,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			*/
 			if (!empty($this->_params['imdbid'])) {
 				# validate input
-				if ($this->_params['imdbid'] == "") {
-					$this->showApiError(200);
-					return ;
-				} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
+				if (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
 					$this->showApiError(201);
 					return ;
 				} # if
