@@ -1,5 +1,11 @@
 <?php
 
+require  __DIR__.'/../../../vendor/pchart/class/pData.class.php';
+require  __DIR__.'/../../../vendor/pchart/class/pDraw.class.php';
+require  __DIR__.'/../../../vendor/pchart/class/pImage.class.php';
+require  __DIR__.'/../../../vendor/pchart/class/pPie.class.php';
+
+
 class Services_Image_Chart {
 	private $_svcImageUtil;
     private $_strTtfPath;
