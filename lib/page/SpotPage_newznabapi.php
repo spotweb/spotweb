@@ -207,11 +207,9 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				# validate input
 				if ($this->_params['imdbid'] == "") {
 					$this->showApiError(200);
-
 					return ;
 				} elseif (!preg_match('/^[0-9]{1,8}$/', $this->_params['imdbid'])) {
 					$this->showApiError(201);
-
 					return ;
 				} # if
 
@@ -245,7 +243,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				if ($imdbInfo->getAlternateTitle() != null) {
 					$searchParams['value'][] = "Title:=:OR:+\"" . $imdbInfo->getAlternateTitle() . "\" " . $movieReleaseDate;
 				} # if
-			}
+			} # if
 
 			/*
 			 * Free search query
