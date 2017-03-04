@@ -65,7 +65,9 @@ global $_testInstall_Ok;
     </tr>
     <tr>
         <td colspan="2"> curl</td>
-        <td><?php SpotInstall::showResult(extension_loaded('curl'), true); ?></td>
+        <!--<td><?php SpotInstall::showResult(extension_loaded('curl'), true); ?></td>-->
+        <td><?php SpotInstall::showResult(extension_loaded('curl'), false, "",
+                "You need this module to communicate with sabnzbd/nzbget"); ?></td>
     </tr>
     <tr>
         <td colspan="2"> DOM</td>
@@ -114,10 +116,12 @@ global $_testInstall_Ok;
         <td colspan="2"> SQLite (PDO)</td>
         <td><?php SpotInstall::showResult(extension_loaded('pdo_sqlite'), false); ?></td>
     </tr>
-
     <?php if (extension_loaded('gd')) {
-        $gdInfo = gd_info();
-    } ?>
+       $gdInfo = gd_info();
+    } 
+    else {
+       $gdInfo = array('FreeType Support' => 0, 'GIF Read Support' => 0,'GIF Create Support' => 0,'JPEG Support' => 0,'JPG Support' => 0,'PNG Support' => 0); 
+    }?>
     <tr>
         <th colspan="2"> GD</th>
         <td><?php SpotInstall::showResult(extension_loaded('gd'), true); ?></td>
