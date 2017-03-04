@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b18a62ee4dee005974671324145aeec",
+    "content-hash": "a6ba72204086cfcd0c284bf5f6f7758a",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -194,50 +194,6 @@
             "description": "A package that adds support for the NNTP protocol in PHP.",
             "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol",
             "time": "2016-11-04T15:48:31+00:00"
-        },
-        {
-            "name": "jean-damien/pchart",
-            "version": "v2.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mbirth/pchart.git",
-                "reference": "484c52f17f1a3a198c907ea8bb71a3351a114f1b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mbirth/pchart/zipball/484c52f17f1a3a198c907ea8bb71a3351a114f1b",
-                "reference": "484c52f17f1a3a198c907ea8bb71a3351a114f1b",
-                "shasum": ""
-            },
-            "require": {
-                "ext-gd": "*",
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "class/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Jean-Damien Pogolotti",
-                    "homepage": "http://www.pchart.net/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "pChart is a PHP class oriented framework designed to create anti-aliased charts.",
-            "homepage": "http://www.pchart.net/",
-            "keywords": [
-                "charts",
-                "pchart",
-                "pogolotti"
-            ],
-            "time": "2014-01-19T20:08:29+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
