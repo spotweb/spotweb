@@ -291,7 +291,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
          */
 		if ((!empty($this->_params['limit'])) &&
             (is_numeric($this->_params['limit'])) &&
-            ($this->_params['limit'] < 500)) {
+            ($this->_params['limit'] <= 500)) {
                 $limit = $this->_params['limit'];
         } else {
             $limit = $this->_currentSession['user']['prefs']['perpage'];
@@ -352,23 +352,14 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$data['fromname']		= $spot['poster'];
 				$data['completion']		= 100;
 
-                $cat = array();
-                if( !empty($spot["subcatz"])) {
-					$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
-					if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
-						$cat = $nabCat[0];
-					} # if
-				} # if
-				
-				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+                $cat = '';
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata'], $spot['subcatz']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$data['categoryID'] = $nabCat[0];
-					$cat .= implode(",", $nabCat);
-				} # if
-
-				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
-				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
-					$cat .= "," . $nabCat[0];
+                    if ($cat != '') {
+                        $cat .= ',';
+                    }
+                    $cat .= implode(",", $nabCat);
 				} # if
 
 				$data['comments']		= $spot['commentcount'];
@@ -447,18 +438,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					default		: $enclosure->setAttribute('type', 'application/x-nzb');
 				} # switch
 				$item->appendChild($enclosure);
-				
-				if( !empty($spot["subcatz"])) {
-					$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
-					if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
-						$attr = $doc->createElement('newznab:attr');
-						$attr->setAttribute('name', 'category');
-						$attr->setAttribute('value', $nabCat[0]);
-						$item->appendChild($attr);
-					} # if
-				} # if
-				
-				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata'],$spot['subcatz']));
 				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 					$attr = $doc->createElement('newznab:attr');
 					$attr->setAttribute('name', 'category');
@@ -471,13 +451,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$item->appendChild($attr);
 				} # if
 
-				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
-				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
-					$attr = $doc->createElement('newznab:attr');
-					$attr->setAttribute('name', 'category');
-					$attr->setAttribute('value', $nabCat[0]);
-					$item->appendChild($attr);
-				} # if
+                //$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
+                //if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
+                //    $attr = $doc->createElement('newznab:attr');
+                //    $attr->setAttribute('name', 'category');
+                //    $attr->setAttribute('value', $nabCat[0]);
+                //    $item->appendChild($attr);
+                //} # if
 
 				if ( !empty($spot['subcatc'])) {
 					$nabCat = explode("|",  $spot['subcatc']);
@@ -638,18 +618,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				default		: $enclosure->setAttribute('type', 'application/x-nzb');
 			} # switch
 			$item->appendChild($enclosure);
-
-			if( !empty($spot["subcatz"])) {
-				$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot["subcata"]));
-				if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
-					$attr = $doc->createElement('newznab:attr');
-					$attr->setAttribute('name', 'category');
-					$attr->setAttribute('value', $nabCat[0]);
-					$item->appendChild($attr);
-				} # if
-			} # if
-
-			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcata'], $spot['subcatz']));
 			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
 				$attr = $doc->createElement('newznab:attr');
 				$attr->setAttribute('name', 'category');
@@ -659,14 +628,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$attr = $doc->createElement('newznab:attr');
 				$attr->setAttribute('name', 'category');
 				$attr->setAttribute('value', $nabCat[1]);
-				$item->appendChild($attr);
-			} # if
-
-			$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
-			if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
-				$attr = $doc->createElement('newznab:attr');
-				$attr->setAttribute('name', 'category');
-				$attr->setAttribute('value', $nabCat[0]);
 				$item->appendChild($attr);
 			} # if
 
@@ -777,40 +738,30 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		echo $doc->saveXML();
 	} # caps
 
-	function Cat2NewznabCat($hcat, $cat, $catZCompanion = "") {
-		$result = "-";
+	function Cat2NewznabCat($hcat, $cat, $catZ) {
 		$catList = explode("|", $cat);
 		$cat = $catList[0];
 		$nr = substr($cat, 1);
+		$zcatList = explode("|", $catZ);
+		$zcat = $zcatList[0];
+		$znr = substr($zcat, 1);
+        //$znr = min(4,$znr);
+        if ($znr == 2) {
+            $znr = 0;
+        }
 
 		# Als $nr niet gevonden kan worden is dat niet erg, het mag echter
 		# geen Notice veroorzaken.
 		if (!empty($cat[0])) {
 			switch ($cat[0]) {
-				case "a"	: $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr]; break;
-				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
-				case "z"	: 
-					switch($nr) {
-						case "1":
-							if(!empty($catZCompanion)) {
-								$catZCompanionList = explode("|", $catZCompanion);
-								$catZCompanion = $catZCompanionList[0];
-								
-								if(in_array($catZCompanion, $this->spotHdCat())) {
-									return 5040;
-								}
-								elseif(in_array($catZCompanion, $this->spotSdCat())) {
-									return 5030;
-								}
-							}
-						break;
-						default: 
-							$newznabcat = $this->spotZcat2nabcat(); 
-							return @$newznabcat[$nr]; 						
-						break;
-					}
+				case "a"	: if ($hcat == 0 ) {
+                                 $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$znr][$nr];
+                              } else {
+                                 $newznabcat = $this->spotAcat2nabcat(); return @$newznabcat[$hcat][$nr];
+                              }
+                              break;
 
-				break;
+				case "b"	: $newznabcat = $this->spotBcat2nabcat(); return @$newznabcat[$nr]; break;
 			} # switch
 		} # if
 
@@ -868,7 +819,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						 'cat'		=> '2000',
 						 'subcata'	=> array('SD'		=> '2030',
 											 'HD'		=> '2040',
-											 'Sport'	=> '2060')
+											 'BluRay'	=> '2050')
 				), array('name'		=> 'Audio',
 						 'cat'		=> '3000',
 						 'subcata'	=> array('MP3'		=> '3010',
@@ -877,12 +828,12 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				), array('name'		=> 'PC',
 						 'cat'		=> '4000',
 						 'subcata'	=> array('Mac'		=> '4030',
-											 'Phone'	=> '4040',
+											 'Mobile'	=> '4040',
 											 'Games'	=> '4050')
 				), array('name'		=> 'TV',
 						 'cat'		=> '5000',
 						 'subcata'	=> array('Foreign'	=> '5020',
-											'SD'		=> '5030',
+							           		 'SD'		=> '5030',
 											 'HD'		=> '5040',
 											 'Other'	=> '5050',
 											 'Sport'	=> '5060',
@@ -895,7 +846,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 											 'x264'		=> '6040')
 				), array('name'		=> 'Other',
 						 'cat'		=> '7000',
-						 'subcata'	=> array('Ebook'	=> '7020')
+						 'subcata'	=> array('Misc'     => '7010',
+                                             'Ebook'	=> '7020')
 				)
 		);
 	} # categories
@@ -912,19 +864,19 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 			case 2000: return 'cat0_z0';
 			case 2010:
-			case 2030: return 'cat0_a0,cat0_a1,cat0_a2,cat0_a3,cat0_a10,~cat0_z1,~cat0_z2,~cat0_z3';
-			case 2040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z1,~cat0_z2,~cat0_z3';
-			case 2060: return 'cat0_d18';
+			case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';  // Movies/SD
+			case 2040: return 'cat0_z0_a4,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9';              // Movies/HD
+            case 2050: return 'cat0_z0_a6';                                               // Movies/BluRay
 
 			case 3000: return 'cat1_a';
 			case 3010: return 'cat1_a0';
 			case 3020: return 'cat0_d13';
 			case 3040: return 'cat1_a2,cat1_a4,cat1_a7,cat1_a8';
 
-			case 4000: return 'cat3_a0';
+			case 4000: return 'cat3';
 			case 4030: return 'cat3_a1';
 			case 4040: return 'cat3_a4,cat3_a5,cat3_a6,cat3_a7';
-			case 4050: return 'cat2_a0,cat2_a1,cat2_a2';
+			case 4050: return 'cat2_a';
 
 			case 5000: return 'cat0_z1';
 			case 5020: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
@@ -935,10 +887,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 5070: return 'cat0_z1_d29';
 
 			case 6000: return 'cat0_z3';
-			case 6010: return 'cat0_a3,cat0_a10,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6020: return 'cat0_a1,cat0_a8,~cat0_z1,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6030: return 'cat0_a0,~cat0_z0,~cat0_z1,~cat0_z2';
-			case 6040: return 'cat0_a4,cat0_a6,cat0_a7,cat0_a8,cat0_a9,~cat0_z0,~cat0_z1,~cat0_z2';
+			case 6010: return 'cat0_z3_a3,cat0_z3_a10';
+			case 6020: return 'cat0_z3_a1,cat0_z3_a8';
+			case 6030: return 'cat0_z3_a0';
+			case 6040: return 'cat0_z3_a4,cat0_z3_a6,cat0_z3_a7,cat0_z3_a8,cat0_z3_a9';
 
 			case 7020: return 'cat0_z2';
 		}
@@ -948,17 +900,49 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 	function spotAcat2nabcat() {
 		return Array(0 =>
-				Array(0 => "2000|2030",
-					  1 => "2000|2030",
-					  2 => "2000|2030",
-					  3 => "2000|2030",
-					  4 => "2000|2040",
-					  5 => "7000|7020",
-					  6 => "2000|2040",
-					  7 => "2000|2040",
-					  8 => "2000|2040",
-					  9 => "2000|2040",
-					  10 => "2000|2030"),
+                Array(0 =>
+				            Array(0 => "2000|2030",
+					              1 => "2000|2030",
+					              2 => "2000|2030",
+					              3 => "2000|2030",
+					              4 => "2000|2040",
+					              5 => "7000|7020",
+					              6 => "2000|2050",
+					              7 => "2000|2040",
+					              8 => "2000|2040",
+					              9 => "2000|2040",
+					              10 => "2000|2030",
+                                  11 => "7000|7020"),
+                      1 => 
+				            Array(0 => "5000|5030",
+					              1 => "5000|5030",
+					              2 => "5000|5030",
+					              3 => "5000|5030",
+					              4 => "5000|5040",
+					              5 => "7000|7020",
+					              6 => "5000|5040",
+					              7 => "5000|5040",
+					              8 => "5000|5040",
+					              9 => "5000|5040",
+					              10 => "5000|5030",
+                                  11 => "7000|7020"),
+                      3 => 
+				            Array(0 => "6000|6030",
+					              1 => "6000|6030",
+					              2 => "6000|6030",
+					              3 => "6000|6030",
+					              4 => "6000|6040",
+					              5 => "6000|6000",
+					              6 => "6000|6040",
+					              7 => "6000|6040",
+					              8 => "6000|65040",
+					              9 => "6000|6040",
+					              10 => "6000|6030",
+                                  11 => "6000|6000"),
+                      4 =>     // Picture (new)
+				            Array(11 => "7000|7010",
+                                  12 => "7000|7010"),
+                      ),
 			  1 =>
 				Array(0	=> "3000|3010",
 					  1 => "3000|3010",
@@ -994,8 +978,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					  3 => "OS/2",
 					  4 => "4000|4040",
 					  5 => "NAV",
-					  6 => "4000|4040",
-					  7 => "4000|4040")
+					  6 => "4000|4060",
+					  7 => "4000|4070")
 			);
 	} # spotAcat2nabcat
 
@@ -1012,19 +996,5 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					 9 => "",
 					 10 => "");
 	} # spotBcat2nabcat
-	
-	function spotZcat2nabcat() {
-		return Array (
-			3 => "6000"
-		);
-	} # spotZcat2nabcat
-	
-	function spotHdCat() {
-		return Array("a4", "a6", "a7", "a8", "a9");
-	} # spotHdCat
-	
-	function spotSdCat() {
-		return Array("a1", "a2", "a3", "a10");
-	} # spotSdCat
 
 } # class SpotPage_api
