@@ -7,5 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'phpseclib\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
+    'Zend\\Xml2Json\\' => array($vendorDir . '/zendframework/zend-xml2json/src'),
+    'Zend\\Json\\' => array($vendorDir . '/zendframework/zend-json/src'),
     'Abraham\\TwitterOAuth\\' => array($vendorDir . '/abraham/twitteroauth/src'),
 );

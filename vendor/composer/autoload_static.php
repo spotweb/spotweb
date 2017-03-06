@@ -18,6 +18,11 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
         array (
             'phpseclib\\' => 10,
         ),
+        'Z' => 
+        array (
+            'Zend\\Xml2Json\\' => 14,
+            'Zend\\Json\\' => 10,
+        ),
         'A' => 
         array (
             'Abraham\\TwitterOAuth\\' => 21,
@@ -29,6 +34,14 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
         array (
             0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
         ),
+        'Zend\\Xml2Json\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-xml2json/src',
+        ),
+        'Zend\\Json\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-json/src',
+        ),
         'Abraham\\TwitterOAuth\\' => 
         array (
             0 => __DIR__ . '/..' . '/abraham/twitteroauth/src',
@@ -36,6 +49,13 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
     );
 
     public static $prefixesPsr0 = array (
+        'Z' => 
+        array (
+            'ZendXml\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/zendframework/zendxml/library',
+            ),
+        ),
         'P' => 
         array (
             'Prowl' => 
