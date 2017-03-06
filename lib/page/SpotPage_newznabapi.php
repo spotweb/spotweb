@@ -18,19 +18,6 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$this->sendExpireHeaders(true);
 
         /*
-         * CAPS function is used to query the server for supported features and the protocol version and other
-         * meta data relevant to the implementation. This function doesn't require the client to provide any
-         * login information but can be executed out of "login session".
-         */
-		if ($this->_params['t'] == "caps" || $this->_params['t'] == "c") {
-			$this->caps();
-			return ;
-		} # if
-
-		# Make sure the user has permissions to retrieve the index
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
-
-        /*
          * Determine the output type
          */
         if ($this->_params['o'] == 'json') {
@@ -38,6 +25,19 @@ class SpotPage_newznabapi extends SpotPage_Abs {
         } else {
             $outputtype = 'xml';
         } # else
+
+        /*
+         * CAPS function is used to query the server for supported features and the protocol version and other
+         * meta data relevant to the implementation. This function doesn't require the client to provide any
+         * login information but can be executed out of "login session".
+         */
+		if ($this->_params['t'] == "caps" || $this->_params['t'] == "c") {
+			$this->caps($outputtype);
+			return ;
+		} # if
+
+		# Make sure the user has permissions to retrieve the index
+		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spots_index, '');
 
         /*
          * Main switch statement, determines what actually has to be done
@@ -664,7 +664,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		header('Location: ' . $this->_tplHelper->makeBaseUrl("full") . '?page=getnzb&action=display&messageid=' . $this->_params['messageid'] . html_entity_decode($this->_tplHelper->makeApiRequestString()));
 	} # getNzb
 
-	function caps() {
+	function caps($outputtype) {
 		$doc = new DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
 
@@ -733,9 +733,13 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				$cat->appendChild($subCat);
 			} # foreach
 		} # foreach
-
-		$this->sendContentTypeHeader('xml');
-		echo $doc->saveXML();
+        if ($outputtype == 'json') {
+            $this->sendContentTypeHeader('json');
+            echo Zend\Xml2Json\Xml2Json::fromXml($doc->saveXML(),false);
+        } else {
+            $this->sendContentTypeHeader('xml');
+            echo $doc->saveXML();
+        }
 	} # caps
 
 	function Cat2NewznabCat($hcat, $cat, $catZ) {
