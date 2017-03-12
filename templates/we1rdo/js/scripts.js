@@ -100,7 +100,9 @@ function openSpot(id,url) {
 
 		if($("#overlay").children().size() == 0) {
 			alert("<t>Error while loading this page, you will be returned automaticly to the mainview</t>");
-			closeDetails(scrollLocation);
+			//closeDetails(scrollLocation);
+            parent.history.back();
+			return false;
 		}
 
 		$("a.closeDetails").click(function(){ 
