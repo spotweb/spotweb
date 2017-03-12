@@ -128,7 +128,7 @@ class Dto_FormResult {
      * Return a list of data fields
      */
 	public function getData($field = null) {
-		if ($field === null) {
+		if (($field === null) or (empty($this->_data[$field]))) {
 			return $this->_data;	
 		} # if
 
