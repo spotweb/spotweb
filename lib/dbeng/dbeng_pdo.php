@@ -187,18 +187,17 @@ abstract class dbeng_pdo extends dbeng_abs {
          * up in tears.
          */
         $chunks = array_chunk($ar, $this->_batchInsertChunks);
-
         foreach($chunks as $items) {
             $insertArray = array();
-            $fieldCounter = 1;
-            $placeHolderPerRow = '(' . substr(str_repeat('?,', count($fields)), 0, -1) . '),';
-            $placeHolders = substr(str_repeat($placeHolderPerRow, count($items)), 0, -1);
 
             /*
              * The amount of placeholders might change
              * between the first N chunks and the last one
              * so we need to prepare it
              */
+            $placeHolderPerRow = '(' . substr(str_repeat('?,', count($fields)), 0, -1) . '),';
+            $placeHolders = substr(str_repeat($placeHolderPerRow, count($items)), 0, -1);
+
             $stmt = $this->_conn->prepare($sql . $placeHolders);
             if (!$stmt instanceof PDOStatement) {
                 $x = $stmt->errorInfo();
@@ -211,29 +210,22 @@ abstract class dbeng_pdo extends dbeng_abs {
                  * the correct order and nicely escaped
                  * from any injection
                  */
-                $itemValues = array();
-                $typeCounter = 0;
                 foreach($fields as $field) {
-                    $stmt->bindValue($fieldCounter, $item[$field], $typs[$typeCounter]);
-
-                    $fieldCounter++;
-                    $typeCounter++;
+                    array_push($insertArray, $item[$field]);
                 } # foreach
-
-                array_push($insertArray, $itemValues);
             } # foreach
 
             # Actually insert the batch
             if (!empty($insertArray)) {
                 try {
-                    $stmt->execute();
-                } catch(PDOException $x) {
+                    $stmt->execute($insertArray);
+                }
+                catch(PDOException $x) {
                     throw new SqlErrorException(implode(': ', $x->errorInfo), -1);
                 } # catch
             } # if
 
         } # foreach
-
         $this->commit();
     } # batchInsert
 
