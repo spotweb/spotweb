@@ -19,3 +19,4 @@ cache/
 /composer.phar
 /clover.xml
 *.bak
+web.config
