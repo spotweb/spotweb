@@ -361,7 +361,7 @@ try {
 
 		default : {
 				SpotTiming::start('renderpage->case-default');
-				if (@$_SERVER['HTTP_X_PURPOSE'] == 'preview') {
+				if ((empty($_SERVER['HTTP_X_PURPOSE']) ? "" : $_SERVER['HTTP_X_PURPOSE']) == 'preview') {
 					$page = new SpotPage_getimage($daoFactory, $settings, $currentSession,
 							Array('messageid' => $req->getDef('messageid', ''),
 								  'image' => array('type' => 'speeddial')));
