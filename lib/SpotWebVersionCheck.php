@@ -61,7 +61,9 @@ EOF;
         } # else
 
 		# Supress the namespace warning
+        libxml_use_internal_errors(true);
 		$this->_xml = @simplexml_load_string($rssFile);
+        libxml_clear_errors();
 	} # retrieveRss
 	
 	/*

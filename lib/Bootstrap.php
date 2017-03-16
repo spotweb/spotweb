@@ -24,13 +24,6 @@ define('SPOTWEB_ADMIN_USERID', 2);
 class Bootstrap {
     private $_dbSettings;
 
-    function startsWith($haystack, $needle)
-    {
-        $length = strlen($needle);
-        return (substr($haystack, 0, $length) === $needle);
-    }
-
-
     /**
      * Boot up the Spotweb system
      *
