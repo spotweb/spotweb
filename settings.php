@@ -21,7 +21,19 @@
 
 
 
-$settings = array();
+/*
+ * Where is Spotweb intalled / accessible for the outside world?
+ * We try to automatically create the proper URL to this site, but 
+ * if this somehow fails please set it yourselve. Spotweb url is used
+ * for things like pushing the NZB file to your download manager, and
+ * in notifications to users.
+ */
+if (isset($_SERVER['SERVER_PROTOCOL'])) {
+    $settings['spotweburl'] = (@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
+} else {
+	$settings['spotweburl'] = 'http://mijnuniekeservernaam/spotweb/';
+} # if
+
 /*
  * Where is your 'openssl.cnf' file stored? This file needs to be readable
  * for OpenSSL to function. OpenSSL greatly speeds up the verifying and
@@ -133,30 +145,12 @@ if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded("openssl"
 } # if
 
 
-/*
- * Where is Spotweb intalled / accessible for the outside world?
- * We try to automatically create the proper URL to this site, but 
- * if this somehow fails please set it yourselve. Spotweb url is used
- * for things like pushing the NZB file to your download manager, and
- * in notifications to users.
- * Determine the Spotweb url
- * use HTTPS in case of HTTPS in server vars or ssloveride in ownsettings or HTTP_X_SSL in server vars
- */
-$ssloverride = (isset($settings['ssloverride']) ? $settings['ssloverride'] : false);
-$httpxssl = isset($_SERVER['HTTP_X_SSL']);
-if (isset($_SERVER['SERVER_PROTOCOL'])) {
-    $nwsetting = (((isset($_SERVER['HTTPS']) and $_SERVER['HTTPS'] == 'on') or ($ssloverride == true) or ($httpxssl == true)) ? 'https' : 'http') . '://' . @$_SERVER['HTTP_HOST'] . (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']). '/' : '/');	
-} else {
-    $nwsetting = 'http://mijnuniekeservernaam/spotweb/';
-} # if
-
 /* 
  * Add a closing slash to the Spotweb url
  */
-if (substr($nwsetting, -1) != '/') {
-    $nwsetting .= '/';
+if (substr($settings['spotweburl'], -1) != '/') {
+	$settings['spotweburl'] .= '/';
 } # if
-$settings['spotweburl'] = $nwsetting;
 
 /*
  * In older Spotweb versions, users could set preferences
