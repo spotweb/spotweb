@@ -24,11 +24,11 @@ define('SPOTWEB_ADMIN_USERID', 2);
 class Bootstrap {
     private $_dbSettings;
 
-    function startsWith($haystack, $needle)
-    {
-        $length = strlen($needle);
-        return (substr($haystack, 0, $length) === $needle);
-    }
+    //function startsWith($haystack, $needle)
+    //{
+    //    $length = strlen($needle);
+    //    return (substr($haystack, 0, $length) === $needle);
+    //}
 
 
     /**
@@ -42,7 +42,8 @@ class Bootstrap {
 		$settings = $this->getSettings($daoFactory, true);
 		$spotReq = $this->getSpotReq($settings);
 
-        /*
+      
+         /*
          * Set the cache path
          */
         if ($settings->exists('cache_path')) {
