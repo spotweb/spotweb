@@ -145,7 +145,7 @@ class Dao_Base_Comment implements Dao_Comment {
 			$comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
 			$comment['user-key'] = serialize($comment['user-key']);
 			$comment['body'] = substr($comment['body'], 0, (1024*10));
-			$comment['verified'] = (bool) $comment['verified'];
+			$comment['verified'] = (int) $comment['verified'];
             $comment['stamp'] = (int) $comment['stamp'];
 
             /*
@@ -156,7 +156,7 @@ class Dao_Base_Comment implements Dao_Comment {
 
 		$this->_conn->batchInsert($fullComments,
 								  "INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar) VALUES ",
-                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_BOOL, PDO::PARAM_STR),
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR),
 								  array('messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar')
 								  );
 	} # addFullComments
