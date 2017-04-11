@@ -504,6 +504,31 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$attr->setAttribute('value', $spot['commentcount']);
 					$item->appendChild($attr);
 				} # if
+				if($this->_tplHelper->isSpotNew($spot)) {
+					$attr = $doc->createElement("new", "true");
+					$item->appendChild($attr);
+				}
+				else {
+					$attr = $doc->createElement("new", "false");
+					$item->appendChild($attr);	
+				}
+				if(!empty($spot["hasbeenseen"])) {
+					$attr = $doc->createElement("seen", "true");
+					$item->appendChild($attr);
+				}
+				else {
+					$attr = $doc->createElement("seen", "false");
+					$item->appendChild($attr);
+					
+				}
+				if(!empty($spot["hasbeendownloaded"])) {
+					$attr = $doc->createElement("downloaded", "true");
+					$item->appendChild($attr);
+				}
+				else {
+					$attr = $doc->createElement("downloaded", "false");
+					$item->appendChild($attr);
+				}
 			} # foreach
 
 			$this->sendContentTypeHeader('xml');
