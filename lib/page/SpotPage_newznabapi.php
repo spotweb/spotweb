@@ -285,6 +285,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		 */
 		$searchParams['value'][] = "filesize:>:DEF:0";
 
+		if(!empty($this->_params["poster"])){
+			$searchParams["value"][] = "Poster:=:*".$this->_params["poster"]."*";
+		}
+
         /*
          * Gather the preference of the results per page and use it in this
          * system as well when no value is explicitly provided
@@ -496,6 +500,31 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					$attr->setAttribute('value', $spot['commentcount']);
 					$item->appendChild($attr);
 				} # if
+				if($this->_tplHelper->isSpotNew($spot)) {
+					$attr = $doc->createElement("new", "true");
+					$item->appendChild($attr);
+				}
+				else {
+					$attr = $doc->createElement("new", "false");
+					$item->appendChild($attr);	
+				}
+				if(!empty($spot["hasbeenseen"])) {
+					$attr = $doc->createElement("seen", "true");
+					$item->appendChild($attr);
+				}
+				else {
+					$attr = $doc->createElement("seen", "false");
+					$item->appendChild($attr);
+					
+				}
+				if(!empty($spot["hasbeendownloaded"])) {
+					$attr = $doc->createElement("downloaded", "true");
+					$item->appendChild($attr);
+				}
+				else {
+					$attr = $doc->createElement("downloaded", "false");
+					$item->appendChild($attr);
+				}
 			} # foreach
 
 			$this->sendContentTypeHeader('xml');
