@@ -730,6 +730,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 
 		$search = $doc->createElement('search');
 		$search->setAttribute('available', 'yes');
+		$search->setAttribute('supportedParams', 'q');
 		$searching->appendChild($search);
 
 		$tvsearch = $doc->createElement('tv-search');
