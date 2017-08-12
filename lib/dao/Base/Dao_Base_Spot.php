@@ -64,17 +64,6 @@ class Dao_Base_Spot implements Dao_Spot {
 		$sortList = array();
 		foreach($sortFields as $sortValue) {
 			if (!empty($sortValue)) {
-				/*
-                 * when asked to sort on the field 'stamp' descending, we secretly 
-                 * sort ascsending on a field called 'reversestamp'. Older MySQL versions
-                 * suck at sorting in reverse, and older NAS systems run ancient MySQl
-                 * versions
-                 */
-				if ((strtolower($sortValue['field']) == 's.stamp') && strtolower($sortValue['direction']) == 'desc') {
-					$sortValue['field'] = 's.reversestamp';
-					$sortValue['direction'] = 'ASC';
-				} # if
-				
 				$sortList[] = $sortValue['field'] . ' ' . $sortValue['direction'];
 			} # if
 		} # foreach
@@ -399,7 +388,6 @@ class Dao_Base_Spot implements Dao_Spot {
 			$spot['spotterid'] = substr($spot['spotterid'], 0, 31);
 			$spot['catgory'] = (int) $spot['category'];
 			$spot['stamp'] = (int) $spot['stamp'];
-			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
 
             /*
              * Make sure we only store valid utf-8
@@ -412,14 +400,14 @@ class Dao_Base_Spot implements Dao_Spot {
         unset($spot);
 
 		$this->_conn->batchInsert($spots,
-								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
-														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
+								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata,
+														subcatb, subcatc, subcatd, subcatz, stamp, filesize, spotterid)
 									VALUES",
                                   array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
                                         PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
-                                        PDO::PARAM_INT, PDO::PARAM_STR),
+                                        PDO::PARAM_STR),
 								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
-								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
+								  		'subcatd', 'subcatz', 'stamp', 'filesize', 'spotterid')
 								  );
 
 		if (!empty($fullSpots)) {
