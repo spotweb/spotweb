@@ -273,7 +273,6 @@ abstract class SpotStruct_abs {
 
 	function updateSchema() {
 		# Drop any older (not used anymore) FTS indexes on the spots full table
-		$this->dropIndex("idx_spots_3", "spots");
 		$this->dropIndex("idx_spotsfull_fts_1", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_2", "spotsfull");
 		$this->dropIndex("idx_spotsfull_fts_3", "spotsfull");
@@ -293,50 +292,6 @@ abstract class SpotStruct_abs {
 		$this->dropForeignKey('reportsposted', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
 		$this->dropForeignKey('sessions', 'userid', 'users', 'id', 'ON DELETE CASCADE ON UPDATE CASCADE');
 
-		# Update older mysql indexes
-		$schemaVer = $this->_dbcon->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'", array());
-                if ($schemaVer < 0.69 && ($this instanceof SpotStruct_mysql)) {
-			echo "Performing index upgrade " . PHP_EOL;
-			$this->_dbcon->rawExec("ALTER TABLE `cache` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `commentsfull` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `commentsposted` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `commentsxover` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `debuglog` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `filtercounts` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `filters` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `grouppermissions` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `moderatedringbuffer` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `notifications` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `permaudit` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `reportsposted` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `reportsxover` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-
-			$this->_dbcon->rawExec("ALTER TABLE `grouppermissions` DROP FOREIGN KEY IF EXISTS `grouppermissions_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `usergroups` DROP FOREIGN KEY IF EXISTS `usergroups_ibfk_2`;");
-			$this->_dbcon->rawExec("ALTER TABLE `securitygroups` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-
-			$this->_dbcon->rawExec("ALTER TABLE `sessions` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `settings` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `spots` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `spotsfull` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `spotsposted` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `spotstatelist` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `spotteridblacklist` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `usenetstate` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-			$this->_dbcon->rawExec("ALTER TABLE `usergroups` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-
-			$this->_dbcon->rawExec("ALTER TABLE `commentsposted` DROP FOREIGN KEY IF EXISTS commentsposted_ibfk_1;");
-			$this->_dbcon->rawExec("ALTER TABLE `filters` DROP FOREIGN KEY IF EXISTS `filters_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `notifications` DROP FOREIGN KEY IF EXISTS `notifications_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `reportsposted` DROP FOREIGN KEY IF EXISTS `reportsposted_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `spotsposted` DROP FOREIGN KEY IF EXISTS `spotsposted_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `spotstatelist` DROP FOREIGN KEY IF EXISTS `spotstatelist_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `usergroups` DROP FOREIGN KEY IF EXISTS `usergroups_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `usersettings` DROP FOREIGN KEY IF EXISTS `usersettings_ibfk_1`;");
-			$this->_dbcon->rawExec("ALTER TABLE `users` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-
-			$this->_dbcon->rawExec("ALTER TABLE `usersettings` CHANGE `id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;");
-		}
 
 		##############################################################################################
 		# Cleaning up data ###########################################################################
@@ -390,53 +345,54 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('poster', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('title', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spots', 'VARCHAR(128)', NULL, false, 'utf8');
-		$this->validateColumn('category', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('subcata', 'spots', 'VARCHAR(64)', NULL, false, 'ascii');
-		$this->validateColumn('subcatb', 'spots', 'VARCHAR(64)', NULL, false, 'ascii');
-		$this->validateColumn('subcatc', 'spots', 'VARCHAR(64)', NULL, false, 'ascii');
-		$this->validateColumn('subcatd', 'spots', 'VARCHAR(64)', NULL, false, 'ascii');
-		$this->validateColumn('subcatz', 'spots', 'VARCHAR(64)', NULL, false, 'ascii');
+		$this->validateColumn('category', 'spots', 'INTEGER', NULL, false, '');
+		$this->validateColumn('subcata', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatb', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatc', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatd', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
+		$this->validateColumn('subcatz', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
 		$this->validateColumn('stamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('reversestamp', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('filesize', 'spots', 'UNSIGNED BIGINTEGER', "0", true, '');
 		$this->validateColumn('moderated', 'spots', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('commentcount', 'spots', 'UNSIGNED INTEGER', "0", false, '');
-		$this->validateColumn('spotrating', 'spots', 'UNSIGNED INTEGER', "0", false, '');
-		$this->validateColumn('reportcount', 'spots', 'UNSIGNED INTEGER', "0", false, '');
-		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii_bin');
+		$this->validateColumn('commentcount', 'spots', 'INTEGER', "0", false, '');
+		$this->validateColumn('spotrating', 'spots', 'INTEGER', "0", false, '');
+		$this->validateColumn('reportcount', 'spots', 'INTEGER', "0", false, '');
+		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii_bin'); 
 		$this->validateColumn('editstamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
 		$this->validateColumn('editor', 'spots', "VARCHAR(128)", NULL, false, 'utf8');
+		$this->alterStorageEngine("spots", "MyISAM");
 		
-		$this->alterStorageEngine("spots", "InnoDB");
 		# ---- spotsfull table ---- #
-		$this->createTable('spotsfull', "utf8");
+		$this->createTable('spotsfull', "utf8"); 
 		$this->validateColumn('messageid', 'spotsfull', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('verified', 'spotsfull', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii');
-		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(512)', NULL, false, 'ascii');
-		$this->validateColumn('xmlsignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii');
+		$this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('userkey', 'spotsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
+		$this->validateColumn('xmlsignature', 'spotsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('fullxml', 'spotsfull', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsfull", "InnoDB");
 	
 		# ---- uspstate table ---- #
 		$this->createTable('usenetstate', "utf8");
 		$this->validateColumn('infotype', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('curarticlenr', 'usenetstate', 'UNSIGNED INTEGER', "0", false, '');
+		$this->validateColumn('curarticlenr', 'usenetstate', 'INTEGER', "0", false, '');
 		$this->validateColumn('curmessageid', 'usenetstate', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('lastretrieved', 'usenetstate', 'UNSIGNED INTEGER', "0", false, '');
-		$this->validateColumn('nowrunning', 'usenetstate', 'UNSIGNED INTEGER', "0", false, '');
+		$this->validateColumn('lastretrieved', 'usenetstate', 'INTEGER', "0", false, '');
+        $this->validateColumn('nowrunning', 'usenetstate', 'INTEGER', "0", false, '');
 		$this->alterStorageEngine("usenetstate", "InnoDB");
 		
 		# ---- commentsxover table ---- #
-		$this->createTable('commentsxover', "ascii");
+		$this->createTable('commentsxover', "ascii"); 
 		$this->validateColumn('messageid', 'commentsxover', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('nntpref', 'commentsxover', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('spotrating', 'commentsxover', 'UNSIGNED INTEGER', "0", false, '');
+		$this->validateColumn('spotrating', 'commentsxover', 'INTEGER', "0", false, '');
 		$this->validateColumn('moderated', 'commentsxover', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('stamp', 'commentsxover', 'UNSIGNED INTEGER', NULL, false, '');
 		$this->alterStorageEngine("commentsxover", "InnoDB");
 
 		# ---- reportsxover table ---- #
-		$this->createTable('reportsxover', "ascii");
+		$this->createTable('reportsxover', "ascii"); 
 		$this->validateColumn('messageid', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('fromhdr', 'reportsxover', 'VARCHAR(256)', "''", true, 'utf8');
 		$this->validateColumn('keyword', 'reportsxover', 'VARCHAR(128)', "''", true, 'ascii');
@@ -444,72 +400,72 @@ abstract class SpotStruct_abs {
 		$this->alterStorageEngine("reportsxover", "InnoDB");
 		
 		# ---- spotstatelist table ---- #
-		$this->createTable('spotstatelist', "ascii");
+		$this->createTable('spotstatelist', "ascii"); 
 		$this->validateColumn('messageid', 'spotstatelist', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('ouruserid', 'spotstatelist', 'UNSIGNED INTEGER', "0", false, '');
-		$this->validateColumn('download', 'spotstatelist', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('watch', 'spotstatelist', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('seen', 'spotstatelist', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('ouruserid', 'spotstatelist', 'INTEGER', "0", false, '');
+		$this->validateColumn('download', 'spotstatelist', 'INTEGER', NULL, false, '');
+		$this->validateColumn('watch', 'spotstatelist', 'INTEGER', NULL, false, '');
+		$this->validateColumn('seen', 'spotstatelist', 'INTEGER', NULL, false, '');
 		$this->alterStorageEngine("spotstatelist", "InnoDB");
 		
 		# ---- commentsfull table ---- #
-		$this->createTable('commentsfull', "ascii");
+		$this->createTable('commentsfull', "ascii"); 
 		$this->validateColumn('messageid', 'commentsfull', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('fromhdr', 'commentsfull', 'VARCHAR(128)', NULL, false, 'utf8');
-		$this->validateColumn('stamp', 'commentsfull', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('usersignature', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii');
-		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(512)', NULL, false, 'ascii');
-		$this->validateColumn('spotterid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii_bin');
-		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii');
+		$this->validateColumn('stamp', 'commentsfull', 'INTEGER', NULL, false, '');
+		$this->validateColumn('usersignature', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
+		$this->validateColumn('userkey', 'commentsfull', 'VARCHAR(512)', NULL, false, 'ascii'); 
+		$this->validateColumn('spotterid', 'commentsfull', 'VARCHAR(32)', NULL, false, 'ascii_bin'); 
+		$this->validateColumn('hashcash', 'commentsfull', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('body', 'commentsfull', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('verified', 'commentsfull', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('avatar', 'commentsfull', 'TEXT', NULL, false, 'ascii');
 		$this->alterStorageEngine("commentsfull", "InnoDB");
 											
 		# ---- settings table ---- #
-		$this->createTable('settings', "ascii");
-		$this->validateColumn('name', 'settings', 'VARCHAR(128)', "''", true, 'ascii');
+		$this->createTable('settings', "ascii"); 
+		$this->validateColumn('name', 'settings', 'VARCHAR(128)', "''", true, 'ascii'); 
 		$this->validateColumn('value', 'settings', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('serialized', 'settings', 'boolean', NULL, false, '');
 		$this->alterStorageEngine("settings", "InnoDB");
 
 		# ---- commentsposted table ---- #
-		$this->createTable('commentsposted', "ascii");
-		$this->validateColumn('ouruserid', 'commentsposted', 'UNSIGNED INTEGER', "0", true, '');
+		$this->createTable('commentsposted', "ascii"); 
+		$this->validateColumn('ouruserid', 'commentsposted', 'INTEGER', "0", true, '');
 		$this->validateColumn('messageid', 'commentsposted', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('inreplyto', 'commentsposted', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('randompart', 'commentsposted', 'VARCHAR(32)', "''", true, 'ascii');
-		$this->validateColumn('rating', 'commentsposted', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('rating', 'commentsposted', 'INTEGER', 0, true, '');
 		$this->validateColumn('body', 'commentsposted', 'TEXT', NULL, false, 'utf8');
-		$this->validateColumn('stamp', 'commentsposted', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'commentsposted', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("commentsposted", "InnoDB");
 
 		# ---- spotsposted table ---- #
-		$this->createTable('spotsposted', "utf8");
+		$this->createTable('spotsposted', "utf8"); 
 		$this->validateColumn('messageid', 'spotsposted', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('ouruserid', 'spotsposted', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('ouruserid', 'spotsposted', 'INTEGER', "0", true, '');
 		$this->validateColumn('stamp', 'spotsposted', 'UNSIGNED INTEGER', NULL, false, '');
 		$this->validateColumn('title', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
-		$this->validateColumn('category', 'spotsposted', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('subcats', 'spotsposted', 'VARCHAR(255)', NULL, false, 'ascii');
+		$this->validateColumn('category', 'spotsposted', 'INTEGER', NULL, false, '');
+		$this->validateColumn('subcats', 'spotsposted', 'VARCHAR(255)', NULL, false, 'ascii'); 
 		$this->validateColumn('filesize', 'spotsposted', 'UNSIGNED BIGINTEGER', "0", true, '');
 		$this->validateColumn('fullxml', 'spotsposted', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsposted", "InnoDB");
 		
 		# ---- reportsposted table ---- #
-		$this->createTable('reportsposted', "ascii");
-		$this->validateColumn('ouruserid', 'reportsposted', 'UNSIGNED INTEGER', "0", true, '');
+		$this->createTable('reportsposted', "ascii"); 
+		$this->validateColumn('ouruserid', 'reportsposted', 'INTEGER', "0", true, '');
 		$this->validateColumn('messageid', 'reportsposted', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('inreplyto', 'reportsposted', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('randompart', 'reportsposted', 'VARCHAR(32)', "''", true, 'ascii');
 		$this->validateColumn('body', 'reportsposted', 'TEXT', NULL, false, 'utf8');
-		$this->validateColumn('stamp', 'reportsposted', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'reportsposted', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("reportsposted", "InnoDB");
 		
 		# ---- usersettings table ---- #
-		$this->createTable('usersettings', "utf8");
-		$this->validateColumn('userid', 'usersettings', 'UNSIGNED INTEGER', '0', true, '');
+		$this->createTable('usersettings', "utf8"); 
+		$this->validateColumn('userid', 'usersettings', 'INTEGER', '0', true, '');
 		$this->validateColumn('privatekey', 'usersettings', "TEXT", NULL, false, 'ascii');
 		$this->validateColumn('publickey', 'usersettings', "TEXT", NULL, false, 'ascii');
 		$this->validateColumn('avatar', 'usersettings', "TEXT", NULL, false, 'ascii');
@@ -517,7 +473,7 @@ abstract class SpotStruct_abs {
 		$this->alterStorageEngine("usersettings", "InnoDB");
 	
 		# ---- users table ---- #
-		$this->createTable('users', "utf8");
+		$this->createTable('users', "utf8"); 
 		$this->validateColumn('username', 'users', "VARCHAR(128)", "''", true, 'utf8');
 		$this->validateColumn('firstname', 'users', "VARCHAR(128)", "''", true, 'utf8');
 		$this->validateColumn('passhash', 'users', "VARCHAR(40)", "''", true, 'ascii');
@@ -534,52 +490,52 @@ abstract class SpotStruct_abs {
 		# ---- sessions ---- #
 		$this->createTable('sessions', "ascii");
 		$this->validateColumn('sessionid', 'sessions', 'VARCHAR(128)', NULL, false, 'ascii');
-		$this->validateColumn('userid', 'sessions', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('hitcount', 'sessions', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('lasthit', 'sessions', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('userid', 'sessions', 'INTEGER', NULL, false, '');
+		$this->validateColumn('hitcount', 'sessions', 'INTEGER', NULL, false, '');
+		$this->validateColumn('lasthit', 'sessions', 'INTEGER', NULL, false, '');
 		$this->validateColumn('ipaddr', 'sessions', "VARCHAR(45)", "''", true, 'ascii');
 		$this->validateColumn('devicetype', 'sessions', "VARCHAR(8)", "''", true, 'ascii');
-		$this->alterStorageEngine("sessions", "InnoDB");
+		$this->alterStorageEngine("sessions", "MyISAM");
 
 		# ---- securitygroups ----
-		$this->createTable('securitygroups', "ascii");
+		$this->createTable('securitygroups', "ascii"); 
 		$this->validateColumn('name', 'securitygroups', 'VARCHAR(128)', NULL, false, 'ascii');
 		$this->alterStorageEngine("securitygroups", "InnoDB");
 
 		# ---- grouppermissions ----
-		$this->createTable('grouppermissions', "ascii");
-		$this->validateColumn('groupid', 'grouppermissions', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('permissionid', 'grouppermissions', 'UNSIGNED INTEGER', "0", true, '');
+		$this->createTable('grouppermissions', "ascii"); 
+		$this->validateColumn('groupid', 'grouppermissions', 'INTEGER', "0", true, '');
+		$this->validateColumn('permissionid', 'grouppermissions', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'grouppermissions', "VARCHAR(128)", "''", true, 'ascii');
-		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", $this->bool2dt(false), true, '');
+		$this->validateColumn('deny', 'grouppermissions', "BOOLEAN", $this->bool2dt(false), true, ''); 
 		$this->alterStorageEngine("grouppermissions", "InnoDB");
 		
 		# ---- usergroups ----
-		$this->createTable('usergroups', "ascii");
-		$this->validateColumn('userid', 'usergroups', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('groupid', 'usergroups', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('prio', 'usergroups', 'UNSIGNED INTEGER', '1', true, '');
+		$this->createTable('usergroups', "ascii"); 
+		$this->validateColumn('userid', 'usergroups', 'INTEGER', "0", true, '');
+		$this->validateColumn('groupid', 'usergroups', 'INTEGER', "0", true, '');
+		$this->validateColumn('prio', 'usergroups', 'INTEGER', '1', true, '');
 		$this->alterStorageEngine("usergroups", "InnoDB");
 		
 		# ---- notifications ----
-		$this->createTable('notifications', "ascii");
-		$this->validateColumn('userid', 'notifications', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('stamp', 'notifications', 'UNSIGNED INTEGER', "0", true, '');
+		$this->createTable('notifications', "ascii"); 
+		$this->validateColumn('userid', 'notifications', 'INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'notifications', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('type', 'notifications', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'notifications', 'VARCHAR(128)', "''", true, 'utf8');
 		$this->validateColumn('body', 'notifications', 'TEXT', NULL, false, 'utf8');
-		$this->validateColumn('sent', 'notifications', 'BOOLEAN', $this->bool2dt(false), true, '');
+		$this->validateColumn('sent', 'notifications', 'BOOLEAN', $this->bool2dt(false), true, ''); 
 		$this->alterStorageEngine("notifications", "InnoDB");
 
 		# ---- filters ----
-		$this->createTable('filters', "utf8");
-		$this->validateColumn('userid', 'filters', 'UNSIGNED INTEGER', "0", true, '');
+		$this->createTable('filters', "utf8"); 
+		$this->validateColumn('userid', 'filters', 'INTEGER', "0", true, '');
 		$this->validateColumn('filtertype', 'filters', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('title', 'filters', 'VARCHAR(128)', "''", true, 'utf8');
 		$this->validateColumn('icon', 'filters', 'VARCHAR(128)', "''", true, 'utf8');
-		$this->validateColumn('torder', 'filters', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('tparent', 'filters', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('torder', 'filters', 'INTEGER', "0", true, '');
+		$this->validateColumn('tparent', 'filters', 'INTEGER', "0", true, '');
 		$this->validateColumn('tree', 'filters', 'TEXT', NULL, false, 'ascii');
 		$this->validateColumn('valuelist', 'filters', 'TEXT', NULL, false, 'utf8');
 		$this->validateColumn('sorton', 'filters', 'VARCHAR(128)', NULL, false, 'ascii');
@@ -588,24 +544,25 @@ abstract class SpotStruct_abs {
 		$this->alterStorageEngine("filters", "InnoDB");
 
 		# ---- filtercounts ----
-		$this->createTable('filtercounts', "utf8");
+		$this->createTable('filtercounts', "utf8"); 
 		$this->validateColumn('userid', 'filtercounts', 'INTEGER', "0", true, '');
 		$this->validateColumn('filterhash', 'filtercounts', 'VARCHAR(40)', "''", true, 'ascii');
-		$this->validateColumn('currentspotcount', 'filtercounts', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('lastvisitspotcount', 'filtercounts', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('lastupdate', 'filtercounts', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('currentspotcount', 'filtercounts', 'INTEGER', "0", true, '');
+		$this->validateColumn('lastvisitspotcount', 'filtercounts', 'INTEGER', "0", true, '');
+		$this->validateColumn('lastupdate', 'filtercounts', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("filtercounts", "InnoDB");
 
 		# ---- spotteridblacklist table ---- #
 		$this->createTable('spotteridblacklist', "utf8");
 		$this->validateColumn('spotterid', 'spotteridblacklist', 'VARCHAR(32)', NULL, false, 'ascii_bin');
-		$this->validateColumn('ouruserid', 'spotteridblacklist', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('idtype', 'spotteridblacklist', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('ouruserid', 'spotteridblacklist', 'INTEGER', "0", true, '');
+		$this->validateColumn('idtype', 'spotteridblacklist', 'INTEGER', "0", true, '');
 		$this->validateColumn('origin', 'spotteridblacklist', 'VARCHAR(255)', NULL, false, 'ascii');
 		$this->validateColumn('doubled', 'spotteridblacklist', 'BOOLEAN', $this->bool2dt(false), true, '');
 		$this->alterStorageEngine("spotteridblacklist", "InnoDB");
 		
 		# Update old blacklisttable
+		$schemaVer = $this->_dbcon->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'", array());
 		if ($schemaVer < 0.56) {
 			$this->_dbcon->rawExec("UPDATE spotteridblacklist SET idtype = 1");
 		}
@@ -669,10 +626,10 @@ abstract class SpotStruct_abs {
         # ---- cache table ---- #
 		$this->createTable('cache', "ascii");
 		$this->validateColumn('resourceid', 'cache', 'VARCHAR(128)', "''", true, 'ascii');
-		$this->validateColumn('cachetype', 'cache', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('stamp', 'cache', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('cachetype', 'cache', 'INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'cache', 'INTEGER', "0", true, '');
 		$this->validateColumn('metadata', 'cache', 'TEXT', NULL, false, 'ascii');
-		$this->validateColumn('ttl', 'cache', 'UNSIGNED INTEGER', "0", true, '');
+        $this->validateColumn('ttl', 'cache', 'INTEGER', "0", true, '');
 		$this->alterStorageEngine("cache", "InnoDB");
 
         # ---- moderated ring buffer table ---- #
@@ -682,9 +639,9 @@ abstract class SpotStruct_abs {
 
         # ---- permaudit table ---- #
 		$this->createTable('permaudit', "ascii");
-		$this->validateColumn('stamp', 'permaudit', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('userid', 'permaudit', 'UNSIGNED INTEGER', "0", true, '');
-		$this->validateColumn('permissionid', 'permaudit', 'UNSIGNED INTEGER', "0", true, '');
+		$this->validateColumn('stamp', 'permaudit', 'INTEGER', "0", true, '');
+		$this->validateColumn('userid', 'permaudit', 'INTEGER', "0", true, '');
+		$this->validateColumn('permissionid', 'permaudit', 'INTEGER', "0", true, '');
 		$this->validateColumn('objectid', 'permaudit', "VARCHAR(128)", "''", true, 'ascii');
 		$this->validateColumn('result', 'permaudit', "BOOLEAN", $this->bool2dt(true), true, '');
 		$this->validateColumn('ipaddr', 'permaudit', "VARCHAR(45)", "''", true, 'ascii');
@@ -692,9 +649,9 @@ abstract class SpotStruct_abs {
 
         # ---- debuglog table ---- #
         $this->createTable('debuglog', "ascii");
-        $this->validateColumn('stamp', 'debuglog', 'UNSIGNED INTEGER', "0", true, '');
+        $this->validateColumn('stamp', 'debuglog', 'INTEGER', "0", true, '');
         $this->validateColumn('microtime', 'debuglog', 'VARCHAR(16)', "0", true, '');
-        $this->validateColumn('level', 'debuglog', 'UNSIGNED INTEGER', "0", true, '');
+        $this->validateColumn('level', 'debuglog', 'INTEGER', "0", true, '');
         $this->validateColumn('message', 'debuglog', 'TEXT', NULL, false, 'ascii');
         $this->alterStorageEngine("debuglog", "InnoDB");
 
@@ -745,6 +702,7 @@ abstract class SpotStruct_abs {
 		# ---- Indexes on spots -----
 		$this->validateIndex("idx_spots_1", "UNIQUE", "spots", array("messageid"));
 		$this->validateIndex("idx_spots_2", "", "spots", array("stamp"));
+		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
 		$this->validateIndex("idx_spots_4", "", "spots", array("category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz"));
 		$this->validateIndex("idx_spots_5", "", "spots", array("spotterid"));
 		$this->validateFts("idx_fts_spots", "spots",  array(1 => "poster",
@@ -854,7 +812,6 @@ abstract class SpotStruct_abs {
 		$this->dropColumn('userid', 'spotsfull');
 		$this->dropColumn('userid', 'spotteridblacklist');
 		$this->dropColumn('userid', 'commentsfull');
-		$this->dropColumn('reversestamp', 'spots');
         $this->dropColumn('serialized', 'cache');
         $this->dropColumn('content', 'cache');
 

@@ -245,8 +245,8 @@ class SpotStruct_mysql extends SpotStruct_abs {
 				case 'ascii'	: $colSetting = 'CHARSET=ascii'; break;
 				default			: throw new Exception("Invalid collation setting");
 			} # switch
-
-			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id UNSIGNED INTEGER PRIMARY KEY AUTO_INCREMENT) " . $colSetting);
+		
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT) " . $colSetting);
 		} # if
 	} # createTable
 	
