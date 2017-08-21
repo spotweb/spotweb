@@ -246,14 +246,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 				default			: throw new Exception("Invalid collation setting");
 			} # switch
 
-			if ($tablename !== "users")
-			{
-				$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id UNSIGNED INTEGER PRIMARY KEY AUTO_INCREMENT) " . $colSetting);
-			}
-			else
-			{
-				$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id INTEGER PRIMARY KEY AUTO_INCREMENT) " . $colSetting);
-			}			
+			$this->_dbcon->rawExec("CREATE TABLE " . $tablename . " (id UNSIGNED INTEGER PRIMARY KEY AUTO_INCREMENT) " . $colSetting);
 		} # if
 	} # createTable
 	
