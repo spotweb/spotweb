@@ -1,0 +1,281 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    color: #000000;
+    background: #ffffff;
+}
+
+body, li, th, td {
+    font-family: verdana,arial,helvetica,sans-serif;
+    font-size: 95%;
+}
+
+.debug {
+    border: 0px solid #999999;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    margin: 0em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding: 0em;
+}
+
+.debug p {
+    color: #333333;
+    border-color: #999999;
+    border-style: solid;
+    border-width: 0px;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    margin: 0em;
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: 0em;
+    padding-left: 1em;
+    padding-right: 1em;
+
+    XXXfont-family: system;
+    Xfont-size: %;
+}
+
+.debug p.warning {
+    border-color: #990000;
+}
+
+.debug p.notice {
+    border-color: #000099;
+}
+
+.debug p.info {
+    border-color: #009900;
+}
+
+.debug p.debug {
+    color: #999999;
+    border-color: #999999;
+}
+
+
+
+
+img {
+    border : 0px;
+}
+
+
+
+
+.odd {
+	background: #ffffff;
+}
+
+.even {
+	background: #ddddcc;
+}
+
+
+
+
+
+
+td {
+    color: #000000;
+}
+
+
+
+
+.nav {
+	width: 20%;
+}
+
+
+a:link    {
+    color: #000099;
+}
+
+a:hover   {
+    color: #ff0000;
+}
+
+
+
+
+
+
+
+
+
+
+
+#page-header tr.header {
+    background-color: #339900;
+}
+
+#page-header tr.subheader {
+    background-color: #006600;
+    height : 15px;
+}
+
+#page-header tr.header a {
+    color: #66cc66;
+    text-decoration: none;
+}
+
+#page-header tr.header a:hover {
+    color: #66ff66;
+    text-decoration: underline;
+}
+
+
+#page-header tr.header h1 {
+    color: #66ff66;
+}
+
+#page-header tr.header h1 a {
+    color: #66ff66;
+    text-decoration: none;
+}
+
+
+
+
+
+#page-breadcrumbs {
+    margin-top: 0.5ex;
+    margin-bottom: 1.5em;
+}
+
+#page-breadcrumbs a {
+    color: #666600;
+    text-decoration: none;
+    font-weight: bolder;
+}
+
+#page-breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+#page-footer {
+    margin-top: 2em;
+}
+
+#page-footer hr {
+    color: #999999;
+}
+
+#page-footer .copyright {
+    font-size: 75%;
+    color: #999999;
+    text-align: center;
+}
+
+#page-footer .copyright a {
+    color: #999999;
+}
+
+#page-footer .copyright a:hover {
+    color: #000000;
+}
+
+
+
+#index #xxx td {
+    border-top: 1px dashed #cccccc;
+}
+
+
+
+#groups th {
+    color: #000000;
+    background: #999966;
+}
+
+#groups .group .name {
+    font-weight: bolder;
+}
+
+#groups .group .name a {
+    text-decoration: none;
+}
+#groups .group .name a:hover {
+    text-decoration: underline;
+}
+
+#groups .posting-yes .name a {
+    color: #006600;
+}
+
+#groups .posting-yes .posting {
+    color: #006600;
+}
+
+#groups .posting-no .name a {
+    color: #660000;
+}
+
+#groups .posting-no .posting {
+    color: #660000;
+}
+
+#groups .posting-moderated .name a {
+    color: #666600;
+}
+
+#groups .posting-moderated .posting {
+    color: #666600;
+}
+
+
+
+
+
+
+#group th {
+    color: #000000;
+    background: #999966;
+}
+
+
+
+
+
+
+#article #article-head .label {
+    background: #ddddcc;
+    text-align: right;
+    font-weight: bold;
+}
+
+#article #article-head .value {
+    background: #eeeeee;
+    text-align: left;
+}
+
+
+
+
+#article #article-body {
+    color: #000000;
+}
+
+#article #article-body .quote {
+    color: #006600;
+}
+
+#article #article-body .signature {
+    font-size: smaller;
+    color: gray;
+}
+
+#article #article-body .signature a {
+    color: #9999ff;
+}
+
+#article #article-body .signature a:hover {
+    color: #ff9999;
+}
+
