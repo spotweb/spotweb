@@ -7,9 +7,6 @@ namespace Composer\Autoload;
 class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
 {
     public static $files = array (
-        '2017bd12a28d839df32ad9b0b2a97562' => __DIR__ . '/..' . '/gdwebs/nntp/src/Protocol/Responsecode.php',
-        'ed817a92f1a97d5fd2972ea0d5bd357d' => __DIR__ . '/..' . '/gdwebs/nntp/src/Protocol/Client.php',
-        '675a69e7dbe61c444936690a6f90035e' => __DIR__ . '/..' . '/gdwebs/nntp/src/Client.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
     );
 
@@ -62,6 +59,10 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
             array (
                 0 => __DIR__ . '/..' . '/xenji/prowlphp/src',
             ),
+            'PEAR' => 
+            array (
+                0 => __DIR__ . '/..' . '/pear/pear_exception',
+            ),
         ),
         'D' => 
         array (
@@ -70,9 +71,21 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
                 0 => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced',
             ),
         ),
+        'C' => 
+        array (
+            'Console' => 
+            array (
+                0 => __DIR__ . '/..' . '/pear/console_getopt',
+            ),
+        ),
+    );
+
+    public static $fallbackDirsPsr0 = array (
+        0 => __DIR__ . '/..' . '/pear/pear-core-minimal/src',
     );
 
     public static $classMap = array (
+        'Basics' => __DIR__ . '/..' . '/spotweb/net_nntp/tests/basics.php',
         'Bootstrap' => __DIR__ . '/../..' . '/lib/Bootstrap.php',
         'CacheIsCorruptException' => __DIR__ . '/../..' . '/lib/exceptions/CacheIsCorruptException.php',
         'CacheMustBeMigrated2Exception' => __DIR__ . '/../..' . '/lib/exceptions/CacheMustBeMigrated2Exception.php',
@@ -174,8 +187,11 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
         'InvalidOwnSettingsSettingException' => __DIR__ . '/../..' . '/lib/exceptions/InvalidOwnSettingsSettingException.php',
         'InvalidPrivateKeyException' => __DIR__ . '/../..' . '/lib/exceptions/InvalidPrivateKeyException.php',
         'InvalidSettingsUpdateException' => __DIR__ . '/../..' . '/lib/exceptions/InvalidSettingsUpdateException.php',
+        'Logger' => __DIR__ . '/..' . '/spotweb/net_nntp/docs/examples/demo/common.inc.php',
         'MissingNntpConfigurationException' => __DIR__ . '/../..' . '/lib/exceptions/MissingNntpConfigurationException.php',
         'Mobile_Detect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
+        'Net_NNTP_Client' => __DIR__ . '/..' . '/spotweb/net_nntp/NNTP/Client.php',
+        'Net_NNTP_Protocol_Client' => __DIR__ . '/..' . '/spotweb/net_nntp/NNTP/Protocol/Client.php',
         'NntpException' => __DIR__ . '/../..' . '/lib/exceptions/NntpException.php',
         'NotImplementedException' => __DIR__ . '/../..' . '/lib/exceptions/NotImplementedException.php',
         'Notifications_Boxcar' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Boxcar.php',
@@ -344,6 +360,7 @@ class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
             $loader->prefixLengthsPsr4 = ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a::$fallbackDirsPsr0;
             $loader->classMap = ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a::$classMap;
 
         }, null, ClassLoader::class);

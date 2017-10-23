@@ -1,0 +1,982 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.4.5" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+
+ <name>Net_NNTP</name>
+ <channel>pear.php.net</channel>
+
+ <summary>NNTP implementation</summary>
+
+ <description>
+PEAR's package for communication with NNTP/Usenet servers.
+Net_NNTP handles the connection and protocol level commands (RFC977), including many commonly implemented non-standard commands (RFC2980).
+Net_NNTP includes an unserfriendly API for intermediate user, who don't want to work directly at the command level. However, Net_NNTP does require some knowlege about the NNTP protocol (RFC 977), and general knowledge about email (RFC(2)822) and MIME (2045-2048), since any handling of both content and headers is left up to the user!
+The protocol implementation does not parse the actual article data, but at the command level it splits returned data at protocol specified boundaries where appropriate.
+ </description>
+
+ <lead>
+  <name>Heino H. Gehlsen</name>
+  <user>heino</user>
+  <email>heino@gehlsen.dk</email>
+  <active>yes</active>
+ </lead>
+
+ <contributor>
+  <name>Jan-Pascal van Best</name>
+  <user>janpascal</user>
+  <email>janpascal@vanbest.org</email>
+  <active>no</active>
+ </contributor>
+
+ <date>2017-08-30</date>
+ <version>
+  <release>1.5.2</release>
+  <api>0.9.0</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>alpha</api>
+ </stability>
+
+ <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
+
+ <notes> - Fix bug #20941, PR #2 @ GitHub: "Clear openssl error messages before and after fgets calls" (thanks @zrtq)
+ - Fix bug #21236: "Line starting with dot is not dot stuffed" (thanks @mesa57 / Jan Franken)
+ - Change to absolute file locations in require-once()
+ </notes>
+
+ <contents>
+  <dir name="/">
+   <dir baseinstalldir="Net" name="NNTP">
+    <file name="Client.php" role="php">
+     <tasks:replace from="@package_version@" to="version" type="package-info" />
+     <tasks:replace from="@package_state@" to="state" type="package-info" />
+     <tasks:replace from="@api_version@" to="api-version" type="package-info" />
+     <tasks:replace from="@api_state@" to="api-state" type="package-info" />
+    </file>
+    <dir name="Protocol">
+     <file name="Client.php" role="php">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+      <tasks:replace from="@package_state@" to="state" type="package-info" />
+      <tasks:replace from="@api_version@" to="api-version" type="package-info" />
+      <tasks:replace from="@api_state@" to="api-state" type="package-info" />
+     </file>
+     <file name="Responsecode.php" role="php">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+      <tasks:replace from="@package_state@" to="state" type="package-info" />
+      <tasks:replace from="@api_version@" to="api-version" type="package-info" />
+      <tasks:replace from="@api_state@" to="api-state" type="package-info" />
+     </file>
+    </dir> <!-- /NNTP/Protocol -->
+   </dir> <!-- /NNTP -->
+   <file name="LICENSE.md" role="doc" />
+   <dir name="docs">
+    <dir name="examples">
+     <dir name="demo">
+      <file name="article.php" role="doc" />
+      <file name="group.php" role="doc" />
+      <file name="groups.php" role="doc" />
+      <file name="index.php" role="doc" />
+      <file name="common.inc.php" role="doc" />
+      <file name="footer.inc.php" role="doc" />
+      <file name="header.inc.php" role="doc" />
+      <file name="style.css" role="doc" />
+      <file name="config.inc.php" role="doc">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+       <tasks:replace from="@package_state@" to="state" type="package-info" />
+       <tasks:replace from="@api_version@" to="api-version" type="package-info" />
+       <tasks:replace from="@api_state@" to="api-state" type="package-info" />
+      </file>
+     </dir> <!-- /docs/examples/demo -->
+     <dir name="phpdoc">
+      <file name="authenticate.php" role="doc" />
+      <file name="connect.php" role="doc" />
+      <file name="constructor.php" role="doc" />
+      <file name="getDescriptions.php" role="doc" />
+      <file name="getGroups.php" role="doc" />
+      <file name="getOverview.php" role="doc" />
+      <file name="selectArticle.php" role="doc" />
+      <file name="selectGroup.php" role="doc" />
+      <file name="selectNextArticle.php" role="doc" />
+      <file name="selectPreviousArticle.php" role="doc" />
+     </dir> <!-- /docs/examples/demo -->
+    </dir> <!-- /docs/examples -->
+   </dir> <!-- /docs -->
+  </dir> <!-- / -->
+ </contents>
+
+ <dependencies>
+  <required>
+   <php>
+    <min>5.0.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.5</min>
+   </pearinstaller>
+   <package>
+    <name>PEAR</name>
+    <channel>pear.php.net</channel>
+    <min>1.4.0</min>
+   </package>
+  </required>
+  <optional>
+   <package>
+    <name>Log</name>
+    <channel>pear.php.net</channel>
+    <min>1.8.7</min>
+   </package>
+  </optional>
+ </dependencies>
+
+ <phprelease />
+
+ <changelog>
+
+  <release>
+   <date>2017-08-19</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.2RC1</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes> - Fix bug #20941, PR #2 @ GitHub: "Clear openssl error messages before and after fgets calls" (thanks @zrtq)
+ - Fix bug #21236: "Line starting with dot is not dot stuffed" (thanks @mesa57 / Jan Franken)
+ - Change to absolute file locations in require-once()
+   </notes>
+  </release>
+
+  <release>
+   <date>2017-08-14</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.1</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes> - Fix a few serious typos
++ Better handling of timeouts
++ Add pause between each line to avoid CPU overload
+- Fix calls to nonexistent error()
+- Minor fixes in demo
+   </notes>
+  </release>
+
+ <release>
+   <date>2015-05-22</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.1RC1</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes> - Fix a few serious typos
++ Better handling of timeouts
++ Add pause between each line to avoid CPU overload
+- Fix calls to nonexistent error()
+- Minor fixes in demo
+   </notes>
+  </release>
+
+ <release>
+   <date>2011-10-05</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.0</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes>+ Fix limited buffer for large replies from server (bug# 18875)
++ Fix NNTP injection vulnerability (reported by Brendan Coles, itsecuritysolutions.org)
++ Fix XXS vulnerability in demo (reported by Brendan Coles, itsecuritysolutions.org)
++ Added support for STARTTLS encryption
++ Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
++ Improved logging with notices for most commands
++ Added warning about feof() defect in PHP 5.2.11 (bug #49706)
++ Fix usage of deprecated split() (bug #17417 and #17783)
++ Fix for large groups on 32 bit systems: Article numbers are no longer cast into integers, but passed on directly from the server as strings (bug #17689). This _could_ possibly have implications and should considered a possible backward compatibility breakage, but is thought to be acceptable, since PHP is expected to cast into integers/floats as needed...
+   </notes>
+  </release>
+
+ <release>
+   <date>2011-10-05</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.0RC2</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes>+ Fix limited buffer for large replies from server (bug# 18875)
++ Fix NNTP injection vulnerability (reported by Brendan Coles, itsecuritysolutions.org)
++ Fix XXS vulnerability in demo (reported by Brendan Coles, itsecuritysolutions.org)
++ Added support for STARTTLS encryption
++ Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
++ Improved logging with notices for most commands
++ Added warning about feof() defect in PHP 5.2.11 (bug #49706)
++ Fix usage of deprecated split() (bug #17417 and #17783)
++ Fix for large groups on 32 bit systems: Article numbers are no longer cast into integers, but passed on directly from the server as strings (bug #17689). This _could_ possibly have implications and should considered a possible backward compatibility breakage, but is thought to be acceptable, since PHP is expected to cast into integers/floats as needed...
+   </notes>
+  </release>
+
+ <release>
+   <date>2011-08-15</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.0RC1</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes>+ Fix NNTP injection vulnerability (reported by Brendan Coles, itsecuritysolutions.org)
+  + Fix XXS vulnerability in demo (reported by Brendan Coles, itsecuritysolutions.org)
+  + Fix usage of deprecated split() (bug #17417 and #17783)
+  + Fix for large groups on 32 bit systems: Article numbers are no longer cast into integers, but passed on directly from the server as strings (bug #17689). This _could_ possibly have implications and should considered a possible backward compatibility breakage, but is thought to be acceptable, since PHP is expected to cast into integers/floats as needed...
+   </notes>
+  </release>
+
+  <release>
+   <date>2009-10-04</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.0a1</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <license>W3C</license>
+   <notes>
++ Added support for STARTTLS encryption
++ Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
++ Improved logging with notices for most commands
++ Added warning about feof() defect in PHP 5.2.11 (bug #49706)
+   </notes>
+  </release>
+
+  <release>
+   <date>2008-06-17</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.4.0</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <license>W3C</license>
+   <notes>
+     Finally released as stable - after two years as release candidate...
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.4.0RC1</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+   <date>2006-06-17</date>
+   <license>W3C</license>
+   <notes>Changes in Net_NNTP_Client:
+  - fix bug #6833: mail() does not work
+  - fix bug #6845: notices in getOverview()
+  + Loading deprecated classes Net_NNTP_Message and Net_NNTP_Header now triggers warnings !
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.3.3</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+   <date>2006-02-06</date>
+   <license>W3C</license>
+   <notes>+ Changes in Net_NNTP_Protocol_Client:
+  - fix bug #6618: notices in cmdListNewsgroups()
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.3.2</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-12-23</date>
+   <license>W3C</license>
+   <notes>+ Changes in Net_NNTP_Client:
+  - getNewArticles() and getNewGroups() now validates that any strtotime() convertions was successfull.
+
++ Changes in Net_NNTP_Protocol_Client:
+  - fix bug #6334: cmdNewNews() and cmdNewGroups() no longer localize the timestamp depending on timezones.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.3.1</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-12-23</date>
+   <license>W3C</license>
+   <notes>+ Changes in Net_NNTP_Client:
+  - added: mail() as a replacement for experimental post() using identical parameters as PHP's mail() function, (temporarily) preserving backward compatibility with experimental method in v1.0.
+  - modified and rewritten: post(), reduced to having only one parameter, (temporarily) preserving backward compatibility with experimental method in v1.0.
+
++ Changes in Net_NNTP_Protocol_Client:
+  - added: _sendArticle()
+  - modified and rewritten: cmdPost() split into cmdPost() and cmdPost2() + now sends data via _sendArticle()
+  - modified and rewritten: cmdIhave() split into cmdIhave() and cmdIhave2() + now sends data via _sendArticle()
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.3.1</release>
+    <api>0.8.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-12-14</date>
+   <license>W3C</license>
+   <notes>+ WARNING!
+  - Serious backward compatibility break with v1.2.x (alpha) releases!!! The experimental classes Net_NNTP_Header and Net_NNTP_Message has been droped, since such features does not belong in this package! For now loading either class results in a notice/warning, but later on both classes will be removed! Previously unimplementet NNTP commands now allow access to article headers...
+  - Some backward compatibility break with v1.1.x (beta) releases!!!
+
++ Changes in Net_NNTP_Client:
+  - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader()).
+  - fixed: getGroupArticles(), now updates internal group summary cache.
+  - added: getHeaderField().
+  - added: getGroupArticles().
+  - modified: connect(), added $encryption parameter to support ssl/tls connections, and $timeout parameter. 
+  - modified: selectGroup(), added (experimental) parameter to allow fetching of article numbers at once.
+  - modified: getOverview(), added two (experimental) parameters (rewritten to preserve backward compatible with v1.0).
+  - modified and rewritten: getGroups(), addition of optional $wildmat parameter.
+  - modified and rewritten: getDescriptions(), addition of optional $wildmat parameter.
+  - modified and rewritten: getOverview(), $first and $last parameters changed into $range.
+  - renamed: quit() into disconnect(), (temporarily) preserving backward compatible with v1.0.
+  - renamed: getArticleRaw() into getArticle(), (temporarily) preserving backward compatible with v1.1.
+  - renamed: getHeaderRaw() into getHeader(), (temporarily) preserving backward compatible with v1.1.
+  - renamed: getBodyRaw() into getBody(), (temporarily) preserving backward compatible with v1.1.
+  - renamed and rewritten: getReferencesOverview() into getReferences().
+  - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2).
+  - removed: isConnected() removed due to use of private members in Net_Socket! 
+  - misc: all internal PEAR::throwError() changed to $this->throwError().
+  - misc: major phpdoc rewrite.
+  - misc: removal of code related to not yet implemented alternative authentication methods.
+
++ Changes in Net_NNTP_Protocol_Client:
+  - added: cmdXHdr().
+  - added: cmdCapabilities().
+  - added: cmdHelp().
+  - added: cmdListActive().
+  - added: cmdXPat().
+  - modified connect(), added $encryption parameter to support ssl/tls connections. 
+  - modified: cmdNext(), now returns array by default.
+  - modified and rewritten: cmdXOver(), first parameter now optional.
+  - renamed: isConnected() into _isConnected(), due to use of private members in Net_Socket. 
+  - misc: support for logging via the Log package (debugging rewritten to use logger).
+  - misc: use of status response code constants in Net_NNTP_Protocol_Responsecode.
+  - misc: extends PEAR (as in v1.0.x).
+  - misc: all internal PEAR::throwError() changed to $this->throwError().
+
++ Examples replaced by fully functional newsgroup reader demo.
+
++ License upgraded to newer edition of 'W3C SOFTWARE NOTICE AND LICENSE'
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.2.5</release>
+    <api>0.7.4</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-11-27</date>
+   <license>W3C</license>
+   <notes>+ getHeaderField() added
++ getReferencesOverview() rewritten
++ cmdOver() added
++ cmdHelp() added
++ cmdXHdr() added
++ cmdCapabilities() added
++ cmdXOver() rewritten
++ cmdListOverviewFmt rewritten
++ cmdNext() modified
++ cmdPrevious() modified
++ cmdStat() modified
++ connectAuthenticated() removed
++ examples rewritten
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.2.4</release>
+    <api>0.7.3</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-10-20</date>
+   <license>W3C</license>
+   <notes>+ Fix: connect() now returns false when posting is prohibited, like cmdModeReader() does
++ New: Response code constants
++ Misc. internal rewrites in protocol implementation:
+  - Expected response codes in cmdArticle(), cmdHead() and cmdBody() reduced to correspond actual implementations.
+  - First parameter in cmdXOver(), cmdXROver() and cmdListgroup() is now optional.
+  - New third optional parameter in getNewNews() and cmdNewnews().
+  - cmdNext(), cmdLast() and cmdStat() now returns array by default.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.2.3</release>
+    <api>0.7.2</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-05-13</date>
+   <license>W3C</license>
+   <notes>+ New method in Net_NNTP_Client: getBody().
++ Added parameters to Net_NNTP_Client::getArticle/getHeader() to allow use of external return classes.
++ Added status response code constants in Net_NNTP_Protocol_Clients.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.2.2</release>
+    <api>0.7.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-03-13</date>
+   <license>W3C</license>
+   <notes>+ Bug #3967 fixed: typo in Net_NNTP_Header::decodeString().
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.2.1</release>
+    <api>0.7.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-03-28</date>
+   <license>W3C</license>
+   <notes>+ New methods in Net_NNTP_Client: selectArticle(), selectNextArticle() and selectPreviousArticle().
++ New methods in Net_NNTP_Protocol_Client: cmdStat(), cmdNext() and cmdLast().
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.2.0</release>
+    <api>0.7.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-01-14</date>
+   <license>W3C</license>
+   <notes>+ Corresponds to v0.11.3 (exact feature match).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.1.2</release>
+    <api>0.6.2</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2005-05-13</date>
+   <license>W3C</license>
+   <notes>+ Three new Net_NNTP_Client methods: getArticle(), getHeader() and getBody() - stripped down versions from the v1.2 releases (no default return classes).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.1.1</release>
+    <api>0.6.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2005-03-28</date>
+   <license>W3C</license>
+   <notes>+ Net_NNTP_Client::connectAuthenticated() removed - it should only exist in the MAINT_1_2 branch for now (was not removed by mistake in the v1.1.0 release).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.1.0</release>
+    <api>0.6.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2005-01-14</date>
+   <license>W3C</license>
+   <notes>+ This release is NOT fully backward compatible with v0.11.3, since experimental features (Net_NNTP_Message and Net_NNTP_Header and related methods Net_NNTP_Client::getArticle() and Net_NNTP_Client::getHeader()) have been removed (users of those features should consider v1.2.x in stead).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.0.1</release>
+    <api>0.5.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>beta</api>
+   </stability>
+   <date>2005-03-28</date>
+   <license uri="http://www.example.com">W3C</license>
+   <notes>+ Fixes lack of $fp property in historical Net_NNTP class (only relevant for backward compatibility with v0.2.5).
++ Fixes typo in examples.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.0.0</release>
+    <api>0.5.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>beta</api>
+   </stability>
+   <date>2005-01-18</date>
+   <license>W3C</license>
+   <notes>+ This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
++ Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
++ Backward compatible with v0.2.5 (this is ONLY guarantied in v1.0.x releases, and may be removed in the future).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>1.0.0RC1</release>
+    <api>0.5.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2005-01-14</date>
+   <license>W3C</license>
+   <notes>+ This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
++ Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
++ Backward compatible with v0.2.5 (this is ONLY guarantied in v1.0.x releases, and may be removed in the future).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.11.3</release>
+    <api>0.4.3</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2004-09-06</date>
+   <license>W3C</license>
+   <notes>+ Going beta (features not documented in the manual should still be considered experiemental).
++ Added the &apos;distributions&apos; parameter to getNewGroups() and cmdNewGroups().
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.11.2</release>
+    <api>0.4.2</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-08-22</date>
+   <license>W3C</license>
+   <notes>+ Update PhpDoc blocks.
++ Changed xmdXOver(),cmdXROver(),getOverview() and getReferencesOverview() into using only parameter: $range.
++ Fixes whitespace in Net_NNTP_Client, Net_NNTP_Protocol_Client and Net_NNTP.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.11.1</release>
+    <api>0.4.1</api>
+   </version>
+   <stability>
+    <release>devel</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-07-30</date>
+   <license>W3C</license>
+   <notes>+ Fixes bug in (deprecated) Net_NNTP::command().
++ Rename a few constants due to renamed classes (BC preserved).
++ Update class phpdoc blocks.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.11.0</release>
+    <api>0.4.0</api>
+   </version>
+   <stability>
+    <release>devel</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-07-19</date>
+   <license>W3C</license>
+   <notes>+ New directory structure (classes/files renamed/moved) to allow future server class (dummy files preserves backward compatibility).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.10.3</release>
+    <api>0.3.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-07-14</date>
+   <license>W3C</license>
+   <notes>+ Fixes undefined property warning.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.10.2</release>
+    <api>0.3.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-07-06</date>
+   <license>W3C</license>
+   <notes>+ Fixes bug #1803 (trailing space character sent in cmdListNewsgrups()).
++ Fixes bug #825 (no more lazy assignement of new values to $this).
++ Examples moved into docs to comply with the standard PEAR directory structure.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.10.1</release>
+    <api>0.3.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-10-24</date>
+   <license>W3C</license>
+   <notes>+ Fixes bug #7 (lines longer than 1000 chars no longer stop download).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.10.0</release>
+    <api>0.3.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-10-12</date>
+   <license>W3C</license>
+   <notes>+ Merges v0.3.3 and v0.9.4 into one package (The &apos;Net_NNTP&apos; class from v0.9.x is now called &apos;Net_NNTP_Realtime&apos;).
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.9.3</release>
+    <api>0.2.2</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-09-13</date>
+   <license>W3C</license>
+   <notes>+ Fixes Incorrect handling of the XROVER extension corrected in cmdXROver() and removed in getOverview().
++ Constant names pearified.
++ Deprecated/historical methods that didn&apos;t follow PEAR&apos;s coding standard have been removed.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.9.2</release>
+    <api>0.2.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-08-16</date>
+   <license>W3C</license>
+   <notes>+ Fixes syntax typo...
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.9.1</release>
+    <api>0.2.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2002-08-15</date>
+   <license>W3C</license>
+   <notes>+ Bug fixing and improvements in Net_NNTP_Header and Net_NNTP_Message.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.9.0</release>
+    <api>0.2.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2002-08-09</date>
+   <license>W3C</license>
+   <notes>+ Major rewrite, yet still generaly backward compatible - now uses Net_Socket, lets the user choose if the article data are to be returned as strings or arrays or objects, authentication has been separated from the execution of commands, returns pear_error objects of failure, and handles the server&apos;s responses individually.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.3.3</release>
+    <api>0.1.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2003-10-12</date>
+   <license>W3C</license>
+   <notes>+ Fixes bug #85.
++ PhpDoc updateds.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.3.2</release>
+    <api>0.1.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2003-09-20</date>
+   <license>W3C</license>
+   <notes>+ Incorrect handling of the XROVER extension corrected in cmdXROver() and removed in getOverview().
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.3.1</release>
+    <api>0.1.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2003-08-31</date>
+   <license>W3C</license>
+   <notes>+ Uses the new protocol implementation from 0.9.*, but preserves backward compatibility with 0.2, since the experimental header and message classes are not used.
++ Deprecated/historical methods that didn&apos;t follow PEAR&apos;s coding standard have been removed.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.2.5</release>
+    <api>0.0.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-07-19</date>
+   <license>PHP 2.0</license>
+   <notes>+ post() rewritten to allow posting using authentication (bug #817).
++ Examples moved into docs to comply with the standard PEAR directory structure.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.2.4</release>
+    <api>0.0.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-03-10</date>
+   <license>PHP 2.0</license>
+   <notes>(Not released)
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.2.3</release>
+    <api>0.0.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-09-20</date>
+   <license>PHP 2.0</license>
+   <notes>+ Incorrect handling of the XROVER extension in getOverview() removed.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.2.2</release>
+    <api>0.0.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-08-31</date>
+   <license>PHP 2.0</license>
+   <notes>+ Constant names pearified.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.2.1</release>
+    <api>0.0.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-08-09</date>
+   <license>PHP 2.0</license>
+   <notes>+ Fix binary safety.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.2</release>
+    <api>0.0.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <date>2003-07-20</date>
+   <license>PHP 2.0</license>
+   <notes>+ Pearified API.
+   </notes>
+  </release>
+
+  <release>
+   <version>
+    <release>0.1</release>
+    <api>0.0.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <date>2002-05-22</date>
+   <license>PHP 2.0</license>
+   <notes>+ This is the initial independent release of the NNTP package.
+   </notes>
+  </release>
+
+ </changelog>
+
+</package>

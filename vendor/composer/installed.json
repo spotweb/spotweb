@@ -1,202 +1,5 @@
 [
     {
-        "name": "abraham/twitteroauth",
-        "version": "0.2.1",
-        "version_normalized": "0.2.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/abraham/twitteroauth.git",
-            "reference": "adf6a8ee92b0bac69cae7dded9743d5a7de0057e"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/abraham/twitteroauth/zipball/adf6a8ee92b0bac69cae7dded9743d5a7de0057e",
-            "reference": "adf6a8ee92b0bac69cae7dded9743d5a7de0057e",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=5.3.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "4.2.*"
-        },
-        "time": "2014-11-18T00:05:59+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Abraham\\TwitterOAuth\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Abraham Williams",
-                "email": "abraham@abrah.am",
-                "homepage": "https://abrah.am",
-                "role": "Developer"
-            }
-        ],
-        "description": "The first PHP Library to support OAuth 1.0A for Twitter's REST API.",
-        "homepage": "https://github.com/abraham/twitteroauth",
-        "keywords": [
-            "api",
-            "oauth",
-            "twitter"
-        ]
-    },
-    {
-        "name": "boxcar/boxcar",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mbirth/boxcar-php.git",
-            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/mbirth/boxcar-php/zipball/1357299c01bca1da57391f75a5de8214d927bd4d",
-            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=5.3.0"
-        },
-        "time": "2016-08-12T20:03:30+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "boxcar_api.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "ISC"
-        ],
-        "authors": [
-            {
-                "name": "Russell Smith",
-                "email": "russell.smith@ukd1.co.uk",
-                "homepage": "http://www.ukd1.co.uk/",
-                "role": "Developer"
-            }
-        ],
-        "description": "A simple boxcar provider implementation for PHP.",
-        "homepage": "https://boxcar.io/",
-        "keywords": [
-            "boxcar",
-            "ios",
-            "notifications",
-            "push"
-        ]
-    },
-    {
-        "name": "digitalstratum/fts_parser",
-        "version": "dev-spotweb",
-        "version_normalized": "dev-spotweb",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mbirth/fts_parser.git",
-            "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/mbirth/fts_parser/zipball/b693bfb6f348a1875dd8edd512cce360dceb1138",
-            "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2016-08-12T10:43:23+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "parse_model.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Digital Stratum, Inc.",
-                "homepage": "http://digitalstratum.com/",
-                "role": "Developer"
-            }
-        ],
-        "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
-        "homepage": "http://digitalstratum.com/oss/fts_parser",
-        "keywords": [
-            "fts",
-            "fulltext",
-            "postgresql",
-            "tsearch2"
-        ]
-    },
-    {
-        "name": "gdwebs/nntp",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/GeoffreyDijkstra/NNTP-Protocol.git",
-            "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/GeoffreyDijkstra/NNTP-Protocol/zipball/d9883b322a36a7cbb400be4eb5da880b108c120a",
-            "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3"
-        },
-        "time": "2016-11-04T15:48:31+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "src/Protocol/Responsecode.php",
-                "src/Protocol/Client.php",
-                "src/Client.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Heino H. Gehlsen",
-                "email": "heino@gehlsen.dk",
-                "role": "Lead (abandoned)"
-            },
-            {
-                "name": "Jan-Pascal van Best",
-                "email": "janpascal@vanbest.org",
-                "role": "Lead (abandoned)"
-            },
-            {
-                "name": "Geoffrey Dijkstra",
-                "email": "info@gdwebs.nl",
-                "homepage": "http://www.gdwebs.nl",
-                "role": "Developer"
-            }
-        ],
-        "description": "A package that adds support for the NNTP protocol in PHP.",
-        "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol"
-    },
-    {
         "name": "mobiledetect/mobiledetectlib",
         "version": "2.8.22",
         "version_normalized": "2.8.22.0",
@@ -250,49 +53,6 @@
             "mobile detect",
             "mobile detector",
             "php mobile detect"
-        ]
-    },
-    {
-        "name": "notifo/notifo-php",
-        "version": "v1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mbirth/notifo-php.git",
-            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/mbirth/notifo-php/zipball/3f5faee77e6c79a769de2577ff580aaf679543a8",
-            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.0.0"
-        },
-        "time": "2016-08-12T21:11:31+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "Notifo_API.php",
-                "Notifo_Webhook.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "authors": [
-            {
-                "name": "Notifo",
-                "homepage": "http://notifo.com/",
-                "role": "Developer"
-            }
-        ],
-        "description": "Notifo API Library.",
-        "homepage": "http://www.notifo.com/",
-        "keywords": [
-            "notifications",
-            "notifo",
-            "push"
         ]
     },
     {
@@ -390,6 +150,102 @@
         ]
     },
     {
+        "name": "digitalstratum/fts_parser",
+        "version": "dev-spotweb",
+        "version_normalized": "dev-spotweb",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/fts_parser.git",
+            "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/fts_parser/zipball/b693bfb6f348a1875dd8edd512cce360dceb1138",
+            "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-08-12T10:43:23+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "parse_model.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Digital Stratum, Inc.",
+                "homepage": "http://digitalstratum.com/",
+                "role": "Developer"
+            }
+        ],
+        "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
+        "homepage": "http://digitalstratum.com/oss/fts_parser",
+        "keywords": [
+            "fts",
+            "fulltext",
+            "postgresql",
+            "tsearch2"
+        ]
+    },
+    {
+        "name": "abraham/twitteroauth",
+        "version": "0.2.1",
+        "version_normalized": "0.2.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/abraham/twitteroauth.git",
+            "reference": "adf6a8ee92b0bac69cae7dded9743d5a7de0057e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/abraham/twitteroauth/zipball/adf6a8ee92b0bac69cae7dded9743d5a7de0057e",
+            "reference": "adf6a8ee92b0bac69cae7dded9743d5a7de0057e",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.2.*"
+        },
+        "time": "2014-11-18T00:05:59+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Abraham\\TwitterOAuth\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Abraham Williams",
+                "email": "abraham@abrah.am",
+                "homepage": "https://abrah.am",
+                "role": "Developer"
+            }
+        ],
+        "description": "The first PHP Library to support OAuth 1.0A for Twitter's REST API.",
+        "homepage": "https://github.com/abraham/twitteroauth",
+        "keywords": [
+            "api",
+            "oauth",
+            "twitter"
+        ]
+    },
+    {
         "name": "xenji/prowlphp",
         "version": "1.0.4",
         "version_normalized": "1.0.4.0",
@@ -431,6 +287,97 @@
         "keywords": [
             "api",
             "webservices"
+        ]
+    },
+    {
+        "name": "boxcar/boxcar",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/boxcar-php.git",
+            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/boxcar-php/zipball/1357299c01bca1da57391f75a5de8214d927bd4d",
+            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3.0"
+        },
+        "time": "2016-08-12T20:03:30+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "boxcar_api.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "ISC"
+        ],
+        "authors": [
+            {
+                "name": "Russell Smith",
+                "email": "russell.smith@ukd1.co.uk",
+                "homepage": "http://www.ukd1.co.uk/",
+                "role": "Developer"
+            }
+        ],
+        "description": "A simple boxcar provider implementation for PHP.",
+        "homepage": "https://boxcar.io/",
+        "keywords": [
+            "boxcar",
+            "ios",
+            "notifications",
+            "push"
+        ]
+    },
+    {
+        "name": "notifo/notifo-php",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mbirth/notifo-php.git",
+            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mbirth/notifo-php/zipball/3f5faee77e6c79a769de2577ff580aaf679543a8",
+            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.0.0"
+        },
+        "time": "2016-08-12T21:11:31+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "Notifo_API.php",
+                "Notifo_Webhook.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "authors": [
+            {
+                "name": "Notifo",
+                "homepage": "http://notifo.com/",
+                "role": "Developer"
+            }
+        ],
+        "description": "Notifo API Library.",
+        "homepage": "http://www.notifo.com/",
+        "keywords": [
+            "notifications",
+            "notifo",
+            "push"
         ]
     },
     {
@@ -630,5 +577,201 @@
             "xml",
             "zf2"
         ]
+    },
+    {
+        "name": "pear/pear_exception",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pear/PEAR_Exception.git",
+            "reference": "8c18719fdae000b690e3912be401c76e406dd13b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/8c18719fdae000b690e3912be401c76e406dd13b",
+            "reference": "8c18719fdae000b690e3912be401c76e406dd13b",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=4.4.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "*"
+        },
+        "time": "2015-02-10T20:07:52+00:00",
+        "type": "class",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "PEAR": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "include-path": [
+            "."
+        ],
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Helgi Thormar",
+                "email": "dufuz@php.net"
+            },
+            {
+                "name": "Greg Beaver",
+                "email": "cellog@php.net"
+            }
+        ],
+        "description": "The PEAR Exception base class.",
+        "homepage": "https://github.com/pear/PEAR_Exception",
+        "keywords": [
+            "exception"
+        ]
+    },
+    {
+        "name": "pear/console_getopt",
+        "version": "v1.4.1",
+        "version_normalized": "1.4.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pear/Console_Getopt.git",
+            "reference": "82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pear/Console_Getopt/zipball/82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f",
+            "reference": "82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f",
+            "shasum": ""
+        },
+        "time": "2015-07-20T20:28:12+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Console": "./"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "include-path": [
+            "./"
+        ],
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Greg Beaver",
+                "email": "cellog@php.net",
+                "role": "Helper"
+            },
+            {
+                "name": "Andrei Zmievski",
+                "email": "andrei@php.net",
+                "role": "Lead"
+            },
+            {
+                "name": "Stig Bakken",
+                "email": "stig@php.net",
+                "role": "Developer"
+            }
+        ],
+        "description": "More info available on: http://pear.php.net/package/Console_Getopt"
+    },
+    {
+        "name": "pear/pear-core-minimal",
+        "version": "v1.10.3",
+        "version_normalized": "1.10.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pear/pear-core-minimal.git",
+            "reference": "070f0b600b2caca2501e2c9b7e553016e4b0d115"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pear/pear-core-minimal/zipball/070f0b600b2caca2501e2c9b7e553016e4b0d115",
+            "reference": "070f0b600b2caca2501e2c9b7e553016e4b0d115",
+            "shasum": ""
+        },
+        "require": {
+            "pear/console_getopt": "~1.4",
+            "pear/pear_exception": "~1.0"
+        },
+        "replace": {
+            "rsky/pear-core-min": "self.version"
+        },
+        "time": "2017-02-28T16:46:11+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "include-path": [
+            "src/"
+        ],
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Christian Weiske",
+                "email": "cweiske@php.net",
+                "role": "Lead"
+            }
+        ],
+        "description": "Minimal set of PEAR core files to be used as composer dependency"
+    },
+    {
+        "name": "spotweb/net_nntp",
+        "version": "dev-trunk",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mesa57/Net_NNTP.git",
+            "reference": "e176fbdc14926e131dee3bcc112cb3fa44d5271b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mesa57/Net_NNTP/zipball/e176fbdc14926e131dee3bcc112cb3fa44d5271b",
+            "reference": "e176fbdc14926e131dee3bcc112cb3fa44d5271b",
+            "shasum": ""
+        },
+        "require": {
+            "pear/pear-core-minimal": "^1.10.3",
+            "php": ">=5.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "*"
+        },
+        "time": "2017-10-23T18:59:18+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "./"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "W3C"
+        ],
+        "authors": [
+            {
+                "name": "Heino H. Gehlsen",
+                "email": "heino@gehlsen.dk",
+                "role": "Lead"
+            }
+        ],
+        "description": "PEAR's package for communication with NNTP/Usenet servers.",
+        "homepage": "http://pear.php.net/package/Net_NNTP"
     }
 ]
