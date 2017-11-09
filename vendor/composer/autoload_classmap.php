@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Basics' => $vendorDir . '/spotweb/net_nntp/tests/basics.php',
     'Bootstrap' => $baseDir . '/lib/Bootstrap.php',
     'CacheIsCorruptException' => $baseDir . '/lib/exceptions/CacheIsCorruptException.php',
     'CacheMustBeMigrated2Exception' => $baseDir . '/lib/exceptions/CacheMustBeMigrated2Exception.php',
@@ -108,11 +107,8 @@ return array(
     'InvalidOwnSettingsSettingException' => $baseDir . '/lib/exceptions/InvalidOwnSettingsSettingException.php',
     'InvalidPrivateKeyException' => $baseDir . '/lib/exceptions/InvalidPrivateKeyException.php',
     'InvalidSettingsUpdateException' => $baseDir . '/lib/exceptions/InvalidSettingsUpdateException.php',
-    'Logger' => $vendorDir . '/spotweb/net_nntp/docs/examples/demo/common.inc.php',
     'MissingNntpConfigurationException' => $baseDir . '/lib/exceptions/MissingNntpConfigurationException.php',
     'Mobile_Detect' => $vendorDir . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
-    'Net_NNTP_Client' => $vendorDir . '/spotweb/net_nntp/NNTP/Client.php',
-    'Net_NNTP_Protocol_Client' => $vendorDir . '/spotweb/net_nntp/NNTP/Protocol/Client.php',
     'NntpException' => $baseDir . '/lib/exceptions/NntpException.php',
     'NotImplementedException' => $baseDir . '/lib/exceptions/NotImplementedException.php',
     'Notifications_Boxcar' => $baseDir . '/lib/notifications/Notifications_Boxcar.php',
