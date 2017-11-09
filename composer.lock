@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cfb80ce7bdfd193408cd78d306f8b27",
+    "content-hash": "c0cc2bb6af94fbfa12506f425cf9e683",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -145,6 +145,57 @@
             "time": "2016-08-12T10:43:23+00:00"
         },
         {
+            "name": "gdwebs/nntp",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GeoffreyDijkstra/NNTP-Protocol.git",
+                "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GeoffreyDijkstra/NNTP-Protocol/zipball/d9883b322a36a7cbb400be4eb5da880b108c120a",
+                "reference": "d9883b322a36a7cbb400be4eb5da880b108c120a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Protocol/Responsecode.php",
+                    "src/Protocol/Client.php",
+                    "src/Client.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Heino H. Gehlsen",
+                    "email": "heino@gehlsen.dk",
+                    "role": "Lead (abandoned)"
+                },
+                {
+                    "name": "Jan-Pascal van Best",
+                    "email": "janpascal@vanbest.org",
+                    "role": "Lead (abandoned)"
+                },
+                {
+                    "name": "Geoffrey Dijkstra",
+                    "email": "info@gdwebs.nl",
+                    "homepage": "http://www.gdwebs.nl",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A package that adds support for the NNTP protocol in PHP.",
+            "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol",
+            "time": "2016-11-04T15:48:31+00:00"
+        },
+        {
             "name": "mobiledetect/mobiledetectlib",
             "version": "2.8.22",
             "source": {
@@ -240,152 +291,6 @@
             "time": "2016-08-12T21:11:31+00:00"
         },
         {
-            "name": "pear/console_getopt",
-            "version": "v1.4.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pear/Console_Getopt.git",
-                "reference": "82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pear/Console_Getopt/zipball/82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f",
-                "reference": "82f05cd1aa3edf34e19aa7c8ca312ce13a6a577f",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Console": "./"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                "./"
-            ],
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Greg Beaver",
-                    "email": "cellog@php.net",
-                    "role": "Helper"
-                },
-                {
-                    "name": "Andrei Zmievski",
-                    "email": "andrei@php.net",
-                    "role": "Lead"
-                },
-                {
-                    "name": "Stig Bakken",
-                    "email": "stig@php.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "More info available on: http://pear.php.net/package/Console_Getopt",
-            "time": "2015-07-20T20:28:12+00:00"
-        },
-        {
-            "name": "pear/pear-core-minimal",
-            "version": "v1.10.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pear/pear-core-minimal.git",
-                "reference": "070f0b600b2caca2501e2c9b7e553016e4b0d115"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pear/pear-core-minimal/zipball/070f0b600b2caca2501e2c9b7e553016e4b0d115",
-                "reference": "070f0b600b2caca2501e2c9b7e553016e4b0d115",
-                "shasum": ""
-            },
-            "require": {
-                "pear/console_getopt": "~1.4",
-                "pear/pear_exception": "~1.0"
-            },
-            "replace": {
-                "rsky/pear-core-min": "self.version"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                "src/"
-            ],
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Christian Weiske",
-                    "email": "cweiske@php.net",
-                    "role": "Lead"
-                }
-            ],
-            "description": "Minimal set of PEAR core files to be used as composer dependency",
-            "time": "2017-02-28T16:46:11+00:00"
-        },
-        {
-            "name": "pear/pear_exception",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pear/PEAR_Exception.git",
-                "reference": "8c18719fdae000b690e3912be401c76e406dd13b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/8c18719fdae000b690e3912be401c76e406dd13b",
-                "reference": "8c18719fdae000b690e3912be401c76e406dd13b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=4.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "*"
-            },
-            "type": "class",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "PEAR": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                "."
-            ],
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Helgi Thormar",
-                    "email": "dufuz@php.net"
-                },
-                {
-                    "name": "Greg Beaver",
-                    "email": "cellog@php.net"
-                }
-            ],
-            "description": "The PEAR Exception base class.",
-            "homepage": "https://github.com/pear/PEAR_Exception",
-            "keywords": [
-                "exception"
-            ],
-            "time": "2015-02-10T20:07:52+00:00"
-        },
-        {
             "name": "phpseclib/phpseclib",
             "version": "2.0.4",
             "source": {
@@ -476,48 +381,6 @@
                 "x509"
             ],
             "time": "2016-10-04T00:57:04+00:00"
-        },
-        {
-            "name": "spotweb/net_nntp",
-            "version": "dev-trunk",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mesa57/Net_NNTP.git",
-                "reference": "e176fbdc14926e131dee3bcc112cb3fa44d5271b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mesa57/Net_NNTP/zipball/e176fbdc14926e131dee3bcc112cb3fa44d5271b",
-                "reference": "e176fbdc14926e131dee3bcc112cb3fa44d5271b",
-                "shasum": ""
-            },
-            "require": {
-                "pear/pear-core-minimal": "^1.10.3",
-                "php": ">=5.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "W3C"
-            ],
-            "authors": [
-                {
-                    "name": "Heino H. Gehlsen",
-                    "email": "heino@gehlsen.dk",
-                    "role": "Lead"
-                }
-            ],
-            "description": "PEAR's package for communication with NNTP/Usenet servers.",
-            "homepage": "http://pear.php.net/package/Net_NNTP",
-            "time": "2017-10-23T18:59:18+00:00"
         },
         {
             "name": "uskr/nma-php",
@@ -2059,8 +1922,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "digitalstratum/fts_parser": 20,
-        "boxcar/boxcar": 20,
-        "spotweb/net_nntp": 20
+        "boxcar/boxcar": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

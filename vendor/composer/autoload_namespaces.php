@@ -8,8 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'ZendXml\\' => array($vendorDir . '/zendframework/zendxml/library'),
     'Prowl' => array($vendorDir . '/xenji/prowlphp/src'),
-    'PEAR' => array($vendorDir . '/pear/pear_exception'),
     'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),
-    'Console' => array($vendorDir . '/pear/console_getopt'),
-    '' => array($vendorDir . '/pear/pear-core-minimal/src'),
 );
