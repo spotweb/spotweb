@@ -72,13 +72,11 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 
                     <!-- Add some explanation about the MS translator API -->
                     <p>
-                        <?php echo _('Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires a so-called Client ID and a SecretID which you need to <a href="http://blogs.msdn.com/b/translation/p/gettingstarted1.aspx">request at Microsoft</a>. Please enter the values in below fields.'); ?>
+                        <?php echo _('Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires either a subscription key from Microsoft Cognitive Services in the Azure Portal. You can find instructions at <a href="http://docs.microsofttranslator.com/text-translate.html">http://docs.microsofttranslator.com/text-translate.html</a>. Please enter the subscription key in the field below.'); ?>
                     </p>
-                    <dt><label for="editsettingsform[ms_translator_clientid]"><?php echo _('Microsoft Translator API - Client ID'); ?></label></dt>
-                    <dd><input type="text" name="editsettingsform[ms_translator_clientid]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_clientid'), ENT_QUOTES); ?>"></dd>
+                    <dt><label for="editsettingsform[ms_translator_subscriptionkey]"><?php echo _('Microsoft Cognitive Services - Subscription Key'); ?></label></dt>
+                    <dd><input type="text" name="editsettingsform[ms_translator_subscriptionkey]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_subscriptionkey'), ENT_QUOTES); ?>"></dd>
 
-                    <dt><label for="editsettingsform[ms_translator_clientsecret]"><?php echo _('Microsoft Translator API - Secret ID'); ?></label></dt>
-                    <dd><input type="text" name="editsettingsform[ms_translator_clientsecret]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_clientsecret'), ENT_QUOTES); ?>"></dd>
 				</dl>
 
 			</fieldset>
