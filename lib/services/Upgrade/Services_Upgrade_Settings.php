@@ -77,8 +77,9 @@ class Services_Upgrade_Settings {
 				array(
 						'we1rdo' => 'we1rdo'
 				));;
-        $this->setIfNot('ms_translator_clientid', '');
-        $this->setIfNot('ms_translator_clientsecret', '');
+		$this->setIfNot('ms_translator_subscriptionkey', '');
+        	$this->remove('ms_translator_clientid');
+        	$this->remove('ms_translator_clientsecret');
 
         $this->updateSettingsVersion();
 	} # update()

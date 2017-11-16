@@ -4,19 +4,20 @@ class Services_Translation_Microsoft {
     // actual translation URL
     const translateUrl = "http://api.microsofttranslator.com/v2/Http.svc/TranslateArray?";
     // oAuth url
-    const authUrl      = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13/";
+    const authUrl      = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
     // application Scope Url
     const scopeUrl     = "http://api.microsofttranslator.com";
     // application grant type
     const grantType    = "client_credentials";
+    // subscription key headers
+    const subscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
 
     /*
      * These id's need to be copied from the Azure market place, please
      * check the follow blog post
      *      http://blogs.msdn.com/b/translation/p/gettingstarted1.aspx
      */
-    private $_clientId = '';
-    private $_clientSecret = '';
+    private $_subscriptionKey = '';
 
     protected $_settings;
     protected $_cacheDao;
@@ -25,15 +26,14 @@ class Services_Translation_Microsoft {
         $this->_settings = $settings;
         $this->_cacheDao = $cacheDao;
 
-        $this->_clientId = $settings->get('ms_translator_clientid');
-        $this->_clientSecret = $settings->get('ms_translator_clientsecret');
+        $this->_subscriptionKey = $settings->get('ms_translator_subscriptionkey');
     } # ctor
 
     /*
      * Returns whether the translation API is available
      */
     function isAvailable() {
-        return (!empty($this->_clientId) && !empty($this->_clientSecret));
+        return (!empty($this->_subscriptionKey));
     } # isAvailable
 
     /*
@@ -48,7 +48,7 @@ class Services_Translation_Microsoft {
          * after a few seconds
          */
         $svcPrvHttp = new Services_Providers_Http(null);
-        $translaterToken = $this->_cacheDao->getCachedTranslaterToken($this->_clientId . $this->_clientSecret);
+        $translaterToken = $this->_cacheDao->getCachedTranslaterToken($this->_subscriptionKey);
         if ($translaterToken != false) {
             return $translaterToken['content'];
         } # if
@@ -58,43 +58,23 @@ class Services_Translation_Microsoft {
             return false;
         } # if
 
-        # create the request array
-        $paramArr = array (
-            'grant_type'    => Services_Translation_Microsoft::grantType,
-            'scope'         => Services_Translation_Microsoft::scopeUrl,
-            'client_id'     => $this->_clientId,
-            'client_secret' => $this->_clientSecret
-        );
-
         $svcPrvHttp->setMethod('POST');
-        $svcPrvHttp->setPostContent($paramArr);
+        $svcPrvHttp->setContentType('text/plain');
+        $svcPrvHttp->setRawPostData('{body}');
+        $svcPrvHttp->addHttpHeaders(array(Services_Translation_Microsoft::subscriptionKeyHeader . ': ' . $this->_subscriptionKey));
         $tmpResult = $svcPrvHttp->perform(Services_Translation_Microsoft::authUrl, null);
 
         if (!$tmpResult['successful']) {
-            $tmpResult = @json_decode($tmpResult['data']);
-            if (!empty($tmpResult->error)) {
-                throw new Exception($tmpResult->error_description);
-            } # if
-
             return false;
         } # if
 
-        $result = json_decode($tmpResult['data']);
-
-        /*
-         * throw any exception if one happens because else we get sometimes
-         * failing translations which suck even more.
-         */
-        if (!empty($result->error)) {
-            throw new Exception($result->error_description);
-        } # if
+        $translaterToken = $tmpResult['data'];
 
         /*
          * store the translation token into the cache
          */
-        $translaterToken = $result->access_token;
-        $this->_cacheDao->saveTranslaterTokenCache($this->_clientId . $this->_clientSecret, // unique token
-                                              time() + ($result->expires_in - 2),      // The amount of secs token is valid
+        $this->_cacheDao->saveTranslaterTokenCache($this->_subscriptionKey, // unique token
+                                              time() + 7*60, // valid for 10 minutes so renew early
                                               $translaterToken);
 
         return $translaterToken;

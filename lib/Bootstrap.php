@@ -4,7 +4,7 @@
  * Define several version constants
  * used throughput Spotweb
  */
-define('SPOTWEB_SETTINGS_VERSION', '0.28');
+define('SPOTWEB_SETTINGS_VERSION', '0.29');
 define('SPOTWEB_SECURITY_VERSION', '0.32');
 define('SPOTDB_SCHEMA_VERSION', '0.68');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
