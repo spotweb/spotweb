@@ -185,7 +185,7 @@
 <?php						
 	}
 ?>
-						<h4>Sorteren op:</h4>
+						 <h4><?php echo _('Sort by'); ?>:</h4>
 						<input type="hidden" name="sortdir" value="<?php if($sortType == "stamp" || $sortType == "spotrating" || $sortType == "commentcount") {echo "DESC";} else {echo "ASC";} ?>">
 						<ul class="search sorting threecol">
 							<li> <input type="radio" name="sortby" value="" <?php echo $sortType == "" ? 'checked="checked"' : "" ?>><label><?php echo _('Relevance'); ?></label> </li>
