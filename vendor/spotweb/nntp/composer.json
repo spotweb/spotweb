@@ -1,9 +1,9 @@
 {
-  "name": "gdwebs/nntp",
+  "name": "spotweb/nntp",
   "description": "A package that adds support for the NNTP protocol in PHP.",
   "type": "library",
   "license": "MIT",
-  "homepage": "https://github.com/GeoffreyDijkstra/NNTP-Protocol",
+  "homepage": "https://github.com/mesa57/NNTP-Protocol",
   "authors": [
     {
       "name": "Heino H. Gehlsen",
@@ -19,6 +19,11 @@
       "name": "Geoffrey Dijkstra",
       "email": "info@gdwebs.nl",
       "homepage": "http://www.gdwebs.nl",
+      "role": "Developer"
+    },
+    {
+      "name": "mesa57",
+      "email": "mesa57@hotmail.com",
       "role": "Developer"
     }
   ],
