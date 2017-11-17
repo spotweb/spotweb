@@ -679,7 +679,7 @@ class Services_Search_QueryParser {
 				 * add quotes around it when not numeric. We cannot blankly always add quotes
 				 * as postgresql doesn't like that of course
 				 */
-				if (!is_numeric($tmpFilterValue)) {
+				if ($tmpFilterValue > PHP_INT_MAX) {
 					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue);
 				} else {
 					$tmpFilterValue = $this->_dbEng->safe((int) $tmpFilterValue);

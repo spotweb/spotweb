@@ -7,10 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInit9a4f7282bbaf2b68b9b71f801741479a
 {
     public static $files = array (
-        '2017bd12a28d839df32ad9b0b2a97562' => __DIR__ . '/..' . '/gdwebs/nntp/src/Protocol/Responsecode.php',
-        'ed817a92f1a97d5fd2972ea0d5bd357d' => __DIR__ . '/..' . '/gdwebs/nntp/src/Protocol/Client.php',
-        '675a69e7dbe61c444936690a6f90035e' => __DIR__ . '/..' . '/gdwebs/nntp/src/Client.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
+        '5caae5f7b68648de3f5342db2c5e073b' => __DIR__ . '/..' . '/spotweb/nntp/src/Protocol/Responsecode.php',
+        'aceb30944f602cb245c3639fc1fadea4' => __DIR__ . '/..' . '/spotweb/nntp/src/Protocol/Client.php',
+        '4a08139a9d6436051e44a1c5271bced8' => __DIR__ . '/..' . '/spotweb/nntp/src/Client.php',
     );
 
     public static $prefixLengthsPsr4 = array (

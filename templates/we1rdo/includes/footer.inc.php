@@ -14,7 +14,8 @@
         <script src='?page=statics&amp;type=js&amp;lang=<?php echo urlencode($currentSession['user']['prefs']['user_language']); ?>&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 
         <script type='text/javascript'>
-            initSpotwebJs();
+            <?php echo "initSpotwebJs('";  echo _('Between ') ; echo "','"; echo _(' and ') ; echo "')" ?>;
+            //initSpotwebJs();
             <?php if (!empty($toRunJsCode)) {
                 echo $toRunJsCode;
             } # if

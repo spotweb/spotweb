@@ -6,8 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    '2017bd12a28d839df32ad9b0b2a97562' => $vendorDir . '/gdwebs/nntp/src/Protocol/Responsecode.php',
-    'ed817a92f1a97d5fd2972ea0d5bd357d' => $vendorDir . '/gdwebs/nntp/src/Protocol/Client.php',
-    '675a69e7dbe61c444936690a6f90035e' => $vendorDir . '/gdwebs/nntp/src/Client.php',
     'decc78cc4436b1292c6c0d151b19445c' => $vendorDir . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
+    '5caae5f7b68648de3f5342db2c5e073b' => $vendorDir . '/spotweb/nntp/src/Protocol/Responsecode.php',
+    'aceb30944f602cb245c3639fc1fadea4' => $vendorDir . '/spotweb/nntp/src/Protocol/Client.php',
+    '4a08139a9d6436051e44a1c5271bced8' => $vendorDir . '/spotweb/nntp/src/Client.php',
 );
