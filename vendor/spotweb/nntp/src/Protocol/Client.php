@@ -550,7 +550,7 @@ class Net_NNTP_Protocol_Client
     	case is_string($article):
     	    //
 	    $this->_clearSSLErrors();
-    	    @fwrite($this->_socket, $article);
+            @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $article));
 	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
@@ -577,7 +577,7 @@ class Net_NNTP_Protocol_Client
 
     	    // Send header (including separation line)
 	    $this->_clearSSLErrors();
-    	    @fwrite($this->_socket, $header);
+            @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $header));
 	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, "\r\n");
 
@@ -598,7 +598,7 @@ class Net_NNTP_Protocol_Client
 
     	    // Send body
 	    $this->_clearSSLErrors();
-    	    @fwrite($this->_socket, $body);
+            @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $body));
 	    $this->_clearSSLErrors();
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
