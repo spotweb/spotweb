@@ -398,6 +398,9 @@ msgstr "Voeg NZB aan SABnzbd wachtrij toe"
 msgid "Find spots in this category"
 msgstr "Zoek spots in de categorie"
 
+msgid "Sort by"
+msgstr "Sorteren op"
+
 msgid "Sort on sender [0-Z]"
 msgstr "Sorteren op Afzender [0-Z]"
 
