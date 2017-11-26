@@ -679,10 +679,15 @@ class Services_Search_QueryParser {
 				 * add quotes around it when not numeric. We cannot blankly always add quotes
 				 * as postgresql doesn't like that of course
 				 */
-				if ($tmpFilterValue > PHP_INT_MAX) {
+                if (!is_numeric($tmpFilterValue)) {
 					$tmpFilterValue = $this->_dbEng->safe($tmpFilterValue);
 				} else {
-					$tmpFilterValue = $this->_dbEng->safe((int) $tmpFilterValue);
+                    # numeric, test if greater max int value
+                    if ($tmpFilterValue > PHP_INT_MAX) {
+                        $tmpFilterValue = $this->_dbEng->safe($tmpFilterValue);
+                    } else {
+                        $tmpFilterValue = $this->_dbEng->safe((int) $tmpFilterValue);
+                    }
 				} # if
 
 				# depending on the type of search, we either add the filter as an AND or an OR
