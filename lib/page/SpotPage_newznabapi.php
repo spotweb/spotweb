@@ -168,16 +168,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			} elseif ($this->_params['ep'] != "") {
 				$this->showApiError(201);
 				return ;
-			} else {
-                // Complete season search, add wildcard character to season
-            	if (!empty($title)) {
-                    if (!empty($seasonSearch )) {
-                        $seasonSearch .= '*';
-                        // and search for the text 'Season ' ...
-                        $searchParams['value'][] = "Titel:=:OR:+\"" . $title . "\" +\"Season " . (int) $this->_params['season'] . "\"";
-                    }
-            	}
-            } # else
+            } # if
 
 			/*
              * The + operator is supported both by PostgreSQL and MySQL's FTS
@@ -185,10 +176,21 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			 * We search both for S04E17 and S04 E17 (with a space)
 			 */
             if (!empty($title)) {
-				$searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . $episodeSearch;
-	            if (!empty($episodeSearch)) {
-	                $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $seasonSearch . ' +' . $episodeSearch;
-	            } # if
+                if (!empty($seasonSearch)) {
+                    if (!empty($episodeSearch)) {
+                        $searchParams['value'][] = "Titel:=:AND:+\"" . $tvInfo->getTitle() . "\"" ;
+                        $searchParams['value'][] = "Titel:=:DEF:".$seasonSearch . " ". $episodeSearch;
+                    } else {
+                        // Complete season search, add wildcard character to season
+                        if (empty($this->_params['noalt']) or $this->_params['noalt'] <> "1") {
+                            $searchParams['value'][] = 'Titel:=:OR:+"' . $title . '" +"Seizoen ' . (int) $this->_params['season'] .'"';
+                            $searchParams['value'][] = 'Titel:=:OR:+"' . $title . '" +"Season ' . (int) $this->_params['season'] .'"';
+                        }
+                        $searchParams['value'][] = 'Titel:=:OR:+"' . $title . '" +' . $seasonSearch.'*';
+                    }
+                } else {
+                    $searchParams['value'][] = "Titel:=:OR:+\"" . $tvInfo->getTitle() . "\" +" . $episodeSearch;
+                }
             }
             if (empty($this->_params['cat'] )) {
 				$this->_params['cat'] = 5000;
@@ -234,12 +236,15 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 				/*
 				* Add movie title to the query
 				*/
+
 				$searchParams['value'][] = "Titel:=:OR:+\"" . $imdbInfo->getTitle()  . "\" " . $movieReleaseDate;
 
-				// imdb sometimes returns the title translated, if so, pass the original title as well
-				if ($imdbInfo->getAlternateTitle() != null) {
-					$searchParams['value'][] = "Title:=:OR:+\"" . $imdbInfo->getAlternateTitle() . "\" " . $movieReleaseDate;
-				} # if
+				// imdb sometimes returns the title translated, if so, pass the translated title as well, bu only if noalt <> 1
+                if (empty($this->_params['noalt']) or $this->_params['noalt'] <> "1") {
+                    if ($imdbInfo->getAlternateTitle() != null) {
+                        $searchParams['value'][] = "Title:=:OR:+\"" . $imdbInfo->getAlternateTitle() . "\" " . $movieReleaseDate;
+                    } # if
+                } # if
 			} # if
 
 			/*
