@@ -291,7 +291,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$searchParams['value'][] = "filesize:>:DEF:0";
 
 		if(!empty($this->_params["poster"])){
-			$searchParams["value"][] = "Poster:=:*".$this->_params["poster"]."*";
+			$searchParams["value"][] = "Poster:=:".$this->_params["poster"];
 		}
 
         /*
