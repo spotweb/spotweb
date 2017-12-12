@@ -191,7 +191,8 @@ try {
 						  'offset' => $req->getDef('offset', ''),
 						  'del' => $req->getDef('del', ''),
                           'spotcat' => $req->getDef('spotcat', ''),
-                          'noalt' => $req->getDef('noalt', '')
+                          'noalt' => $req->getDef('noalt', ''),
+                          'poster' => $req->getDef('poster', '')
 					)
 			);
 			$page->render();
