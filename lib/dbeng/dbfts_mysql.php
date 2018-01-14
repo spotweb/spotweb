@@ -85,7 +85,7 @@ class dbfts_mysql extends dbfts_abs {
 		 */
 		$serverSetting = $this->_db->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
 		$minWordLen = $serverSetting[0]['Value'];
-
+                
         //var_dump($searchFields);
 
 		foreach($searchFields as $searchItem) {
@@ -275,8 +275,9 @@ class dbfts_mysql extends dbfts_abs {
              */
 			$queryPart = array();
             $matchPart = '';
-			if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') || ($searchMode == 'both-match-boolean')) {
-                foreach($this->splitWords($searchValue) as $splittedTerm) {
+            if (($searchMode == 'normal') || ($searchMode == 'both-match-natural') || ($searchMode == 'both-match-boolean')) {
+                $splitted = $this->splitWords($searchValue);
+                foreach ($splitted as $splittedTerm) {
                     /*
                      * If the term contains an boolean operator in the beginning,
                      * strip it
@@ -287,10 +288,13 @@ class dbfts_mysql extends dbfts_abs {
 
                     if (!empty($filteredTerm)) {
                         $filteredTerm = str_replace(' ','_',$filteredTerm );
+                        $filteredTerm = stripslashes ($filteredTerm );
+                        $filteredTerm = str_replace('"','',$filteredTerm );
+                        $filteredTerm = str_replace('+','',$filteredTerm );
                         $queryPart[] = ' ' . $field . " LIKE " . $this->_db->safe('%' . $filteredTerm . '%');
                     } # if
                 } # foreach
-			} # if
+            } # if
 			
 			if (($searchMode == 'match-natural') || ($searchMode == 'both-match-natural')) {
 				/* Natural language mode always defaults in MySQL 5.0 en 5.1, but cannot be explicitly defined in MySQL 5.0 */

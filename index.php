@@ -190,7 +190,9 @@ try {
 						  'maxage' => $req->getDef('maxage', ''),
 						  'offset' => $req->getDef('offset', ''),
 						  'del' => $req->getDef('del', ''),
-                          'spotcat' => $req->getDef('spotcat', '')
+                          'spotcat' => $req->getDef('spotcat', ''),
+                          'noalt' => $req->getDef('noalt', ''),
+                          'poster' => $req->getDef('poster', '')
 					)
 			);
 			$page->render();
