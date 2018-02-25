@@ -198,7 +198,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		} elseif ($this->_params['t'] == "music") {
 			if (empty($this->_params['artist']) && empty($this->_params['cat'])) {
 				$this->_params['cat'] = 3000;
-			} else {
+			} elseif (!empty($this->_params['artist'])) {
 				$searchParams['value'][] = "Titel:=:DEF:\"" . $this->_params['artist'] . "\"";
 			} # if
 		} elseif ($this->_params['t'] == "m" || $this->_params['t'] == "movie") {
