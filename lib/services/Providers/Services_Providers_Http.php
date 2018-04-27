@@ -192,7 +192,7 @@ class Services_Providers_Http {
         curl_setopt ($ch, CURLOPT_URL, $url);
         curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt ($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt ($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt ($ch, CURLOPT_ENCODING, '');
         // Don't use fail on error, because sometimes we do want to se
         // the output of the content
