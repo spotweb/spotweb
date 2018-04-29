@@ -279,7 +279,7 @@ table.spots td.genre,
 table.spots th.genre {min-width:120px; width:120px;}
 table.spots td.poster,
 table.spots th.poster {min-width:110px; width:110px; overflow:hidden;}
-table.spots td.poster a {width:110px;}
+table.spots td.poster a {width:115px;}
 table.spots td.date,
 table.spots th.date {min-width:140px; width:140px;}
 table.spots td.filesize,
