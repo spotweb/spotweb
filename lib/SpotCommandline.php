@@ -65,7 +65,7 @@ class SpotCommandline {
 		
         // could use getopt() here (since PHP 5.3.0), but it doesn't work reliably
         reset($params);
-        while (list($tmp, $p) = each($params)) {
+        foreach ($params as $p) {
             if ($p{0} == '-') {
                 $pname = substr($p, 1);
                 $value = true;
