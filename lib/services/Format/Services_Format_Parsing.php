@@ -49,7 +49,18 @@ class Services_Format_Parsing {
 		return $xmlStr;
 	} # correctElmContents
 
-	/*
+    /*
+     * Make string utf8mb3 for mysql (only 3 byte utf codes)
+     */
+    private function replace4Byte($string, $replacement = '') {
+        return preg_replace('%(?:
+          \xF0[\x90-\xBF][\x80-\xBF]{2}      # planes 1-3
+        | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+        | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
+    )%xs', $replacement, $string);
+    }
+    
+    /*
 	 * Parse a full Spot according to the XML structure
 	 */
 	function parseFull($xmlStr) {
@@ -93,7 +104,9 @@ class Services_Format_Parsing {
 
         // Decode HTML special characters, title otherwise search will be broken, description as body in newsgroup
         $tpl_spot['title'] = html_entity_decode($tpl_spot['title'],ENT_QUOTES ,'UTF-8');
+        $tpl_spot['title'] = $this->replace4Byte($tpl_spot['title'],'??');
         $tpl_spot['description'] = html_entity_decode($tpl_spot['description'],ENT_QUOTES ,'UTF-8');
+        $tpl_spot['description'] = $this->replace4Byte($tpl_spot['description'],'??');
 
 		# FTD spots have the filename
 		if (!empty($xml->Filename)) {
