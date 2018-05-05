@@ -106,7 +106,7 @@ abstract class dbeng_abs {
 		$tmpList = '';
 
 		foreach($ar as $k => $v) {
-			$tmpList .= $this->safe($k) . ",";
+			$tmpList .= $this->safe((string) $k) . ",";
 		} # foreach
 		return substr($tmpList, 0, -1);
 	} # arrayKeyToIn
@@ -135,7 +135,7 @@ abstract class dbeng_abs {
 		$tmpList = '';
 
 		foreach($ar as $v) {
-			$tmpList .= $this->safe($v[$val]) . ",";
+			$tmpList .= $this->safe((string) $v[$val]) . ",";
 		} # foreach
 		return substr($tmpList, 0, -1);
 	} # arrayValToIn
