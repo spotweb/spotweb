@@ -713,6 +713,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 		$server->setAttribute('email', $this->_currentSession['user']['mail'] . ' (' . $this->_currentSession['user']['firstname'] . ' ' . $this->_currentSession['user']['lastname'] . ')');
 		$server->setAttribute('url', $this->_settings->get('spotweburl'));
 		$server->setAttribute('image', $this->_settings->get('spotweburl') . 'images/spotnet.gif');
+		$server->setAttribute('type', 'Spotweb');
 		$caps->appendChild($server);
 
 		$limits = $doc->createElement('limits');
