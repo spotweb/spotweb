@@ -14,7 +14,7 @@ Spotweb is one of the most-featured Spotnet clients currently available, featuri
 * Easy to download multiple files.
 * Runs on NAS devices like Synology and QNAP.
 * Rating of spots.
-* Integration with [Sick beard](http://www.sickbeard.com) and [CouchPotato](http://couchpotatoapp.com/) as a 'newznab' provider.
+* Integration with [Sick Gear](https://github.com/SickGear/SickGear/wiki) , [Sick beard](http://www.sickbeard.com) and [CouchPotato](http://couchpotatoapp.com/) as a 'newznab' provider.
 * Platform independent (reported to work on Linux, *BSD and Windows).
 * Both central as user-specific blacklist support built-in.
 * Spam reporting.
