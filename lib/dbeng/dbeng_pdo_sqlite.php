@@ -15,6 +15,7 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 			if (!$this->_conn instanceof PDO) {
 				$this->_conn = new PDO('sqlite:' . $db);
 				$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				$this->_conn->setAttribute(PDO::ATTR_TIMEOUT, 300);
 			} # if		
 		} catch(PDOException $e) {
 				throw new DatabaseConnectionException($e->getMessage(), -1);
