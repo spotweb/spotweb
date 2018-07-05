@@ -30,7 +30,7 @@ class Services_Providers_Statistics {
 	public function createAllStatistics() {
 		foreach ($this->getValidStatisticsLimits() as $limitValue => $limitName) {
 			# Reset timelimit
-			set_time_limit(60);
+			set_time_limit(120);
 
 			foreach ($this->getValidStatisticsGraphs() as $graphValue => $graphName) {
 				$this->renderStatImage($graphValue, $limitValue);
