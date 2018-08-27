@@ -91,5 +91,68 @@ class Dao_Sqlite_Spot extends Dao_Base_Spot {
         return $queryStr ;
     }
 	
+	/*
+	 * Add a lis tof spots to the database
+	 */
+	function addSpots($spots, $fullSpots = array()) {
+		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+		foreach($spots as &$spot) {
+			/*
+			 * Manually check whether filesize is really a numeric value
+			 * because in some PHP vrsions an %d will overflow on >32bits (signed)
+			 * values causing a wrong result for files larger than 2GB
+			 */
+			if (!is_numeric($spot['filesize'])) {
+				$spot['filesize'] = 0;
+			} # if
+			
+			/*
+			 * Cut off some strings to a maximum value as defined in the
+			 * database. We don't cut off the unique keys as we rather
+			 * have Spotweb error out than corrupt it
+			 *
+			 * We NEED to cast integers to actual integers to make sure our
+			 * batchInsert() call doesn't fail.
+			 */
+			$spot['poster'] = substr($spot['poster'], 0, 127);
+			$spot['title'] = substr($spot['title'], 0, 127);
+			$spot['tag'] = substr($spot['tag'], 0, 127);
+			$spot['subcata'] = substr($spot['subcata'], 0, 63);
+			$spot['subcatb'] = substr($spot['subcatb'], 0, 63);
+			$spot['subcatc'] = substr($spot['subcatc'], 0, 63);
+			$spot['subcatd'] = substr($spot['subcatd'], 0, 63);
+			$spot['spotterid'] = substr($spot['spotterid'], 0, 31);
+			$spot['catgory'] = (int) $spot['category'];
+			$spot['stamp'] = (int) $spot['stamp'];
+			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
+
+            /*
+             * Make sure we only store valid utf-8
+             */
+            $spot['poster'] = mb_convert_encoding($spot['poster'], 'UTF-8', 'UTF-8');
+            $spot['title'] = mb_convert_encoding($spot['title'], 'UTF-8', 'UTF-8');
+            $spot['tag'] = mb_convert_encoding($spot['tag'], 'UTF-8', 'UTF-8');
+
+		} # foreach
+        unset($spot);
+
+		$this->_conn->batchInsert($spots,
+								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
+														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
+									VALUES",
+                                  array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
+                                        PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
+                                        PDO::PARAM_STR, PDO::PARAM_STR),
+								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
+								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
+								  );
+
+		if (!empty($fullSpots)) {
+			$this->addFullSpots($fullSpots);
+		} # if
+
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($spots, $fullSpots));
+	} # addSpot()
+
 
 } # Dao_Sqlite_Spot

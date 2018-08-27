@@ -42,7 +42,8 @@ class dbfts_sqlite extends dbfts_abs {
 			 * ambiguity
 			 */
 			$tmpField = explode('.', $searchItem['fieldname']);
-			$matchList[] = $searchValue;
+			$field = $tmpField[1];
+			$matchList[] = $field . ':' . substr($this->_db->safe($searchValue), 1, -1);
 		} # foreach
 		
 		# add one WHERE MATCH conditions with all conditions
