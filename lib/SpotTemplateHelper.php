@@ -121,9 +121,9 @@ class SpotTemplateHelper {
         $searchString = urlencode($searchString);
 
 		switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
-			case 'nzbindex'	: return 'http://nzbindex.nl/search/?q=' . $searchString; break;
+			case 'nzbindex'	: return 'https://nzbindex.nl/search/?q=' . $searchString; break;
 			case 'binsearch':
-			default			: return 'http://www.binsearch.info/?adv_age=&amp;q=' . $searchString;
+			default			: return 'https://www.binsearch.info/?adv_age=&amp;q=' . $searchString;
 		} # switch
 	} # makeSearchUrl
 	
