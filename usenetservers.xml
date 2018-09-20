@@ -272,9 +272,9 @@
 
 		<server name='I-Telligent' buggy='true'>
 			<ssl>
-				<header ssl='yes' port='563'>news.i-telligent.com</header>
-				<nzb ssl='yes' port='563'>news.i-telligent.com</nzb>
-				<post ssl='yes' port='563'>news.i-telligent.com</post>
+				<header ssl='yes' port='563'>reader.i-telligent.com</header>
+				<nzb ssl='yes' port='563'>reader.i-telligent.com</nzb>
+				<post ssl='yes' port='563'>reader.i-telligent.com</post>
 			</ssl>
 			<plain>
 				<header ssl='' port='119'>news.i-telligent.com</header>
