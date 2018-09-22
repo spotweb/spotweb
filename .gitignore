@@ -20,3 +20,4 @@ cache/
 /clover.xml
 *.bak
 web.config
+logs/

@@ -21,7 +21,7 @@ try {
      * Enable debug logging mechanism if timing is enabled
      */
     if ($settings->get('enable_timing')) {
-        SpotDebug::enable(SpotDebug::TRACE, $daoFactory->getDebugLogDao());
+        SpotDebug::enable(SpotDebug::TRACE);
     } # if
 
 	# helper functions for passed variables
