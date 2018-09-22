@@ -385,7 +385,7 @@ class Services_Nntp_Engine {
                 throw new NntpException('Error while connecting to server (server did not respond)', -1);
             } # if
 
-            SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->connect called, trying to authenticate?: " . $tmpUser[$this->_server] . ", " . $tmpPass[$this->_server] . ".");
+            SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . "->connect called, trying to authenticate?: ", array('user' => $tmpUser[$this->_server], 'pass' => $tmpPass[$this->_server]));
 
             if (!empty($tmpUser[$this->_server])) {
                 $authed = $this->_nntp->authenticate($tmpUser[$this->_server], $tmpPass[$this->_server]);
