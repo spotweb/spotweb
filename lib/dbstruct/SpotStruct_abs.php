@@ -647,14 +647,6 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('ipaddr', 'permaudit', "VARCHAR(45)", "''", true, 'ascii');
 		$this->alterStorageEngine("permaudit", "InnoDB");
 
-        # ---- debuglog table ---- #
-        $this->createTable('debuglog', "ascii");
-        $this->validateColumn('stamp', 'debuglog', 'INTEGER', "0", true, '');
-        $this->validateColumn('microtime', 'debuglog', 'VARCHAR(16)', "0", true, '');
-        $this->validateColumn('level', 'debuglog', 'INTEGER', "0", true, '');
-        $this->validateColumn('message', 'debuglog', 'TEXT', NULL, false, 'ascii');
-        $this->alterStorageEngine("debuglog", "InnoDB");
-
         ##############################################################################################
 		### Remove old sessions ######################################################################
 		##############################################################################################
@@ -818,7 +810,8 @@ abstract class SpotStruct_abs {
         ##############################################################################################
         # Drop old tables ############################################################################
         ##############################################################################################
-        $this->dropTable("nntp");
+		$this->dropTable("nntp");
+		$this->dropTable("debuglog");
 
 		# update the database with this specific schemaversion
 		$this->_dbcon->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", array());
