@@ -1,13 +1,12 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-json for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @see       https://github.com/zendframwork/zend-json for the canonical source repository
+ * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   https://github.com/zendframwork/zend-json/blob/master/LICENSE.md New BSD License
  */
 
 namespace Zend\Json;
 
-use SimpleXMLElement;
 use SplQueue;
 use Zend\Json\Exception\RuntimeException;
 
@@ -172,8 +171,19 @@ class Json
         $indentString = isset($options['indent']) ? $options['indent'] : '    ';
         $inLiteral    = false;
 
-        foreach ($tokens as $token) {
-            $token = trim($token);
+        $openingBrackets = ['{', '['];
+        $closingBrackets = ['}', ']'];
+
+        $bracketPairs = array_combine(
+            $openingBrackets,
+            $closingBrackets
+        );
+
+        $count = count($tokens);
+
+        for ($i = 0; $i < $count; ++$i) {
+            $token = trim($tokens[$i]);
+
             if ($token === '') {
                 continue;
             }
@@ -183,16 +193,35 @@ class Json
             }
 
             $prefix = str_repeat($indentString, $indentLevel);
-            if (! $inLiteral && ($token === '{' || $token === '[')) {
+            if (! $inLiteral && in_array($token, $openingBrackets, true)) {
                 $indentLevel++;
                 if ($result != '' && $result[strlen($result) - 1] === "\n") {
                     $result .= $prefix;
                 }
-                $result .= $token . "\n";
+                $result .= $token;
+
+                $closingBracket = $bracketPairs[$token];
+
+                do {
+                    ++$i;
+                } while ($i < $count && '' === trim($tokens[$i]));
+
+                if ($closingBracket === $tokens[$i]) {
+                    --$indentLevel;
+
+                    $result .= $tokens[$i];
+
+                    continue;
+                }
+
+                --$i;
+
+                $result .= "\n";
+
                 continue;
             }
 
-            if (! $inLiteral && ($token == '}' || $token == ']')) {
+            if (! $inLiteral && in_array($token, $closingBrackets, true)) {
                 $indentLevel--;
                 $prefix = str_repeat($indentString, $indentLevel);
                 $result .= "\n" . $prefix . $token;
