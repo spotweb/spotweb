@@ -9,5 +9,8 @@ return array(
     'phpseclib\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'Zend\\Xml2Json\\' => array($vendorDir . '/zendframework/zend-xml2json/src'),
     'Zend\\Json\\' => array($vendorDir . '/zendframework/zend-json/src'),
+    'ZendXml\\' => array($vendorDir . '/zendframework/zendxml/src'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
+    'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Abraham\\TwitterOAuth\\' => array($vendorDir . '/abraham/twitteroauth/src'),
 );

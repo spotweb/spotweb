@@ -86,7 +86,7 @@ try {
 	 */
 	$debugLog = SpotCommandline::get('debug');
     if ($debugLog) {
-        SpotDebug::enable(SpotDebug::TRACE, $daoFactory->getDebugLogDao());
+        SpotDebug::enable(SpotDebug::TRACE);
     } else {
         SpotDebug::disable();
     } # if
@@ -232,11 +232,6 @@ try {
 	} catch (CorruptBWListException $e) {
 		echo PHP_EOL . "Non-fatal: Updating black/whitelist failed, most likely unreachable!";
 	}
-
-    ## Remove expired debuglogs
-    echo "Expiring debuglog entries, if any, ";
-    $daoFactory->getDebugLogDao()->expire();
-    echo "done. " . PHP_EOL;
 
 	## Statistics
 	if ($settings->get('prepare_statistics') && $newSpotCount > 0) {

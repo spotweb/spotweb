@@ -223,7 +223,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base {
             $cachedIdList = $this->_cacheDao->getMassCacheRecords($hdrList);
             SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__ . ':getMassCacheRecords');
 
-			SpotDebug::msg(SpotDebug::TRACE, 'dbIdList=' . serialize($dbIdList));
+			SpotDebug::msg(SpotDebug::TRACE, __CLASS__ . '::' . __FUNCTION__, array('dbIdList' => $dbIdList));
 
             /*
              * We get a list of spots which have been blacklisted before,

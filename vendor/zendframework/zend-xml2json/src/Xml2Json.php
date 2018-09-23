@@ -1,8 +1,8 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-xml2json for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @see       https://github.com/zendframework/zend-xml2json for the canonical source repository
+ * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (https://www.zend.com)
+ * @license   https://github.com/zendframework/zend-xml2json/blob/master/LICENSE.md New BSD License
  */
 
 namespace Zend\Xml2Json;
@@ -42,7 +42,6 @@ class Xml2Json
      * NOTE: Encoding native javascript expressions via Zend\Json\Expr is not
      * possible.
      *
-     * @deprecated by https://github.com/zendframework/zf2/pull/6778
      * @param string $xmlStringContents XML String to be converted.
      * @param  bool $ignoreXmlAttributes Include or exclude XML attributes in
      *     the conversion process.
