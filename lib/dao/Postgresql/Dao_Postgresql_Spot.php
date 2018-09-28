@@ -127,8 +127,7 @@ class Dao_Postgresql_Spot extends Dao_Base_Spot {
 	                                l.download as downloadstamp, 
 	                                l.watch as watchstamp,
 	                                l.seen AS seenstamp,
-                                    bl.idtype as idtype,
-                                    s.reversestamp as reversestamp
+                                    bl.idtype as idtype
 								    " . $extendedFieldList . " \n
 								    FROM spots AS s " . 
 								    $additionalTableList . " \n" .

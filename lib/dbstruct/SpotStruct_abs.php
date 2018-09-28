@@ -280,6 +280,7 @@ abstract class SpotStruct_abs {
 		$this->dropIndex("idx_nntp_2", "nntp");
 		$this->dropIndex("idx_nntp_3", "nntp");
 		$this->dropIndex("idx_spotteridblacklist_3", "spotteridblacklist");
+		$this->dropIndex("idx_spots_3", "spots");
 		
 		# Drop any non-valid FK relations
 		$this->dropForeignKey('spotsfull', 'messageid', 'spots', 'messageid', 'ON DELETE CASCADE ON UPDATE CASCADE');
@@ -352,7 +353,6 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('subcatd', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
 		$this->validateColumn('subcatz', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
 		$this->validateColumn('stamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
-		$this->validateColumn('reversestamp', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('filesize', 'spots', 'UNSIGNED BIGINTEGER', "0", true, '');
 		$this->validateColumn('moderated', 'spots', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('commentcount', 'spots', 'INTEGER', "0", false, '');
@@ -694,7 +694,6 @@ abstract class SpotStruct_abs {
 		# ---- Indexes on spots -----
 		$this->validateIndex("idx_spots_1", "UNIQUE", "spots", array("messageid"));
 		$this->validateIndex("idx_spots_2", "", "spots", array("stamp"));
-		$this->validateIndex("idx_spots_3", "", "spots", array("reversestamp"));
 		$this->validateIndex("idx_spots_4", "", "spots", array("category", "subcata", "subcatb", "subcatc", "subcatd", "subcatz"));
 		$this->validateIndex("idx_spots_5", "", "spots", array("spotterid"));
 		$this->validateFts("idx_fts_spots", "spots",  array(1 => "poster",
@@ -805,7 +804,8 @@ abstract class SpotStruct_abs {
 		$this->dropColumn('userid', 'spotteridblacklist');
 		$this->dropColumn('userid', 'commentsfull');
         $this->dropColumn('serialized', 'cache');
-        $this->dropColumn('content', 'cache');
+		$this->dropColumn('content', 'cache');
+		$this->dropColumn('reversestamp', 'spots');
 
         ##############################################################################################
         # Drop old tables ############################################################################

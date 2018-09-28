@@ -124,7 +124,6 @@ class Dao_Sqlite_Spot extends Dao_Base_Spot {
 			$spot['spotterid'] = substr($spot['spotterid'], 0, 31);
 			$spot['catgory'] = (int) $spot['category'];
 			$spot['stamp'] = (int) $spot['stamp'];
-			$spot['reversestamp'] = (int) ($spot['stamp'] * -1);
 
             /*
              * Make sure we only store valid utf-8
@@ -138,13 +137,13 @@ class Dao_Sqlite_Spot extends Dao_Base_Spot {
 
 		$this->_conn->batchInsert($spots,
 								  "INSERT INTO spots(messageid, poster, title, tag, category, subcata, 
-														subcatb, subcatc, subcatd, subcatz, stamp, reversestamp, filesize, spotterid) 
+														subcatb, subcatc, subcatd, subcatz, stamp, filesize, spotterid) 
 									VALUES",
                                   array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
-                                        PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
-                                        PDO::PARAM_STR, PDO::PARAM_STR),
+                                        PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
+                                        PDO::PARAM_STR),
 								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
-								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
+								  		'subcatd', 'subcatz', 'stamp', 'filesize', 'spotterid')
 								  );
 
 		if (!empty($fullSpots)) {
