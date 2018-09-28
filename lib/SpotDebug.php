@@ -20,6 +20,7 @@ class SpotDebug
     protected static function spotlevelToMonolevel($lvl)
     {
         switch ($lvl) {
+            case self::DISABLED:
             case self::TRACE:
                 return Logger::DEBUG;
             case self::DEBUG:
@@ -56,7 +57,9 @@ class SpotDebug
 
     public static function msg($lvl, $msg, $context = array())
     {
-        self::$_debugLogDao->addRecord(self::spotlevelToMonolevel($lvl), $msg, $context);
+        if (!is_null(self::$_debugLogDao)) {
+            self::$_debugLogDao->addRecord(self::spotlevelToMonolevel($lvl), $msg, $context);
+        }
     } # msg
 
 } # class SpotDebug
