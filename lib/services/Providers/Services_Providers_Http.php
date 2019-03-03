@@ -321,7 +321,7 @@ class Services_Providers_Http {
             if (preg_match('/meta.+?http-equiv\W+?refresh/i', $response)) {
                 preg_match('/content.+?url\W+?(.+?)\"/i', $response, $matches);
                 if (isset($matches[1])) {
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '-perform(), matches[1]= ' . $matches[1]);
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '-perform()', array('matches[1]' => $matches[1]));
 
                     /*
                      * We can get either an relative redirect, or an fully
@@ -339,7 +339,7 @@ class Services_Providers_Http {
 
                         $urlParts = parse_url($url);
 
-                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), parse_url: ' . json_encode($urlParts));
+                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform()', array('parse_url' => json_encode($urlParts)));
 
                         if ($redirUrl[0] == '/') {
                             $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $redirUrl;
@@ -348,7 +348,7 @@ class Services_Providers_Http {
                         } # if
                     } # if
 
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), after metafresh, url = : ' . $url);
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), after metafresh', array('url' => $url));
                     $redirTries++;
 
                     if ($redirTries < 20) {

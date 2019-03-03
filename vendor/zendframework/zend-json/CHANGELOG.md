@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 3.1.0 - 2018-01-04
+
+### Added
+
+- [#35](https://github.com/zendframework/zend-json/pull/35) and
+  [#39](https://github.com/zendframework/zend-json/pull/39) add support for PHP
+  7.1 and PHP 7.2.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- [#35](https://github.com/zendframework/zend-json/pull/35) removes support for
+  PHP 5.5.
+
+- [#35](https://github.com/zendframework/zend-json/pull/35) removes support for
+  HHVM.
+
+### Fixed
+
+- [#38](https://github.com/zendframework/zend-json/pull/38) provides a fix to
+  `Json::prettyPrint()` to ensure that empty arrays and objects are printed
+  without newlines.
+
+- [#38](https://github.com/zendframework/zend-json/pull/38) provides a fix to
+  `Json::prettyPrint()` to remove additional newlines preceding a closing
+  bracket.
+
 ## 3.0.0 - 2016-03-31
 
 ### Added

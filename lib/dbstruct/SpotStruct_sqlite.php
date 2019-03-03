@@ -110,16 +110,14 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("DROP TRIGGER IF EXISTS " . $ftsname . "_insert");
 		
 		# and recreate the virtual table and link the update trigger to it
-		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS4(CONTENT='spots'," . implode(',', $colList) . ", matchinfo=fts3)");
+		$this->_dbcon->rawExec("CREATE VIRTUAL TABLE " . $ftsname . " USING FTS5(CONTENT='spots'," . implode(',', $colList) . ", columnsize=0)");
 
 		$this->_dbcon->rawExec("INSERT INTO " . $ftsname . "(rowid, " . implode(',', $colList) . ") SELECT rowid," . implode(',', $colList) . " FROM " . $tablename);
-		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_insert AFTER INSERT ON " . $tablename . " FOR EACH ROW
-								BEGIN
+		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_insert AFTER INSERT ON " . $tablename . " BEGIN
 								   INSERT INTO " . $ftsname . "(rowid," . implode(',', $colList) . ") VALUES (new.rowid, new." . implode(', new.', $colList) . ");
 								END");
-		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_delete AFTER DELETE ON " . $tablename . " FOR EACH ROW
-								BEGIN
-								   DELETE FROM " . $ftsname . " WHERE rowid=old.rowid;
+		$this->_dbcon->rawExec("CREATE TRIGGER " . $ftsname . "_delete AFTER DELETE ON " . $tablename . " BEGIN
+								   INSERT INTO " . $ftsname . "(" . $ftsname . ",rowid," . implode(',', $colList) . ") VALUES('delete', old.rowid, old." . implode(', old.', $colList) . ");
 								END");
 	} # createFts
 	

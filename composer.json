@@ -13,6 +13,7 @@
     "notifo/notifo-php": "^1.0.0",
     "ext-mbstring": "*",
     "php": ">=5.3.0",
+    "monolog/monolog": "^1.23.0",
     "uskr/nma-php": "^0.0.4",
     "zendframework/zend-xml2json": "^3.0",
     "spotweb/nntp": "1.0.*"
