@@ -29,7 +29,7 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs {
         if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb, $movieReleaseDate)) {
             $mediaInfo->setReleaseYear($movieReleaseDate[1]);
         } # if
-        preg_match('/\<meta property=\'og:title\' content="([^<]*?)\([0-9]*?\)" \/>/ms',$imdb,$movieTitle);
+        preg_match('/\<meta property=\'og:title\' content="([^<]*?)\([0-9]*?\)/ms',$imdb,$movieTitle);
         
         if (isset($movieTitle[1])) {
             $movieTitle[1] = trim($movieTitle[1]);
