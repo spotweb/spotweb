@@ -29,15 +29,14 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs {
         if (preg_match('/\<a href="\/year\/([0-9]{4})/ms', $imdb, $movieReleaseDate)) {
             $mediaInfo->setReleaseYear($movieReleaseDate[1]);
         } # if
-        preg_match('/\<meta property=\'og:title\' content="([^<]*?)\([0-9]*?\)" \/>/ms',$imdb,$movieTitle);
-        
+        preg_match('/\<meta property=\'og:title\' content="([^<]*?)\(.*?\).*?" \/>/ms',$imdb,$movieTitle);
         if (isset($movieTitle[1])) {
             $movieTitle[1] = trim($movieTitle[1]);
         	$mediaInfo->setTitle($movieTitle[1]);
         } # if
 
         // imdb sometimes returns the title translated, if so, pass the original title as well
-        preg_match('/<meta name="title" content="([^<]*?)\([0-9]*?\)/ms', $imdb, $originalTitle);
+        preg_match('/<meta name="title" content="([^<]*?)\(.*?\)/ms', $imdb, $originalTitle);
         if ((!empty($originalTitle)) && (trim($originalTitle[1]) != $movieTitle[1])) {
             $mediaInfo->setAlternateTitle(trim($originalTitle[1]));
         } # if
