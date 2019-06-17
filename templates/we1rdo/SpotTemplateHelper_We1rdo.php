@@ -109,19 +109,18 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 	function getStaticFiles($type) {
 		switch($type) {
 			case 'js'	: {
-				return array('js/jquery/jquery.min.js', 
-								'js/jquery/jquery-ui.custom.min.js',
+				return array('js/jquery/jquery.js',
+								'js/jquery/jquery-ui.js',
 								'js/jquery/jquery.cookie.js',
 								'js/jquery/jquery.hotkeys.js',
 								'js/jquery/jquery.form.js',
-								'js/jquery-json/jquery.json-2.3.js',
 								'js/sha1/jquery.sha1.js',
-                                'templates/we1rdo/js/jquery.address.js',
+								'templates/we1rdo/js/jquery.address.js',
 								'js/posting/posting.js',
 								'js/dynatree/jquery.dynatree.min.js',
 								'templates/we1rdo/js/scripts.js',
-                                'templates/we1rdo/js/spotdialogs.js',
-                                'templates/we1rdo/js/sabpanel.js',
+								'templates/we1rdo/js/spotdialogs.js',
+								'templates/we1rdo/js/sabpanel.js',
 								'templates/we1rdo/js/we1rdopost.js',
 								'templates/we1rdo/js/treehelper.js',
 								'templates/we1rdo/js/jquery.ui.nestedSortable.js',
@@ -132,7 +131,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper {
 			
 			case 'css'	: {
 				return array('js/dynatree/skin-vista/ui.dynatree.css',
-							 'templates/we1rdo/css/jquery-ui-1.8.23.custom.css',
+							 'templates/we1rdo/css/jquery-ui.css',
 							 'templates/we1rdo/css/spoticons.css',
 							 'templates/we1rdo/css/style.css',
 							 'templates/we1rdo/css/tipTip.css'
