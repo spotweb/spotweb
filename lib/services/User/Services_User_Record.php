@@ -416,16 +416,6 @@ class Services_User_Record {
 			} # if
 		} # if
 
-		# 'Notifo' requires both a username and apikey
-		if ($prefs['notifications']['notifo']['enabled']) {
-			if (empty($prefs['notifications']['notifo']['username'])) {
-				$result->addError(_('"Notifo" notifications require an username to be entered'));
-			} # if
-			if (empty($prefs['notifications']['notifo']['api'])) {
-				$result->addError(_('"Notifo" notifications require an api key to be entered'));
-			} # if
-		} # if
-
 		# 'Prowl' requires an API key
 		if ($prefs['notifications']['prowl']['enabled']) {
 			if (empty($prefs['notifications']['prowl']['apikey'])) {

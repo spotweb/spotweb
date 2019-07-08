@@ -37,8 +37,8 @@ try {
 	$svcUpgradeBase->settings();
     $svcUpgradeBase->usenetState();
 	echo "Settings update done" . PHP_EOL;
-	$svcUpgradeBase->users($settings);
 	echo "Updating users" . PHP_EOL;
+	$svcUpgradeBase->users($settings);
 	echo "Users' update done" . PHP_EOL;
 
 	/* 

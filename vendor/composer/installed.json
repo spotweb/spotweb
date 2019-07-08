@@ -278,49 +278,6 @@
         ]
     },
     {
-        "name": "notifo/notifo-php",
-        "version": "v1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mbirth/notifo-php.git",
-            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/mbirth/notifo-php/zipball/3f5faee77e6c79a769de2577ff580aaf679543a8",
-            "reference": "3f5faee77e6c79a769de2577ff580aaf679543a8",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.0.0"
-        },
-        "time": "2016-08-12T21:11:31+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "Notifo_API.php",
-                "Notifo_Webhook.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "authors": [
-            {
-                "name": "Notifo",
-                "homepage": "http://notifo.com/",
-                "role": "Developer"
-            }
-        ],
-        "description": "Notifo API Library.",
-        "homepage": "http://www.notifo.com/",
-        "keywords": [
-            "notifications",
-            "notifo",
-            "push"
-        ]
-    },
-    {
         "name": "phpseclib/phpseclib",
         "version": "2.0.11",
         "version_normalized": "2.0.11.0",
