@@ -417,7 +417,7 @@ class Dao_Base_Spot implements Dao_Spot {
 									VALUES",
                                   array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
                                         PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
-                                        PDO::PARAM_INT, PDO::PARAM_STR),
+                                        PDO::PARAM_INT),
 								  array('messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
 								  		'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid')
 								  );
