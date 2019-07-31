@@ -351,15 +351,15 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('subcatc', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
 		$this->validateColumn('subcatd', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
 		$this->validateColumn('subcatz', 'spots', 'VARCHAR(64)', NULL, false, 'ascii'); 
-		$this->validateColumn('stamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('stamp', 'spots', 'INTEGER UNSIGNED', NULL, false, '');
 		$this->validateColumn('reversestamp', 'spots', 'INTEGER', "0", false, '');
-		$this->validateColumn('filesize', 'spots', 'UNSIGNED BIGINTEGER', "0", true, '');
+		$this->validateColumn('filesize', 'spots', 'BIGINTEGER UNSIGNED', "0", true, '');
 		$this->validateColumn('moderated', 'spots', 'BOOLEAN', NULL, false, '');
 		$this->validateColumn('commentcount', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('spotrating', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('reportcount', 'spots', 'INTEGER', "0", false, '');
 		$this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', NULL, false, 'ascii_bin'); 
-		$this->validateColumn('editstamp', 'spots', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('editstamp', 'spots', 'INTEGER UNSIGNED', NULL, false, '');
 		$this->validateColumn('editor', 'spots', "VARCHAR(128)", NULL, false, 'utf8');
 		$this->alterStorageEngine("spots", "MyISAM");
 		
@@ -388,7 +388,7 @@ abstract class SpotStruct_abs {
 		$this->validateColumn('nntpref', 'commentsxover', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('spotrating', 'commentsxover', 'INTEGER', "0", false, '');
 		$this->validateColumn('moderated', 'commentsxover', 'BOOLEAN', NULL, false, '');
-		$this->validateColumn('stamp', 'commentsxover', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('stamp', 'commentsxover', 'INTEGER UNSIGNED', NULL, false, '');
 		$this->alterStorageEngine("commentsxover", "InnoDB");
 
 		# ---- reportsxover table ---- #
@@ -444,12 +444,12 @@ abstract class SpotStruct_abs {
 		$this->createTable('spotsposted', "utf8"); 
 		$this->validateColumn('messageid', 'spotsposted', 'VARCHAR(128)', "''", true, 'ascii');
 		$this->validateColumn('ouruserid', 'spotsposted', 'INTEGER', "0", true, '');
-		$this->validateColumn('stamp', 'spotsposted', 'UNSIGNED INTEGER', NULL, false, '');
+		$this->validateColumn('stamp', 'spotsposted', 'INTEGER UNSIGNED', NULL, false, '');
 		$this->validateColumn('title', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('tag', 'spotsposted', 'VARCHAR(128)', NULL, false, 'utf8');
 		$this->validateColumn('category', 'spotsposted', 'INTEGER', NULL, false, '');
 		$this->validateColumn('subcats', 'spotsposted', 'VARCHAR(255)', NULL, false, 'ascii'); 
-		$this->validateColumn('filesize', 'spotsposted', 'UNSIGNED BIGINTEGER', "0", true, '');
+		$this->validateColumn('filesize', 'spotsposted', 'BIGINTEGER UNSIGNED', "0", true, '');
 		$this->validateColumn('fullxml', 'spotsposted', 'TEXT', NULL, false, 'utf8');
 		$this->alterStorageEngine("spotsposted", "InnoDB");
 		
