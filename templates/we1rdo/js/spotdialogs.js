@@ -23,7 +23,7 @@ function openDialog(divid, title, url, buttonClick, successAction, closeCb, open
             title: title,
             autoOpen: false,
             resizable: false,
-            position: 'center',
+            position: { my: 'center', at: 'center', of: window },
             stack: true,
             closeOnEscape: true,
             height: 'auto',

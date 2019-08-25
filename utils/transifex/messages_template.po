@@ -824,15 +824,6 @@ msgstr ""
 msgid "API key"
 msgstr ""
 
-msgid "Use Notifo?"
-msgstr ""
-
-msgid "Notifo Username?"
-msgstr ""
-
-msgid "Notifo <a href=\"http://notifo.com/user/settings\">API secret</a>?"
-msgstr ""
-
 msgid "Use Prowl?"
 msgstr ""
 
@@ -1098,12 +1089,6 @@ msgid "Growl notifications require a growl host to be entered"
 msgstr ""
 
 msgid "\"Notify My Android\" notifications require an API key"
-msgstr ""
-
-msgid "\"Notifo\" notifications require a username to be entered"
-msgstr ""
-
-msgid "\"Notifo\" notifications require an api key to be entered"
 msgstr ""
 
 msgid "\"Prowl\" notifications require an API key to be entered"
