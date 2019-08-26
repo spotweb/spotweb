@@ -1,123 +1,98 @@
 <?php
-$spot = $tplHelper->formatSpot($spot);
-$comments = $tplHelper->getSpotComments($spot['messageid'], $spot['prevMsgids'], 0, 99999);
-$comments = $tplHelper->formatComments($comments);
+	$spot = $tplHelper->formatSpot($spot);
+	$comments = $tplHelper->getSpotComments($spot['messageid'], $spot['prevMsgids'], 0, 99999);
+	$comments = $tplHelper->formatComments($comments);
 
-$setpath = $tplHelper->makeBaseUrl("path");
-
-// fix the sabnzbdurl en searchurl
-$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
-$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
+	$setpath = $tplHelper->makeBaseUrl("path");
+	
+	// fix the sabnzbdurl en searchurl
+	$spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
+	$spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
 ?>
-<div data-role="page" id="spots">
-<div data-role="toolbar" data-type="header" data-theme="b">
-  <h1>Spot info</h1>
+<div data-role="page" id="spots"> 
+	<div data-role="header" data-backbtn="false">
+	<h1>Spot info</h1>
+<?php if (!empty($spot['sabnzbdurl'])) { ?>
+                  <a href="<?php echo str_replace('getnzb','getnzbmobile',$spot['sabnzbdurl']);?>"  data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">SAVE</a></th>
+<?php } else { ?>	
+  <a class="nzb" href="<?php echo $setpath ?>index.php?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
+<?php } ?>		
+	
+	</div>
+	<div data-role="content">
+   	<img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 150, 150); ?>" height="150">
+<p>
 <?php
-  $fmt = '<a href="%s" data-transition="fade" data-rel="dialog" data-icon="plus" class="%s">%s</a>';
-  $clss = array(
-    'ui-toolbar-header-button-right',
-    'ui-button',
-    'ui-button-inline',
-    'ui-mini',
-    'ui-corner-all'
-  );
-
-  if(!empty($spot['sabnzbdurl'])) {
-    $href = str_replace('getnzb', 'getnzbmobile', $spot['sabnzbdurl']);
-    $href = preg_replace('/^[^\?]*/', '', $href);
-    $label = 'SAVE';
-  } else {
-    $href = '?page=getnzbmobile&messageid=' . $spot['messageid'];
-    $label = 'NZB';
-  }
-
-  printf($fmt, $href, join(' ', $clss), $label);
+	if (!$spot['verified']) {
 ?>
-</div>
-<div data-role="main" class="ui-content">
-  <img class="spotinfoimage" src="<?php echo $tplHelper->makeImageUrl($spot, 150, 150); ?>" height="150">
-  <p><?php if(!$spot['verified']) print('* niet geverifieerd *'); ?></p>
-  <h3><?php print($spot['title']); ?></h3>
-  <table class="spotinfo">
-    <tbody>
-      <tr>
-        <th>Categorie</th>
-        <td><?php print($spot['catname']); ?></td>
-      </tr>
+	* niet geverifieerd *
 <?php
-  if (!empty($spot['subcatlist'])) {
-    foreach($spot['subcatlist'] as $sub) {
-      $fmt = '<tr><th>%s</th><td>%s</td></tr>';
-      printf(
-        "$fmt\n",
-        SpotCategories::SubcatDescription($spot['category'], substr($sub,0,1)),
-        SpotCategories::Cat2Desc($spot['category'], $sub)
-      );
-    }
-  }
+	}
 ?>
-      <tr>
-        <th>Omvang</th>
-        <td><?php echo $tplHelper->format_size($spot['filesize']); ?></td>
-      </tr>
-      <tr>
-        <th>Website</th>
-        <td><a href='<?php echo $spot['website']; ?>' target="_blank">BEKIJK</a></td>
-      </tr>
-      <tr>
-        <th>Afzender</th>
-        <td><?php echo $spot['poster']; ?> (<?php echo $spot['spotterid']; ?>)</td>
-      </tr>
-      <tr>
-        <th>Tag</th>
-        <td><?php echo $spot['tag']; ?></td>
-      </tr>
-      <tr>
-        <th>Zoekmachine</th>
-        <td><a href='<?php echo $spot['searchurl']; ?>'>Zoek</a></td>
-      </tr>
-      <tr>
-        <th>NZB</th>
-        <td><a href='<?php echo $setpath; ?>?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a></td>
-      </tr>
-    </tbody>
-  </table>
-  <h4>Omschrijving</h4>
-  <p>
+  </p>                     	
+                            <h3><?php echo $spot['title'];?></h3>
+                
+                
+				<table class="spotinfo">
+                	<tbody>
+                        <tr><th> Categorie </th> <td> <?php echo $spot['catname']; ?> </td> </tr>
 <?php
-  $exprs = array(
-    '#\[\/?(b|i|u|br|strong)\]#',
-    '#\<b\>#',
-    '#\&lt;\s*br\s*/?\&gt;#'
-  );
-  $repls = array('', '', '<br/>');
+	if (!empty($spot['subcatlist'])) {
+		foreach($spot['subcatlist'] as $sub) {
+			$subcatType = substr($sub, 0, 1);
+			echo "\t\t\t\t\t\t<tr><th> " . SpotCategories::SubcatDescription($spot['category'], $subcatType) .  "</th> <td> " . SpotCategories::Cat2Desc($spot['category'], $sub) . " </td> </tr>\r\n";
+		} # foreach
+	} # if
+?>
+                        <tr><th> Omvang </th> <td> <?php echo $tplHelper->format_size($spot['filesize']); ?> </td> </tr>
+                        <tr><th> Website </th> <td> <a href='<?php echo $spot['website']; ?>' target="_blank">BEKIJK</a> </td> </tr>
+                        <tr><th> Afzender </th> <td> <?php echo $spot['poster']; ?> (<?php echo $spot['spotterid']; ?>) </td> </tr>
+                        <tr><th> Tag </th> <td> <?php echo $spot['tag']; ?> </td> </tr>
+                        <tr><th> Zoekmachine </th> <td> <a href='<?php echo $spot['searchurl']; ?>'>Zoek</a> </td> </tr>
+                        <tr><th> NZB </th> <td> <a href='<?php echo $setpath; ?>?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>'>NZB</a> </td> </tr>
+                    </tbody>
+				</table>
+            	<h4>Omschrijving</h4>
+            	
+           	<?php
+            	$tmp = $spot['description'];
+	            $tmp = str_replace('[b]', '', $tmp);
+	            $tmp = str_replace('[/b]', '', $tmp);
+	            $tmp = str_replace('<b>', '', $tmp);
+	            $tmp = str_replace('[i]', '', $tmp);
+	            $tmp = str_replace('[/i]', '', $tmp);
+	            $tmp = str_replace('[br]', '', $tmp);
+	            $tmp = str_replace('[u]', '', $tmp);
+	            $tmp = str_replace('[/u]', '', $tmp);
+	            $tmp = str_replace('[strong]', '', $tmp);	
+	            $tmp = str_replace('[/u]', '', $tmp);
+	            $tmp = str_replace('&lt;br&gt;', '<br>', $tmp);
+	            $tmp = str_replace('&lt;br /&gt;', '<br>', $tmp);
+	            echo "<p>$tmp</p>";
+            ?>	
+            	
 
-  $desc = preg_replace($exprs, $repls, $spot['description']);
-  print($desc);
-?>
-  </p>
-<?php if (sizeof($comments) > 0) { ?>
-  <!-- comments -->
-  <div data-role="collapsedset" data-inset="false">
-    <div data-role="collapsible" data-collapsed="true">
-      <h4>Comments</h4>
-      <ul data-role="listview" data-inset="false">
+<?php 
+if(sizeof($comments)>0){ ?>
+<div data-role="collapsible" data-collapsed="true">
+            	<h4>Comments</h4>
+					<ul data-role="listview" data-inset="true">
 <?php
-  foreach($comments as $comment) {
-    $fmt = '<li><h5>%s @ %s</h5><span>%s</span></li>';
-    printf(
-      "$fmt\n",
-      $comment['fromhdr'],
-      $tplHelper->formatDate($comment['stamp'], 'comment'),
-      $comment['body']
-    );
-  }
+
+		foreach($comments as $comment) {
 ?>
-      </ul>
-    </div>
-  </div>
-  <!-- /comments -->
-<?php } ?>
-</div>
-</div>
+					<li><?php echo $comment['fromhdr']; ?> @ <?php echo $tplHelper->formatDate($comment['stamp'], 'comment'); ?> <br>
+					<?php echo $comment['body']; ?>
+					<br>
+					</li>
+<?php	
+		} # foreach
+?>
+				</ul>
+            </div>
+        <?php	
+		} # comments
+?>    
+            </div>
+		</div>
 
