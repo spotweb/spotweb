@@ -387,7 +387,7 @@ function loadSpotImage() {
 	})
 	.each(function() {
 		// From the jQuery comments: http://api.jquery.com/load-event/
-		if (this.complete) {
+		if (this.complete || (jQuery.browser.msie && parseInt(jQuery.browser.version) == 6)) {
 			$(this).trigger("load");
 		}
 	});
@@ -581,10 +581,10 @@ function getSidebarState() {
 function attachSidebarVisibility() {
 // console.time("6th-ready");
 	//ready
-	var data = JSON.parse($.cookie("sidebarVisibility"));
+	var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	if(data == null) {
 		getSidebarState();
-		var data = JSON.parse($.cookie("sidebarVisibility"));
+		var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	}
 	$.each(data, function(i, value) {
 		$("div#filter > a.viewState").eq(value.count).next().css("display", value.state);
@@ -829,7 +829,7 @@ function downloadMultiNZB(dltype) {
 function attachFilterVisibility() {
 // console.time("9th-ready");
 	//ready
-	var data = JSON.parse($.cookie("filterVisiblity"));
+	var data = jQuery.parseJSON($.cookie("filterVisiblity"));
 	if(data != null) {
 		$.each(data, function(i, value) {
 			$("ul.subfilterlist").parent().eq(value.count).children("ul").css("display", value.state);
