@@ -13,12 +13,12 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 		$this->_batchInsertChunks = 100;
 	}
 
-	function connect($host, $user, $pass, $db) {
+	function connect($host, $user, $pass, $db, $port) {
 		if (!$this->_conn instanceof PDO) {
 			if ($host[0] === '/') {
 				$db_conn = "unix_socket=" . $host;
 			} else {
-				$db_conn = "host=" . $host . ";port=3306";
+				$db_conn = "host=" . $host . ";port=".$port;
 			}
 
 			try {
@@ -34,6 +34,36 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 		} # if
 	} # connect()
 
+    function connectRoot($host, $pass, $port) {
+        $this->connect($host,'root',$pass,'',$port);
+    }
 
+    function createDb($db, $usr, $pass) {
+        $rowsFound = $this->exec("SELECT *  FROM INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME = :dbid",
+                                            array(':dbid' => array($db, PDO::PARAM_STR)))->rowCount();  
+        if ($rowsFound == 0) {
+            $this->exec("CREATE DATABASE ".$db);
+        } //$rowsFound == 0
+        try {
+            $userexists = $this->exec("SELECT 1 FROM mysql.user WHERE user = :user",
+                                    array(':user' => array($usr, PDO::PARAM_STR)))->rowCount();
+            if ($userexists > 0) {
+                // grant to existing user 
+                $this->exec("GRANT ALL privileges ON ".$db.".* TO :user",                   
+                            array(':user' => array($usr, PDO::PARAM_STR)));
+            } else {
+                // create and grant to new user
+                $this->exec("GRANT ALL privileges ON ".$db.".* TO :user IDENTIFIED by :pwd",
+                            array(':user' => array($usr, PDO::PARAM_STR),
+                                  ':pwd'  => array($pass, PDO::PARAM_STR)
+                                    )
+                            );
+            }
+        }
+        catch (Exception $e) {
+            $this->exec("DROP DATABASE ".$db);                           
+            throw $e;
+        }
+    }
 
 } # class

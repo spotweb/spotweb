@@ -861,7 +861,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 						 'cat'		=> '2000',
 						 'subcata'	=> array('SD'		=> '2030',
 											 'HD'		=> '2040',
-											 'BluRay'	=> '2050')
+											 'BluRay'	=> '2050',
+                                             '3D'       => '2060')
 				), array('name'		=> 'Audio',
 						 'cat'		=> '3000',
 						 'subcata'	=> array('MP3'		=> '3010',
@@ -909,6 +910,7 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 			case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';  // Movies/SD
 			case 2040: return 'cat0_z0_a4,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9';              // Movies/HD
             case 2050: return 'cat0_z0_a6';                                               // Movies/BluRay
+            case 2060: return 'cat0_z0_a14';                                              // Movies/3D
 
 			case 3000: return 'cat1_a';
 			case 3010: return 'cat1_a0';
@@ -955,7 +957,8 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					              8 => "2000|2040",
 					              9 => "2000|2040",
 					              10 => "2000|2030",
-                                  11 => "7000|7020"),
+                                  11 => "7000|7020",
+                                  14 => "2000|2060"),
                       1 => // Z1 - Series
 				            Array(0 => "5000|5030",
 					              1 => "5000|5030",
@@ -1045,7 +1048,10 @@ class SpotPage_newznabapi extends SpotPage_Abs {
 					  13 => "4000|4040",
 					  14 => "4000|4040",
 					  15 => "4000|4040",
-					  16 => "3DS"),
+					  16 => "3DS",
+                      17 => "PS4",
+                      18 => "XB1"
+                      ),
 			  3 => // Cat3 - Applications
 				Array(0 => "4000|4020",
 					  1 => "4000|4030",

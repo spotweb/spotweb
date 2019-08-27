@@ -58,6 +58,15 @@
 						Array('closetags' => Array('quote'),
 							  'allowedchildren' => Array(NULL),
 							  'handler' => Array('TagHandler', 'handle_quote'))
+                    //)
+                ),
+
+            /* ------- y ------------------- */
+				'y'	=>
+					Array('youtube' =>
+						Array('closetags' => Array('youtube'),
+							  'allowedchildren' => Array(NULL),
+							  'handler' => Array('TagHandler', 'handle_youtube'))
 					)
                 );
 
@@ -175,7 +184,15 @@
 							 'content' => $contents,
 							 'append' => '</a>');
 		} // handle_url
+
+		static function handle_youtube($params, $contents) {
+            # are only specific images allowed?
+            return Array('prepend' => '<div style="max-width: 480px; clear: left"><div style="position: relative; height:0px; padding-bottom: 75%"><iframe style="position: absolute; top: 0px; left:0px; width: 100%; height: 100%" src="https://www.youtube.com/embed/' ,
+                         'content' => $contents,
+                         'append' => '" frameborder="0" allowfullscreen></iframe></div></div>');
+		} // handle_url
 		
+
 		/* handle the noubb tag */
 		static function handle_noubb($params, $contents) {
 			return Array('prepend' => '',

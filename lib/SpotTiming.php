@@ -88,15 +88,18 @@ class SpotTiming {
     } # makeLen
 
     private static function displayLine($values) {
-        if (self::$_useHtml) {
-            try {
-                echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td>' . serialize($values['extra']) . '</td></tr>' . PHP_EOL;
-            } catch(Exception $x) {
-                echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td> [Unserializable data]</td></tr>' . PHP_EOL;
-            } # catch
-        } else {
-            echo "|" . self::makeLen(str_pad('', $values['level'], '.') . $values['name'], 70) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
-        } # else
+        if (isset($values['start'])) {
+            if (self::$_useHtml) {
+                try {
+                    echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td>' . serialize($values['extra']) . '</td></tr>' . PHP_EOL;
+                }
+                catch(Exception $x) {
+                    echo '<tr><td>' . str_pad('', $values['level'], '.') . $values['name'] . '</td><td>' . ($values['stop'] - $values['start']) . '</td><td> [Unserializable data]</td></tr>' . PHP_EOL;
+                } # catch
+            } else {
+                echo "|" . self::makeLen(str_pad('', $values['level'], '.') . $values['name'], 70) . ' | ' . self::makeLen(($values['stop'] - $values['start']), 20) . ' | ' . self::makeLen(serialize($values['extra']), 61) . '|' . PHP_EOL;
+            } # else
+        }
     } # displayLine
 
     static function displayCumul() {

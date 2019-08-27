@@ -193,13 +193,13 @@ class Dao_Base_User implements Dao_User {
 	 * Set users' password. We are expected to be given an updated
 	 * passhash member
 	 */
-	function setUserPassword($user) {
+	function setUserPassword($userarr) {
 		$this->_conn->modify("UPDATE users 
 								SET passhash = :passhash
 								WHERE id = :userid",
             array(
-                ':passhash' => array($user['passhash'], PDO::PARAM_STR),
-                ':userid' => array($user['userid'], PDO::PARAM_INT)
+                ':passhash' => array($userarr['passhash'], PDO::PARAM_STR),
+                ':userid' => array($userarr['userid'], PDO::PARAM_INT)
             ));
 	} # setUserPassword
 

@@ -54,7 +54,8 @@ class SpotCategories {
             10 => "DVD9",
             11 => "PDF",
             12 => "Bitmap",
-            13 => "Vector"),
+            13 => "Vector",
+            14 => "3D"),
             1 =>
             Array(0	=> "MP3",
                 1 => "WMA",
@@ -82,7 +83,10 @@ class SpotCategories {
                 13 => "WinPh",
                 14 => "iOS",
                 15 => "Android",
-                16 => "3DS"),
+                16 => "3DS",
+                17 => "PS4",
+                18 => "XB1"
+                ),
             3 =>
             Array(0 => "WIN",
                 1 => "MAC",
@@ -119,7 +123,9 @@ class SpotCategories {
             10 => array("DVD9", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
             11 => array("PDF", array("z2"), array("z2")),
             12 => array("Bitmap", array("z4"), array("z4")),
-            13 => array("Vector", array("z4"), array("z4"))),
+            13 => array("Vector", array("z4"), array("z4")),
+            14 => array("3D", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
+            ),
             'b' =>
             Array(0	=> array("CAM", array("z0", "z1", "z3"), array("z0", "z1", "z3")),
                 1 => array("(S)VCD", array(), array("z0", "z1", "z3")),
@@ -333,7 +339,10 @@ class SpotCategories {
                     13 => array("Windows Phone", array("zz"), array("zz")),
                     14 => array("iOS", array("zz"), array("zz")),
                     15 => array("Android", array("zz"), array("zz")),
-                    16 => array("Nintendo 3DS", array("zz"), array("zz"))),
+                    16 => array("Nintendo 3DS", array("zz"), array("zz")),
+                    17 => array("Playstation 4", array("zz"), array("zz")),
+                    18 => array("XBox 1", array("zz"), array("zz"))
+                    ),
                 'b' =>
                 Array(0 => array("ISO", array(), array("zz")),
                     1 => array("Rip", array("zz"), array("zz")),

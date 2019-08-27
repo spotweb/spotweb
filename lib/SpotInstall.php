@@ -55,7 +55,9 @@ class SpotInstall
         if (!isset($settings['mydb'])) {
             $form = [
                 'engine' => 'pdo_mysql',
+                'rootpwd' => '',
                 'host'   => 'localhost',
+                'port'   => '3306',   
                 'dbname' => 'spotweb',
                 'user'   => 'spotweb',
                 'pass'   => 'spotweb',
@@ -78,11 +80,18 @@ class SpotInstall
         if ($form['submit'] === 'Verify database') {
             try {
                 $dbCon = dbeng_abs::getDbFactory($form['engine']);
+
+                if (($form['engine'] == 'pdo_mysql' or $form['engine'] == 'pdo_pgsql') and (!empty($form['rootpwd']))) {
+                    $dbCon->connectRoot ($form['host'],$form['rootpwd'],$form['port']);
+                    $dbCon->createDb ($form['dbname'],$form['user'],$form['pass']);
+                }
+                                
                 $dbCon->connect(
                     $form['host'],
                     $form['user'],
                     $form['pass'],
-                    $form['dbname']
+                    $form['dbname'],
+                    $form['port']
                 );
 
                 $databaseCreated = true;
@@ -120,7 +129,7 @@ class SpotInstall
                 'pass'   => '',
                 'port'   => 119,
                 'enc'    => false,
-                'submit' => ''
+                'submit' => '', 'ssl' => '', 'namefield' => 'custom' , 'verifyname'=> 'on'
             ];
         } else {
             $form = $settings['mynntp'];
@@ -128,7 +137,9 @@ class SpotInstall
         }
 
         if (isset($_POST['nntpform'])) {
-            $form = array_merge($form, $_POST['nntpform']);
+            //unset($form['verifyname']);
+            //$form = array_merge($form, $_POST['nntpform']);
+            $form = $_POST['nntpform'];
         }
 
         /**
@@ -169,6 +180,8 @@ class SpotInstall
                             }
                             $form['hdr']['port'] = (int)$server->header['port'];
                             $form['hdr']['buggy'] = (boolean)$server['buggy'];
+                            $form['hdr']['verifyname'] = isset($form['verifyname']);
+
 
                             // NZB usenet server
                             $form['nzb']['host'] = (string)$server->nzb;
@@ -181,6 +194,7 @@ class SpotInstall
                             }
                             $form['nzb']['port'] = (int)$server->nzb['port'];
                             $form['nzb']['buggy'] = (boolean)$server['buggy'];
+                            $form['nzb']['verifyname'] = isset($form['verifyname']);
 
                             // Posting usenet server
                             $form['post']['host'] = (string)$server->post;
@@ -193,6 +207,7 @@ class SpotInstall
                             }
                             $form['post']['port'] = (int)$server->post['port'];
                             $form['post']['buggy'] = (boolean)$server['buggy'];
+                            $form['post']['verifyname'] = isset($form['verifyname']);
                         }
                     }
                 }
@@ -282,7 +297,8 @@ class SpotInstall
                     $dbsettings['host'],
                     $dbsettings['user'],
                     $dbsettings['pass'],
-                    $dbsettings['dbname']
+                    $dbsettings['dbname'],
+                    $dbsettings['port']
                 );
                 $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
                 $daoFactory->setConnection($dbCon);
@@ -336,7 +352,8 @@ class SpotInstall
                 $dbsettings['host'],
                 $dbsettings['user'],
                 $dbsettings['pass'],
-                $dbsettings['dbname']
+                $dbsettings['dbname'],
+                $dbsettings['port']
             );
 
             $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
@@ -454,13 +471,15 @@ class SpotInstall
             . '$dbsettings[\'host\'] = \'%3$s\';%1$s'
             . '$dbsettings[\'dbname\'] = \'%4$s\';%1$s'
             . '$dbsettings[\'user\'] = \'%5$s\';%1$s'
-            . '$dbsettings[\'pass\'] = \'%6$s\';%1$s',
+            . '$dbsettings[\'pass\'] = \'%6$s\';%1$s'
+            . '$dbsettings[\'port\'] = \'%7$s\';%1$s',
             PHP_EOL,
             $engine,
             $dbSettings['host'],
             $dbSettings['dbname'],
             $dbSettings['user'],
-            $dbSettings['pass']
+            $dbSettings['pass'],
+            $dbSettings['port']
         );
 
         if (is_writable(__DIR__ . '/../')) {

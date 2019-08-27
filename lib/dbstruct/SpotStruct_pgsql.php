@@ -40,9 +40,9 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 	function swDtToNative($colType) {
 		switch(strtoupper($colType)) {
 			case 'INTEGER'				: $colType = 'integer'; break;
-			case 'UNSIGNED INTEGER'		: $colType = 'bigint'; break;
+			case 'INTEGER UNSIGNED'		: $colType = 'bigint'; break;
 			case 'BIGINTEGER'			: $colType = 'bigint'; break;
-			case 'UNSIGNED BIGINTEGER'	: $colType = 'bigint'; break;
+			case 'BIGINTEGER UNSIGNED'	: $colType = 'bigint'; break;
 			case 'BOOLEAN'				: $colType = 'boolean'; break;
 			case 'MEDIUMBLOB'			: $colType = 'bytea'; break;
 		} # switch
