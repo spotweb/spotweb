@@ -40,9 +40,9 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 	public function swDtToNative($colType) {
 		switch(strtoupper($colType)) {
 			case 'INTEGER'				: $colType = 'INTEGER'; break;
-			case 'UNSIGNED INTEGER'		: $colType = 'INTEGER'; break;
+			case 'INTEGER UNSIGNED'		: $colType = 'INTEGER'; break;
 			case 'BIGINTEGER'			: $colType = 'BIGINT'; break;
-			case 'UNSIGNED BIGINTEGER'	: $colType = 'BIGINT'; break;
+			case 'BIGINTEGER UNSIGNED'	: $colType = 'BIGINT'; break;
 			case 'BOOLEAN'				: $colType = 'BOOLEAN'; break;
 			case 'MEDIUMBLOB'			: $colType = 'BLOB'; break;
 		} # switch

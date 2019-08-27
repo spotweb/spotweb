@@ -5,6 +5,7 @@ class Services_Nntp_Engine {
     private $_user;
     private $_pass;
     private $_serverenc;
+    private $_verifyname;
     private $_serverport;
 
     /**
@@ -29,6 +30,11 @@ class Services_Nntp_Engine {
         $this->_connected = false;
         $this->_server = $server['host'];
         $this->_serverenc = $server['enc'];
+        if (isset($server['verifyname'])) {
+            $this->_verifyname = $server['verifyname'];
+        } else {
+            $this->_verifyname = true;
+        }
         $this->_serverport = $server['port'];
         $this->_user = $server['user'];
         $this->_pass = $server['pass'];
@@ -380,7 +386,7 @@ class Services_Nntp_Engine {
         } # if
 
         try {
-            $ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10);
+            $ret = $this->_nntp->connect($this->_server, $this->_serverenc, $this->_serverport, 10, $this->_verifyname);
             if ($ret === false) {
                 throw new NntpException('Error while connecting to server (server did not respond)', -1);
             } # if

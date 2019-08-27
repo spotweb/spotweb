@@ -31,6 +31,9 @@ class Services_Upgrade_Settings {
 		$this->remove('max_newcount');
 		$this->remove('action');
 		$this->remove('submitedit');
+        $this->remove('blacklist_url');
+        $this->remove('whitelist_url');
+
 		$this->setIfNot('cookie_expires', 30);
 		$this->setIfNot('sendwelcomemail', true);
 		$this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
@@ -42,9 +45,9 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('retention', 0);
 		$this->setIfNot('retentiontype', 'fullonly');
 		$this->setIfNot('deny_robots', true);
-		$this->setIfNot('nntp_nzb', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
-		$this->setIfNot('nntp_hdr', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
-		$this->setIfNot('nntp_post', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false));
+		$this->setIfNot('nntp_nzb', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true));
+		$this->setIfNot('nntp_hdr', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true));
+		$this->setIfNot('nntp_post', array('host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true));
 		$this->setIfNot('retrieve_newer_than', 0);
 		$this->setIfNot('retrieve_full', false);
 		$this->setIfNot('prefetch_image', false);
@@ -56,9 +59,9 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('spot_moderation', 'act');
 		$this->setIfNot('prepare_statistics', true);
 		$this->setIfNot('external_blacklist', true);
-		$this->setIfNot('blacklist_url', 'http://jijhaatmij.hopto.me/blacklist.txt');
+		$this->setIfNot('blacklist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/whitelist.csv');
 		$this->setIfNot('external_whitelist', true);
-		$this->setIfNot('whitelist_url', 'http://jijhaatmij.hopto.me/whitelist.txt');
+		$this->setIfNot('whitelist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/blacklist.csv');
 		$this->setIfNot('enable_timing', false);
         	$this->setIfNot('cache_path', './cache');
 		$this->setIfNot('enable_stacktrace', true);

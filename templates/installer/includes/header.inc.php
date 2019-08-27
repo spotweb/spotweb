@@ -13,20 +13,5 @@
         .button { padding: 4px; padding-left: 10px; padding-right: 10px; margin: 0; border: 1px solid black; background-color: #fff; color: #666; text-decoration: none; }
 		table.tableresult tr { height: 34px; }
 	</style>
-	<script type='text/javascript'>
-		function toggleNntpField() {
-            var sel = document.getElementById('nntpselectbox');
-            var x = document.getElementById('customnntpfield');
-            if (x == null) { return ; }
-
-            if (sel.options[sel.selectedIndex].value == 'custom') {
-                x.style.display = '';
-            } else {
-                x.style.display = 'none';
-            } // else
-		} // toggleNntpField
-
-		toggleNntpField();
-	</script>
 </head>
 <body>

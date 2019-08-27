@@ -9,7 +9,7 @@ class Services_Nntp_EnginePool {
 	 * which are created by issueing existing NNTP engines
 	 * when possible
      *
-     * @returns Services_Nntp_Engine Instance of Services_NNTP_Engine
+     * returns Services_Nntp_Engine Instance of Services_NNTP_Engine
 	 */
 	static public function pool(Services_Settings_Container $settings, $type) {
         SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '::pool:(' . $type . ') called');
@@ -26,6 +26,11 @@ class Services_Nntp_EnginePool {
 			throw new MissingNntpConfigurationException();
 		} # if
 
+        if (!isset($settings_nntp_hdr['verifyname'])) 
+        {
+            $settings_nntp_hdr['verifyname'] = false;
+        };
+
 		/*
 		 * Retrieve the NNTP header settings we can validate those
 		 */
@@ -38,7 +43,12 @@ class Services_Nntp_EnginePool {
 					self::$_instances[$type] = self::pool($settings, 'hdr');
 				} else {
 					self::$_instances[$type] = new Services_Nntp_Engine($settings_nntp_bin);
-				} # else
+				};
+
+                if (!isset($settings_nntp_bin['verifyname'])) 
+                {
+                    $settings_nntp_bin['verifyname'] = false;
+                };
 
 				break;
 			} # nzb
@@ -50,6 +60,11 @@ class Services_Nntp_EnginePool {
 				} else {
 					self::$_instances[$type] = new Services_Nntp_Engine($settings_nntp_post);
 				} # else
+
+                if (!isset($settings_nntp_post['verifyname'])) 
+                {
+                    $settings_nntp_post['verifyname'] = false;
+                };
 
 				break;
 			} # post

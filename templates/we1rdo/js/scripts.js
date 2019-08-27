@@ -15,6 +15,9 @@ $.address.init(function() {
 			} else if ($.address.value() != '/') openSpot($('table.spots tr.active a.spotlink'), $.address.value());
 		});
 
+var BaseURL = createBaseURL();
+var loading = '<img src="' + BaseURL + 'templates/we1rdo/img/loading.gif" height="16" width="16" />';
+
 function initSpotwebJs(BetweenText, AndText) {
 	//ready
 	$("a.spotlink").click(function(e) { e.preventDefault(); });
@@ -34,8 +37,6 @@ function initSpotwebJs(BetweenText, AndText) {
     attachFilterVisibility();
     attachMaintenanceButtonsBehaviour();
 
-    var BaseURL = createBaseURL();
-    var loading = '<img src="'+BaseURL+'templates/we1rdo/img/loading.gif" height="16" width="16" />';
     attachEnablerBehaviour();
 } // initSpotwebJs
 

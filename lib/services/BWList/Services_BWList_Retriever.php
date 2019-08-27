@@ -38,7 +38,7 @@ class Services_BWList_Retriever {
 		$expItems = explode(chr(10), $items);
 				
 		# Perform a very small sanity check on the black/whitelist
-		if ((count($expItems) > 5) && (strlen($expItems[0]) < 10)) {
+		if ((count($expItems) > 5) && (strlen($expItems[0]) < 200)) {
 			return $expItems;
 		} else {
 			throw new CorruptBWListException();

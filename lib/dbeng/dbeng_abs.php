@@ -25,7 +25,7 @@ abstract class dbeng_abs {
 	/*
 	 * Connects to the database
 	 */
-	abstract function connect($host, $user, $pass, $db);
+	abstract function connect($host, $user, $pass, $db, $port);
 	
 	/*
 	 * Executes the query and discards any output. Returns true of no

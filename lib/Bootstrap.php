@@ -4,8 +4,8 @@
  * Define several version constants
  * used throughput Spotweb
  */
-define('SPOTWEB_SETTINGS_VERSION', '0.29');
-define('SPOTWEB_SECURITY_VERSION', '0.32');
+define('SPOTWEB_SETTINGS_VERSION', '0.30');
+define('SPOTWEB_SECURITY_VERSION', '0.33');
 define('SPOTDB_SCHEMA_VERSION', '0.68');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 
@@ -106,15 +106,31 @@ class Bootstrap {
          * we do overwrite the password to make sure it doesn't show up in a
          * stacktrace.
          */
+        
+        switch ($dbsettings['engine']) {
+			case 'mysql'		:
+			case 'pdo_mysql'	: if (!isset($dbsettings['port'])) {
+                                     $dbsettings['port'] = '3306';
+                                  }
+                                  break;
+			case 'pdo_pgsql' 	: if (!isset($dbsettings['port'])) {
+                                     $dbsettings['port'] = '5432';
+                                  }
+                                  break;
+            default             : if (!isset($dbsettings['port'])) {
+                                     $dbsettings['port'] = '';
+                                  }
+        }
         $this->_dbSettings = $dbsettings;
         $this->_dbSettings['pass'] = '**overwritten**';
         $this->_dbSettings['user'] = '**overwritten**';
-
+        
 		$dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
 		$dbCon->connect($dbsettings['host'],
 						$dbsettings['user'], 
 						$dbsettings['pass'], 
-						$dbsettings['dbname']);
+						$dbsettings['dbname'],
+                        $dbsettings['port']);
 
 		$daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
 		$daoFactory->setConnection($dbCon);

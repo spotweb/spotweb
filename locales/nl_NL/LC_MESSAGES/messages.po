@@ -557,6 +557,9 @@ msgstr "Andere server voor headers opgeven?"
 msgid "Use different server for posting?"
 msgstr "Andere server om te posten opgeven?"
 
+msgid "Verify name (CN) on certificate"
+msgstr "Verificatie van de naam (CN) in het certificaat"
+
 msgid "Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots."
 msgstr "Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen."
 
@@ -831,15 +834,6 @@ msgstr "Notify My Android gebruiken?"
 msgid "API key"
 msgstr "API key"
 
-msgid "Use Notifo?"
-msgstr "Notifo gebruiken?"
-
-msgid "Notifo Username?"
-msgstr "Notifo Gebruikersnaam?"
-
-msgid "Notifo <a href=\"http://notifo.com/user/settings\">API secret</a>?"
-msgstr "Notifo <a href=\"http://notifo.com/user/settings\">API secret</a>?"
-
 msgid "Use Prowl?"
 msgstr "Prowl gebruiken?"
 
@@ -1106,12 +1100,6 @@ msgstr "Growl notificaties vereisen een growl host"
 
 msgid "\"Notify My Android\" notifications require an API key"
 msgstr "\"Notify My Android\" notificaties vereisen een API key"
-
-msgid "\"Notifo\" notifications require a username to be entered"
-msgstr "\"Notify\" notificaties vereisen een gebruikersnaam"
-
-msgid "\"Notifo\" notifications require an api key to be entered"
-msgstr "\"Notify\" notificaties vereisen een APi key"
 
 msgid "\"Prowl\" notifications require an API key to be entered"
 msgstr "\"Prowl\" notificaties vereisen een API key"
