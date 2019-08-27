@@ -2,6 +2,7 @@
 
 class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	protected $_conn;
+    private $_util;
 
 	/*
 	 * constructs a new Dao_Base_BlackWhiteList object, 
@@ -9,6 +10,7 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 	 */
 	public function __construct(dbeng_abs $conn) {
 		$this->_conn = $conn;
+        $this->_util = new Services_Format_Util();
 	} # ctor
 
 	/*
@@ -49,7 +51,16 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 		}
 		/* verwerk de nieuwe lijst */
 		foreach ($newlist as $nwl) {
-			$nwl = trim($nwl);
+            $nwl = trim($nwl);
+            if ($idtype == 2) {
+                $ex = explode(',',$nwl);
+                if (isset($ex[1])) {
+                    $nwl = $ex[1];
+                } else {
+                    $nwl = "";
+                }
+            };
+            $nwl = $this->_util->calculateSpotterId($nwl);
 			if ((strlen($nwl) >= 3) && (strlen($nwl) <= 6)) {	# Spotterids are between 2 and 7 characters long
 				if (empty($updatelist[$nwl])) {
 					$updatelist[$nwl] = 1;						# We want to add this spotterid
@@ -70,6 +81,7 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
 			}
 		}
 		$updlist = array_keys($updatelist);
+        $this->_conn->beginTransaction();
 		foreach ($updlist as $updl) {
 			if ($updatelist[$updl] == 1) {
 				# Add new spotterid's to the list
@@ -112,6 +124,7 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList {
                     ));
 			} # elseif
 		} # foreach
+        $this->_conn->commit();
 
 		return array('added' => $countnewlistspotterid, 
 					 'removed' => $countdellistspotterid,

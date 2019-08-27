@@ -557,6 +557,9 @@ msgstr "Andere server voor headers opgeven?"
 msgid "Use different server for posting?"
 msgstr "Andere server om te posten opgeven?"
 
+msgid "Verify name (CN) on certificate"
+msgstr "Verificatie van de naam (CN) in het certificaat"
+
 msgid "Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots."
 msgstr "Retentie op de spots (in dagen). Oudere spots worden verwijderd. Selecteer 0 om spots niet te verwijderen."
 

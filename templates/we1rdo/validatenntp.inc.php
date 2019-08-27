@@ -8,7 +8,7 @@
 		/* 
 		 * Create an artificial NNTP record
 		 */
-		$server = array('host' => '', 'enc' => false, 'port' => 119, 'user' => '', 'pass' => '');
+		$server = array('host' => '', 'enc' => false, 'port' => 119, 'user' => '', 'pass' => '', 'verifyname' => true);
 		$server = array_merge($server, $data);
 
 		$nntpResult = $tplHelper->validateNntpServer($server);

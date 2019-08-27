@@ -39,7 +39,9 @@ class Services_User_Record {
 		$userIdForName = $this->_userDao->findUserIdForName($spotUser['username']);
 		if (!empty($userIdForName)) {
 			$result->addError(sprintf(_("'%s' already exists"), $spotUser['username']));
-		} # if
+            $spotUser['userid'] = $userIdForName;
+			$result->addData('userid', $spotUser['userid']);
+    	} # if
 
 		if ($result->isSuccess()) {
 			# Create a private and public key pair for this user
@@ -49,7 +51,7 @@ class Services_User_Record {
 			$spotUser['privatekey'] = $userKey['private'];
 
 			# Actually add the user
-			$spotUser['userid'] = $this->addUser($spotUser);
+    		$spotUser['userid'] = $this->addUser($spotUser);
 
 			/*
 			 * We assume the user was successfully added, all validation is done at
@@ -167,11 +169,11 @@ class Services_User_Record {
 	/*
 	 * Update a userid's password
 	 */
-	function setUserPassword($user) {
+	function setUserPassword($userarr) {
 		# Convert the password to an passhash
-		$user['passhash'] = Services_User_Util::passToHash($this->_settings->get('pass_salt'), $user['newpassword1']);
+		$userarr['passhash'] = Services_User_Util::passToHash($this->_settings->get('pass_salt'), $userarr['newpassword1']);
 		
-		$this->_userDao->setUserPassword($user);
+		$this->_userDao->setUserPassword($userarr);
 	} # setUserPassword
 
 	/*
@@ -201,13 +203,14 @@ class Services_User_Record {
 
 		foreach ($arrays as $array) {
 			reset($base); //important
-			while (list($key, $value) = @each($array)) {
+            #while (list($key, $value) = @each($array)) { // Deprecated php 7.2
+            foreach ($array as $key => $value) {
 				if (is_array($value) && @is_array($base[$key])) {
 					$base[$key] = $this->array_merge_recursive_overwrite($base[$key], $value);
 				} else {
 					$base[$key] = $value;
 				} # else
-			} # while
+			} # while / for each
 		} # foreach
 
 		return $base;

@@ -10,7 +10,7 @@ class dbeng_pdo_sqlite extends dbeng_pdo {
 		$this->_batchInsertChunks = 1;
     } # ctor
 
-	function connect($host, $user, $pass, $db) {
+	function connect($host, $user, $pass, $db,$port) {
 		try {
 			if (!$this->_conn instanceof PDO) {
 				$this->_conn = new PDO('sqlite:' . $db);

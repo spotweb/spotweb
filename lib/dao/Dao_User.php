@@ -9,7 +9,7 @@ interface Dao_User {
 	function getUserListForDisplay();
 	function deleteUser($userid);
 	function setUser($user);
-	function setUserPassword($user);
+	function setUserPassword($userarr);
 	function setUserRsaKeys($userId, $publicKey, $privateKey);
 	function getUserPrivateRsaKey($userId);
 	function addUser($user);

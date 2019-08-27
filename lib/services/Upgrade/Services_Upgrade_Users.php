@@ -87,11 +87,11 @@ class Services_Upgrade_Users {
 		} # if
 
 		# Retrieve the actual userid
-		$user = $this->_userDao->getUser($userId);
+		$userarr = $this->_userDao->getUser($userId);
 
 		# update the password
-		$user['passhash'] = $this->passToHash($password);
-		$this->_userDao->setUserPassword($user);
+		$userarr['passhash'] = $this->passToHash($password);
+		$this->_userDao->setUserPassword($userarr);
 	} # resetUserPassword
 	/*
 	 * Create the admin user 
