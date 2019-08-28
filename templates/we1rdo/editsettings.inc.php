@@ -52,10 +52,8 @@
 	
 	<div id="editsettingstab" class="ui-tabs">
 		<ul>
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, '')) { ?>
-			<li><a href="?page=versioncheck" title="<?php echo _('Spotweb updates'); ?>"><span><?php echo _('Spotweb updates');?></span></a></li>
-<?php }
-if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
+
+<?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>
 			<li><a href="#editsettingstab-1"><span><?php echo _('General'); ?></span></a></li>
 			<li><a href="#editsettingstab-2"><span><?php echo _('Newsservers'); ?></span></a></li>
 			<li><a href="#editsettingstab-3"><span><?php echo _('Retrieve'); ?></span></a></li>
