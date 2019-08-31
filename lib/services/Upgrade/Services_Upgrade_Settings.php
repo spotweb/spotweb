@@ -69,6 +69,8 @@ class Services_Upgrade_Settings {
 		$this->setIfNot('customcss', '');
 		$this->setIfNot('systemtype', 'public');
 		$this->setIfNot('imageover_subcats', true);
+		$this->setIfNot('highlight', true);
+		$this->setIfNot('highcount', 10);
 		$this->setIfNot('newuser_grouplist', 
 				array(
 						Array('groupid' => 2, 'prio' => 1),		// Group ID 2 == Anonymous users, open system
