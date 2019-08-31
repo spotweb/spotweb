@@ -253,6 +253,12 @@
 					<dt><label for="editsettingsform[imageover_subcats]"><?php echo _('Enable imagepreview in spot overview'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[imageover_subcats]" <?php if ($this->_settings->get('imageover_subcats')) { echo 'checked="checked"'; } ?>></dd>
 
+					<dt><label for="editsettingsform[highlight]"><?php echo _('Highlight spots based on amount of comments'); ?></label></dt>
+					<dd><input type="checkbox" name="editsettingsform[highlight]" <?php if ($this->_settings->get('highlight')) { echo 'checked="checked"'; } ?>></dd>
+					
+					<dt><label for="editsettingsform[highcount]"><?php echo _('Amount of comments to highlight spot'); ?></label></dt>
+					<dd><input type="text" name="editsettingsform[highcount]" value="<?php echo htmlspecialchars($this->_settings->get('highcount'), ENT_QUOTES); ?>"></dd>
+					
 					<dt><label for="editsettingsform[prepare_statistics]"><?php echo _('Prepare statistics during retrieve'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[prepare_statistics]" <?php if ($this->_settings->get('prepare_statistics')) { echo 'checked="checked"'; } ?>></dd>
 
