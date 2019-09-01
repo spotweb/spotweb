@@ -18,7 +18,7 @@ For details when changes are merged into master branch consult the "Release file
 -Make it possible to use HTTPS to send nzb's to NZBGet #111
 
 1-9-2019 Sweepr: fix for: https://github.com/spotweb/spotweb/issues/437
- Running upgrade-db.php the 2nd time consistantly gave an an error on MySQL 8.0: 
+ Running upgrade-db.php the 2nd time consistantly gave an error on MySQL 8.0: 
  "HY000: 1553: Cannot drop index 'idx_commentsfull_1': needed in a foreign key constraint"
  
  Commit: https://github.com/spotweb/spotweb/commit/d106060af7d6bce3de089bc8e2378124b04bc9ab
