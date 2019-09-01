@@ -224,15 +224,15 @@ abstract class SpotStruct_abs {
 		for($i = 0; $i < count($colList); $i++) {
 			$same = true;
 			
-			if ($colList[$i] != $q[$i]['column_name']) {
+			if ($colList[$i] != $q[$i]['COLUMN_NAME']) {
 				$same = false;
 			} # if
 
 			if ($same) {
 				switch(strtolower($type)) {
 					case 'fulltext'		: $same = (strtolower($q[$i]['index_type']) == 'fulltext'); break;
-					case 'unique'		: $same = ($q[$i]['non_unique'] == 0); break;
-					case ''				: $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($q[$i]['non_unique'] == 1);
+					case 'unique'		: $same = ($q[$i]['NON_UNIQUE'] == 0); break;
+					case ''				: $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($q[$i]['NON_UNIQUE'] == 1);
 				} # switch
 			} # if
 			
@@ -263,7 +263,7 @@ abstract class SpotStruct_abs {
 		 * and properties of each index.
 		 */
 		for($i = 0; $i < count($colList); $i++) {
-			if ($colList[$i + 1] != $q[$i]['column_name']) {
+			if ($colList[$i + 1] != $q[$i]['COLUMN_NAME']) {
 				return false;
 			} # if
 		} # for
