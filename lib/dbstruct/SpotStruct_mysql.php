@@ -106,7 +106,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		foreach($colList as $num => $col) {
 			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
 			
-			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['COLUMN_NAME']) != strtolower($col))) {
 				return false;
 			} # if
 		} # foreach
@@ -119,7 +119,7 @@ class SpotStruct_mysql extends SpotStruct_abs {
 		foreach($colList as $num => $col) {
 			$indexInfo = $this->getIndexInfo($ftsname . '_' . $num, $tablename);
 			
-			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['column_name']) != strtolower($col))) {
+			if ((empty($indexInfo)) || (strtolower($indexInfo[0]['COLUMN_NAME']) != strtolower($col))) {
 				$this->dropIndex($ftsname . '_' . $num, $tablename);
 				$this->addIndex($ftsname . '_' . $num, 'FULLTEXT', $tablename, array($col));
 			} # if

@@ -260,10 +260,11 @@ class Services_Upgrade_Users {
 			$this->setSettingIfNot($user['prefs']['nzbhandling'], 'command', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'url', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'apikey', '');
-            $this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'username', '');
-            $this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'password', '');
+            		$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'username', '');
+            		$this->setSettingIfNot($user['prefs']['nzbhandling']['sabnzbd'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'host', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'port', '');
+			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'ssl', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'username', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'password', '');
 			$this->setSettingIfNot($user['prefs']['nzbhandling']['nzbget'], 'timeout', 15);
