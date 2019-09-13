@@ -211,7 +211,7 @@ abstract class SpotStruct_abs {
 	function compareIndex($idxname, $type, $tablename, $colList) {
 		# Retrieve index information
 		$q = $this->getIndexInfo($idxname, $tablename);
-		
+      
 		# If the amount of columns in the index don't match...
 		if (count($q) != count($colList)) {
 			return false;
@@ -223,16 +223,16 @@ abstract class SpotStruct_abs {
 		 */
 		for($i = 0; $i < count($colList); $i++) {
 			$same = true;
-			
-			if ($colList[$i] != $q[$i]['COLUMN_NAME']) {
+            $qUpper=array_change_key_case($q[$i], CASE_UPPER);
+			if ($colList[$i] != $qUpper['COLUMN_NAME']) {
 				$same = false;
 			} # if
 
 			if ($same) {
 				switch(strtolower($type)) {
 					case 'fulltext'		: $same = (strtolower($q[$i]['index_type']) == 'fulltext'); break;
-					case 'unique'		: $same = ($q[$i]['NON_UNIQUE'] == 0); break;
-					case ''				: $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($q[$i]['NON_UNIQUE'] == 1);
+					case 'unique'		: $same = ($qUpper['NON_UNIQUE'] == 0); break;
+					case ''				: $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($qUpper['NON_UNIQUE'] == 1);
 				} # switch
 			} # if
 			
@@ -263,7 +263,8 @@ abstract class SpotStruct_abs {
 		 * and properties of each index.
 		 */
 		for($i = 0; $i < count($colList); $i++) {
-			if ($colList[$i + 1] != $q[$i]['COLUMN_NAME']) {
+            $qUpper=array_change_key_case($q[$i], CASE_UPPER);
+			if ($colList[$i + 1] != $qUpper['COLUMN_NAME']) {
 				return false;
 			} # if
 		} # for
