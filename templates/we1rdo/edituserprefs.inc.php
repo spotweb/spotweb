@@ -308,6 +308,9 @@ if (!$dialogembedded) { ?>
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][host]"><?php echo _('Hostname of nzbget?'); ?></label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][host]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['host']); ?>"></dd>
 
+						<dt><label for="edituserprefsform[nzbhandling][nzbget][ssl]"><?php echo _('Use SSL?'); ?></label></dt>
+						<dd><input type="checkbox" class="enabler" name="edituserprefsform[nzbhandling][nzbget][ssl]" id="use_ssl" <?php if ($edituserprefsform['nzbhandling']['nzbget']['ssl']) { echo 'checked="checked"'; } ?>></dd>
+						
 						<dt><label for="edituserprefsform[nzbhandling][nzbget][port]"><?php echo _('Portnumber of nzbget?'); ?></label></dt>
 						<dd><input type="input" name="edituserprefsform[nzbhandling][nzbget][port]" value="<?php echo htmlspecialchars($edituserprefsform['nzbhandling']['nzbget']['port']); ?>"></dd>
 

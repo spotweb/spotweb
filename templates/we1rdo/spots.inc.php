@@ -118,13 +118,13 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
         	$catMap['image'] = '<center><br><img src="?page=getimage&messageid='.$spot['messageid'].'&image[height]=260&image[width]=130" height="175px" width="auto"></center>';
 		}
 		$catData = json_encode($catMap);
-	
+		
 		if($spot['rating'] == 0) {
 			$rating = '';
 		} elseif($spot['rating'] > 0) {
 			$rating = '<span class="rating" title="' . sprintf(ngettext('This spot has %d star', 'This spot has %d stars', $spot['rating']), $spot['rating']) . '"><span style="width:' . $spot['rating'] * 4 . 'px;"></span></span>';
 		}
-
+		
 		if($tplHelper->isModerated($spot)) { 
 			$markSpot = '<span class="markSpot">!</span>';
 		} else {
@@ -162,9 +162,92 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 			echo " moderatedspot";
 		} # if
 		echo "'>";
+		
+		if ($settings->get('highlight') > 0 AND $spot['commentcount'] >= $settings->get('highcount')) {
+			
 		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
-			 "<td class='title " . $newSpotClass . " ". $tipTipClass . "'><a data-cats='" . $catData. "' onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
+		"<td class='title " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'><a data-cats='" . $catData. "' onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
+				
+		if ($show_editspot_button) {
+			echo "<td class='editspot " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'>";
+			echo "<a href='" . $tplHelper->makeEditSpotUrl($spot, "edit") . "' onclick=\"return openDialog('editdialogdiv', '" . _('Edit spot') ."', '?page=editspot&amp;messageid=" . urlencode($spot['messageid']) . "', null, 'autoclose', function() { window.location.reload(); }, null);\" title='" . _('Edit spot') . "'><span class='ui-icon ui-icon-pencil'></span></a>";
+			echo "</td>";
+		} # if
 
+		if ($show_watchlist_button) {
+			echo "<td class='watch " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'>";
+			echo "<a class='remove watchremove_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")\""; if(!$spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Delete from watchlist (w)') . "'> </a>";
+			echo "<a class='add watchadd_".$spot['id']."' onclick=\"toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")\""; if($spot['isbeingwatched']) { echo " style='display: none;'"; } echo " title='" . _('Position in watchlist (w)') . "'> </a>";
+			echo "</td>";
+		}
+
+		if ($show_comments) {
+			echo "<td class='comments " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $commentCountValue . "</a></td>";
+		} # if
+			
+		if ($spot['idtype'] == 2) {
+			$markSpot = '<span class="markGreen">W</span>';
+		}
+		
+		if($spot['idtype'] == 1) {
+			$markSpot = '<span class="markSpot">B</span>';
+		}		
+		echo "<td class='genre " . "hg1" . "'><a href='" . $spot['subcaturl'] . "' title='" . sprintf(_('Search spot in category %s'), $spot['catdesc']) . "'>" . $spot['catdesc'] . "</a></td>" .
+			 "<td class='poster " . "hg1" . "'><a href='" . $spot['posterurl'] . "' title='" . sprintf(_('Search spot from %s'), $spot['poster']) . "'>" . $markSpot . $spot['poster'] . "</a></td>" .
+			 "<td class='date " . "hg1" . "' title='" . $dateTitleText . "'>" . $tplHelper->formatDate($spot['stamp'], 'spotlist') . "</td>";
+
+		if ($show_filesize) {
+			echo "<td class='filesize " . "hg1" . "'>" . $tplHelper->format_size($spot['filesize']) . "</td>";
+		}
+		
+		# only display the NZB button from 24 nov or later
+		if ($spot['stamp'] > 1290578400 ) {
+			if ($show_nzb_button) {
+				echo "<td class='nzb " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'><a href='" . $tplHelper->makeNzbUrl($spot) . "' title ='" . _('Download NZB (n)') . "' class='nzb'>NZB";
+				
+				if ($spot['hasbeendownloaded']) {
+					echo '*';
+				} # if
+				
+				echo "</a></td>";
+			} # if
+			
+			if ($show_multinzb_checkbox) {
+				$multispotid = htmlspecialchars($spot['messageid']);
+				echo "<td class='multinzb " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'>";
+				echo "<input onclick='multinzb()' type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+				echo "</td>";
+			} # if
+
+			# display the SABnzbd button
+			if (!empty($spot['sabnzbdurl'])) {
+				if ($spot['hasbeendownloaded']) {
+					echo "<td class='sabnzbd " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "')\" class='sab_".$spot['id']." sabnzbd-button succes' title='" . _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') . "'> </a></td>";
+				} else {
+					echo "<td class='sabnzbd " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','" . $spot['nzbhandlertype'] . "')\" class='sab_".$spot['id']." sabnzbd-button' title='" . _('Add NZB to SABnzbd queue (s)'). "'> </a></td>";
+				} # else
+			} # if
+		} else {
+			if ($show_nzb_button) {
+				echo "<td class='nzb " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'> &nbsp; </td>";
+			} # if
+			
+			# display (empty) MultiNZB td
+			if ($show_multinzb_checkbox) { 
+				echo "<td class='multinzb " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'> &nbsp; </td>";
+			}
+
+			# display the sabnzbd button
+			if (!empty($spot['sabnzbdurl'])) {
+				echo "<td class='sabnzbd " . "hg1" . " " . $newSpotClass . " ". $tipTipClass . "'> &nbsp; </td>";
+			} # if
+		} # else
+		
+		} else 
+		{			
+		echo "<td class='category'><a href='" . $spot['caturl'] . "' title=\"" . sprintf(_("Go to category '%s'"), $spot['catshortdesc']) . "\">" . $spot['catshortdesc'] . "</a></td>" .
+		"<td class='title " . $newSpotClass . " ". $tipTipClass . "'><a data-cats='" . $catData. "' onclick='openSpot(this,\"".$spot['spoturl']."\")' href='".$spot['spoturl']."' title='" . $spot['title'] . "' class='spotlink'>" . $reportSpam . $rating . $markSpot . $spot['title'] . "</a></td>";
+		
 		if ($show_editspot_button) {
 			echo "<td class='editspot'>";
 			echo "<a href='" . $tplHelper->makeEditSpotUrl($spot, "edit") . "' onclick=\"return openDialog('editdialogdiv', '" . _('Edit spot') ."', '?page=editspot&amp;messageid=" . urlencode($spot['messageid']) . "', null, 'autoclose', function() { window.location.reload(); }, null);\" title='" . _('Edit spot') . "'><span class='ui-icon ui-icon-pencil'></span></a>";
@@ -181,9 +264,8 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 		if ($show_comments) {
 			echo "<td class='comments'><a onclick='openSpot(this,\"".$spot['spoturl']."\")' class='spotlink' href='" . $spot['spoturl'] . "#comments' title=\"" . sprintf(_("%d comments on '%s'"), $spot['commentcount'], $spot['title']) . "\">" . $commentCountValue . "</a></td>";
 		} # if
-		
-		$markSpot = '';
-		if($spot['idtype'] == 2) {
+			
+		if ($spot['idtype'] == 2) {
 			$markSpot = '<span class="markGreen">W</span>';
 		}
 		
@@ -240,9 +322,11 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
 				echo "<td class='sabnzbd'> &nbsp; </td>";
 			} # if
 		} # else
+		}	
 		
 		echo "</tr>\r\n";
 	}
+	
 ?>
 					</tbody>
 				</table>

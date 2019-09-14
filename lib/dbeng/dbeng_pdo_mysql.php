@@ -47,18 +47,18 @@ class dbeng_pdo_mysql extends dbeng_pdo {
         try {
             $userexists = $this->exec("SELECT 1 FROM mysql.user WHERE user = :user",
                                     array(':user' => array($usr, PDO::PARAM_STR)))->rowCount();
-            if ($userexists > 0) {
-                // grant to existing user 
-                $this->exec("GRANT ALL privileges ON ".$db.".* TO :user",                   
-                            array(':user' => array($usr, PDO::PARAM_STR)));
-            } else {
-                // create and grant to new user
-                $this->exec("GRANT ALL privileges ON ".$db.".* TO :user IDENTIFIED by :pwd",
+            if ($userexists <= 0) {
+                $this->exec("CREATE USER :user IDENTIFIED by :pwd",
                             array(':user' => array($usr, PDO::PARAM_STR),
                                   ':pwd'  => array($pass, PDO::PARAM_STR)
                                     )
                             );
+                
             }
+            $this->exec("GRANT ALL privileges ON ".$db.".* TO :user",
+                        array(':user' => array($usr, PDO::PARAM_STR)
+                                )
+                        );
         }
         catch (Exception $e) {
             $this->exec("DROP DATABASE ".$db);                           

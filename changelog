@@ -1,0 +1,25 @@
+* Changelog *
+Pull requests can only be made to the develop branch.
+Please me sure to proper test pull request prior entering them.
+
+New updates are grouped by person (committer/merger), at the top of the file.
+All entries are dated according to merging into the code in develop branch. 
+THIS MEANS THE CODE IS PRESENT IN THE MASTER BRANCH UNTILL MERGED
+
+For details when changes are merged into master branch consult the "Release file".
+
+1-9-2019 Sweepr: fix for: https://github.com/spotweb/spotweb/issues/437
+ Running upgrade-db.php the 2nd time consistantly gave an error on MySQL 8.0: 
+ "HY000: 1553: Cannot drop index 'idx_commentsfull_1': needed in a foreign key constraint"
+ 
+ Commit: https://github.com/spotweb/spotweb/commit/d106060af7d6bce3de089bc8e2378124b04bc9ab
+ Commit: https://github.com/spotweb/spotweb/commit/e42a18330a405a71aee9c9500e7a2d0a3af0d9cf
+
+31-8-2019 Sweepr https://github.com/spotweb/spotweb/issues/111
+-Make it possible to use HTTPS to send nzb's to NZBGet #111
+
+31-8-2019 Sweepr https://github.com/spotweb/spotweb/issues/268
+-Spot highlighting based on the amount of comments, default setting: 
+  Highlight spots based on amount of comments = On  
+  Amount of comments to highlight spot = 10 
+ (Setting can be changed in ?page=editsettings -> performance tab and color in style.css)
