@@ -16,10 +16,10 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
 		$nzbget = $nzbHandling['nzbget'];
 		$this->_host = $nzbget['host'];
 		$this->_timeout = $nzbget['timeout'];
-		if ($this->_ssl = $nzbget['ssl'] > 0) {
-		$this->_url = "http://" . $nzbget['host'] . ":" . $nzbget['port'] . "/jsonrpc";
+		if ($this->_ssl = $nzbget['ssl'] <> "on") {
+		    $this->_url = "http://" . $nzbget['host'] . ":" . $nzbget['port'] . "/jsonrpc";
 		} else {
-		$this->_url = "https://" . $nzbget['host'] . ":" . $nzbget['port'] . "/jsonrpc";
+		    $this->_url = "https://" . $nzbget['host'] . ":" . $nzbget['port'] . "/jsonrpc";
 		}
 		$this->_username = $nzbget['username'];
 		$this->_password = $nzbget['password'];
