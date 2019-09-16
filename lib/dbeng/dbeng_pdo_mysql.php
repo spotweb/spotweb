@@ -18,7 +18,7 @@ class dbeng_pdo_mysql extends dbeng_pdo {
 			if ($host[0] === '/') {
 				$db_conn = "unix_socket=" . $host;
 			} else {
-				$db_conn = "host=" . $host . ";port=".$port;
+				$db_conn = "host=" . $host . ":".$port;
 			}
 
 			try {
