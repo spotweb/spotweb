@@ -145,7 +145,9 @@ try {
 			$cachePath = $settings->get('cache_path');
 			delete_files(dirname(__FILE__, 2).'/'.substr($cachePath,2));			
 			$dir = dirname(__FILE__, 2).'/'.substr($cachePath,2);
-			mkdir($dir, 0755, true);
+			$oldmask = umask(0);
+			mkdir($dir, 0777, true);
+			umask($oldmask);
 								    
 		echo "Starting reset of DB. (Depending on the size, this can take a while.)" . PHP_EOL;
 		$svcUpgradeBase->resetdb();
@@ -165,7 +167,9 @@ try {
 			$cachePath = $settings->get('cache_path');
 			delete_files(dirname(__FILE__, 2).'/'.substr($cachePath,2));			
 			$dir = dirname(__FILE__, 2).'/'.substr($cachePath,2);
-			mkdir($dir, 0755, true);
+			$oldmask = umask(0);
+			mkdir($dir, 0777, true);
+			umask($oldmask);
 								    
 		echo "Truncating cache table." . PHP_EOL;
 		$svcUpgradeBase->clearcache();
