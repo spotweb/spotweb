@@ -21,6 +21,24 @@ class SpotStruct_mysql extends SpotStruct_abs {
         $this->_dbcon->rawExec("ANALYZE TABLE moderatedringbuffer");
         $this->_dbcon->rawExec("ANALYZE TABLE usenetstate");
 	} # analyze
+	
+	function resetdb() { 		
+		$this->_dbcon->rawExec("SET FOREIGN_KEY_CHECKS = 0");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spots");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotsposted");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotsfull");
+		$this->_dbcon->rawExec("TRUNCATE TABLE commentsxover");
+		$this->_dbcon->rawExec("TRUNCATE TABLE commentsfull");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotstatelist");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotteridblacklist");
+		$this->_dbcon->rawExec("TRUNCATE TABLE filtercounts");	
+		$this->_dbcon->rawExec("TRUNCATE TABLE reportsposted");
+		$this->_dbcon->rawExec("TRUNCATE TABLE reportsxover");
+		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
+        $this->_dbcon->rawExec("TRUNCATE TABLE moderatedringbuffer");
+        $this->_dbcon->rawExec("TRUNCATE TABLE usenetstate");
+		$this->_dbcon->rawExec("SET FOREIGN_KEY_CHECKS = 1");
+	} # resetdb
 
     /*
      * Returns a database specific representation of a boolean value
