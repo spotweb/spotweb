@@ -39,6 +39,12 @@ class SpotStruct_mysql extends SpotStruct_abs {
         $this->_dbcon->rawExec("TRUNCATE TABLE usenetstate");
 		$this->_dbcon->rawExec("SET FOREIGN_KEY_CHECKS = 1");
 	} # resetdb
+	
+	function clearcache() { 		
+		$this->_dbcon->rawExec("SET FOREIGN_KEY_CHECKS = 0");
+		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
+		$this->_dbcon->rawExec("SET FOREIGN_KEY_CHECKS = 1");
+	} # clearcache
 
     /*
      * Returns a database specific representation of a boolean value
