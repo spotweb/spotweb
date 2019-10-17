@@ -26,7 +26,7 @@ try {
      */
 	SpotCommandline::initialize(array('reset-groupmembership', 'reset-securitygroups', 'reset-filters'), 
 								array('reset-groupmembership' => false, 'reset-securitygroups' => false, 'reset-filters' => false,
-									  'set-systemtype' => false, 'reset-password' => false, 'mass-userprefchange' => false, 'reset-db' => false));
+									  'set-systemtype' => false, 'reset-password' => false, 'mass-userprefchange' => false, 'reset-db' => false, 'clear-cache' => false));
 	if (!SpotCommandline::isCommandline()) {
 		die("upgrade-db.php can only be run from the console, it cannot be run from the web browser");
 	} # if
@@ -150,6 +150,26 @@ try {
 		echo "Starting reset of DB. (Depending on the size, this can take a while.)" . PHP_EOL;
 		$svcUpgradeBase->resetdb();
 		echo "DB reset succesfully!" . PHP_EOL;
+	} # if
+	
+	/* 
+	* If user asked to reset-db, here we reset-db..
+	*/
+	if (SpotCommandline::get('clear-cache')) {
+	
+		echo "Clearing cache.." . PHP_EOL . PHP_EOL;
+		
+		echo "Clear on-disk cache folder.\n";
+						
+			/* delete cache folder and re-create. */
+			$cachePath = $settings->get('cache_path');
+			delete_files(dirname(__FILE__, 2).'/'.substr($cachePath,2));			
+			$dir = dirname(__FILE__, 2).'/'.substr($cachePath,2);
+			mkdir($dir, 0755, true);
+								    
+		echo "Truncating cache table." . PHP_EOL;
+		$svcUpgradeBase->clearcache();
+		echo "Cleared cache succesfully!" . PHP_EOL . PHP_EOL;
 	} # if
 
 		echo "Performing basic analysis of database tables" . PHP_EOL;
