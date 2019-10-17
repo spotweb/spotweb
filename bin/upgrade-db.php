@@ -2,16 +2,31 @@
 <?php
 error_reporting(2147483647);
 
+/* 
+* delete_files function to remove entire cache folder.
+*/
+function delete_files($target) {
+    if(is_dir($target)){
+        $files = glob( $target . '*', GLOB_MARK ); //GLOB_MARK adds a slash to directories returned
+        foreach( $files as $file ){
+            delete_files( $file );      
+        }
+        rmdir( $target );
+    } elseif(is_file($target)) {
+        unlink( $target );  
+    }
+}
+
 try {
 	require_once __DIR__ . '/../vendor/autoload.php';
-
+	
     /*
      * Make sure we are not run from the server, an db upgrade can take too much time and
      * will easily be aborted by either a database, apache or browser timeout
      */
 	SpotCommandline::initialize(array('reset-groupmembership', 'reset-securitygroups', 'reset-filters'), 
 								array('reset-groupmembership' => false, 'reset-securitygroups' => false, 'reset-filters' => false,
-									  'set-systemtype' => false, 'reset-password' => false, 'mass-userprefchange' => false));
+									  'set-systemtype' => false, 'reset-password' => false, 'mass-userprefchange' => false, 'reset-db' => false));
 	if (!SpotCommandline::isCommandline()) {
 		die("upgrade-db.php can only be run from the console, it cannot be run from the web browser");
 	} # if
@@ -37,8 +52,8 @@ try {
 	$svcUpgradeBase->settings();
     $svcUpgradeBase->usenetState();
 	echo "Settings update done" . PHP_EOL;
-	echo "Updating users" . PHP_EOL;
 	$svcUpgradeBase->users($settings);
+	echo "Updating users" . PHP_EOL;
 	echo "Users' update done" . PHP_EOL;
 
 	/* 
@@ -92,17 +107,54 @@ try {
 	} # if
 
 	/* 
-	 * If the user asked to reset filters, do so
+	 * If the user asked to reset filters, do so.
 	 */
 	if (SpotCommandline::get('reset-filters')) {
 		echo "Resetting users' filters to the default" . PHP_EOL;
 		$svcUpgradeBase->resetFilters();
 		echo "Reset of users' filters done" . PHP_EOL;
 	} # if
+	
+	/* 
+	* If user asked to reset-db, here we reset-db..
+	*/
+	if (SpotCommandline::get('reset-db')) {
+	
+		echo "Reset-DB" . PHP_EOL . PHP_EOL;
+		
+		echo "\033[31m You are about to reset the database to default, please stop retriever first!\033[0m \n" . PHP_EOL;		
+		echo "\033[31m This will empty spots, comments, cache and reports!\033[0m \n" . PHP_EOL;	
+		echo "\033[32m Table's: users, usergroups, usersettings, sessions, settings, grouppermissions, securitygroups and filters are left alone.\033[0m \n" . PHP_EOL;
+		echo "\033[32m The rest will be truncated.\033[0m \n" . PHP_EOL;
+		echo "\033[31m Are you sure you want to continue?, this cannot be undone!!\033[0m \n" . PHP_EOL;
+		echo "\033[31m Type 'yes' to confirm or any other key to abort: \033[0m \n" . PHP_EOL;
+		
+		$handle = fopen ("php://stdin","r");
+		$line = fgets($handle);
+			if(trim($line) != 'yes')
+			{
+    			echo "ABORTING!\n";
+    			exit;
+			}
+							
+		echo "\n";
+		echo "Continuing...\n";
+		echo "Clear on-disk cache folder...\n";
+						
+			/* delete cache folder and re-create. */
+			$cachePath = $settings->get('cache_path');
+			delete_files(dirname(__FILE__, 2).'/'.substr($cachePath,2));			
+			$dir = dirname(__FILE__, 2).'/'.substr($cachePath,2);
+			mkdir($dir, 0755, true);
+								    
+		echo "Starting reset of DB. (Depending on the size, this can take a while.)" . PHP_EOL;
+		$svcUpgradeBase->resetdb();
+		echo "DB reset succesfully!" . PHP_EOL;
+	} # if
 
-	echo "Performing basic analysis of database tables" . PHP_EOL;
-	$svcUpgradeBase->analyze($settings);
-	echo "Basic database optimalisation done" . PHP_EOL;
+		echo "Performing basic analysis of database tables" . PHP_EOL;
+		$svcUpgradeBase->analyze($settings);
+		echo "Basic database optimalisation done" . PHP_EOL;
 } 
 
 catch(CacheMustBeMigratedException $x) {
