@@ -57,6 +57,11 @@ class Services_Upgrade_Base {
 		# Instantieeer een struct object
 		$this->_dbStruct->resetdb();
 	 } # analyze
+	 
+	 function clearcache() {
+		# Instantieeer een struct object
+		$this->_dbStruct->clearcache();
+	 } # analyze
 
 	/*
 	 * Reset users' group membership
