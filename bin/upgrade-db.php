@@ -50,7 +50,7 @@ try {
 	echo "Schema update done" . PHP_EOL;
 	echo "Updating settings" . PHP_EOL;
 	$svcUpgradeBase->settings();
-    $svcUpgradeBase->usenetState();
+        $svcUpgradeBase->usenetState();
 	echo "Settings update done" . PHP_EOL;
 	$svcUpgradeBase->users($settings);
 	echo "Updating users" . PHP_EOL;
@@ -138,6 +138,18 @@ try {
 			}
 							
 		echo "\n";
+		echo "Checking if retriever is running, if so wait for it to finish." . PHP_EOL;
+		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
+		if ($retriever == true)
+		{
+		echo "Waiting for retriever to finish." . PHP_EOL;	
+		while($retriever)
+		{
+		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
+		sleep (5);
+		}
+		}	
+		echo "Retriever is not running." . PHP_EOL;
 		echo "Continuing...\n";
 		echo "Clear on-disk cache folder...\n";
 						
@@ -172,6 +184,18 @@ try {
 			}
 							
 		echo "\n";
+		echo "Checking if retriever is running, if so wait for it to finish." . PHP_EOL;
+		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
+		if ($retriever == true)
+		{
+		echo "Waiting for retriever to finish." . PHP_EOL;	
+		while($retriever)
+		{
+		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
+		sleep (5);
+		}
+		}	
+		echo "Retriever is not running." . PHP_EOL;
 		echo "Continuing...\n";
 		echo "Clear on-disk cache folder.\n";
 						
