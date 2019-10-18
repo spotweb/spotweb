@@ -160,7 +160,19 @@ try {
 	if (SpotCommandline::get('clear-cache')) {
 	
 		echo "Clearing cache.." . PHP_EOL . PHP_EOL;
+		echo "\033[31m The cache in DB and files on-disk will be cleared, are you sure? \033[0m \n" . PHP_EOL;
+		echo "\033[31m Type 'yes' to confirm or any other key to abort: \033[0m \n" . PHP_EOL;
 		
+		$handle = fopen ("php://stdin","r");
+		$line = fgets($handle);
+			if(trim($line) != 'yes')
+			{
+    			echo "ABORTING!\n";
+    			exit;
+			}
+							
+		echo "\n";
+		echo "Continuing...\n";
 		echo "Clear on-disk cache folder.\n";
 						
 			/* delete cache folder and re-create. */
