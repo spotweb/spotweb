@@ -155,8 +155,8 @@ try {
 						
 			/* delete cache folder and re-create. */
 			$cachePath = $settings->get('cache_path');
-			delete_files(dirname(__FILE__, 2).'/'.substr($cachePath,2));			
-			$dir = dirname(__FILE__, 2).'/'.substr($cachePath,2);
+			delete_files(str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2)));			
+			$dir = str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2));		
 			$oldmask = umask(0);
 			mkdir($dir, 0777, true);
 			umask($oldmask);
@@ -201,8 +201,8 @@ try {
 						
 			/* delete cache folder and re-create. */
 			$cachePath = $settings->get('cache_path');
-			delete_files(dirname(__FILE__, 2).'/'.substr($cachePath,2));			
-			$dir = dirname(__FILE__, 2).'/'.substr($cachePath,2);
+			delete_files(str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2)));			
+			$dir = str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2));
 			$oldmask = umask(0);
 			mkdir($dir, 0777, true);
 			umask($oldmask);
