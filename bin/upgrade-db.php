@@ -5,15 +5,21 @@ error_reporting(2147483647);
 /* 
 * delete_files function to remove entire cache folder.
 */
-function delete_files($target) {
-    if(is_dir($target)){
-        $files = glob( $target . '*', GLOB_MARK ); //GLOB_MARK adds a slash to directories returned
-        foreach( $files as $file ){
-            delete_files( $file );      
+function delete_files($target)
+{
+    if(!is_link($target) && is_dir($target))
+    {
+        // it's a directory; recursively delete everything in it
+        $files = array_diff( scandir($target), array('.', '..') );
+        foreach($files as $file) {
+            delete_files("$target/$file");
         }
-        rmdir( $target );
-    } elseif(is_file($target)) {
-        unlink( $target );  
+        rmdir($target);
+    }
+    else
+    {
+        // probably a normal file or a symlink; either way, just unlink() it
+        unlink($target);
     }
 }
 
