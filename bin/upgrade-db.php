@@ -2,9 +2,6 @@
 <?php
 error_reporting(2147483647);
 
-/* 
-* delete_files function to remove entire cache folder.
-*/
 function delete_files($target)
 {
     if(!is_link($target) && is_dir($target))
@@ -41,11 +38,13 @@ try {
 	 * Create a DAO factory. We cannot use the bootstrapper here,
 	 * because it validates for a valid settings etc. version.
 	 */
-    $bootstrap = new Bootstrap();
-    $daoFactory = $bootstrap->getDaoFactory();
-    $settings = $bootstrap->getSettings($daoFactory, false);
-    $dbSettings = $bootstrap->getDbSettings();
-
+    	$bootstrap = new Bootstrap();
+    	$daoFactory = $bootstrap->getDaoFactory();
+    	$settings = $bootstrap->getSettings($daoFactory, false);
+    	$dbSettings = $bootstrap->getDbSettings();
+	$dbConnection = $daoFactory->getConnection();
+	$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
+	
 	/*
 	 * And actually start updating or creating the schema and settings
 	 */
@@ -127,8 +126,8 @@ try {
 	if (SpotCommandline::get('reset-db')) {
 	
 		echo "Reset-DB" . PHP_EOL . PHP_EOL;
-		
-		echo "\033[31m You are about to reset the database to default, please stop retriever first!\033[0m \n" . PHP_EOL;		
+					
+		echo "\033[31m You are about to reset the database to default.\033[0m \n" . PHP_EOL;		
 		echo "\033[31m This will empty spots, comments, cache and reports!\033[0m \n" . PHP_EOL;	
 		echo "\033[32m Table's: users, usergroups, usersettings, sessions, settings, grouppermissions, securitygroups and filters are left alone.\033[0m \n" . PHP_EOL;
 		echo "\033[32m The rest will be truncated.\033[0m \n" . PHP_EOL;
@@ -145,16 +144,16 @@ try {
 							
 		echo "\n";
 		echo "Checking if retriever is running, if so wait for it to finish." . PHP_EOL;
-		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
-		if ($retriever == true)
-		{
-		echo "Waiting for retriever to finish." . PHP_EOL;	
-		while($retriever)
-		{
-		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
-		sleep (5);
-		}
-		}	
+			if ($isRetrieverRunning > 0)
+			{
+				echo "Waiting for retriever to finish." . PHP_EOL;
+				while($isRetrieverRunning)
+				{
+					echo ".";
+					$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
+					sleep (5); /* Wait 5 sec, do not stress the sql-server) */
+				}
+			}	
 		echo "Retriever is not running." . PHP_EOL;
 		echo "Continuing...\n";
 		echo "Clear on-disk cache folder...\n";
@@ -162,14 +161,15 @@ try {
 			/* delete cache folder and re-create. */
 			$cachePath = $settings->get('cache_path');
 			delete_files(str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2)));			
-			$dir = str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2));		
+			$dir = str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2));
 			$oldmask = umask(0);
 			mkdir($dir, 0777, true);
 			umask($oldmask);
-								    
+			
 		echo "Starting reset of DB. (Depending on the size, this can take a while.)" . PHP_EOL;
 		$svcUpgradeBase->resetdb();
 		echo "DB reset succesfully!" . PHP_EOL;
+
 	} # if
 	
 	/* 
@@ -191,26 +191,27 @@ try {
 							
 		echo "\n";
 		echo "Checking if retriever is running, if so wait for it to finish." . PHP_EOL;
-		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
-		if ($retriever == true)
-		{
-		echo "Waiting for retriever to finish." . PHP_EOL;	
-		while($retriever)
-		{
-		$retriever = exec("ps aux | grep -i 'retrieve' | grep -v grep", $pids);
-		sleep (5);
-		}
-		}	
+			if ($isRetrieverRunning > 0)
+			{
+				echo "Waiting for retriever to finish." . PHP_EOL;
+				while($isRetrieverRunning)
+				{
+					echo ".";
+					$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
+					sleep (5); /* Wait 5 sec, do not stress the sql-server) */
+				}
+			}	
 		echo "Retriever is not running." . PHP_EOL;
 		echo "Continuing...\n";
 		echo "Clear on-disk cache folder.\n";
 						
 			/* delete cache folder and re-create. */
-			$cachePath = $settings->get('cache_path');
+			$cachePath = $settings->get('cache_path');					
 			delete_files(str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2)));			
-			$dir = str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2));
+			$dir = str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2));		
 			$oldmask = umask(0);
 			mkdir($dir, 0777, true);
+			$oldmask = umask(0);
 			umask($oldmask);
 								    
 		echo "Truncating cache table." . PHP_EOL;
