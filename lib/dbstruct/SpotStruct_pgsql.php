@@ -18,9 +18,33 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 		$this->_dbcon->rawExec("VACUUM ANALYZE spotstatelist");
 		$this->_dbcon->rawExec("VACUUM ANALYZE users");
 		$this->_dbcon->rawExec("VACUUM ANALYZE cache");
-        $this->_dbcon->rawExec("VACUUM ANALYZE moderatedringbuffer");
-        $this->_dbcon->rawExec("VACUUM ANALYZE usenetstate");
+        	$this->_dbcon->rawExec("VACUUM ANALYZE moderatedringbuffer");
+        	$this->_dbcon->rawExec("VACUUM ANALYZE usenetstate");
 	} # analyze
+
+	function resetdb() { 		
+		$this->_dbcon->rawExec("SET session_replication_role TO 'replica'");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spots");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotsposted");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotsfull");
+		$this->_dbcon->rawExec("TRUNCATE TABLE commentsxover");
+		$this->_dbcon->rawExec("TRUNCATE TABLE commentsfull");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotstatelist");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotteridblacklist");
+		$this->_dbcon->rawExec("TRUNCATE TABLE filtercounts");	
+		$this->_dbcon->rawExec("TRUNCATE TABLE reportsposted");
+		$this->_dbcon->rawExec("TRUNCATE TABLE reportsxover");
+		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
+       		$this->_dbcon->rawExec("TRUNCATE TABLE moderatedringbuffer");
+        	$this->_dbcon->rawExec("TRUNCATE TABLE usenetstate");
+		$this->_dbcon->rawExec("SET session_replication_role TO 'origin'");
+	} # resetdb
+	
+	function clearcache() { 		
+		$this->_dbcon->rawExec("SET session_replication_role TO 'replica'");
+		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
+		$this->_dbcon->rawExec("SET session_replication_role TO 'origin'");
+	} # clearcache
 
     /*
      * Returns a database specific representation of a boolean value
