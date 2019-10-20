@@ -18,8 +18,8 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE filtercounts");
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE cache");
-        $this->_dbcon->rawExec("ANALYZE moderatedringbuffer");
-        $this->_dbcon->rawExec("ANALYZE usenetstate");
+        	$this->_dbcon->rawExec("ANALYZE moderatedringbuffer");
+        	$this->_dbcon->rawExec("ANALYZE usenetstate");
 	} # analyze
 	
 	function resetdb() { 		
@@ -35,15 +35,13 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("TRUNCATE TABLE reportsposted");
 		$this->_dbcon->rawExec("TRUNCATE TABLE reportsxover");
 		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
-        $this->_dbcon->rawExec("TRUNCATE TABLE moderatedringbuffer");
-        $this->_dbcon->rawExec("TRUNCATE TABLE usenetstate");
+        	$this->_dbcon->rawExec("TRUNCATE TABLE moderatedringbuffer");
+        	$this->_dbcon->rawExec("TRUNCATE TABLE usenetstate");
 		$this->_dbcon->rawExec("PRAGMA FOREIGN_KEYS = ON");
 	} # resetdb
 	
 	function clearcache() { 		
-		$this->_dbcon->rawExec("PRAGMA FOREIGN_KEYS = OFF");
 		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
-		$this->_dbcon->rawExec("PRAGMA FOREIGN_KEYS = ON");
 	} # clearcache
 
 	/*
