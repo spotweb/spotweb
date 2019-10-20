@@ -41,9 +41,7 @@ class SpotStruct_pgsql extends SpotStruct_abs {
 	} # resetdb
 	
 	function clearcache() { 		
-		$this->_dbcon->rawExec("SET session_replication_role TO 'replica'");
 		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
-		$this->_dbcon->rawExec("SET session_replication_role TO 'origin'");
 	} # clearcache
 
     /*
