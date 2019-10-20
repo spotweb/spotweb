@@ -173,7 +173,7 @@ try {
 	} # if
 	
 	/* 
-	* If user asked to reset-db, here we reset-db..
+	* If user asked to clear the cache, here we clear the cache..
 	*/
 	if (SpotCommandline::get('clear-cache')) {
 		
