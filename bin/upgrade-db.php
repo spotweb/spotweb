@@ -38,10 +38,10 @@ try {
 	 * Create a DAO factory. We cannot use the bootstrapper here,
 	 * because it validates for a valid settings etc. version.
 	 */
-    	$bootstrap = new Bootstrap();
-    	$daoFactory = $bootstrap->getDaoFactory();
-    	$settings = $bootstrap->getSettings($daoFactory, false);
-    	$dbSettings = $bootstrap->getDbSettings();
+    $bootstrap = new Bootstrap();
+    $daoFactory = $bootstrap->getDaoFactory();
+    $settings = $bootstrap->getSettings($daoFactory, false);
+    $dbSettings = $bootstrap->getDbSettings();
 	$dbConnection = $daoFactory->getConnection();
 	$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
 	
@@ -55,7 +55,7 @@ try {
 	echo "Schema update done" . PHP_EOL;
 	echo "Updating settings" . PHP_EOL;
 	$svcUpgradeBase->settings();
-        $svcUpgradeBase->usenetState();
+    $svcUpgradeBase->usenetState();
 	echo "Settings update done" . PHP_EOL;
 	$svcUpgradeBase->users($settings);
 	echo "Updating users" . PHP_EOL;
@@ -176,20 +176,53 @@ try {
 	* If user asked to reset-db, here we reset-db..
 	*/
 	if (SpotCommandline::get('clear-cache')) {
-	
+		
+		if (isset($argv[2]) && ($argv[2] == '-yes')) {
+		{		
 		echo "Clearing cache.." . PHP_EOL . PHP_EOL;
+		echo "Checking if retriever is running, if so wait for it to finish." . PHP_EOL;
+			if ($isRetrieverRunning > 0)
+			{
+				echo "Waiting for retriever to finish." . PHP_EOL;
+				while($isRetrieverRunning)
+				{
+					echo ".";
+					$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
+					sleep (5); /* Wait 5 sec, do not stress the sql-server) */
+				}
+			}	
+		echo "Retriever is not running." . PHP_EOL;
+		echo "Continuing...\n";
+		echo "Clear on-disk cache folder.\n";
+						
+			/* delete cache folder and re-create. */
+			$cachePath = $settings->get('cache_path');					
+			delete_files(str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2)));			
+			$dir = str_replace("\\", "/", dirname(__FILE__, 2).'/'.substr($cachePath,2));		
+			$oldmask = umask(0);
+			mkdir($dir, 0777, true);
+			$oldmask = umask(0);
+			umask($oldmask);
+								    
+		echo "Truncating cache table." . PHP_EOL;
+		$svcUpgradeBase->clearcache();
+		echo "Cleared cache succesfully!" . PHP_EOL . PHP_EOL;
+		} # if
+		
+		} else {
+		
+		echo "No argument passed, type --clear-cache -yes to bypass this.\n";
 		echo "\033[31m The cache in DB and files on-disk will be cleared, are you sure? \033[0m \n" . PHP_EOL;
 		echo "\033[31m Type 'yes' to confirm or any other key to abort: \033[0m \n" . PHP_EOL;
-		
-		$handle = fopen ("php://stdin","r");
-		$line = fgets($handle);
-			if(trim($line) != 'yes')
-			{
-    			echo "ABORTING!\n";
-    			exit;
-			}
-							
-		echo "\n";
+					$handle = fopen ("php://stdin","r");
+					$line = fgets($handle);
+					if(trim($line) != 'yes')
+					{
+					echo "ABORTING!\n";
+					echo "\n";
+					exit;	
+					}
+					
 		echo "Checking if retriever is running, if so wait for it to finish." . PHP_EOL;
 			if ($isRetrieverRunning > 0)
 			{
@@ -223,6 +256,7 @@ try {
 		$svcUpgradeBase->analyze($settings);
 		echo "Basic database optimalisation done" . PHP_EOL;
 } 
+}
 
 catch(CacheMustBeMigratedException $x) {
     die("Your current Spotweb installation has an old way of storing Spotweb related files like images and NZB files. " . PHP_EOL .
