@@ -18,9 +18,31 @@ class SpotStruct_sqlite extends SpotStruct_abs {
 		$this->_dbcon->rawExec("ANALYZE filtercounts");
 		$this->_dbcon->rawExec("ANALYZE users");
 		$this->_dbcon->rawExec("ANALYZE cache");
-        $this->_dbcon->rawExec("ANALYZE moderatedringbuffer");
-        $this->_dbcon->rawExec("ANALYZE usenetstate");
+        	$this->_dbcon->rawExec("ANALYZE moderatedringbuffer");
+        	$this->_dbcon->rawExec("ANALYZE usenetstate");
 	} # analyze
+	
+	function resetdb() { 		
+		$this->_dbcon->rawExec("PRAGMA FOREIGN_KEYS = OFF");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spots");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotsposted");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotsfull");
+		$this->_dbcon->rawExec("TRUNCATE TABLE commentsxover");
+		$this->_dbcon->rawExec("TRUNCATE TABLE commentsfull");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotstatelist");
+		$this->_dbcon->rawExec("TRUNCATE TABLE spotteridblacklist");
+		$this->_dbcon->rawExec("TRUNCATE TABLE filtercounts");	
+		$this->_dbcon->rawExec("TRUNCATE TABLE reportsposted");
+		$this->_dbcon->rawExec("TRUNCATE TABLE reportsxover");
+		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
+        	$this->_dbcon->rawExec("TRUNCATE TABLE moderatedringbuffer");
+        	$this->_dbcon->rawExec("TRUNCATE TABLE usenetstate");
+		$this->_dbcon->rawExec("PRAGMA FOREIGN_KEYS = ON");
+	} # resetdb
+	
+	function clearcache() { 		
+		$this->_dbcon->rawExec("TRUNCATE TABLE cache");
+	} # clearcache
 
 	/*
 	 * Returns a database specific representation of a boolean value

@@ -31,6 +31,18 @@ abstract class SpotStruct_abs {
 	 * This function does not modify any schema or data
 	 */
 	abstract function analyze();
+	
+	/* 
+	 * This will reset the following table's: spots, spotsfull, spotsposted, 
+	 * spotstatelist, commentsfull, commentsposted, commentsxover, moderatedringbuffer, 
+	 * reportsposted, reportsxover, usenetstate, cache
+	 */
+	abstract function resetdb();
+	
+	/* 
+	 * Clearcache / clear the database table cache.
+	 */
+	abstract function clearcache();
 
 	/*
 	 * Converts a 'spotweb' internal datatype to a 

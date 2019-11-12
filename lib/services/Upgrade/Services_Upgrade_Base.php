@@ -50,6 +50,19 @@ class Services_Upgrade_Base {
 		$this->_dbStruct->analyze();
 	 } # analyze
 
+	 /*
+	 * Reset de database
+	 */
+	function resetdb() {
+		# Instantieeer een struct object
+		$this->_dbStruct->resetdb();
+	 } # analyze
+	 
+	 function clearcache() {
+		# Instantieeer een struct object
+		$this->_dbStruct->clearcache();
+	 } # analyze
+
 	/*
 	 * Reset users' group membership
 	 */
