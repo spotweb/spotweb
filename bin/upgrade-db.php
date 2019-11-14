@@ -43,7 +43,6 @@ try {
     $settings = $bootstrap->getSettings($daoFactory, false);
     $dbSettings = $bootstrap->getDbSettings();
 	$dbConnection = $daoFactory->getConnection();
-	$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
 	
 	/*
 	 * And actually start updating or creating the schema and settings
@@ -124,7 +123,7 @@ try {
 	* If user asked to reset-db, here we reset-db..
 	*/
 	if (SpotCommandline::get('reset-db')) {
-	
+		$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
 		echo "Reset-DB" . PHP_EOL . PHP_EOL;
 					
 		echo "\033[31m You are about to reset the database to default.\033[0m \n" . PHP_EOL;		
@@ -176,7 +175,7 @@ try {
 	* If user asked to clear the cache, here we clear the cache..
 	*/
 	if (SpotCommandline::get('clear-cache')) {
-		
+		$isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
 		if (isset($argv[2]) && ($argv[2] == '-yes')) {
 		{		
 		echo "Clearing cache.." . PHP_EOL . PHP_EOL;
