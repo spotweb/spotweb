@@ -227,6 +227,13 @@ try {
 				break;
 		} # createuser
 
+		case 'createuser2' : {
+				$page = new SpotPage_createuser2($daoFactory, $settings, $currentSession,
+										Array('createuserform' => $req->getForm('createuserform')));
+				$page->render();
+				break;
+		} # createuser2
+
 		case 'editsettings' : {
 				$page = new SpotPage_editsettings($daoFactory, $settings, $currentSession,
 							Array('editsettingsform' => $req->getForm('editsettingsform')));

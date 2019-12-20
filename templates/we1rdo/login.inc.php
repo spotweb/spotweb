@@ -33,6 +33,9 @@
         $data['renderhtml'] = true;
     } # if
 ?>
+<h1>Your Spotweb login is different than your NZBFinder login!</h1>
+<br />
+<h2>If you're new, please check your inbox and spam folders first before contacting us.</h2>
 <form class="loginform" name="loginform" action="<?php echo $tplHelper->getPageUrl('login'); ?>" method="post">
 	<input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
 	<input type="hidden" name="loginform[http_referer]" value="<?php echo $http_referer; ?>">

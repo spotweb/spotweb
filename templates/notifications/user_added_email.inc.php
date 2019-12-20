@@ -1,13 +1,14 @@
-Spotweb registratie
+NZB Finder Spotweb Registration
 
-Hallo <?php echo $user['firstname'] . ' ' . $user['lastname'] ?>,
+Hi <?php echo $user['firstname'] . ' ' . $user['lastname'] ?>,
 
-Er is zojuist een account voor je aangemaakt op <?php echo $settings->get('spotweburl'); ?>.
+A new Spotweb account was just created for you at: <?php echo $settings->get('spotweburl'); ?>.
 
-Je kunt inloggen met de volgende gegevens:
+Please login using the following credentials:
 
-Gebruikersnaam:		<?php echo $user['username']; ?> 
-Wachtwoord:		<?php echo $user['newpassword1']; ?> 
+Username:		<?php echo $user['username']; ?> 
+Password:		<?php echo $user['newpassword1']; ?> 
 
-Met vriendelijke groet,
-<?php echo $adminUser['firstname'] . ' ' . $adminUser['lastname']; ?>.
+Thanks,
+
+NZB Finder
