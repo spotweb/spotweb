@@ -67,10 +67,10 @@ class SpotCommandline {
 
         foreach ($params as $tmp => $p) {
             if (!$skipnext) {
-                if ($p{0} == '-') {
+                if ($p[0] == '-') {
                     $pname = substr($p, 1);
                     $value = true;
-                    if ($pname{0} == '-') {
+                    if ($pname[0] == '-') {
                         // long-opt (--<param>)
                         $pname = substr($pname, 1);
                         if (strpos($p, '=') !== false) {
@@ -84,7 +84,7 @@ class SpotCommandline {
                     } else {
                         $nextparm = false;
                     }
-                    if (!in_array($pname, $noopt) && $value === true && $nextparm !== false && $nextparm{0} != '-') {
+                    if (!in_array($pname, $noopt) && $value === true && $nextparm !== false && $nextparm[0] != '-') {
                         $value = $nextparm;
                         $skipnext = true; // Found value, skip next params
                     }
@@ -92,7 +92,7 @@ class SpotCommandline {
                 } else {
                     // param doesn't belong to any option, probably a value
                     $result[] = $p;
-                } # $p{0} == '-'
+                } # $p[0] == '-'
             } else { # skipnext
                 $skipnext = false;
             }
