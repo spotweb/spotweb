@@ -45,7 +45,7 @@ class Services_Format_ParsingLegacy {
 								$startIndex += 3;
 							} # if 
 
-							continue;
+							break;
 						} # case '=' 
 
 						case '?': {
@@ -53,7 +53,7 @@ class Services_Format_ParsingLegacy {
 								$startIndex += 2;
 							} # if
 
-							continue;
+							break;
 						} # case '?' 
 					} # switch
 
