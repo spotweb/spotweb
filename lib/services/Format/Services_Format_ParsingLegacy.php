@@ -110,7 +110,7 @@ class Services_Format_ParsingLegacy {
 						$builder = '';
 						$num += 2;
 						$bliep = true;
-						continue;						
+						break;						
 				} # case '?' 
 			} # switch
 
