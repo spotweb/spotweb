@@ -126,7 +126,7 @@ abstract class dbeng_pdo extends dbeng_abs {
 		unset($stmt);
 		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($s,$p));
         
-		return $row[0];
+		return $row[0] ?? NULL;
 	} # singleQuery
 	
 	/**
