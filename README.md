@@ -3,6 +3,8 @@ Spotweb is a decentralized usenet community based on the [Spotnet](https://githu
 
 Spotweb requires an operational webserver with PHP5 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
 
+[![Build Status](https://travis-ci.org/spotweb/spotweb.svg?branch=develop)](https://travis-ci.org/spotweb/spotweb)
+
 ## Features
 Spotweb is one of the most-featured Spotnet clients currently available, featuring among other things:
 
