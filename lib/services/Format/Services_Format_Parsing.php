@@ -285,7 +285,7 @@ class Services_Format_Parsing {
 		 * Extract the fixed fields from the header
 		 */
 		$spot['poster'] = substr($from, 0, $fromInfoPos -1);
-		$spot['category'] = (substr($fields[0], 0, 1)) - 1.0;
+		$spot['category'] = (int) (substr($fields[0], 0, 1)) - 1.0;
 		$spot['keyid'] = (int) substr($fields[0], 1, 1);
 		$spot['filesize'] = $fields[1];
 		$spot['subcata'] = '';
