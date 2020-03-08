@@ -27,7 +27,7 @@ tools:
 build:
     environment:
         timezone: "Europe/Amsterdam"
-        php: "7.0"
+        php: "7.3"
         mysql: false
         postgresql: false
         redis: false
