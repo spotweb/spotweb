@@ -3,10 +3,10 @@ Spotweb is a decentralized usenet community based on the [Spotnet](https://githu
 
 Spotweb requires an operational webserver with PHP5 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
 
-[![Build Status](https://travis-ci.org/spotweb/spotweb.svg?branch=develop)](https://travis-ci.org/spotweb/spotweb)
+[![Travis-CI Status](https://travis-ci.org/spotweb/spotweb.svg?branch=develop)](https://travis-ci.org/spotweb/spotweb)
 [![Coverage Status](https://coveralls.io/repos/github/spotweb/spotweb/badge.svg?branch=develop)](https://coveralls.io/github/spotweb/spotweb?branch=develop)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/?branch=develop)
-[![Build Status](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/build-status/develop)
+[![Scrutinzer Status](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/build-status/develop)
 
 ## Features
 Spotweb is one of the most-featured Spotnet clients currently available, featuring among other things:
