@@ -7,6 +7,7 @@ Spotweb requires an operational webserver with PHP5 installed, it uses either an
 [![Coverage Status](https://coveralls.io/repos/github/spotweb/spotweb/badge.svg?branch=develop)](https://coveralls.io/github/spotweb/spotweb?branch=develop)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/?branch=develop)
 [![Scrutinzer Status](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/build-status/develop)
+[![Code consistency](https://squizlabs.github.io/PHP_CodeSniffer/analysis/squizlabs/PHP_CodeSniffer/grade.svg)](https://squizlabs.github.io/PHP_CodeSniffer/analysis/squizlabs/PHP_CodeSniffer)
 
 ## Features
 Spotweb is one of the most-featured Spotnet clients currently available, featuring among other things:
