@@ -7,8 +7,9 @@ php:
   - '7.4'
 before_script:
   - composer self-update
-  - composer require atoum/atoum
+  - composer require --dev atoum/atoum
   - composer install
 script:
   - phpunit
-  - vendor/bin/atoum
+  - vendor/bin/atoum --version
+  - vendor/bin/atoum --test-it
