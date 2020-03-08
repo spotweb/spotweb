@@ -7,7 +7,7 @@ php:
   - '7.3'
   - '7.4'
 before_install:
-  - if [[ ${TRAVIS_PHP_VERSION:0:6} == "5.6.40" ]]; then export PHPCS_VERSION="2.8.*"; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]]; then export PHPCS_VERSION="2.8.*"; fi
 before_script:
   - composer require --dev phpcompatibility/php-compatibility
   - composer require --dev squizlabs/php_codesniffer=${PHPCS_VERSION}
@@ -17,6 +17,7 @@ script:
   - phpunit
   - mkdir -p build/logs
   - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpcs --version 
   - vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/* --standard=PHPCompatibility . 
 after_success:
