@@ -1,3 +1,4 @@
+// phpcs:ignoreFile
 </div>
 </div>
 	</body>
