@@ -15,3 +15,5 @@ script:
   - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   - vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/* --standard=PHPCompatibility . 
+after_success:
+  - travis_retry php vendor/bin/php-coveralls
