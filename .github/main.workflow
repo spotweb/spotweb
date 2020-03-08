@@ -4,7 +4,7 @@ workflow "PHPCS Inspections" {
 }
 
 action "Run phpcs inspection" {
-  uses = "rtCamp/rtCamp/action-phpcs-inspection@develop"
+  uses = "rtCamp/rtCamp/action-phpcs-inspection@master"
   env = {
     DIFF_BASE="develop"
   }
