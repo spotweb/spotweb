@@ -119,10 +119,10 @@ class Services_Image_BmpConverter {
 			$j = 0;
 			/*** loop of the palette ***/
 			while($j < $palette_size) {
-				$b = $palette{$j++};
-				$g = $palette{$j++};
-				$r = $palette{$j++};
-				$a = $palette{$j++};
+				$b = $palette[$j++];
+				$g = $palette[$j++];
+				$r = $palette[$j++];
+				$a = $palette[$j++];
 				/*** assemble the gd palette ***/
 				$gd_palette .= "$r$g$b$a";
 			}
@@ -145,9 +145,9 @@ class Services_Image_BmpConverter {
 				$gd_scan_line = "";
 				$j = 0;
 				while($j < $scan_line_size) {
-					$b = $scan_line{$j++};
-					$g = $scan_line{$j++};
-					$r = $scan_line{$j++};
+					$b = $scan_line[$j++];
+					$g = $scan_line[$j++];
+					$r = $scan_line[$j++];
 					$gd_scan_line .= "\x00$r$g$b";
 				}
 			} elseif($bits == 8) {
@@ -156,7 +156,7 @@ class Services_Image_BmpConverter {
 				$gd_scan_line = "";
 				$j = 0;
 				while($j < $scan_line_size) {
-					$byte = ord($scan_line{$j++});
+					$byte = ord($scan_line[$j++]);
 					$p1 = chr($byte >> 4);
 					$p2 = chr($byte & 0x0F);
 					$gd_scan_line .= "$p1$p2";
@@ -166,7 +166,7 @@ class Services_Image_BmpConverter {
 				$gd_scan_line = "";
 				$j = 0;
 				while($j < $scan_line_size) {
-					$byte = ord($scan_line{$j++});
+					$byte = ord($scan_line[$j++]);
 					$p1 = chr((int) (($byte & 0x80) != 0));
 					$p2 = chr((int) (($byte & 0x40) != 0));
 					$p3 = chr((int) (($byte & 0x20) != 0));
