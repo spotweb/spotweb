@@ -18,12 +18,18 @@
     "spotweb/nntp": "1.0.*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5.6.2"
+    "phpunit/phpunit": "^5.6.2",
+    "phpcompatibility/php-compatibility": "*"
   },
+  "prefer-stable" : true
   "autoload": {
     "classmap": [
       "lib/",
       "templates/"
     ]
+  }
+  "scripts": {
+    "post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
+    "post-update-cmd" : "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility"
   }
 }
