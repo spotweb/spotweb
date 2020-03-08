@@ -10,7 +10,7 @@ before_install:
   - if [[ ${TRAVIS_PHP_VERSION:0:6} == "5.6.40" ]]; then export PHPCS_VERSION="2.8.*"; fi
 before_script:
   - composer require --dev phpcompatibility/php-compatibility
-  - composer require --dev squizlabs/php_codesniffer:${PHPCS_VERSION}
+  - composer require --dev squizlabs/php_codesniffer=${PHPCS_VERSION}
   - composer require --dev php-coveralls/php-coveralls
   - composer install
 script:
