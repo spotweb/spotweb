@@ -5,9 +5,11 @@ php:
   - '7.3'
   - '7.4'
 before_script:
+  - composer require --dev phpcompatibility/php-compatibility
   - composer require --dev squizlabs/php_codesniffer
   - composer install
 script:
   - phpunit
   - vendor/bin/phpcs -i
+  - vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/* --standard=PHPCompatibility . 
