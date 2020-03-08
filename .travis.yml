@@ -12,6 +12,6 @@ before_script:
 script:
   - phpunit
   - mkdir -p build/logs
-  - vendor/bin/phpunit tests --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   - vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/* --standard=PHPCompatibility . 
