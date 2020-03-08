@@ -31,14 +31,6 @@ try {
 	SpotTranslation::initialize('en_US');
 
 	/*
-	 * When PHP is running in safe mode, max execution time cannot be set,
-	 * which is necessary on slow systems for retrieval and statistics generation
-	 */
-	if (ini_get('safe_mode')) {
-		echo "WARNING: PHP safemode is enabled, maximum execution cannot be reset! Turn off safemode if this causes problems" . PHP_EOL . PHP_EOL;
-	} # if
-
-	/*
 	 * When retrieval is run from the webinterface, we want to make
 	 * sure this user is actually allowed to run retrieval.
 	 */
