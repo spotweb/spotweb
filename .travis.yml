@@ -8,11 +8,25 @@ php:
 env:
   global:
     - PHPUNIT_VERSION="travis"
-  matrix:
-    - PHPCS_VERSION="2.6.0"
+    - php: 5.6
+      env: PHPCS_VERSION="2.8.*"
+    - php: 7.0
+      env: PHPCS_VERSION="2.6.*"
+    - php: 7.1
+      env: PHPCS_VERSION="3.1.*"
+    - php: 7.2
+      env: PHPCS_VERSION="3.3.*"
+    - php: 7.3
+      env: PHPCS_VERSION="3.4.*" LINT=1
+    - php: 7.3
+      env: PHPCS_VERSION="dev-master"
+    - php: 7.4
+      env: PHPCS_VERSION=">=2.6,<3.0" LINT=1
+    - php: 7.4
+      env: PHPCS_VERSION="2.6.0"
 before_script:
   - composer require --dev phpcompatibility/php-compatibility
-  - composer require --dev squizlabs/php_codesniffer
+  - composer require --dev squizlabs/php_codesniffer:${PHPCS_VERSION}
   - composer require --dev php-coveralls/php-coveralls
   - composer install
 script:
