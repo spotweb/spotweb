@@ -21,15 +21,14 @@
     "phpunit/phpunit": "^5.6.2",
     "phpcompatibility/php-compatibility": "*"
   },
-  "prefer-stable" : true
+  "scripts": {
+    "post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
+    "post-update-cmd" : "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility"
+  }
   "autoload": {
     "classmap": [
       "lib/",
       "templates/"
     ]
-  }
-  "scripts": {
-    "post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
-    "post-update-cmd" : "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility"
   }
 }
