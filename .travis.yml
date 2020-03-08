@@ -1,7 +1,6 @@
 language: php
 os: linux
 php:
-  - '5.6'
   - '7.2'
   - '7.3'
   - '7.4'
@@ -12,4 +11,3 @@ script:
   - phpunit
   - vendor/bin/phpcs -i
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/* --standard=PHPCompatibility . 
-  - vendor/bin/phpcbf -h
