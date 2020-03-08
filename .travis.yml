@@ -9,4 +9,5 @@ before_script:
   - composer install
 script:
   - phpunit
+  - vendor/bin/phpcs -i
   - vendor/bin/phpcs --ignore=*/vendor/* --standard=PHPCompatibility . 
