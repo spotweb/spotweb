@@ -5,3 +5,10 @@ php:
   - '7.2'
   - '7.3'
   - '7.4'
+before_script:
+  - composer self-update
+  - composer require --dev humanmade/coding-standards
+  - composer install
+script:
+  - phpunit
+  - vendor/bin/phpcs --standard=vendor/humanmade/coding-standards .
