@@ -43,12 +43,6 @@ global $_testInstall_Ok;
                 "allow_url_fopen not on -- will cause problems to retrieve external data"); ?></td>
     </tr>
     <tr>
-        <td> PHP safe mode</td>
-        <td><?php echo ini_get("safe_mode"); ?></td>
-        <td><?php SpotInstall::showResult(!ini_get("safe_mode"), true, "",
-                "Safe mode set -- will cause problems for retrieve.php"); ?></td>
-    </tr>
-    <tr>
         <td> Memory limit</td>
         <td><?php echo ini_get("memory_limit"); ?></td>
         <td><?php SpotInstall::showResult(SpotInstall::returnBytes(ini_get("memory_limit")) >= (128 * 1024 * 1024),
