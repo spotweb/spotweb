@@ -7,8 +7,8 @@ php:
 before_script:
   - composer require --dev squizlabs/php_codesniffer
   - composer install
+script:
   - cd vendor/squizlabs/php_codesniffer/CodeSniffer/Standards
   - git clone https://github.com/wimg/PHPCompatibility.git
-script:
   - phpunit
   - vendor/bin/phpcs --ignore=*/vendor/* --standard=PHPCompatibility . 
