@@ -211,7 +211,7 @@ class Services_Providers_Http {
 
         // Only use these curl options if no open base dir is set and php mode is off.
         $manualRedirect = false;
-        if (ini_get('open_basedir') <> '' || ini_get('safe_mode')) {
+        if (ini_get('open_basedir') <> '') {
             $manualRedirect = true;
             curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, false);
             curl_setopt ($ch, CURLOPT_MAXREDIRS, 1);
