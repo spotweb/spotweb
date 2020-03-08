@@ -7,9 +7,11 @@ php:
 before_script:
   - composer require --dev phpcompatibility/php-compatibility
   - composer require --dev squizlabs/php_codesniffer
+  - composer require --dev php-coveralls/php-coveralls
   - composer install
 script:
   - phpunit
-  - vendor/bin/phpcs -i
+  - mkdir -p build/logs
+  - vendor/bin/phpunit tests --coverage-clover build/logs/clover.xml
   - vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/* --standard=PHPCompatibility . 
