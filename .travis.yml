@@ -7,9 +7,9 @@ php:
   - '7.4'
 before_script:
   - composer self-update
-  - composer require --dev atoum/atoum
+  - composer require --dev squizlabs/php_codesniffer
   - composer install
 script:
   - phpunit
-  - vendor/bin/atoum --version
-  - vendor/bin/atoum --test-it
+  - vendor/bin/phpcs --standard=PHPCS --report=summary
+  
