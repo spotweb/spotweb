@@ -11,4 +11,5 @@ before_script:
 script:
   - phpunit
   - vendor/bin/phpcs -i
-  - vendor/bin/phpcs --ignore=*/vendor/* --ignore=*/js/* --standard=PHPCompatibility . 
+  - vendor/bin/phpcs --ignore=*/vendor/*,*/js/* --standard=PHPCompatibility . 
+  - vendor/bin/phpcbf -h
