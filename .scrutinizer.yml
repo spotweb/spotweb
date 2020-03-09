@@ -3,8 +3,8 @@ build:
         before:
         override:
            - 'composer update'
-           - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'
-nodes:
+           - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
+    nodes:
       php56:
       environment:
         php: 5.6
