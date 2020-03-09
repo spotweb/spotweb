@@ -1,10 +1,10 @@
 build:
-    dependencies:
+  dependencies:
         before:
         override:
            - 'composer update'
            - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
-    nodes:
+  nodes:
       php56:
         environment:
             php: 
@@ -29,9 +29,9 @@ build:
         environment:
             php:
                 version: 7.4
- analysis:
-       tests:
-         override:
+    analysis:
+      tests:
+        override:
           -
           command: 'php-scrutinizer-run'
 filter:
