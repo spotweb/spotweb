@@ -1,3 +1,4 @@
+// @codingStandardsIgnoreLine
 // phpcs:ignoreFile
 </div>
 </div>
