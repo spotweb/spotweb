@@ -1,1 +1,65 @@
+build:
+    dependencies:
+        before:
+        override:
+           - 'composer update'
+           - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'
+    nodes:
+        php56:
+      environment:
+        php: 5.6
 
+        php70:
+      environment:
+        php: 7.0
+
+        php71:
+      environment:
+        php: 7.1
+    
+        php72:
+      environment:
+        php: 7.2
+        
+        php73:
+      environment:
+        php: 7.3
+    
+        php74:
+      environment:
+        php: 7.4    
+        analysis:
+            tests:
+                override:
+                    -
+                        command: 'php-scrutinizer-run'
+filter:
+    excluded_paths:
+      - "js/*"
+    dependency_paths:
+      - "vendor/*"
+
+checks:
+    php:
+        code_rating: true
+        remove_extra_empty_lines: true
+        remove_php_closing_tag: true
+        remove_trailing_whitespace: true
+        fix_use_statements:
+          remove_unused: true
+          preserve_multiple: false
+          preserve_blanklines: true
+          order_alphabetically: true
+        fix_php_opening_tag: true
+        fix_linefeed: true
+        fix_line_ending: true
+        fix_identation_4spaces: true
+        fix_doc_comments: true
+
+tools:
+    sensiolabs_security_checker: true
+    php_analyzer: true
+    php_cs_fixer: true
+    php_code_sniffer:
+      config:
+        standard: PSR2
