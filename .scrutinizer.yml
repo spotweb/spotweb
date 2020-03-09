@@ -7,27 +7,33 @@ build:
     nodes:
       php56:
       environment:
-        php: 5.6
+        php: 
+        version: '5.6'
 
       php70:
       environment:
-        php: 7.0
+        php:
+        version: '7.0'
 
       php71:
       environment:
-        php: 7.1
+        php:
+        version: '7.1'
     
       php72:
       environment:
-        php: 7.2
+        php:
+        version: '7.2'
         
       php73:
       environment:
-        php: 7.3
+        php:
+        version: '7.3'
     
       php74:
       environment:
-        php: 7.4    
+        php: 
+        version: '7.4'    
         analysis:
             tests:
                 override:
