@@ -15,7 +15,10 @@
     "monolog/monolog": "^1.23.0",
     "uskr/nma-php": "^0.0.4",
     "zendframework/zend-xml2json": "^3.0",
-    "spotweb/nntp": "1.0.*"
+    "spotweb/nntp": "1.0.*",
+    "squizlabs/php_codesniffer": "^2.6.0",
+    "phpcompatibility/php-compatibility",
+    "php-coveralls/php-coveralls": "^2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.6.2"
