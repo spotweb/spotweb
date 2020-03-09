@@ -4,7 +4,7 @@ build:
         override:
            - 'composer update'
            - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
-      nodes:
+    nodes:
        php56:
          environment:
              php: 
