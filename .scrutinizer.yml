@@ -30,8 +30,8 @@ build:
             php:
                 version: 7.4
    
-   analysis:
-      tests:
+analysis:
+    tests:
         override:
           - php-scrutinizer-run
 
