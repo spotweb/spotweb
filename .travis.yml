@@ -1,13 +1,28 @@
 language: php
 os: linux
 php: 
+  - '5.6'
+  - '7.0'
+  - '7.1'
   - '7.2'
   - '7.3'
   - '7.4'
+env:
+  global:
+    - DEFAULT=1
+    
+matrix:
+  include:
+    - php: 5.6
+      env: PREFER_LOWEST=1
+
 before_script:
-  - composer require --dev squizlabs/php_codesniffer
-  - composer require --dev phpcompatibility/php-compatibility
-  - composer require --dev php-coveralls/php-coveralls
+  - if [[ $PREFER_LOWEST != 1 ]]; then composer install --prefer-source --no-interaction; fi
+  - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest --prefer-dist --prefer-stable --no-interaction; fi
+  - if [[ $PREFER_LOWEST == 1 ]]; then composer require --dev dereuromark/composer-prefer-lowest; fi
+  - composer require squizlabs/php_codesniffer
+  - composer require phpcompatibility/php-compatibility
+  - composer require php-coveralls/php-coveralls
   - composer install
 script:
   - phpunit
