@@ -29,11 +29,12 @@ build:
         environment:
             php:
                 version: 7.4
-    analysis:
+   
+   analysis:
       tests:
         override:
-          -
-          command: 'php-scrutinizer-run'
+          - php-scrutinizer-run
+
 filter:
     excluded_paths:
       - "js/*"
