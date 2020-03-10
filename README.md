@@ -2,16 +2,22 @@
 Spotweb is a decentralized usenet community based on the [Spotnet](https://github.com/spotnet/spotnet/wiki) protocol.
 
 Spotweb requires an operational webserver with PHP5 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
-
+<table align="center"><tr><td align="center" width="9999">
+ 
 [![Travis-CI Status](https://travis-ci.org/spotweb/spotweb.svg?branch=develop)](https://travis-ci.org/spotweb/spotweb)
 [![Coverage Status](https://coveralls.io/repos/github/spotweb/spotweb/badge.svg?branch=develop)](https://coveralls.io/github/spotweb/spotweb?branch=develop)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/?branch=develop)
+
 [![Scrutinzer Status](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/build-status/develop)
 [![Code consistency](https://squizlabs.github.io/PHP_CodeSniffer/analysis/squizlabs/PHP_CodeSniffer/grade.svg)](https://squizlabs.github.io/PHP_CodeSniffer/analysis/squizlabs/PHP_CodeSniffer)
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/code-intelligence.svg?b=develop)](https://scrutinizer-ci.com/code-intelligence)
 [![StyleCI](https://github.styleci.io/repos/21400663/shield?branch=develop)](https://github.styleci.io/repos/21400663)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/maintainability)](https://codeclimate.com/github/spotweb/spotweb/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/test_coverage)](https://codeclimate.com/github/spotweb/spotweb/test_coverage)
+
 [![Tested on:](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20-brightgreen.svg?maxAge=2419200)](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20-brightgreen.svg?maxAge=2419200)
+</td></tr></table>
 
 ## Features
 Spotweb is one of the most-featured Spotnet clients currently available, featuring among other things:
