@@ -38,7 +38,7 @@ build:
                     -	
                         command: 'php-scrutinizer-run'
                     -
-                        command: 'phpcs-run'
+                        command: 'vendor/bin/phpcs -h'
                     -
                         command: 'vendor/bin/phpunit --coverage-clover=coverage'
                               
