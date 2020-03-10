@@ -62,6 +62,8 @@ checks:
         fix_doc_comments: true
 
 tools:
+    php_code_coverage:
+        test_command: vendor/bin/phpunit
     sensiolabs_security_checker: true
     php_analyzer: true
     php_cs_fixer: true
