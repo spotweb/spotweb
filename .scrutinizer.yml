@@ -34,10 +34,17 @@ build:
                 override:
                     -
                         command: 'php-scrutinizer-run'
+                    -
+                        command: 'phpcs-run'
+                            use_website_config: true
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
+                            coverage:
+                                file: coverage
+                                format: clover
 filter:
     excluded_paths:
       - "js/*"
-    dependency_paths:
       - "vendor/*"
 
 checks:
