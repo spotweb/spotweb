@@ -29,7 +29,15 @@ build:
             environment:
                 php:
                     version: 7.4
-                    
+   
+    analysis:	    
+        tests:	           
+            override:	                
+                -	
+                    command: 'php-scrutinizer-run'	
+                -
+                    command: 'phpcs-run'
+                              
 filter:
     excluded_paths:
       - "js/*"
@@ -37,6 +45,9 @@ filter:
 
 checks:
     php:
+        excluded_dependencies:
+            - monolog/monolog
+            - abraham/twitteroauth
         code_rating: true
         remove_extra_empty_lines: true
         remove_php_closing_tag: true
@@ -53,11 +64,5 @@ checks:
         fix_doc_comments: true
 
 tools:
-    php_code_coverage:
-        test_command: vendor/bin/phpunit
-    sensiolabs_security_checker: true
     php_analyzer: true
     php_cs_fixer: true
-    php_code_sniffer:
-      config:
-        standard: PSR2
