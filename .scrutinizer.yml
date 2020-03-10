@@ -1,4 +1,7 @@
 build:
+    tests:
+        override:
+                - vendor/bin/phpunit
     dependencies:
         before:
         override:
@@ -45,9 +48,6 @@ filter:
       - "vendor/*"
 
 checks:
-    tests:
-        override:
-                - vendor/bin/phpunit
         code_rating: true
         remove_extra_empty_lines: true
         remove_php_closing_tag: true
