@@ -11,13 +11,13 @@ before_script:
   - composer update
   - composer install
 script:
-  #- mkdir -p build/logs
+  - mkdir -p build/logs
   - vendor/bin/phpunit -c phpunit.xml.dist
   #- vendor/bin/phpunit --coverage-clover ./clover.xml
   - vendor/bin/phpcs --version 
   - vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility . 
 after_script:
-- php vendor/bin/coveralls -v
+  - vendor/bin/coveralls -v
 after_success:
   - travis_retry php vendor/bin/php-coveralls
