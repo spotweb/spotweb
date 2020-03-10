@@ -1,203 +1,234 @@
 <?php
-	class TagHandler {
-		/*
-		 * Denied tags -- used to be able to process
-		 * all this in two passes (eg: used for tags needing information for other stuff)
-		 */
-		private static $deniedtags = Array();
 
-		/*
-		* UBB tag configuration params
-		*/
-		public static $tagconfig =
-			Array(
-			/* ------- b -------------------- */
-				'b'	=>
-				Array('b' =>
-					Array('closetags' => Array('b'),
-					      'allowedchildren' => Array(NULL),
-					      'handler' => Array('TagHandler', 'handle_bold') ),
-					  'br' =>
-					Array('closetags' => Array(NULL),
-					      'allowedchildren' => Array(''),
-					      'handler' => Array('TagHandler', 'handle_br') )
-				),
+    class TagHandler
+    {
+        /*
+         * Denied tags -- used to be able to process
+         * all this in two passes (eg: used for tags needing information for other stuff)
+         */
+        private static $deniedtags = [];
 
-			/* ------- i -------------------- */
-				'i'	=>
-					Array('i' => 
-						Array('closetags' => Array('i'),
-							  'allowedchildren' => Array(NULL),
-							  'handler' => Array('TagHandler', 'handle_italic') ),
-							  
+        /*
+        * UBB tag configuration params
+        */
+        public static $tagconfig =
+            [
+                /* ------- b -------------------- */
+                'b'	=> ['b' => ['closetags' => ['b'],
+                    'allowedchildren'       => [null],
+                    'handler'               => ['TagHandler', 'handle_bold'], ],
+                    'br' => ['closetags'    => [null],
+                        'allowedchildren'   => [''],
+                        'handler'           => ['TagHandler', 'handle_br'], ],
+                ],
 
-						  'img' =>
-							Array('closetags' => Array(NULL),
-								  'allowedchildren' => Array(''),
-								  'handler' => Array('TagHandler', 'handle_img') )
-							  
-				),
+                /* ------- i -------------------- */
+                'i'	=> ['i' => ['closetags' => ['i'],
+                    'allowedchildren'       => [null],
+                    'handler'               => ['TagHandler', 'handle_italic'], ],
 
-			/* ------- u ------------------- */
-				'u'	=>
-					Array('u' =>
-						Array('closetags' => Array('u'),
-							  'allowedchildren' => Array(NULL),
-							  'handler' => Array('TagHandler', 'handle_underline')),
+                    'img' => ['closetags' => [null],
+                        'allowedchildren' => [''],
+                        'handler'         => ['TagHandler', 'handle_img'], ],
 
-						  'url' =>
-							Array('closetags' => Array('url'),
-								  'allowedchildren' => Array(''),
-								  'handler' => Array('TagHandler', 'handle_url') )
-							  
-					),
+                ],
 
-			/* ------- q ------------------- */
-				'q'	=>
-					Array('quote' =>
-						Array('closetags' => Array('quote'),
-							  'allowedchildren' => Array(NULL),
-							  'handler' => Array('TagHandler', 'handle_quote'))
+                /* ------- u ------------------- */
+                'u'	=> ['u' => ['closetags' => ['u'],
+                    'allowedchildren'       => [null],
+                    'handler'               => ['TagHandler', 'handle_underline'], ],
+
+                    'url' => ['closetags' => ['url'],
+                        'allowedchildren' => [''],
+                        'handler'         => ['TagHandler', 'handle_url'], ],
+
+                ],
+
+                /* ------- q ------------------- */
+                'q'	=> ['quote' => ['closetags' => ['quote'],
+                    'allowedchildren'           => [null],
+                    'handler'                   => ['TagHandler', 'handle_quote'], ],
                     //)
-                ),
+                ],
 
-            /* ------- y ------------------- */
-				'y'	=>
-					Array('youtube' =>
-						Array('closetags' => Array('youtube'),
-							  'allowedchildren' => Array(NULL),
-							  'handler' => Array('TagHandler', 'handle_youtube'))
-					)
+                /* ------- y ------------------- */
+                'y'	=> ['youtube' => ['closetags' => ['youtube'],
+                    'allowedchildren'             => [null],
+                    'handler'                     => ['TagHandler', 'handle_youtube'], ],
+                ],
+            ];
+
+        /**
+         * Returns the tag config for a given tag.
+         */
+        public static function gettagconfig($tagname)
+        {
+            if ((strlen($tagname) >= 1) && (isset(self::$tagconfig[$tagname[0]][$tagname]))) {
+                return self::$tagconfig[$tagname[0]][$tagname];
+            } else {
+                return null;
+            } // else
+        }
+
+        // gettagconfig
+
+        /*
+         * Add additional configuration for a tag
+         */
+        public static function setadditionalinfo($tagname, $name, $value)
+        {
+            self::$tagconfig[$tagname[0]][$tagname][$name] = $value;
+        }
+
+        // setadditionalinfo
+
+        /*
+         * Set the list of denied tags
+         */
+        public static function setdeniedtags($deniedtags)
+        {
+            self::$deniedtags = $deniedtags;
+        }
+
+        // setdeniedtags
+
+        /*
+         * Returns the list of denied tags
+         */
+        public static function getdeniedtags($deniedtags)
+        {
+            return self::$deniedtags;
+        }
+
+        // getdeniedtags
+
+        /*
+         * Processes an tag (when allowed)
+         */
+        public static function process_tag($tagname, $params, $contents)
+        {
+            if (array_search($tagname, self::$deniedtags) !== false) {
+                return null;
+            } // if denied tag
+
+            if (isset(self::$tagconfig[$tagname[0]][$tagname]['handler'])) {
+                return call_user_func_array(
+                    self::$tagconfig[$tagname[0]][$tagname]['handler'],
+                    [$params, $contents]
                 );
+            } else {
+                // ??
+            } // if
+        }
 
-		/**
-		* Returns the tag config for a given tag
-		*/
-		static function gettagconfig($tagname) {
-			if ((strlen($tagname) >= 1) && (isset(TagHandler::$tagconfig[$tagname[0]][$tagname]))) {
-				return TagHandler::$tagconfig[$tagname[0]][$tagname];
-			} else {
-				return NULL;
-			} // else
-		} // gettagconfig
+        // process_tag
 
-		/*
-		 * Add additional configuration for a tag 
-		 */
-		static function setadditionalinfo($tagname, $name, $value) {
-			TagHandler::$tagconfig[$tagname[0]][$tagname][$name] = $value;
-		} # setadditionalinfo
+        /* Returns an empty append/prepend, used for deprecated tags */
+        public static function handle_empty($params, $contents)
+        {
+            return ['prepend' => '', 'content' => $contents, 'append' => ''];
+        }
 
-		/*
-		 * Set the list of denied tags	
-		 */
-		static function setdeniedtags($deniedtags) {
-			TagHandler::$deniedtags = $deniedtags;
-		} // setdeniedtags
+        // func. handle_empty
 
-		/*
-		 * Returns the list of denied tags
-		 */
-		static function getdeniedtags($deniedtags) {
-			return TagHandler::$deniedtags;
-		} // getdeniedtags
+        public static function handle_bold($params, $contents)
+        {
+            return ['prepend' => '<b>',
+                'content'     => $contents,
+                'append'      => '</b>', ];
+        }
 
-		/*
-		 * Processes an tag (when allowed)
-		 */
-		static function process_tag($tagname, $params, $contents) {
-			if (array_search($tagname, TagHandler::$deniedtags) !== FALSE) {
-					return NULL;
-			} // if denied tag
+        // handle_bold
 
-			if (isset(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'])) {
-				return call_user_func_array(TagHandler::$tagconfig[$tagname[0]][$tagname]['handler'],
-							array($params, $contents));
-			} else {
-				// ??
-			} # if
-		} // process_tag
+        public static function handle_underline($params, $contents)
+        {
+            return ['prepend' => '<u>',
+                'content'     => $contents,
+                'append'      => '</u>', ];
+        }
 
-		/* Returns an empty append/prepend, used for deprecated tags */
-		static function handle_empty($params, $contents) {
-			return Array('prepend' => '', 'content' => $contents, 'append' => '');
-		} // func. handle_empty
+        // handle_underline
 
-		static function handle_bold($params, $contents) {
-			return Array('prepend' => '<b>',
-				     'content' => $contents,
-				     'append' => '</b>');
-		} // handle_bold
+        public static function handle_italic($params, $contents)
+        {
+            return ['prepend' => '<i>',
+                'content'     => $contents,
+                'append'      => '</i>', ];
+        }
 
-		static function handle_underline($params, $contents) {
-			return Array('prepend' => '<u>',
-				     'content' => $contents,
-				     'append' => '</u>');
-		} // handle_underline
+        // handle_italic
 
-		static function handle_italic($params, $contents) {
-			return Array('prepend' => '<i>',
-				     'content' => $contents,
-				     'append' => '</i>');
-		} // handle_italic
+        /* Handles [br] */
+        public static function handle_br($params, $contents)
+        {
+            return ['prepend' => '<br>',
+                'content'     => $contents,
+                'append'      => '', ];
+        }
 
-		
-		/* Handles [br] */
-		static function handle_br($params, $contents) {
-			return Array('prepend' => '<br>',
-				     'content' => $contents,
-				     'append' => '');
-		} // handle_br
+        // handle_br
 
-		
-		/* handle the img tag */
-		static function handle_img($params, $contents) {
-				$origAppend = '';
-				
-				# are only specific images allowed?
-				if (isset(TagHandler::$tagconfig['i']['img']['allowedimgs'])) {
-					if (!isset(TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]])) { 
-						return TagHandler::handle_empty($params, $contents);
-					} else {
-						$origAppend = $contents;
-						$contents = TagHandler::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]];
-					} # if
-				} # if
-				
-				return Array('prepend' => '<img src="' . $contents . '">',
-							 'content' => $origAppend,
-							 'append' => '');
-		} // handle_img
+        /* handle the img tag */
+        public static function handle_img($params, $contents)
+        {
+            $origAppend = '';
 
-		/* handle the quote tag */
-		static function handle_quote($params, $contents) {
-				# quote it
-				return Array('prepend' => '<blockquote><strong>' . sprintf(_("%s commented earlier:"), substr($params['originalparams'], 1)). '</strong><br>',
-							 'content' => $contents,
-							 'append' => '</blockquote>');
-		} // handle_quote
+            // are only specific images allowed?
+            if (isset(self::$tagconfig['i']['img']['allowedimgs'])) {
+                if (!isset(self::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]])) {
+                    return self::handle_empty($params, $contents);
+                } else {
+                    $origAppend = $contents;
+                    $contents = self::$tagconfig['i']['img']['allowedimgs'][$params['params'][0]];
+                } // if
+            } // if
 
-		/* handle the img tag */
-		static function handle_url($params, $contents) {
-				# are only specific images allowed?
-				return Array('prepend' => '<a href="' . substr($params['originalparams'], 1) . '">',
-							 'content' => $contents,
-							 'append' => '</a>');
-		} // handle_url
+                return ['prepend' => '<img src="'.$contents.'">',
+                    'content'     => $origAppend,
+                    'append'      => '', ];
+        }
 
-		static function handle_youtube($params, $contents) {
-            # are only specific images allowed?
-            return Array('prepend' => '<div style="max-width: 480px; clear: left"><div style="position: relative; height:0px; padding-bottom: 75%"><iframe style="position: absolute; top: 0px; left:0px; width: 100%; height: 100%" src="https://www.youtube.com/embed/' ,
-                         'content' => $contents,
-                         'append' => '" frameborder="0" allowfullscreen></iframe></div></div>');
-		} // handle_url
-		
+        // handle_img
 
-		/* handle the noubb tag */
-		static function handle_noubb($params, $contents) {
-			return Array('prepend' => '',
-				     'content' => $contents,
-				     'append' => '');
-		} // handle_noubb
+        /* handle the quote tag */
+        public static function handle_quote($params, $contents)
+        {
+            // quote it
+            return ['prepend' => '<blockquote><strong>'.sprintf(_('%s commented earlier:'), substr($params['originalparams'], 1)).'</strong><br>',
+                'content'     => $contents,
+                'append'      => '</blockquote>', ];
+        }
 
-	} // class TagHandler 
+        // handle_quote
+
+        /* handle the img tag */
+        public static function handle_url($params, $contents)
+        {
+            // are only specific images allowed?
+            return ['prepend' => '<a href="'.substr($params['originalparams'], 1).'">',
+                'content'     => $contents,
+                'append'      => '</a>', ];
+        }
+
+        // handle_url
+
+        public static function handle_youtube($params, $contents)
+        {
+            // are only specific images allowed?
+            return ['prepend' => '<div style="max-width: 480px; clear: left"><div style="position: relative; height:0px; padding-bottom: 75%"><iframe style="position: absolute; top: 0px; left:0px; width: 100%; height: 100%" src="https://www.youtube.com/embed/',
+                'content'     => $contents,
+                'append'      => '" frameborder="0" allowfullscreen></iframe></div></div>', ];
+        }
+
+        // handle_url
+
+        /* handle the noubb tag */
+        public static function handle_noubb($params, $contents)
+        {
+            return ['prepend' => '',
+                'content'     => $contents,
+                'append'      => '', ];
+        }
+
+        // handle_noubb
+    } // class TagHandler

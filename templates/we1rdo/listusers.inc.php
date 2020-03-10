@@ -1,6 +1,6 @@
 <?php
-	# We run tis at the top to get the cleanest error handling possible
-	$userlist = $tplHelper->getUserList();
+    // We run tis at the top to get the cleanest error handling possible
+    $userlist = $tplHelper->getUserList();
 ?>
 	<table  class="ui-widget ui-widget-content" summary="Users">
 		<thead>
@@ -18,36 +18,34 @@
 		<tbody id="userlist">
 				
 <?php
-	$allow_edit_groupMembership = $tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '');
-	$allow_display_groupMembership = $tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, '');
+    $allow_edit_groupMembership = $tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '');
+    $allow_display_groupMembership = $tplHelper->allowed(SpotSecurity::spotsec_display_groupmembership, '');
 
-	foreach($userlist as $user) {
-		# We vragen nu de group membership op, en geven die mee als string zodat
-		# ze kunnen zien welke groepen een user lid van is
-		$groupMember = $tplHelper->getGroupListForUser($user['userid']);
-		$groupList = '';
-		foreach($groupMember as $group) {
-			# We maken een link naar het editten van de security groep hier naar toe
-			# dit maakt het simpeler om te zien welke rechten een user heeft
-			if ($group['ismember']) {
-				if ($allow_edit_groupMembership) {
-					$groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \'' . _('Change group') . '\', \'?page=editsecgroup&amp;groupid=' . $group['id'] . '\', null, \'reload\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' . $group['name'] . '</a>, ';
-				} elseif ($allow_display_groupMembership) { 
-					$groupList .= $group['name'] . ', ';
-				} # if
-			} # if
-		} # foreach
-		
-		# en wis de laatste comma en spatie
-		$groupList = substr($groupList, 0, -2);
-?>
+    foreach ($userlist as $user) {
+        // We vragen nu de group membership op, en geven die mee als string zodat
+        // ze kunnen zien welke groepen een user lid van is
+        $groupMember = $tplHelper->getGroupListForUser($user['userid']);
+        $groupList = '';
+        foreach ($groupMember as $group) {
+            // We maken een link naar het editten van de security groep hier naar toe
+            // dit maakt het simpeler om te zien welke rechten een user heeft
+            if ($group['ismember']) {
+                if ($allow_edit_groupMembership) {
+                    $groupList .= '<a href="" onclick="return openDialog(\'editdialogdiv\', \''._('Change group').'\', \'?page=editsecgroup&amp;groupid='.$group['id'].'\', null, \'reload\', function() { refreshTab(\'usermanagementtabs\')}, null); ">'.$group['name'].'</a>, ';
+                } elseif ($allow_display_groupMembership) {
+                    $groupList .= $group['name'].', ';
+                } // if
+            } // if
+        } // foreach
+
+        // en wis de laatste comma en spatie
+        $groupList = substr($groupList, 0, -2); ?>
 			<tr> 
 				<td> 
-<?php 
-		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'' . _('Change user') . '\', \'?page=edituser&userid=' . $user['userid'] . '\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, null); ">' .
-				 $user['username'] . '</a>'; 
-?> 
+<?php
+        echo '<a href="'.$tplHelper->makeEditUserUrl($user['userid'], 'edit').'" '.
+                'onclick="return openDialog(\'editdialogdiv\', \''._('Change user').'\', \'?page=edituser&userid='.$user['userid'].'\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, null); ">'.
+                 $user['username'].'</a>'; ?> 
 				</td>
 				<td> <?php echo $user['firstname']; ?> </td>
 				<td> <?php echo $user['lastname']; ?> </td>
@@ -56,14 +54,13 @@
 				<td> <?php echo $groupList; ?> </td>
 				<td> <?php echo $user['lastipaddr']; ?> </td>
 				<td> 
-<?php 
-		echo '<a href="' . $tplHelper->makeEditUserUrl($user['userid'], 'edit') . '" ' .
-				'onclick="return openDialog(\'editdialogdiv\', \'' . vsprintf(_('Editting user preferences for \\\'%s\\\''), $user['username']) . '\', \'?page=edituserprefs&userid=' . $user['userid'] . '&dialogembedded=1\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, function() { initializeUserPreferencesScreen(); }); "><span class="ui-icon ui-icon-pencil"></span></a>';
-?> 
+<?php
+        echo '<a href="'.$tplHelper->makeEditUserUrl($user['userid'], 'edit').'" '.
+                'onclick="return openDialog(\'editdialogdiv\', \''.vsprintf(_('Editting user preferences for \\\'%s\\\''), $user['username']).'\', \'?page=edituserprefs&userid='.$user['userid'].'&dialogembedded=1\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, function() { initializeUserPreferencesScreen(); }); "><span class="ui-icon ui-icon-pencil"></span></a>'; ?> 
 				</td>
 		</tr>
 <?php
-	}
+    }
 ?>
 		</tbody>
 	</table>

@@ -1,6 +1,6 @@
 Spotweb registratie
 
-Hallo <?php echo $user['firstname'] . ' ' . $user['lastname'] ?>,
+Hallo <?php echo $user['firstname'].' '.$user['lastname'] ?>,
 
 Er is zojuist een account voor je aangemaakt op <?php echo $settings->get('spotweburl'); ?>.
 
@@ -10,4 +10,4 @@ Gebruikersnaam:		<?php echo $user['username']; ?>
 Wachtwoord:		<?php echo $user['newpassword1']; ?> 
 
 Met vriendelijke groet,
-<?php echo $adminUser['firstname'] . ' ' . $adminUser['lastname']; ?>.
+<?php echo $adminUser['firstname'].' '.$adminUser['lastname']; ?>.
