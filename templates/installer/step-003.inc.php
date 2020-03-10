@@ -24,12 +24,12 @@
                             $sslstr = ',ssl';
                         } elseif (isset($provider->plain)) {
                             $server = $provider->plain;
-                        } # if
+                        } // if
 
                         if (!empty($server)) {
-                            echo "<option value='{$provider['name']}{$sslstr}'" . (($provider['name'] == $form['name']) ? "selected='selected'" : '') . ">{$provider['name']}</option>";
-                        } # if
-                    } # foreach
+                            echo "<option value='{$provider['name']}{$sslstr}'".(($provider['name'] == $form['name']) ? "selected='selected'" : '').">{$provider['name']}</option>";
+                        } // if
+                    } // foreach
                     ?>
                     <option value='custom'>Custom</option>
                 </select>
@@ -44,7 +44,9 @@
         </tr>
         <tr id='verifybox' style='display: none;'>
             <td>Verify name (CN) on SSL certificate</td>
-            <td><input name='nntpform[verifyname]' id='verifyfield' type="checkbox" <?php if (isset($form['verifyname'])) { echo 'checked="checked"'; } ?> /> </td>
+            <td><input name='nntpform[verifyname]' id='verifyfield' type="checkbox" <?php if (isset($form['verifyname'])) {
+                        echo 'checked="checked"';
+                    } ?> /> </td>
         </tr>
         <tr>
             <td> username</td>

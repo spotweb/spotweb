@@ -1,10 +1,10 @@
 <?php
-	# vraag de opgegeven securitygroup op
-	$blSpotter = $tplHelper->getBlacklistForSpotterId($data['spotterid']);
+    // vraag de opgegeven securitygroup op
+    $blSpotter = $tplHelper->getBlacklistForSpotterId($data['spotterid']);
 
-	# bereid alvast een UL voor voor de errors e.d., worden er later
-	# via AJAX ingegooid
-	require __DIR__ . '/includes/form-messages.inc.php';
+    // bereid alvast een UL voor voor de errors e.d., worden er later
+    // via AJAX ingegooid
+    require __DIR__.'/includes/form-messages.inc.php';
 ?>
 
 	<!-- Security group wissen -->

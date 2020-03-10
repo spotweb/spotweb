@@ -1,8 +1,8 @@
 <?php
-require __DIR__ . '/includes/form-messages.inc.php';
+require __DIR__.'/includes/form-messages.inc.php';
 
 if (!showResults($result)) {
-?>
+    ?>
 <form class="edituserform" name="edituserform" action="<?php echo $tplHelper->makeEditUserAction(); ?>" method="post">
 	<input type="hidden" name="edituserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('edituserform'); ?>">
 	<input type="hidden" name="userid" value="<?php echo htmlspecialchars($edituserform['userid']); ?>">
@@ -47,10 +47,15 @@ if (!showResults($result)) {
 				
 				<tbody>
 <?php
-	foreach($groupMembership as $secGroup) {
-?>
-					<tr> <td> <?php echo $secGroup['name']; ?> </td> <td> <input <?php if (!$tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) { echo "readonly='readonly'"; } ?> type="checkbox" name="edituserform[grouplist][<?php echo $secGroup['id'];?>]" value="<?php echo $secGroup['id'];?>" <?php if ($secGroup['ismember']) { echo 'checked="checked"'; } ?> /></td> </tr>
-<?php } ?>
+    foreach ($groupMembership as $secGroup) {
+        ?>
+					<tr> <td> <?php echo $secGroup['name']; ?> </td> <td> <input <?php if (!$tplHelper->allowed(SpotSecurity::spotsec_edit_groupmembership, '')) {
+            echo "readonly='readonly'";
+        } ?> type="checkbox" name="edituserform[grouplist][<?php echo $secGroup['id']; ?>]" value="<?php echo $secGroup['id']; ?>" <?php if ($secGroup['ismember']) {
+            echo 'checked="checked"';
+        } ?> /></td> </tr>
+<?php
+    } ?>
 
 				</tbody>
 			</table>
