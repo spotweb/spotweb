@@ -33,8 +33,6 @@ build:
             tests:
                 override:
                     -
-                        command: 'php-scrutinizer-run'
-                    -
                         command: 'phpcs-run'
                     -
                         command: 'vendor/bin/phpunit --coverage-clover=coverage'
