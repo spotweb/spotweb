@@ -158,7 +158,7 @@
 
 					<div class="sidebarPanel advancedSearch">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title="<?php echo _("Close 'Advanced Search'"); ?>">[x]</a><?php echo _('Search on:'); ?></h4>
-						<ul class="search <?php echo ' fourcol';?>">
+						<ul class="search <?php echo ' fourcol'; ?>">
 							<li> <input type="radio" name="search[type]" value="Title" <?php echo $searchType == 'Title' ? 'checked="checked"' : '' ?> ><label><?php echo _('Title'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == 'Poster' ? 'checked="checked"' : '' ?> ><label><?php echo _('Poster'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == 'Tag' ? 'checked="checked"' : '' ?> ><label><?php echo _('Tag'); ?></label></li>
