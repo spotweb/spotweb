@@ -8,6 +8,7 @@ Spotweb requires an operational webserver with PHP5 installed, it uses either an
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/?branch=develop)
 [![Scrutinzer Status](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/spotweb/spotweb/build-status/develop)
 [![Code consistency](https://squizlabs.github.io/PHP_CodeSniffer/analysis/squizlabs/PHP_CodeSniffer/grade.svg)](https://squizlabs.github.io/PHP_CodeSniffer/analysis/squizlabs/PHP_CodeSniffer)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/spotweb/spotweb/badges/code-intelligence.svg?b=develop)](https://scrutinizer-ci.com/code-intelligence)
 
 [![Tested on:](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20-brightgreen.svg?maxAge=2419200)](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20-brightgreen.svg?maxAge=2419200)
 
