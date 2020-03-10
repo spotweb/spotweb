@@ -153,18 +153,12 @@
 </script>
 
 				<div><input type="hidden" id="search-tree" name="search[tree]" value="<?php echo $tplHelper->categoryListToDynatree(); ?>"></div>
-<?php
-    $filterColCount = 4;
-?>
+
 					<div class="search"><input class='searchbox' type="text" name="search[text]" value="<?php echo htmlspecialchars($searchText); ?>"><input type='submit' class="filtersubmit" value='+' onclick='$("#searchfilter-includeprevfilter-toggle").val("true");' title='<?php echo _('Search within current filters'); ?>'><input type='submit' class="filtersubmit default" onclick='$("#searchfilter-includeprevfilter-toggle").val(""); return true;' value='>>' title='<?php echo _('Search'); ?>'></div>
 
 					<div class="sidebarPanel advancedSearch">
 					<h4><a class="toggle" onclick="toggleSidebarPanel('.advancedSearch')" title="<?php echo _("Close 'Advanced Search'"); ?>">[x]</a><?php echo _('Search on:'); ?></h4>
-						<ul class="search <?php if ($filterColCount == 3) {
-    echo ' threecol';
-} else {
-    echo ' fourcol';
-} ?>">
+						<ul class="search <?php echo ' fourcol';?>">
 							<li> <input type="radio" name="search[type]" value="Title" <?php echo $searchType == 'Title' ? 'checked="checked"' : '' ?> ><label><?php echo _('Title'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Poster" <?php echo $searchType == 'Poster' ? 'checked="checked"' : '' ?> ><label><?php echo _('Poster'); ?></label></li>
 							<li> <input type="radio" name="search[type]" value="Tag" <?php echo $searchType == 'Tag' ? 'checked="checked"' : '' ?> ><label><?php echo _('Tag'); ?></label></li>
