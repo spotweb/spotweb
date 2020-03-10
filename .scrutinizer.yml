@@ -35,8 +35,7 @@ build:
                     -
                         command: 'phpcs-run'
                     -
-                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
-                       
+                        command: 'php-scrutinizer-run'
 filter:
     excluded_paths:
       - "js/*"
