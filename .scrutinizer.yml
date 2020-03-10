@@ -29,14 +29,15 @@ build:
             environment:
                 php:
                     version: 7.4
-   
-    analysis:	    
-        tests:	           
-            override:	                
-                -	
-                    command: 'php-scrutinizer-run'	
-                -
-                    command: 'phpcs-run'
+        analysis:
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'phpcs-run'
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
                               
 filter:
     excluded_paths:
