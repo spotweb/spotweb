@@ -10,6 +10,9 @@ php:
 before_script:
   - composer update
   - composer install
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter 
+  - chmod +x ./cc-test-reporter 
+  - ./cc-test-reporter before-build
 script:
   - mkdir -p build/logs
   - vendor/bin/phpunit -c phpunit.xml.dist
@@ -17,7 +20,10 @@ script:
   - vendor/bin/phpcs --version 
   - vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
   - vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility . 
+  - vendor/bin/codecept run unit --coverage --coverage-xml
 after_script:
+  - mv tests/_output/coverage.xml clover.xml 
+  - ./cc-test-reporter after-build --coverage-input-type clover --id 12345 --exit-code $TRAVIS_TEST_RESULT
   - vendor/bin/coveralls -v
 after_success:
   - travis_retry php vendor/bin/php-coveralls
