@@ -38,11 +38,11 @@ global $_testInstall_Ok;
         <td> Open base dir</td>
         <td><?php echo ini_get('open_basedir'); ?></td>
         <td><?php SpotInstall::showResult(
-                    !ini_get('open_basedir'),
-                    true,
-                    '',
-                    'Not empty, <strong>might</strong> be a problem'
-                ); ?></td>
+                !ini_get('open_basedir'),
+                true,
+                '',
+                'Not empty, <strong>might</strong> be a problem'
+            ); ?></td>
     </tr>
     <tr>
         <td> Allow furl open</td>
@@ -138,8 +138,8 @@ global $_testInstall_Ok;
     <?php if (extension_loaded('gd')) {
                     $gdInfo = gd_info();
                 } else {
-        $gdInfo = ['FreeType Support' => 0, 'GIF Read Support' => 0, 'GIF Create Support' => 0, 'JPEG Support' => 0, 'JPG Support' => 0, 'PNG Support' => 0];
-    }?>
+                    $gdInfo = ['FreeType Support' => 0, 'GIF Read Support' => 0, 'GIF Create Support' => 0, 'JPEG Support' => 0, 'JPG Support' => 0, 'PNG Support' => 0];
+                }?>
     <tr>
         <th colspan="2"> GD</th>
         <td><?php SpotInstall::showResult(extension_loaded('gd'), true); ?></td>
@@ -183,9 +183,9 @@ global $_testInstall_Ok;
     <tr>
         <td colspan="2"> Can create private key?</td>
         <td><?php SpotInstall::showResult(
-        isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']),
-        true
-    ); ?></td>
+                    isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']),
+                    true
+                ); ?></td>
     </tr>
     <tr>
         <th colspan="3"> Cache directory</th>
