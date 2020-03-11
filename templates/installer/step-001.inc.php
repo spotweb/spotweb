@@ -48,11 +48,11 @@ global $_testInstall_Ok;
         <td> Allow furl open</td>
         <td><?php echo ini_get('allow_url_fopen'); ?></td>
         <td><?php SpotInstall::showResult(
-                    ini_get('allow_url_fopen') == 1,
-                    true,
-                    '',
-                    'allow_url_fopen not on -- will cause problems to retrieve external data'
-                ); ?></td>
+                ini_get('allow_url_fopen') == 1,
+                true,
+                '',
+                'allow_url_fopen not on -- will cause problems to retrieve external data'
+            ); ?></td>
     </tr>
     <tr>
         <td> Memory limit</td>
