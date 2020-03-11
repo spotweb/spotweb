@@ -49,7 +49,7 @@ if (!$result->isSubmitted()) {
         $filter = $tplHelper->getUserFilter($data['filterid']);
     } else {
         $filter = ['id' => 9999, 'title' => '', 'icon' => ''];
-    } // if ?>
+    } // if?>
 
 	<!-- Naam van filter wijzigen of nieuwe filter toevoegen -->
 	<fieldset>
@@ -76,16 +76,15 @@ if (!$result->isSubmitted()) {
 <?php
                 foreach ($filterIcons as $icon => $desc) {
                     echo '<option '.($filter['icon'] == $icon ? 'selected="selected"' : '')."value='".$icon."'>".$desc.'</option>';
-                } // foreach
-?>
+                } // foreach ?>
 				</select>
 			</dd>
 
 			<dt><label for="editfilterform[enablenotify]"><?php echo _('Notify me when this filter has new spots?'); ?></label></dt>
 			<dd>
 				<input type="checkbox" name="editfilterform[enablenotify]" value="1" <?php if ((isset($filter['enablenotify'])) && ($filter['enablenotify'])) {
-    echo ' checked="checked" ';
-} ?> />
+                    echo ' checked="checked" ';
+                } ?> />
 			</dd>
 			
 			<dd>

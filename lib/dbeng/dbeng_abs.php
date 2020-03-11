@@ -14,11 +14,10 @@ abstract class dbeng_abs {
 		 */
 		switch ($engine) {
 			case 'mysql'		:
-			case 'pdo_mysql'	: return new dbeng_pdo_mysql(); break; 
-			case 'pdo_pgsql' 	: return new dbeng_pdo_pgsql(); break;
-			case 'pdo_sqlite'	: return new dbeng_pdo_sqlite(); break;
-
-			default				: throw new Exception("Unknown database engine (" . $engine . ") factory specified");
+			case 'pdo_mysql'	: return new dbeng_pdo_mysql();
+			case 'pdo_pgsql' 	: return new dbeng_pdo_pgsql();
+			case 'pdo_sqlite'	: return new dbeng_pdo_sqlite();
+			default			: throw new Exception("Unknown database engine (" . $engine . ") factory specified");
 		} // switch
 	} # getDbFactory()
 	
@@ -125,7 +124,6 @@ abstract class dbeng_abs {
 		} # foreach
 		return substr($tmpList, 0, -1);
 	} # arrayKeyToIn
-
 
 	/*
 	 * Transforms an array of values to an list usable by an
