@@ -76,7 +76,7 @@ if (!$result->isSubmitted()) {
 <?php
                 foreach ($filterIcons as $icon => $desc) {
                     echo '<option '.($filter['icon'] == $icon ? 'selected="selected"' : '')."value='".$icon."'>".$desc.'</option>';
-                } // foreach ?>
+                } // foreach?>
 				</select>
 			</dd>
 
