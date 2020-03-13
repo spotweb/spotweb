@@ -322,7 +322,7 @@ class SpotInstall
 
             static::showTemplate('step-004.inc.php', [
                 'form'         => $form,
-
+            ]);
         }
     }
 
