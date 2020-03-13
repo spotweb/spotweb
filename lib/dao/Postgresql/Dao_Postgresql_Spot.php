@@ -1,106 +1,125 @@
 <?php
 
-class Dao_Postgresql_Spot extends Dao_Base_Spot {
-
-
-
+class Dao_Postgresql_Spot extends Dao_Base_Spot
+{
     /*
      * Remove older spots from the database
      */
-    function deleteSpotsRetention($retention) {
-        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+    public function deleteSpotsRetention($retention)
+    {
+        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
         $retention = $retention * 24 * 60 * 60; // omzetten in seconden
 
-        $this->_conn->modify("DELETE FROM spots WHERE spots.stamp < :time",
-            array(
-                ':time' => array(time() - $retention, PDO::PARAM_INT)
-            ));
-        $this->_conn->modify("DELETE FROM spotsfull WHERE NOT EXISTS
-							(SELECT 1 FROM spots WHERE spots.messageid = spotsfull.messageid)") ;
-        $this->_conn->modify("DELETE FROM commentsfull WHERE NOT EXISTS
-							(SELECT 1 FROM commentsxover WHERE commentsxover.messageid = commentsfull.messageid)");
-        $this->_conn->modify("DELETE FROM commentsxover WHERE NOT EXISTS
-							(SELECT 1 FROM spots WHERE spots.messageid = commentsxover.nntpref)") ;
-        $this->_conn->modify("DELETE FROM reportsxover WHERE NOT EXISTS
-							(SELECT 1 FROM spots WHERE spots.messageid = reportsxover.nntpref)") ;
-        $this->_conn->modify("DELETE FROM spotstatelist WHERE NOT EXISTS
-							(SELECT 1 FROM spots WHERE spots.messageid = spotstatelist.messageid)") ;
-        $this->_conn->modify("DELETE FROM reportsposted WHERE NOT EXISTS
-							  (SELECT 1 FROM spots WHERE spots.messageid = reportsposted.inreplyto)") ;
-        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($retention));
-    } # deleteSpotsRetention
+        $this->_conn->modify(
+            'DELETE FROM spots WHERE spots.stamp < :time',
+            [
+                ':time' => [time() - $retention, PDO::PARAM_INT],
+            ]
+        );
+        $this->_conn->modify('DELETE FROM spotsfull WHERE NOT EXISTS
+							(SELECT 1 FROM spots WHERE spots.messageid = spotsfull.messageid)');
+        $this->_conn->modify('DELETE FROM commentsfull WHERE NOT EXISTS
+							(SELECT 1 FROM commentsxover WHERE commentsxover.messageid = commentsfull.messageid)');
+        $this->_conn->modify('DELETE FROM commentsxover WHERE NOT EXISTS
+							(SELECT 1 FROM spots WHERE spots.messageid = commentsxover.nntpref)');
+        $this->_conn->modify('DELETE FROM reportsxover WHERE NOT EXISTS
+							(SELECT 1 FROM spots WHERE spots.messageid = reportsxover.nntpref)');
+        $this->_conn->modify('DELETE FROM spotstatelist WHERE NOT EXISTS
+							(SELECT 1 FROM spots WHERE spots.messageid = spotstatelist.messageid)');
+        $this->_conn->modify('DELETE FROM reportsposted WHERE NOT EXISTS
+							  (SELECT 1 FROM spots WHERE spots.messageid = reportsposted.inreplyto)');
+        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$retention]);
+    }
 
-	/*
-	 * Returns the amount of spots per hour
-	 */
-	function getSpotCountPerHour($limit) {
+    // deleteSpotsRetention
+
+    /*
+     * Returns the amount of spots per hour
+     */
+    public function getSpotCountPerHour($limit)
+    {
         if (empty($limit)) {
-            return $this->_conn->arrayQuery("SELECT EXTRACT(HOUR FROM to_timestamp(stamp)) AS data,
+            return $this->_conn->arrayQuery('SELECT EXTRACT(HOUR FROM to_timestamp(stamp)) AS data,
                                                     COUNT(*) AS amount
                                                FROM spots
-                                               GROUP BY data");
+                                               GROUP BY data');
         } else {
-            return $this->_conn->arrayQuery("SELECT EXTRACT(HOUR FROM to_timestamp(stamp)) AS data,
+            return $this->_conn->arrayQuery(
+                'SELECT EXTRACT(HOUR FROM to_timestamp(stamp)) AS data,
                                                     COUNT(*) AS amount
                                                FROM spots
                                                WHERE stamp > :stamp
-                                               GROUP BY data",
-                array(
-                    ':stamp' => array(strtotime("-1" . $limit), PDO::PARAM_INT)
-                ));
-        } # else
-	} # getSpotCountPerHour
+                                               GROUP BY data',
+                [
+                    ':stamp' => [strtotime('-1'.$limit), PDO::PARAM_INT],
+                ]
+            );
+        } // else
+    }
 
-	/*
-	 * Returns the amount of spots per weekday
-	 */
-	function getSpotCountPerWeekday($limit) {
+    // getSpotCountPerHour
+
+    /*
+     * Returns the amount of spots per weekday
+     */
+    public function getSpotCountPerWeekday($limit)
+    {
         if (empty($limit)) {
-            return $this->_conn->arrayQuery("SELECT EXTRACT(DOW FROM to_timestamp(stamp)) AS data,
+            return $this->_conn->arrayQuery('SELECT EXTRACT(DOW FROM to_timestamp(stamp)) AS data,
                                                     COUNT(*) AS amount
                                                FROM spots
-                                               GROUP BY data");
+                                               GROUP BY data');
         } else {
-            return $this->_conn->arrayQuery("SELECT EXTRACT(DOW FROM to_timestamp(stamp)) AS data,
+            return $this->_conn->arrayQuery(
+                'SELECT EXTRACT(DOW FROM to_timestamp(stamp)) AS data,
                                                     COUNT(*) AS amount
                                                FROM spots
                                                WHERE stamp > :stamp
-                                               GROUP BY data",
-                array(
-                    ':stamp' => array(strtotime("-1" . $limit), PDO::PARAM_INT)
-                ));
-        } # else
- 	} # getSpotCountPerWeekday
+                                               GROUP BY data',
+                [
+                    ':stamp' => [strtotime('-1'.$limit), PDO::PARAM_INT],
+                ]
+            );
+        } // else
+    }
 
-	/*
-	 * Returns the amount of spots per month
-	 */
-	function getSpotCountPerMonth($limit) {
+    // getSpotCountPerWeekday
+
+    /*
+     * Returns the amount of spots per month
+     */
+    public function getSpotCountPerMonth($limit)
+    {
         if (empty($limit)) {
-            return $this->_conn->arrayQuery("SELECT EXTRACT(MONTH FROM to_timestamp(stamp)) AS data,
+            return $this->_conn->arrayQuery('SELECT EXTRACT(MONTH FROM to_timestamp(stamp)) AS data,
                                                     COUNT(*) AS amount
                                                FROM spots
-                                               GROUP BY data");
+                                               GROUP BY data');
         } else {
-            return $this->_conn->arrayQuery("SELECT EXTRACT(MONTH FROM to_timestamp(stamp)) AS data,
+            return $this->_conn->arrayQuery(
+                'SELECT EXTRACT(MONTH FROM to_timestamp(stamp)) AS data,
                                                     COUNT(*) AS amount
                                                FROM spots
                                                WHERE stamp > :stamp
-                                               GROUP BY data",
-                array(
-                    ':stamp' => array(strtotime("-1" . $limit), PDO::PARAM_INT)
-                ));
-        } # else
-	} # getSpotCountPerMonth
+                                               GROUP BY data',
+                [
+                    ':stamp' => [strtotime('-1'.$limit), PDO::PARAM_INT],
+                ]
+            );
+        } // else
+    }
 
-    function getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter,$sortList,$limit,$offset) {
-        $sortList2 = str_replace ('s.','x.',$sortList);
-        $sortList2 = str_replace("spost.","x.",$sortList2);
-		/*
-         * Run the query with a limit always increased by one. this allows us to 
+    // getSpotCountPerMonth
+
+    public function getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter, $sortList, $limit, $offset)
+    {
+        $sortList2 = str_replace('s.', 'x.', $sortList);
+        $sortList2 = str_replace('spost.', 'x.', $sortList2);
+        /*
+         * Run the query with a limit always increased by one. this allows us to
          * check whether any more results are available
          */
-        $queryStr = "select 	x.*, 
+        $queryStr = 'select 	x.*, 
 	                        f.verified ,
 						    COALESCE(x.idtype, wl.idtype, gwl.idtype) AS idtype
                             from 
@@ -129,22 +148,20 @@ class Dao_Postgresql_Spot extends Dao_Base_Spot {
 	                                l.seen AS seenstamp,
                                     bl.idtype as idtype,
                                     s.reversestamp as reversestamp
-								    " . $extendedFieldList . " \n
-								    FROM spots AS s " . 
-								    $additionalTableList . " \n" .
-								    $additionalJoinList . " \n" .
-							       "LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-							        LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . "))
-                                    " . $criteriaFilter . " \n
-								    ORDER BY " . $sortList . " LIMIT " . (int) ($limit + 1) ." OFFSET " . (int) $offset ."
+								    '.$extendedFieldList." \n
+								    FROM spots AS s ".
+                                    $additionalTableList." \n".
+                                    $additionalJoinList." \n".
+                                   'LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = '.$this->_conn->safe((int) $ourUserId).') OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
+							        LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = '.$this->_conn->safe((int) $ourUserId).'))
+                                    '.$criteriaFilter." \n
+								    ORDER BY ".$sortList.' LIMIT '.(int) ($limit + 1).' OFFSET '.(int) $offset.'
                             ) as x
                             LEFT JOIN spotsfull AS f ON (f.messageid = x.messageid) 
- 					        LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = x.spotterid) AND ((wl.ouruserid = " . $this->_conn->safe( (int) $ourUserId) . ") AND (wl.idtype = 2)))
+ 					        LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = x.spotterid) AND ((wl.ouruserid = '.$this->_conn->safe((int) $ourUserId).') AND (wl.idtype = 2)))
 							LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = x.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) 
-                            ORDER BY ".$sortList2 ;
+                            ORDER BY '.$sortList2;
 
-         return $queryStr ;
+        return $queryStr;
     }
-	
-	
-} # Dao_Postgresql_Spot
+} // Dao_Postgresql_Spot

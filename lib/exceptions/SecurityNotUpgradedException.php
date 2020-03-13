@@ -1,2 +1,5 @@
 <?php
-	class SecurityNotUpgradedException extends CustomException {};
+
+    class SecurityNotUpgradedException extends CustomException
+    {
+    }

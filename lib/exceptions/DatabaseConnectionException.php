@@ -1,2 +1,4 @@
 <?php
-class DatabaseConnectionException extends CustomException {};
+class DatabaseConnectionException extends CustomException
+{
+}

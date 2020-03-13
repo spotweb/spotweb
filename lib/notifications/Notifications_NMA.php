@@ -1,27 +1,35 @@
 <?php
 
-class Notifications_NMA extends Notifications_abs {
-	private $_api;
-	private $_appName;
-	var $nmaObj;
+class Notifications_NMA extends Notifications_abs
+{
+    private $_api;
+    private $_appName;
+    public $nmaObj;
 
-	function __construct($appName, array $dataArray) {
-		$this->nmaObj = new NotifyMyAndroid();
-		$this->_appName = $appName;
-		$this->_api = $dataArray['api'];
-	} # ctor
+    public function __construct($appName, array $dataArray)
+    {
+        $this->nmaObj = new NotifyMyAndroid();
+        $this->_appName = $appName;
+        $this->_api = $dataArray['api'];
+    }
 
-	function register() {
-		return;
-	} # register
+    // ctor
 
-	function sendMessage($type, $title, $body, $sourceUrl) {
-		$params = array('apikey' => $this->_api,
-						'priority' => 0,
-						'application' => $this->_appName,
-						'event' => $title,
-						'description' => $body);
-		$this->nmaObj->push($params);
-	} # sendMessage
+    public function register()
+    {
+    }
 
-} # Notifications_NMA
+    // register
+
+    public function sendMessage($type, $title, $body, $sourceUrl)
+    {
+        $params = ['apikey' => $this->_api,
+            'priority'      => 0,
+            'application'   => $this->_appName,
+            'event'         => $title,
+            'description'   => $body, ];
+        $this->nmaObj->push($params);
+    }
+
+    // sendMessage
+} // Notifications_NMA

@@ -1,3 +1,5 @@
 <?php
 
-class Dao_Mysql_Audit extends Dao_Base_Audit { } ;
+class Dao_Mysql_Audit extends Dao_Base_Audit
+{
+}

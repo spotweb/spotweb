@@ -1,2 +1,4 @@
 <?php
-class SpotwebCannotBeUpgradedToooldException extends CustomException {};
+class SpotwebCannotBeUpgradedTooOldException extends CustomException
+{
+}

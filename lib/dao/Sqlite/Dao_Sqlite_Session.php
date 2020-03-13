@@ -1,4 +1,5 @@
 <?php
 
-class Dao_Sqlite_Session extends Dao_Base_Session { } ;
-
+class Dao_Sqlite_Session extends Dao_Base_Session
+{
+}

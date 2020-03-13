@@ -1,2 +1,5 @@
 <?php
-	class SettingsNotUpgradedException extends CustomException {};
+
+    class SettingsNotUpgradedException extends CustomException
+    {
+    }

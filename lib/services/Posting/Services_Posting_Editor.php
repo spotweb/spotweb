@@ -1,30 +1,38 @@
 <?php
 
-class Services_Posting_Editor {
+class Services_Posting_Editor
+{
     private $_daoFactory;
     private $_currentSession;
     private $_spotValidator;
 
-    function __construct(Dao_Factory $daoFactory, $currentSession) {
+    public function __construct(Dao_Factory $daoFactory, $currentSession)
+    {
         $this->_daoFactory = $daoFactory;
         $this->_currentSession = $currentSession;
 
         $this->_spotValidator = new Services_Posting_Validator();
-    } # ctor
+    }
+
+    // ctor
 
     /*
      * Delete a spot from the database
      */
-    public function deleteSpot($messageId) {
-        # remove the spot from the database
+    public function deleteSpot($messageId)
+    {
+        // remove the spot from the database
         $daoSpot = $this->_daoFactory->getSpotDao();
 
-        $spotMsgIdList = array($messageId => true);
+        $spotMsgIdList = [$messageId => true];
         $daoSpot->removeSpots($spotMsgIdList);
-    } # deleteSpot
+    }
 
-    public function updateSpot($messageId, $fullSpotXml) {
-        # parse the fullspot xml
+    // deleteSpot
+
+    public function updateSpot($messageId, $fullSpotXml)
+    {
+        // parse the fullspot xml
         $svcFmtParsing = new Services_Format_Parsing();
         $updatedFullSpot = $svcFmtParsing->parseFull($fullSpotXml);
 
@@ -35,10 +43,12 @@ class Services_Posting_Editor {
         $updatedFullSpot['messageid'] = $messageId;
         $updatedFullSpot['fullxml'] = $fullSpotXml;
 
-        # finally store the updated spot in the database
+        // finally store the updated spot in the database
         $daoSpot = $this->_daoFactory->getSpotDao();
         $daoSpot->updateSpot($updatedFullSpot, $this->_currentSession['user']['username']);
-    } # updateSpot
+    }
+
+    // updateSpot
 
     /*
      * Validate the data entered by the user, merge the original
@@ -49,7 +59,8 @@ class Services_Posting_Editor {
      * 'title', 'body', 'tag', 'website', 'category', 'subcata',
      * 'subcatb', 'subcatc', 'subcatd' and 'subcatz'
      */
-    public function updateSpotXml($fullSpot, $updatesToApply) {
+    public function updateSpotXml($fullSpot, $updatesToApply)
+    {
         $result = new Dto_FormResult();
         /*
          * before we merge we first want to clean the form from the stuff
@@ -61,11 +72,17 @@ class Services_Posting_Editor {
          * subcat must be an array so let's make it an array if it is not,
          * otherwise we get in trouble in the verifyCategories() method
          */
-        if (!is_array($spot['subcatb'])) { $spot['subcatb'] = array(); }
-        if (!is_array($spot['subcatc'])) { $spot['subcatc'] = array(); }
-        if (!is_array($spot['subcatd'])) { $spot['subcatd'] = array(); }
+        if (!is_array($spot['subcatb'])) {
+            $spot['subcatb'] = [];
+        }
+        if (!is_array($spot['subcatc'])) {
+            $spot['subcatc'] = [];
+        }
+        if (!is_array($spot['subcatd'])) {
+            $spot['subcatd'] = [];
+        }
 
-        # Verify several properties from the caller
+        // Verify several properties from the caller
         $result->addData('spot', $spot);
         $result = $this->_spotValidator->verifyTitle($result);
         $result = $this->_spotValidator->verifyBody($result);
@@ -83,39 +100,43 @@ class Services_Posting_Editor {
 
         if ($result->isSuccess()) {
 
-            # We now merge the cleaned edit form into the original spot
+            // We now merge the cleaned edit form into the original spot
             $spot = array_merge($fullSpot, $spot);
 
-            $imageInfo = array('height' => $spot['image']['height'],
-                'width' => $spot['image']['width'],
-                'segments' => $spot['image']['segment']);
+            $imageInfo = ['height' => $spot['image']['height'],
+                'width'            => $spot['image']['width'],
+                'segments'         => $spot['image']['segment'], ];
 
             $nzbSegmentList = $spot['nzb'];
 
-            # Parse the updated spot to an XML structure
+            // Parse the updated spot to an XML structure
             $spotCreator = new Services_Format_Creation();
             $spotXml = $spotCreator->convertSpotToXml($spot, $imageInfo, $nzbSegmentList);
 
             $result->addData('spotxml', $spotXml);
-        } # if
+        } // if
 
         return $result;
-    } # updateSpotXml
+    }
+
+    // updateSpotXml
 
     /*
      * remove all fields from the array that we do not want to merge
      * with the original fullspot
      */
-    private function cleanseUpdates($updatesToApply) {
-        # Only keep the fields we want to merge
-        $validFields = array('title', 'body', 'tag', 'website', 'category', 'subcata', 'subcatb', 'subcatc', 'subcatd', 'subcatz');
-        foreach($updatesToApply as $key => $value) {
+    private function cleanseUpdates($updatesToApply)
+    {
+        // Only keep the fields we want to merge
+        $validFields = ['title', 'body', 'tag', 'website', 'category', 'subcata', 'subcatb', 'subcatc', 'subcatd', 'subcatz'];
+        foreach ($updatesToApply as $key => $value) {
             if (in_array($key, $validFields) === false) {
                 unset($updatesToApply[$key]);
-            } # if
-        } # foreach
+            } // if
+        } // foreach
 
         return $updatesToApply;
-    } # cleanseEditForm
+    }
 
-} # class Services_Posting_Editor
+    // cleanseEditForm
+} // class Services_Posting_Editor

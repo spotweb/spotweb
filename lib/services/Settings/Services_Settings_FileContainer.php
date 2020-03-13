@@ -1,46 +1,60 @@
 <?php
 
-class Services_Settings_FileContainer implements Services_Settings_IContainer {
+class Services_Settings_FileContainer implements Services_Settings_IContainer
+{
     /**
-     * Settings originated from PHP's ownsettings.php, settings.php etc
+     * Settings originated from PHP's ownsettings.php, settings.php etc.
      *
      * @var array
      */
     private $_phpSettings;
 
     /**
-     * Loads content of datasource
+     * Loads content of datasource.
      *
      * @param array $cfg
+     *
      * @return void
      */
-    public function initialize(array $cfg) {
+    public function initialize(array $cfg)
+    {
         $this->_phpSettings = $cfg;
-    } # initialize
+    }
+
+    // initialize
 
     /**
-     * Returns an array with all settings stored in this container
+     * Returns an array with all settings stored in this container.
+     *
      * @return array
      */
-    public function getAllSettings() {
+    public function getAllSettings()
+    {
         return $this->_phpSettings;
-    } # getAllSettings()
+    }
+
+    // getAllSettings()
 
     /**
-     * Removes a setting from this datasource
+     * Removes a setting from this datasource.
      *
      * @param $name Name of setting to remove
+     *
      * @throws InvalidSettingsUpdateException
+     *
      * @return void
      */
-    public function remove($name) {
+    public function remove($name)
+    {
         /*
          * If setting originates from PHP, throw an exception
          */
         if (isset($this->_phpSettings[$name])) {
-            throw new InvalidSettingsUpdateException("InvalidSettingUpdate Exception for '" . $name . '"');
-        } # if
-    } # remove()
+            throw new InvalidSettingsUpdateException("InvalidSettingUpdate Exception for '".$name.'"');
+        } // if
+    }
+
+    // remove()
 
     /**
      * Updates a setting. If the source provider cannot update
@@ -50,16 +64,20 @@ class Services_Settings_FileContainer implements Services_Settings_IContainer {
      *
      * @param $name
      * @param $value
-     * @return void
+     *
      * @throws InvalidSettingsUpdateException
+     *
+     * @return void
      */
-    public function set($name, $value) {
+    public function set($name, $value)
+    {
         /*
          * If setting originates from PHP, throw an exception
          */
         if (isset($this->_phpSettings[$name])) {
-            throw new InvalidSettingsUpdateException("InvalidSettingUpdate Exception for '" . $name . '"');
-        } # if
-    } # set()
+            throw new InvalidSettingsUpdateException("InvalidSettingUpdate Exception for '".$name.'"');
+        } // if
+    }
 
-} # class Services_Settings_FileContainer
+    // set()
+} // class Services_Settings_FileContainer

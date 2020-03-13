@@ -1,17 +1,26 @@
 <?php
 
-interface Dao_Comment {
+interface Dao_Comment
+{
+    public function isCommentMessageIdUnique($messageid);
 
-	function isCommentMessageIdUnique($messageid);
-	function removeExtraComments($messageId);
-	function addPostedComment($userId, $comment);
-	function matchCommentMessageIds($hdrList);
-	function addComments($comments, $fullComments = array());	
-	function addFullComments($fullComments);
-	function getCommentsFull($userId, $nntpRefs);
-	function getNewCommentCountFor($nntpRefList, $ourUserId);
-	function markCommentsModerated($commentMsgIdList);
-	function removeComments($commentMsgIdList);
-	function expireCommentsFull($expireDays);
+    public function removeExtraComments($messageId);
 
-} # Dao_Comment
+    public function addPostedComment($userId, $comment);
+
+    public function matchCommentMessageIds($hdrList);
+
+    public function addComments($comments, $fullComments = []);
+
+    public function addFullComments($fullComments);
+
+    public function getCommentsFull($userId, $nntpRefs);
+
+    public function getNewCommentCountFor($nntpRefList, $ourUserId);
+
+    public function markCommentsModerated($commentMsgIdList);
+
+    public function removeComments($commentMsgIdList);
+
+    public function expireCommentsFull($expireDays);
+} // Dao_Comment

@@ -1,2 +1,5 @@
 <?php
-	class InvalidPrivateKeyException extends CustomException {};
+
+    class InvalidPrivateKeyException extends CustomException
+    {
+    }
