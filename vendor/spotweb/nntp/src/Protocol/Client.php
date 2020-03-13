@@ -680,7 +680,7 @@ class Net_NNTP_Protocol_Client
      * @return mixed (bool) on success (true when posting allowed, otherwise false) or (object) pear_error on failure
      * @access protected
      */
-    function connect($host = null, $encryption = null, $port = null, $timeout = null, $verifyname = null)
+    function connect($host = null, $encryption = null, $port = null, $timeout = null)
     {
     	//
         if ($this->_isConnected() ) {
@@ -722,11 +722,7 @@ class Net_NNTP_Protocol_Client
     	}
 
     	// Open Connection
-        $context = stream_context_create();
-        if (isset($verifyname)) {
-            stream_context_set_option($context, $transport,'verify_peer_name',$verifyname);
-        };
-    	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout,STREAM_CLIENT_CONNECT,$context);
+    	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
     	if ($R === false) {
     	    if ($this->_logger) {
     	        $this->_logger->notice("Connection to $transport://$host:$port failed.");

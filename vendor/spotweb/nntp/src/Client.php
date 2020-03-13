@@ -152,7 +152,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::disconnect()
      * @see Net_NNTP_Client::authenticate()
      */
-    function connect($host = null, $encryption = null, $port = null, $timeout = null, $verifyname = null)
+    function connect($host = null, $encryption = null, $port = null, $timeout = null)
     {
     	// v1.0.x API
     	if (is_int($encryption)) {
@@ -161,7 +161,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	    $encryption = null;
     	}
 
-    	return parent::connect($host, $encryption, $port, $timeout, $verifyname);
+    	return parent::connect($host, $encryption, $port, $timeout);
     }
 
     // }}}
