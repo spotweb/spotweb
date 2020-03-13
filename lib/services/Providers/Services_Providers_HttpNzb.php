@@ -8,22 +8,23 @@
  *
  */
 /**
- *
  * This class is used to find alternate download urls for nzb's.
- *
  */
-class Services_Providers_HttpNzb {
+class Services_Providers_HttpNzb
+{
     protected $spot = null;
     protected $alternateDownloadUrl = null;
     protected $nzb = null;
     protected $_cacheDao = null;
 
-    public function __construct(array $spot, Dao_Cache $cacheDao) {
+    public function __construct(array $spot, Dao_Cache $cacheDao)
+    {
         $this->spot = $spot;
         $this->_cacheDao = $cacheDao;
     }
 
-    public function hasNzb() {
+    public function hasNzb()
+    {
         // Check if we can get an nzb.
         if ($this->getNzb()) {
             return true;
@@ -33,14 +34,14 @@ class Services_Providers_HttpNzb {
     }
 
     /**
-     *
      * Returns nzb file in xml format.
      */
-    public function getNzb() {
+    public function getNzb()
+    {
         if ($this->nzb) {
             // \O/ We already found an nzb before. Return the xml!
             return $this->nzb;
-        } else if ($this->nzb === false) {
+        } elseif ($this->nzb === false) {
             // We already did a http request and this results in a badly formed xml.
             return null;
         }
@@ -50,13 +51,14 @@ class Services_Providers_HttpNzb {
 
         // If there is no alternate url return;
         if (!$url) {
-            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), failed to find url for spot');
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->getnzb(), failed to find url for spot');
 
             $this->nzb = false;
+
             return null;
         }
 
-        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), url: ' . $url);
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->getnzb(), url: '.$url);
 
         // Initialize http class.
         $svcHttp = new Services_Providers_Http($this->_cacheDao);
@@ -69,16 +71,18 @@ class Services_Providers_HttpNzb {
             // Suppress errors if the string is not well formed, where testing here.
             $body = $result['data'];
             if (@simplexml_load_string($body)) {
-                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), found nzb');
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->getnzb(), found nzb');
 
                 $this->nzb = $body;
+
                 return $this->nzb;
-            } else if ($body) {
-                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->getnzb(), found body but not a valid XML');
+            } elseif ($body) {
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->getnzb(), found body but not a valid XML');
 
                 // we did not get a direct link to an nzb file.
                 // more parsing is needed t(*_*t)
                 $this->nzb = $this->downloadNzbFrom($url, $body);
+
                 return $this->nzb;
             } else {
                 $this->nzb = false;
@@ -92,13 +96,15 @@ class Services_Providers_HttpNzb {
     }
 
     /**
-     *
      * Check if we have an url and return it if there is one.
-     * @return String returns the url or null
+     *
+     * @return string returns the url or null
      */
-    function getUrlForSpot() {
+    public function getUrlForSpot()
+    {
         if (!$this->hasUrlForSpot()) {
             $this->nzb = false;
+
             return null;
         }
 
@@ -106,16 +112,16 @@ class Services_Providers_HttpNzb {
     }
 
     /**
-     *
      * Check for specific string to check if we have an alternate download url.
      */
-    public function hasUrlForSpot() {
+    public function hasUrlForSpot()
+    {
         if ($this->alternateDownloadUrl) {
             return true;
         }
 
         // Array containing url matches. Must contain the first part of the url.
-        $matches = array(
+        $matches = [
             'http://base64.derefer.me',
             'http://derefer.me',
             'http://alturl.com',
@@ -125,17 +131,17 @@ class Services_Providers_HttpNzb {
             'http://hideref.org',
             'http://tiny.cc',
             'http://www.dereferer.org',
-        );
+        ];
 
         // Search in the website url
         if (isset($this->spot['website'])) {
-            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), website = ' . $this->spot['website']);
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->hasUrlForSpot(), website = '.$this->spot['website']);
 
             foreach ($matches as $needle) {
-                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), website needle = ' . $needle);
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->hasUrlForSpot(), website needle = '.$needle);
 
                 if (strpos($this->spot['website'], $needle) !== false) {
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), website match');
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->hasUrlForSpot(), website match');
 
                     // Stop search we have a match
                     $this->alternateDownloadUrl = $this->resolveUrl($this->spot['website']);
@@ -143,8 +149,7 @@ class Services_Providers_HttpNzb {
                         return false;
                     } else {
                         return true;
-                    } # else
-
+                    } // else
                 }
             }
         }
@@ -152,14 +157,14 @@ class Services_Providers_HttpNzb {
         // We have no alternate yet lets spider the description.
         if (isset($this->spot['description'])) {
             foreach ($matches as $needle) {
-                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), content looking for ' . $needle);
+                SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->hasUrlForSpot(), content looking for '.$needle);
 
                 if (strpos($this->spot['description'], $needle) !== false) {
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), needle match');
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->hasUrlForSpot(), needle match');
 
                     // Stop search we have a match, get the url from the description
                     $url = false;
-                    preg_match('/\>(' . str_replace('/', '\/', preg_quote($needle)) . '.*)\</', $this->spot['description'], $matches);
+                    preg_match('/\>('.str_replace('/', '\/', preg_quote($needle)).'.*)\</', $this->spot['description'], $matches);
 
                     if (isset($matches[1])) {
                         $url = $matches[1];
@@ -172,10 +177,10 @@ class Services_Providers_HttpNzb {
                         preg_match("(([^=])((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*))", $this->spot['description'], $matches);
                         if (isset($matches[2])) {
                             $url = $matches[2];
-                        } # if
-                    } # else
+                        } // if
+                    } // else
 
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->hasUrlForSpot(), needle match, url: ' . $url);
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->hasUrlForSpot(), needle match, url: '.$url);
 
                     if ($url) {
                         $this->alternateDownloadUrl = $this->resolveUrl($url);
@@ -184,24 +189,27 @@ class Services_Providers_HttpNzb {
                             return false;
                         } else {
                             return true;
-                        } # else
+                        } // else
                     }
                 }
             }
         }
 
         $this->nzb = false;
+
         return false;
     }
 
     /**
+     * Find the alternate url.
      *
-     * Find the alternate url
      * @param $url String containing alternate url.
-     * @return boolean could the file be resolved?
+     *
+     * @return bool could the file be resolved?
      */
-    protected function resolveUrl($url) {
-        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), url=' . $url);
+    protected function resolveUrl($url)
+    {
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->resolveUrl(), url='.$url);
 
         // Initialize download retrieval class
         $svcHttp = new Services_Providers_Http($this->_cacheDao);
@@ -209,44 +217,46 @@ class Services_Providers_HttpNzb {
 
         // Check if any error occured
         if (!$result['successful']) {
-            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->resolveUrl(), not succesful=' . $result['errorstr']);
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->resolveUrl(), not succesful='.$result['errorstr']);
+
             return false;
-        } # if
+        } // if
 
         // Execute (save responce to var for manual following redirects)
         return $result['finalurl'];
     }
 
     /**
-     * Cases for calling the specific parse methods
+     * Cases for calling the specific parse methods.
      *
-     * @param String $url
-     * @param String $body
+     * @param string $url
+     * @param string $body
+     *
      * @return bool|mixed
      */
-    protected function downloadNzbFrom($url, $body) {
-        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->downloadNzbfrom() ' . $url);
-
+    protected function downloadNzbFrom($url, $body)
+    {
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->downloadNzbfrom() '.$url);
 
         // Binsearch
-        if (strpos($url, 'binsearch.info') !== FALSE) {
+        if (strpos($url, 'binsearch.info') !== false) {
             return $this->downloadNzbFromBinsearch($url, $body);
         }
 
         // NZB Index
-        if ((strpos($url, 'nzbindex.nl') !== FALSE) || (strpos($url, 'nzbindex.com') !== FALSE)) {
+        if ((strpos($url, 'nzbindex.nl') !== false) || (strpos($url, 'nzbindex.com') !== false)) {
             // This function does not use the $body var.
             return $this->downloadNzbFromNzbindex($url);
         }
 
         // NZB Club
-        if (strpos($url, 'nzbclub.com') !== FALSE) {
+        if (strpos($url, 'nzbclub.com') !== false) {
             // This function does not use the $body var.
             return $this->downloadNzbFromNzbclub($url);
         }
 
         // NZB search
-        if (strpos($url, 'nzbsearch.net') != FALSE) {
+        if (strpos($url, 'nzbsearch.net') != false) {
             return $this->downloadNzbFromNzbSearch($url, $body);
         } // nzbsearch
 
@@ -255,13 +265,15 @@ class Services_Providers_HttpNzb {
     }
 
     /**
-     * Tries to download the actual nzb from binsearch
+     * Tries to download the actual nzb from binsearch.
      *
-     * @param String $url
-     * @param String $body
+     * @param string $url
+     * @param string $body
+     *
      * @return bool|mixed
      */
-    protected function downloadNzbFromBinsearch($url, $body) {
+    protected function downloadNzbFromBinsearch($url, $body)
+    {
         // Match to get the nzb id.
         preg_match('/\q\=([a-z0-9]*)&*/i', $url, $matches);
 
@@ -271,13 +283,13 @@ class Services_Providers_HttpNzb {
         }
 
         // Hardcoded download url.
-        $downloadUrl = 'http://www.binsearch.info/fcgi/nzb.fcgi?q=' . $matches[1];
+        $downloadUrl = 'http://www.binsearch.info/fcgi/nzb.fcgi?q='.$matches[1];
 
-        $dom = new DOMDocument;
+        $dom = new DOMDocument();
 
         // Suppress errors, html does not have to be well formed to function.
         @$dom->loadHTML($body);
-        $ids = array();
+        $ids = [];
 
         // Fetch table rows from the result page.
         foreach ($dom->getElementsByTagName('tr') as $tr) {
@@ -304,9 +316,7 @@ class Services_Providers_HttpNzb {
                             $ids[] = $input->getAttribute('name');
                         }
                     }
-
                 }
-
             }
         }
 
@@ -322,22 +332,24 @@ class Services_Providers_HttpNzb {
             return false;
         }
 
-        $postdata = array(
+        $postdata = [
             'action' => 'nzb',
-            $id => $id
-        );
+            $id      => $id,
+        ];
 
         return $this->postAndDownloadNzb($downloadUrl, $postdata);
     }
 
     /**
-     *
      * Execute a POST to the given url and return the body.
-     * @param String $url
-     * @param array $postdata
+     *
+     * @param string $url
+     * @param array  $postdata
+     *
      * @return bool|mixed
      */
-    protected function postAndDownloadNzb($url, array $postdata) {
+    protected function postAndDownloadNzb($url, array $postdata)
+    {
         // Initialize download retrieval class
         $svcHttp = new Services_Providers_Http($this->_cacheDao);
         $svcHttp->setPostContent($postdata);
@@ -346,9 +358,10 @@ class Services_Providers_HttpNzb {
 
         // Check if any error occured
         if (!$result['successful']) {
-            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->postAndDownloadNzb(), not succesful=' . $result['errorstr']);
+            SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->postAndDownloadNzb(), not succesful='.$result['errorstr']);
+
             return false;
-        } # if
+        } // if
 
         // Load the body into simplexml.
         // If the xml is well formed this will result in true thus returning the xml.
@@ -357,17 +370,20 @@ class Services_Providers_HttpNzb {
             return $result['data'];
         } else {
             return false;
-        } # else
+        } // else
     }
 
     /**
-     * Tries to download the actual nzb from nzbindex
+     * Tries to download the actual nzb from nzbindex.
      *
-     * @param String $url
+     * @param string $url
+     *
      * @internal param String $body
+     *
      * @return bool|mixed
      */
-    protected function downloadNzbFromNzbindex($url) {
+    protected function downloadNzbFromNzbindex($url)
+    {
         // New http request to get the page again
         // This time do a request with the cookie that accepts the Disclaimer agreement.
 
@@ -379,6 +395,7 @@ class Services_Providers_HttpNzb {
         // Check if any error occured
         if (!$result['successful']) {
             trigger_error($result['errorstr']);
+
             return false;
         }
 
@@ -390,7 +407,7 @@ class Services_Providers_HttpNzb {
             return false;
         }
 
-        $dom = new DOMDocument;
+        $dom = new DOMDocument();
 
         // Suppress errors, html does not have to be well formed to function.
         $body = $result['data'];
@@ -409,21 +426,23 @@ class Services_Providers_HttpNzb {
                         // No need for posting, just another get using http.
                         return $this->getAndDownloadNzb($url);
                     }
-                } # if
-            } # if
-        } # foreach
+                } // if
+            } // if
+        } // foreach
 
         // Could not find the right download link.
         return false;
     }
 
     /**
-     *
      * Curl GET return xml or false if not well formed.
-     * @param String $url
+     *
+     * @param string $url
+     *
      * @return bool|mixed
      */
-    protected function getAndDownloadNzb($url) {
+    protected function getAndDownloadNzb($url)
+    {
         // Initialize download retrieval class
         $svcHttp = new Services_Providers_Http($this->_cacheDao);
         $result = $svcHttp->perform($url);
@@ -431,6 +450,7 @@ class Services_Providers_HttpNzb {
         // Check if any error occured
         if (!$result['successful']) {
             trigger_error($result['errorstr']);
+
             return false;
         }
 
@@ -448,25 +468,30 @@ class Services_Providers_HttpNzb {
     }
 
     /**
+     * Tries to download the actual nzb from nzbclub.
      *
-     * Tries to download the actual nzb from nzbclub
+     * @param string $url
      *
-     * @param String $url
      * @return bool|mixed
      */
-    protected function downloadNzbFromNzbclub($url) {
-        $downloadUrl = str_replace('nzb_view', 'nzb_get', $url) . 'nzb';
+    protected function downloadNzbFromNzbclub($url)
+    {
+        $downloadUrl = str_replace('nzb_view', 'nzb_get', $url).'nzb';
+
         return $this->getAndDownloadNzb($downloadUrl);
     }
 
     /**
-     * Tries to download the actual nzb from nzbindex
+     * Tries to download the actual nzb from nzbindex.
      *
-     * @param String $url
+     * @param string $url
+     *
      * @internal param String $body
+     *
      * @return bool|mixed
      */
-    protected function downloadNzbFromNzbSearch($url, $body) {
+    protected function downloadNzbFromNzbSearch($url, $body)
+    {
         // Match to get the nzb id.
         preg_match('/nzb_get.aspx\?mid=([a-zA-Z0-9]*)/i', $body, $matches);
 
@@ -475,9 +500,6 @@ class Services_Providers_HttpNzb {
             return false;
         }
 
-        return $this->getAndDownloadNzb('http://www.nzbsearch.net/' . $matches[0]);
+        return $this->getAndDownloadNzb('http://www.nzbsearch.net/'.$matches[0]);
     }
-
-
 }
-

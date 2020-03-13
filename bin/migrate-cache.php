@@ -3,7 +3,7 @@
 error_reporting(2147483647);
 
 try {
-    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__.'/../vendor/autoload.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,
@@ -25,63 +25,66 @@ try {
 
     if (!file_exists($dirCache)) {
         mkdir($dirCache, 0777);
-    } # if
+    } // if
 
     /*
      * Now try to get all current cache items
      */
     $dbConnection = $daoFactory->getConnection();
 
-    # Update old blacklisttable
-    $schemaVer = $dbConnection->singleQuery("SELECT `value` FROM `settings` WHERE `name` = 'schemaversion'", array());
+    // Update old blacklisttable
+    $schemaVer = $dbConnection->singleQuery("SELECT `value` FROM `settings` WHERE `name` = 'schemaversion'", []);
     if ($schemaVer >= 0.60) {
-        throw new Exception("Your schemaversion is already upgraded");
-    } # if
+        throw new Exception('Your schemaversion is already upgraded');
+    } // if
 
     /*
      * Remove any serialized caches as we don't support them anymore
      */
-    echo "Removing serialized entries from database";
-    $dbConnection->modify("DELETE FROM cache WHERE cachetype = 4");
-    $dbConnection->modify("DELETE FROM cache WHERE cachetype = 5");
-    echo ", done. " . PHP_EOL;
+    echo 'Removing serialized entries from database';
+    $dbConnection->modify('DELETE FROM cache WHERE cachetype = 4');
+    $dbConnection->modify('DELETE FROM cache WHERE cachetype = 5');
+    echo ', done. '.PHP_EOL;
 
     $counter = 1;
-    while(true) {
+    while (true) {
         $counter++;
-        echo "Migrating cache content, items " . (($counter - 1) * 100) . ' to ' . ($counter * 100);
+        echo 'Migrating cache content, items '.(($counter - 1) * 100).' to '.($counter * 100);
 
         $results = null;
         switch ($dbSettings['engine']) {
-            case 'mysql'                :
-            case 'pdo_mysql'            : {
+            case 'mysql':
+            case 'pdo_mysql':
                 $results = $dbConnection->arrayQuery(
-                        'SELECT resourceid, stamp, metadata, serialized, cachetype, UNCOMPRESS(content) AS content FROM cache WHERE content IS NOT NULL LIMIT 100');
+                    'SELECT resourceid, stamp, metadata, serialized, cachetype, UNCOMPRESS(content) AS content FROM cache WHERE content IS NOT NULL LIMIT 100'
+                );
                 break;
-            } # mysql
+             // mysql
 
-            case 'pgsql'                :
-            case 'pdo_pgsql'            : {
+            case 'pgsql':
+            case 'pdo_pgsql':
                 $results = $dbConnection->arrayQuery(
-                        "SELECT resourceid, stamp, metadata, serialized, cachetype, content FROM cache WHERE content IS NOT NULL LIMIT 100");
-                foreach($results as &$v) {
+                    'SELECT resourceid, stamp, metadata, serialized, cachetype, content FROM cache WHERE content IS NOT NULL LIMIT 100'
+                );
+                foreach ($results as &$v) {
                     $v['content'] = stream_get_contents($v['content']);
-                } # foreach
+                } // foreach
 
                 break;
-            } # case Postgresql
+             // case Postgresql
 
-            case 'pdo_sqlite'          : {
-                $results = $dbConnection>arrayQuery(
-                    'SELECT resourceid, stamp, metadata, serialized, cachetype, content FROM cache WHERE content IS NOT NULL LIMIT 100');
+            case 'pdo_sqlite':
+                $results = $dbConnection > arrayQuery(
+                    'SELECT resourceid, stamp, metadata, serialized, cachetype, content FROM cache WHERE content IS NOT NULL LIMIT 100'
+                );
 
                 break;
-            } # mysql
+             // mysql
         }
-        foreach($results as $cacheItem) {
+        foreach ($results as $cacheItem) {
             if ($cacheItem['metadata']) {
                 $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
-            } # if
+            } // if
 
             echo '.';
             $cacheDao->putCacheContent($cacheItem['resourceid'], $cacheItem['cachetype'], $cacheItem['content'], $cacheItem['metadata'], 0);
@@ -89,25 +92,25 @@ try {
             /*
              * Actually invalidate the cache content
              */
-            $dbConnection->modify("UPDATE cache SET content = NULL where resourceid = :resourceid AND cachetype = :cachetype",
-                       array(':resourceid' => array($cacheItem['resourceid'], PDO::PARAM_STR),
-                             ':cachetype' => array($cacheItem['cachetype'], PDO::PARAM_INT)));
-        } # results
+            $dbConnection->modify(
+                'UPDATE cache SET content = NULL where resourceid = :resourceid AND cachetype = :cachetype',
+                [':resourceid'   => [$cacheItem['resourceid'], PDO::PARAM_STR],
+                    ':cachetype' => [$cacheItem['cachetype'], PDO::PARAM_INT], ]
+            );
+        } // results
 
-        echo ", done. " . PHP_EOL;
+        echo ', done. '.PHP_EOL;
 
         if (count($results) == 0) {
             break;
-        } # if
-    } # while
-
-}
-catch(Exception $x) {
-        echo PHP_EOL . PHP_EOL;
-        echo 'SpotWeb crashed' . PHP_EOL . PHP_EOL;
-        echo "Cache migration failed:" . PHP_EOL;
-        echo "   " . $x->getMessage() . PHP_EOL;
-        echo PHP_EOL . PHP_EOL;
-        echo $x->getTraceAsString();
-        die(1);
-    } # catch
+        } // if
+    } // while
+} catch (Exception $x) {
+    echo PHP_EOL.PHP_EOL;
+    echo 'SpotWeb crashed'.PHP_EOL.PHP_EOL;
+    echo 'Cache migration failed:'.PHP_EOL;
+    echo '   '.$x->getMessage().PHP_EOL;
+    echo PHP_EOL.PHP_EOL;
+    echo $x->getTraceAsString();
+    die(1);
+} // catch

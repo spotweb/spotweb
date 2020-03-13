@@ -1,6 +1,7 @@
 <?php
 
-class Dto_MediaInformation {
+class Dto_MediaInformation
+{
     private $_title = null;
     private $_alternateTitle = null;
     private $_releaseYear = null;
@@ -69,4 +70,4 @@ class Dto_MediaInformation {
     {
         return $this->_title;
     }
-} # Dto_MediaInformation
+} // Dto_MediaInformation

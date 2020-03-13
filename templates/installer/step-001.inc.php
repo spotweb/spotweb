@@ -58,11 +58,11 @@ global $_testInstall_Ok;
         <td> Memory limit</td>
         <td><?php echo ini_get('memory_limit'); ?></td>
         <td><?php SpotInstall::showResult(
-                    SpotInstall::returnBytes(ini_get('memory_limit')) >= (128 * 1024 * 1024),
-                    true,
-                    '',
-                    'memory_limit below 128M'
-                ); ?></td>
+                SpotInstall::returnBytes(ini_get('memory_limit')) >= (128 * 1024 * 1024),
+                true,
+                '',
+                'memory_limit below 128M'
+            ); ?></td>
     </tr>
 </table>
 <br/>

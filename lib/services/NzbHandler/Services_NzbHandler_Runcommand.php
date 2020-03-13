@@ -2,55 +2,52 @@
 
 class Services_NzbHandler_Runcommand extends Services_NzbHandler_abs
 {
-	private $_localDir = null;
-	private $_cmdToRun = null;
-	
-	function __construct(Services_Settings_Container $settings, array $nzbHandling)
-	{
-		parent::__construct($settings, 'Runcommand', 'Run', $nzbHandling);
+    private $_localDir = null;
+    private $_cmdToRun = null;
+
+    public function __construct(Services_Settings_Container $settings, array $nzbHandling)
+    {
+        parent::__construct($settings, 'Runcommand', 'Run', $nzbHandling);
 
         /*
          * Make sure we don't try to run empty commands, as this will throw warnings
          * in PHP
          */
-		$this->_cmdToRun = $nzbHandling['command'];
-		if (empty($this->_cmdToRun))
-		{
-			throw new Exception("command in handler is empty but 'runcommand' option chosen!");
-		} # if
+        $this->_cmdToRun = $nzbHandling['command'];
+        if (empty($this->_cmdToRun)) {
+            throw new Exception("command in handler is empty but 'runcommand' option chosen!");
+        } // if
 
-		$this->_localDir = $nzbHandling['local_dir'];
-		if (empty($this->_localDir))
-		{
-			throw new InvalidLocalDirException("Unable to save NZB file, local dir in config is empty");
-		} # if
-		
-	} # __construct
+        $this->_localDir = $nzbHandling['local_dir'];
+        if (empty($this->_localDir)) {
+            throw new InvalidLocalDirException('Unable to save NZB file, local dir in config is empty');
+        } // if
+    }
 
-	public function processNzb($fullspot, $nzblist)
-	{
-		$nzb = $this->prepareNzb($fullspot, $nzblist);
-		
-		$path = $this->makeNzbLocalPath($fullspot, $this->_localDir);
-		$filename = $path . $nzb['filename'];
-		
-		# Sla de NZB file op het lokale filesysteem op
-		if (file_put_contents($filename, $nzb['nzb']) === false)
-		{
-			throw new InvalidLocalDirException("Unable to write NZB file to: " . $filename);
-		} # if
-		
-		$cmdToRun = str_replace('$SPOTTITLE', $fullspot['title'], $this->_cmdToRun);
-		$cmdToRun = str_replace('$NZBPATH', $filename, $cmdToRun);
-		
-		# execute the command
-		exec($cmdToRun, $saveOutput, $status);
-				
-		if ($status != 0)
-		{
-			throw new Exception("Unable to execute program: " . $cmdToRun);
-		} # if
+    // __construct
 
-	} # processNzb
+    public function processNzb($fullspot, $nzblist)
+    {
+        $nzb = $this->prepareNzb($fullspot, $nzblist);
 
-} # class Services_NzbHandler_Runcommand
+        $path = $this->makeNzbLocalPath($fullspot, $this->_localDir);
+        $filename = $path.$nzb['filename'];
+
+        // Sla de NZB file op het lokale filesysteem op
+        if (file_put_contents($filename, $nzb['nzb']) === false) {
+            throw new InvalidLocalDirException('Unable to write NZB file to: '.$filename);
+        } // if
+
+        $cmdToRun = str_replace('$SPOTTITLE', $fullspot['title'], $this->_cmdToRun);
+        $cmdToRun = str_replace('$NZBPATH', $filename, $cmdToRun);
+
+        // execute the command
+        exec($cmdToRun, $saveOutput, $status);
+
+        if ($status != 0) {
+            throw new Exception('Unable to execute program: '.$cmdToRun);
+        } // if
+    }
+
+    // processNzb
+} // class Services_NzbHandler_Runcommand

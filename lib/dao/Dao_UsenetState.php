@@ -1,22 +1,25 @@
 <?php
 
-interface Dao_UsenetState {
-    const State_Base            = 'Base';
-    const State_Spots           = 'Spots';
-    const State_Comments        = 'Comments';
-    const State_Reports         = 'Reports';
+interface Dao_UsenetState
+{
+    const State_Base = 'Base';
+    const State_Spots = 'Spots';
+    const State_Comments = 'Comments';
+    const State_Reports = 'Reports';
 
-    function initialize();
+    public function initialize();
 
-	function setMaxArticleId($infoType, $articleNumber, $messageId);
-	function getLastArticleNumber($infoType);
-    function getLastMessageId($infoType);
+    public function setMaxArticleId($infoType, $articleNumber, $messageId);
 
-	function isRetrieverRunning();
-	function setRetrieverRunning($isRunning);
+    public function getLastArticleNumber($infoType);
 
-	function setLastUpdate($infoType);
-	function getLastUpdate($infoType);
+    public function getLastMessageId($infoType);
 
-	
-} # Dao_UsenetState
+    public function isRetrieverRunning();
+
+    public function setRetrieverRunning($isRunning);
+
+    public function setLastUpdate($infoType);
+
+    public function getLastUpdate($infoType);
+} // Dao_UsenetState

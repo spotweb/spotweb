@@ -1,2 +1,4 @@
 <?php
-class CacheMustBeMigratedException extends CustomException {};
+class CacheMustBeMigratedException extends CustomException
+{
+}
