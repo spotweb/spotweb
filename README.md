@@ -49,7 +49,7 @@ Spotweb has been regulary tested on several different systems. Spotweb is mostly
 
 * Unix-based (Linux, FreeBSD) operating systems or small NAS systems like Synology and QNAP.
 * Apache Webserver.
-* PHP v5.3 or higher, with at least these modules:
+* PHP v5.6 or higher, with at least these modules:
   * curl
   * dom
   * gettext
@@ -61,17 +61,27 @@ Spotweb has been regulary tested on several different systems. Spotweb is mostly
   * openssl
 * MySQL, PostgreSQL and SQLite, where SQLite is the least supported and tested database engine.
 
-Please run 'install.php' from within your browser before attempting anything further with Spotweb and make sure
+Please run 'http://yourdomain.com/install.php' from within your browser before attempting anything further with Spotweb and make sure
 all items are checked 'OK'.
 
-## Installation
+## Installation Master branch:
 Installation is the toughest part of Spotweb. Depending on your platform you should look at the different tutorials available on the [Spotweb wiki](https://github.com/spotweb/spotweb/wiki), but the basic steps are:
 
 1. Ensure you have an database server installed (MySQL, PostgreSQL or SQLite).
 2. Create an empty 'spotweb' database.
 3. Ensure you have a webserver running and PHP is configured for this webserver.
-4. [Download the Spotweb zip file.](https://github.com/spotweb/spotweb/archive/master.zip)
-5. Unpack the zip file to a directory of choice.
+4. [Download the Spotweb zip file.](https://github.com/spotweb/spotweb/archive/master.zip) 
+5. Unpack the zip file to a directory of choice (or from within your public www folder: "git clone -b master https://github.com/spotweb/spotweb.git ."
+6. Open 'install.php' in your browser until everything is 'OK'. Fix the parts which aren't OK.
+7. Follow the wizard and perform the instructions as given by the wizard.
+
+## Installation Development branch:
+
+1. Ensure you have an database server installed (MySQL, PostgreSQL or SQLite).
+2. Create an empty 'spotweb' database.
+3. Ensure you have a webserver running and PHP is configured for this webserver.
+4. [Download the Spotweb zip file.](https://github.com/spotweb/spotweb/archive/develop.zip) 
+5. Unpack the zip file to a directory of choice (or from within your public www folder: "git clone -b develop https://github.com/spotweb/spotweb.git ."
 6. Open 'install.php' in your browser until everything is 'OK'. Fix the parts which aren't OK.
 7. Follow the wizard and perform the instructions as given by the wizard.
 
