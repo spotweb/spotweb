@@ -271,7 +271,7 @@ class SpotInstall
          * Did the user press submit? If so, try to
          * connect to the database.
          */
-        $userVerified = false;
+        
         if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {
             try {
                 /**
@@ -320,11 +320,9 @@ class SpotInstall
             }
         }
 
-        if (!$userVerified) {
             static::showTemplate('step-004.inc.php', [
                 'form'         => $form,
-                'userVerified' => $userVerified,
-            ]);
+
         }
     }
 
