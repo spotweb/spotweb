@@ -4,11 +4,11 @@ error_reporting(2147483647);
 
 function delete_files($target)
 {
-	$scan_result = scandir($target);
+    $scan_result = scandir($target);
     if (!is_link($target) && is_dir($target) && ($scan_result != false)) {
         // it's a directory; recursively delete everything in it
-        	
-		$files = array_diff(scandir($target), ['.', '..']);
+
+        $files = array_diff(scandir($target), ['.', '..']);
         foreach ($files as $file) {
             delete_files("$target/$file");
         }
