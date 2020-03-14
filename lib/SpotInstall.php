@@ -271,7 +271,6 @@ class SpotInstall
          * Did the user press submit? If so, try to
          * connect to the database.
          */
-        
         if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {
             try {
                 /**
@@ -320,10 +319,9 @@ class SpotInstall
             }
         }
 
-            static::showTemplate('step-004.inc.php', [
-                'form'         => $form,
-            ]);
-     
+        static::showTemplate('step-004.inc.php', [
+            'form'         => $form,
+        ]);
     }
 
     public static function createSystem()
