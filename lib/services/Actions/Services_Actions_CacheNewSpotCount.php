@@ -16,8 +16,7 @@ class Services_Actions_CacheNewSpotCount
         Dao_UserFilter $userFilterDao,
         Dao_Spot $spotDao,
         Services_Search_QueryParser $queryParser
-    )
-    {
+    ) {
         $this->_userFilterCountDao = $userFilterCountDao;
         $this->_userFilterDao = $userFilterDao;
         $this->_spotDao = $spotDao;

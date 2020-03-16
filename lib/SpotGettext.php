@@ -81,10 +81,10 @@ abstract class SpotGettext
      * given string. If the id is not found and $num == 1 $msg is returned,
      * otherwise $msg_plural
      *
-     * @param string $domain The domain to search in
-     * @param string $msg The message to search for
+     * @param string $domain     The domain to search in
+     * @param string $msg        The message to search for
      * @param string $msg_plural A fallback plural form
-     * @param int $count Which plural form
+     * @param int    $count      Which plural form
      *
      * @return Translated string
      */

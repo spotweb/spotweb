@@ -76,11 +76,11 @@ global $_testInstall_Ok;
         <td colspan="2"> curl</td>
         <!--<td><?php SpotInstall::showResult(extension_loaded('curl'), true); ?></td>-->
         <td><?php SpotInstall::showResult(
-                    extension_loaded('curl'),
-                    false,
-                    '',
-                    'You need this module to communicate with sabnzbd/nzbget'
-                ); ?></td>
+                extension_loaded('curl'),
+                false,
+                '',
+                'You need this module to communicate with sabnzbd/nzbget'
+            ); ?></td>
     </tr>
     <tr>
         <td colspan="2"> DOM</td>
