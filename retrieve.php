@@ -50,7 +50,7 @@ try {
          * If the session failed or the the user doesn't have access
          * to retrieve spots, let the user know
          */
-        if (($userSession == false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) {
+        if (($userSession === false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) {
             throw new PermissionDeniedException(SpotSecurity::spotsec_retrieve_spots, '');
         } // if
 
