@@ -13,8 +13,7 @@ class Services_Providers_SpotImage
         Services_Providers_Http $serviceHttp,
         Services_Nntp_SpotReading $nntpSpotReading,
         Dao_Cache $cacheDao
-    )
-    {
+    ) {
         $this->_serviceHttp = $serviceHttp;
         $this->_cacheDao = $cacheDao;
         $this->_nntpSpotReading = $nntpSpotReading;
