@@ -155,7 +155,7 @@ class SpotTemplateHelper
 
         switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
             case 'nzbindex': return 'https://nzbindex.nl/search/?q='.$searchString;
-            case 'binsearch': return 'https://www.binsearch.info/?q='.$searchString;
+            case 'binsearch':
             default: return 'https://www.binsearch.info/?adv_age=&amp;q='.$searchString;
         } // switch
     }
