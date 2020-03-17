@@ -154,8 +154,8 @@ class SpotTemplateHelper
         $searchString = urlencode($searchString);
 
         switch ($this->_currentSession['user']['prefs']['nzb_search_engine']) {
-            case 'nzbindex': return 'https://nzbindex.nl/search/?q='.$searchString; break;
-            case 'binsearch':
+            case 'nzbindex': return 'https://nzbindex.nl/search/?q='.$searchString;
+            case 'binsearch': return 'https://www.binsearch.info/?q='.$searchString;
             default: return 'https://www.binsearch.info/?adv_age=&amp;q='.$searchString;
         } // switch
     }
@@ -168,7 +168,7 @@ class SpotTemplateHelper
     public function makeBaseUrl($type)
     {
         switch ($type) {
-            case 'path': return parse_url($this->_settings->get('spotweburl'), PHP_URL_PATH); break;
+            case 'path': return parse_url($this->_settings->get('spotweburl'), PHP_URL_PATH);
             default: return $this->_settings->get('spotweburl');
         } // switch
     }
@@ -1411,7 +1411,7 @@ class SpotTemplateHelper
     {
         $svcPrv_Stats = new Services_Providers_Statistics(
             $this->_daoFactory->getSpotDao(),
-            $this->_daoFactory->getCacheDao($this->_settings->get('cache_path')),
+            $this->_daoFactory->/** @scrutinizer ignore-call */getCacheDao($this->_settings->get('cache_path')),
             0
         );
 
