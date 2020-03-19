@@ -19,9 +19,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */
+ 
 
-/**
+
  * Gettext implementation in PHP.
  *
  * @copyright (c) 2009 David Soria Parra <sn_@gmx.net>
@@ -29,12 +29,12 @@
  */
 class Gettext_PHP extends SpotGettext
 {
-    /**
+    /*
      * First magic word in the MO header.
      */
     const MAGIC1 = 0xde120495;
 
-    /**
+    /*
      * First magic word in the MO header.
      */
     const MAGIC2 = 0x950412de;
@@ -45,7 +45,7 @@ class Gettext_PHP extends SpotGettext
     protected $translationTable = [];
     protected $parsed = [];
 
-    /**
+    /*
      * Initialize a new gettext class.
      *
      * @param string $mofile The file to parse
@@ -57,14 +57,14 @@ class Gettext_PHP extends SpotGettext
         $this->locale = $locale;
     }
 
-    /**
+    /*
      * Parse the MO file header and returns the table
      * offsets as described in the file header.
      *
      * If an exception occured, null is returned. This is intentionally
      * as we need to get close to ext/gettexts beahvior.
      *
-     * @oaram Ressource $fp The open file handler to the MO file
+     * @param Resource $fp The open file handler to the MO file
      *
      * @return An array of offset
      */
@@ -89,15 +89,15 @@ class Gettext_PHP extends SpotGettext
         return $offsets;
     }
 
-    /**
-     * Parse and reutnrs the string offsets in a a table. Two table can be found in
+    /*
+     * Parse and returns the string offsets in a table. Two table's can be found in
      * a mo file. The table with the translations and the table with the original
      * strings. Both contain offsets to the strings in the file.
      *
      * If an exception occured, null is returned. This is intentionally
      * as we need to get close to ext/gettexts beahvior.
      *
-     * @param Ressource $fp     The open file handler to the MO file
+     * @param Resource $fp     The open file handler to the MO file
      * @param int       $offset The offset to the table that should be parsed
      * @param int       $num    The number of strings to parse
      *
@@ -118,11 +118,11 @@ class Gettext_PHP extends SpotGettext
         return $table;
     }
 
-    /**
+    /*
      * Parse a string as referenced by an table. Returns an
      * array with the actual string.
      *
-     * @param Ressource $fp    The open file handler to the MO fie
+     * @param Resource $fp    The open file handler to the MO fie
      * @param array     $entry The entry as parsed by parseOffsetTable()
      *
      * @return Parsed string
@@ -139,7 +139,7 @@ class Gettext_PHP extends SpotGettext
         return '';
     }
 
-    /**
+    /*
      * Parse the MO file.
      *
      * @return void
@@ -213,7 +213,7 @@ class Gettext_PHP extends SpotGettext
         $this->parsed[$locale][$domain] = true;
     }
 
-    /**
+    /*
      * Return a translated string.
      *
      * If the translation is not found, the original passed message
@@ -234,7 +234,7 @@ class Gettext_PHP extends SpotGettext
         return $msg;
     }
 
-    /**
+    /*
      * Overrides the domain for a single lookup.
      *
      * If the translation is not found, the original passed message
@@ -258,7 +258,7 @@ class Gettext_PHP extends SpotGettext
         return $msg;
     }
 
-    /**
+    /*
      * Return a translated string in it's plural form.
      *
      * Returns the given $count (e.g second, third,...) plural form of the
@@ -297,7 +297,7 @@ class Gettext_PHP extends SpotGettext
         }
     }
 
-    /**
+    /*
      * Override the current domain for a single plural message lookup.
      *
      * Returns the given $count (e.g second, third,...) plural form of the
