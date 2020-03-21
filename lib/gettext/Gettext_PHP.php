@@ -206,7 +206,7 @@ class Gettext_PHP extends SpotGettext
 					}
 				}
 								
-				@file_put_contents($cachefile, serialize($this->translationTable[$locale][$domain])); 
+				/** @scrutinizer ignore-unhandled */@file_put_contents($cachefile, serialize($this->translationTable[$locale][$domain])); 
 				$fileput = file_put_contents($cachefile, serialize($this->translationTable[$locale][$domain]));
 				if ($fileput === FALSE) {				
 				 throw new Exception('Unable to write file to given location: '.$fileput);
