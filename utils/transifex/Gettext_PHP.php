@@ -128,14 +128,15 @@ class Gettext_PHP extends SpotGettext
      * @return Parsed string
      */
     private function parseEntry($fp, $entry)
-    {			
-        if (is_array($entry) && (fseek($fp, $entry['offset'], SEEK_SET) < 0)) {
+    {
+        if (fseek($fp, $entry['offset'], SEEK_SET) < 0) {
             return null;
         }
-        if (is_array($entry) && ($entry['size'] > 0)) {
+        if (is_array($entry['size'] > 0)) {
             return fread($fp, $entry['size']);
-        }		
-        return '';		
+        }
+
+        return '';
     }
 
     /*
