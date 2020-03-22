@@ -415,7 +415,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $doc->appendChild($rss);
 
             $atomSelfLink = $doc->createElement('atom:link');
-            $atomSelfLink->setAttribute('href', $this->_settings->get('spotweburl').'api');
+            $atomSelfLink->setAttribute('href', $this->_settings->/** @scrutinizer ignore-call */get('spotweburl').'api');
             $atomSelfLink->setAttribute('rel', 'self');
             $atomSelfLink->setAttribute('type', 'application/rss+xml');
 
@@ -493,11 +493,11 @@ class SpotPage_newznabapi extends SpotPage_Abs
                     $count = 0;
                     $subs = [];
 
-                    if (in_array('c2', $nabCat) == true || in_array('c1', $nabCat) == true || in_array('c6', $nabCat) == true) {
+                    if (in_array('c2', $nabCat) === true || in_array('c1', $nabCat) === true || in_array('c6', $nabCat) === true) {
                         $subs[$count] = 'dutch';
                         $count += 1;
                     } // if
-                    if (in_array('c3', $nabCat) == true || in_array('c4', $nabCat) == true || in_array('c7', $nabCat) == true) {
+                    if (in_array('c3', $nabCat) === true || in_array('c4', $nabCat) === true || in_array('c7', $nabCat) === true) {
                         $subs[$count] = 'english';
                         $count += 1;
                     } // if
