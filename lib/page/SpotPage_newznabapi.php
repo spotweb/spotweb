@@ -423,16 +423,16 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $channel->appendChild($atomSelfLink);
             $channel->appendChild($doc->createElement('title', 'Spotweb Index'));
             $channel->appendChild($doc->createElement('description', 'Spotweb Index API Results'));
-            $channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+            $channel->appendChild($doc->createElement('link', $this->_settings->/** @scrutinizer ignore-call */get('spotweburl')));
             $channel->appendChild($doc->createElement('language', 'en-gb'));
             $channel->appendChild($doc->createElement('webMaster', $this->_currentSession['user']['mail'].' ('.$this->_currentSession['user']['firstname'].' '.$this->_currentSession['user']['lastname'].')'));
             $channel->appendChild($doc->createElement('category', ''));
             $rss->appendChild($channel);
 
             $image = $doc->createElement('image');
-            $image->appendChild($doc->createElement('url', $this->_settings->get('spotweburl').'images/spotnet.gif'));
+            $image->appendChild($doc->createElement('url', $this->_settings->/** @scrutinizer ignore-call */ get('spotweburl').'images/spotnet.gif'));
             $image->appendChild($doc->createElement('title', 'Spotweb Index'));
-            $image->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+            $image->appendChild($doc->createElement('link', $this->_settings->/** @scrutinizer ignore-call */ get('spotweburl')));
             $image->appendChild($doc->createElement('description', 'SpotWeb Index API Results'));
             $channel->appendChild($image);
 
@@ -478,15 +478,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
                     $attr->setAttribute('name', 'category');
                     $attr->setAttribute('value', $nabCat[1]);
                     $item->appendChild($attr);
-                } // if
-
-                //$nabCat = explode("|", $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
-                //if ($nabCat[0] != "" && is_numeric($nabCat[0])) {
-                //    $attr = $doc->createElement('newznab:attr');
-                //    $attr->setAttribute('name', 'category');
-                //    $attr->setAttribute('value', $nabCat[0]);
-                //    $item->appendChild($attr);
-                //} # if
+                } 
 
                 if (!empty($spot['subcatc'])) {
                     $nabCat = explode('|', $spot['subcatc']);
@@ -632,7 +624,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $channel->appendChild($doc->createElement('title', 'Spotweb'));
             $channel->appendChild($doc->createElement('language', 'nl'));
             $channel->appendChild($doc->createElement('description', 'Spotweb Index Api Detail'));
-            $channel->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+            $channel->appendChild($doc->createElement('link', $this->_settings->/** @scrutinizer ignore-call */ get('spotweburl')));
             $channel->appendChild($doc->createElement('webMaster', $this->_currentSession['user']['mail'].' ('.$this->_currentSession['user']['firstname'].' '.$this->_currentSession['user']['lastname'].')'));
             $channel->appendChild($doc->createElement('category', ''));
             $rss->appendChild($channel);
@@ -640,7 +632,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $image = $doc->createElement('image');
             $image->appendChild($doc->createElement('url', $this->_tplHelper->makeImageUrl($spot, 300, 300)));
             $image->appendChild($doc->createElement('title', 'Spotweb Index'));
-            $image->appendChild($doc->createElement('link', $this->_settings->get('spotweburl')));
+            $image->appendChild($doc->createElement('link', $this->_settings->/** @scrutinizer ignore-call */ get('spotweburl')));
             $image->appendChild($doc->createElement('description', 'Visit Spotweb Index'));
             $channel->appendChild($image);
 
@@ -734,8 +726,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
         $server->setAttribute('title', 'Spotweb');
         $server->setAttribute('strapline', 'Spotweb API Index');
         $server->setAttribute('email', $this->_currentSession['user']['mail'].' ('.$this->_currentSession['user']['firstname'].' '.$this->_currentSession['user']['lastname'].')');
-        $server->setAttribute('url', $this->_settings->get('spotweburl'));
-        $server->setAttribute('image', $this->_settings->get('spotweburl').'images/spotnet.gif');
+        $server->setAttribute('url', $this->_settings->/** @scrutinizer ignore-call */ get('spotweburl'));
+        $server->setAttribute('image', $this->_settings->/** @scrutinizer ignore-call */ get('spotweburl').'images/spotnet.gif');
         $server->setAttribute('type', 'Spotweb');
         $caps->appendChild($server);
 
