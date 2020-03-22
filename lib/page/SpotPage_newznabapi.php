@@ -478,7 +478,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
                     $attr->setAttribute('name', 'category');
                     $attr->setAttribute('value', $nabCat[1]);
                     $item->appendChild($attr);
-                } 
+                }
 
                 if (!empty($spot['subcatc'])) {
                     $nabCat = explode('|', $spot['subcatc']);
