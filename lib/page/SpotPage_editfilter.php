@@ -89,12 +89,12 @@ class SpotPage_editfilter extends SpotPage_Abs
                                 echo 'window.location.href = "?page=edituserprefs&userid='.$this->_currentSession['user']['userid'].'"';
                                 echo '</script>';
                             } catch (Exception $x) {
-								echo '<script language = "javascript">';
-								echo 'alert("Spotwebfilters file invalid.")';
-								echo '</script>';
-								echo '<script language = "javascript">';
-								echo 'window.location.href = "?page=edituserprefs&userid='.$this->_currentSession['user']['userid'].'"';
-								echo '</script>';                                
+                                echo '<script language = "javascript">';
+                                echo 'alert("Spotwebfilters file invalid.")';
+                                echo '</script>';
+                                echo '<script language = "javascript">';
+                                echo 'window.location.href = "?page=edituserprefs&userid='.$this->_currentSession['user']['userid'].'"';
+                                echo '</script>';
                             } // catch
                         } else {
                             echo '<script language = "javascript">';
