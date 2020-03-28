@@ -105,11 +105,11 @@ global $_testInstall_Ok;
     <tr>
         <td colspan="2"> zip</td>
         <td><?php SpotInstall::showResult(
-                    extension_loaded('zip'),
-                    false,
-                    '',
-                    'You need this module to select multiple NZB files'
-                ); ?></td>
+                extension_loaded('zip'),
+                false,
+                '',
+                'You need this module to select multiple NZB files'
+            ); ?></td>
     </tr>
     <tr>
         <td colspan="2"> zlib</td>
