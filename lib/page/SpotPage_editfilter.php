@@ -89,7 +89,12 @@ class SpotPage_editfilter extends SpotPage_Abs
                                 $result->addError(_('Uploaded Spotwebfilter in invalid'));
                             } // catch
                         } else {
-                            $result->addError(sprintf(_('Error while uploading filter (%s)', $uploadHandler->errorText())));
+                            echo '<script language = "javascript">';
+							echo 'alert("Error uploading filters: '.$uploadHandler->errorText().'")';							
+							echo '</script>';
+							echo '<script language = "javascript">';
+							echo 'window.location.href = "?page=edituserprefs&userid='.$this->_currentSession['user']['userid'].'"';
+							echo '</script>';	
                         } // else
                     } else {
                         $result->addError(_("Filter hasn't been uploaded"));
