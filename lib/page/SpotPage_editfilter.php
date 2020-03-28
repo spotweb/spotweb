@@ -93,11 +93,11 @@ class SpotPage_editfilter extends SpotPage_Abs
                             } // catch
                         } else {
                             echo '<script language = "javascript">';
-							echo 'alert("Error uploading filters: '.$uploadHandler->errorText().'")';							
-							echo '</script>';
-							echo '<script language = "javascript">';
-							echo 'window.location.href = "?page=edituserprefs&userid='.$this->_currentSession['user']['userid'].'"';
-							echo '</script>';	
+                            echo 'alert("Error uploading filters: '.$uploadHandler->errorText().'")';
+                            echo '</script>';
+                            echo '<script language = "javascript">';
+                            echo 'window.location.href = "?page=edituserprefs&userid='.$this->_currentSession['user']['userid'].'"';
+                            echo '</script>';
                         } // else
                     } else {
                         $result->addError(_("Filter hasn't been uploaded"));
