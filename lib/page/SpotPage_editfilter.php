@@ -83,7 +83,7 @@ class SpotPage_editfilter extends SpotPage_Abs
                                 $filterList = $svcUserFilter->xmlToFilters($xml);
                                 $svcUserFilter->setFilterList($this->_currentSession['user']['userid'], $filterList->getData('filters'));
                                 echo '<script language = "javascript">';
-                                echo 'alert("Succesfully imported filters!")';
+                                echo 'alert("Successfully imported filters!")';
                                 echo '</script>';
                                 echo '<script language = "javascript">';
                                 echo 'window.location.href = "?page=edituserprefs&userid='.$this->_currentSession['user']['userid'].'"';
