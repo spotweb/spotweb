@@ -29,8 +29,6 @@ class Notifications_Email extends Notifications_abs
             $mail->CharSet = PHPMailer::CHARSET_UTF8;
             $mail->Encoding = PHPMailer::ENCODING_BASE64;
             $mail->Priority = 1;
-            $mail->do_verp = true;
-            $mail->SingleTo = true;
             $mail->dsn = 'NEVER';
             $mail->WordWrap = 78;
             $mail->XMailer = null;
