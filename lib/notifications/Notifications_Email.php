@@ -21,7 +21,6 @@ class Notifications_Email extends Notifications_abs
 
     public function sendMessage($type, $title, $body, $sourceUrl)
     {
-        $body = wordwrap($body, 70);
         if (isset($this->_settings->smtp['use'] || $this->_settings->smtp['use'])) {
             $mail = new PHPMailer(true);
             $mail->isSMTP();
@@ -48,6 +47,7 @@ class Notifications_Email extends Notifications_abs
             $mail->Body = $body;
             $mail->send()
         } else {
+            $body = wordwrap($body, 78);
             $header = 'From: '.$this->_appName.' <'.$this->_dataArray['sender'].">\r\n";
             mail($this->_dataArray['receiver'], $title, $body, $header);
         }
