@@ -97,7 +97,7 @@ class Services_Settings_Base
         } // if
 
 	// validate smtp settings or sett default if not used
-	$settings['smtp']['use'] = (isset($settings['smtp']['switch'])) ? true : false;
+	$settings['smtp']['use'] = (isset($settings['smtp']['use']['switch'])) ? true : false;
 	if ($settings['use']) {
             $settings['smtp']['host'] = trim($settings['smtp']['host']);
             $settings['smtp']['user'] = trim($settings['smtp']['user']);
