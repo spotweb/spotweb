@@ -98,7 +98,7 @@ class Services_Settings_Base
 
 	// validate smtp settings or sett default if not used
 	$settings['smtp']['use'] = (isset($settings['smtp']['use']['switch'])) ? true : false;
-	if ($settings['use']) {
+	if ($settings['smtp']['use']) {
             $settings['smtp']['host'] = trim($settings['smtp']['host']);
             $settings['smtp']['user'] = trim($settings['smtp']['user']);
             $settings['smtp']['pass'] = trim($settings['smtp']['pass']);
@@ -116,10 +116,11 @@ class Services_Settings_Base
 	    } else
 	        $result->addError(_('SMTP Port must be numeric'));
 	} else {
-            $settings['smtp'] = ['host' => '',
-                'user'                  => '',
-                'pass'                  => '',
-                'port'                  => 587, ];
+            $settings['smtp'] = ['use' => false,
+		'host'                 => '',
+                'user'                 => '',
+                'pass'                 => '',
+                'port'                 => 587, ];
 	} // if
 
         // Convert other settings (usually checkboxes) to be simply boolean settings
