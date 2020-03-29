@@ -119,9 +119,9 @@ global $_testInstall_Ok;
     <tr>
         <th colspan="2"> Database support</th>
         <td><?php SpotInstall::showResult(
-                    extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'),
-                    true
-                ); ?></td>
+                extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'),
+                true
+            ); ?></td>
     </tr>
     <tr>
         <td colspan="2"> MySQL (PDO)</td>
