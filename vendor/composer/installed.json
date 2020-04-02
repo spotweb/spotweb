@@ -2391,23 +2391,23 @@
     },
     {
         "name": "spotweb/nntp",
-        "version": "1.0.2",
-        "version_normalized": "1.0.2.0",
+        "version": "1.0.3",
+        "version_normalized": "1.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mesa57/NNTP-Protocol.git",
-            "reference": "38bf33876d1a67e654dff31fcc5d58b65260e7ea"
+            "reference": "277162e27e811f56f955344db99a6c76436676b3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mesa57/NNTP-Protocol/zipball/38bf33876d1a67e654dff31fcc5d58b65260e7ea",
-            "reference": "38bf33876d1a67e654dff31fcc5d58b65260e7ea",
+            "url": "https://api.github.com/repos/mesa57/NNTP-Protocol/zipball/277162e27e811f56f955344db99a6c76436676b3",
+            "reference": "277162e27e811f56f955344db99a6c76436676b3",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3"
         },
-        "time": "2017-11-17T18:55:33+00:00",
+        "time": "2020-04-02T19:03:20+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
