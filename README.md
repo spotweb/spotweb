@@ -90,3 +90,4 @@ When a white page appears instead of your Spotweb installation, this usually ind
 your ownsettings.php, dbsettings.inc.php or a configuration error in your webserver.
 
 Please consult your Apache's errorlog for the exact error and fix it.
+
