@@ -25,7 +25,7 @@
 //require_once 'Extension.php';
 
 /**
- * Gettext implementation in PHP
+ * Gettext implementation in PHP.
  *
  * @copyright (c) 2009 David Soria Parra <sn_@gmx.net>
  * @author David Soria Parra <sn_@gmx.net>
@@ -35,76 +35,76 @@ abstract class SpotGettext
     private static $instance = null;
 
     /**
-     * Return a translated string
+     * Return a translated string.
      *
      * If the translation is not found, the original passed message
      * will be returned.
      *
-     * @param String $msg The message to translate
-     * 
+     * @param string $msg The message to translate
+     *
      * @return Translated message
      */
-    public abstract function gettext($msg);
+    abstract public function gettext($msg);
 
     /**
-     * Overrides the domain for a single lookup
+     * Overrides the domain for a single lookup.
      *
      * If the translation is not found, the original passed message
      * will be returned.
      *
-     * @param String $domain The domain to search in
-     * @param String $msg The message to translate
-     * 
+     * @param string $domain The domain to search in
+     * @param string $msg    The message to translate
+     *
      * @return Translated message
      */
-    public abstract function dgettext($domain, $msg);
+    abstract public function dgettext($domain, $msg);
 
     /**
-     * Return a translated string in it's plural form
+     * Return a translated string in it's plural form.
      *
      * Returns the given $count (e.g second, third,...) plural form of the
      * given string. If the id is not found and $num == 1 $msg is returned,
      * otherwise $msg_plural
      *
-     * @param String $msg The message to search for
-     * @param String $msg2 A fallback plural form
-     * @param Integer $count Which plural form
+     * @param string $msg   The message to search for
+     * @param string $msg2  A fallback plural form
+     * @param int    $count Which plural form
      *
      * @return Translated string
      */
-    public abstract function ngettext($msg1, $msg2, $count);
+    abstract public function ngettext($msg1, $msg2, $count);
 
     /**
-     * Override the current domain for a single plural message lookup
+     * Override the current domain for a single plural message lookup.
      *
      * Returns the given $count (e.g second, third,...) plural form of the
      * given string. If the id is not found and $num == 1 $msg is returned,
      * otherwise $msg_plural
      *
-     * @param String $domain The domain to search in
-     * @param String $msg The message to search for
-     * @param String $msg_plural A fallback plural form
-     * @param Integer $count Which plural form
+     * @param string $domain     The domain to search in
+     * @param string $msg        The message to search for
+     * @param string $msg_plural A fallback plural form
+     * @param int    $count      Which plural form
      *
      * @return Translated string
      */
-     public abstract function dngettext($domain, $msg1, $msg2, $count);
+    abstract public function dngettext($domain, $msg1, $msg2, $count);
 
     /**
      * Returns an instance of a gettext implementation depending on
      * the capabilities of the PHP installation. If the gettext extension
      * is loaded, we use the native gettext() bindings, otherwise we use
-     * an own implementation
+     * an own implementation.
      *
-     * @param String $directory Directory to search the mo files in
-     * @param String $domain    The current domain
-     * @param String $locale    The local
+     * @param string $directory Directory to search the mo files in
+     * @param string $domain    The current domain
+     * @param string $locale    The local
      *
      * @return Gettext An instance of a Gettext implementation
      */
     public static function getInstance($directory, $domain, $locale)
     {
-        $key = $directory . $domain . $locale;
+        $key = $directory.$domain.$locale;
         if (!isset(self::$instance[$key])) {
             if (extension_loaded('gettext')) {
                 self::$instance[$key] = new Gettext_Extension($directory, $domain, $locale);

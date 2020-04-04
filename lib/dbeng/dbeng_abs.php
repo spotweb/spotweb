@@ -1,143 +1,153 @@
 <?php
 
-abstract class dbeng_abs {
-	protected $_batchInsertChunks = 500;
+abstract class dbeng_abs
+{
+    protected $_batchInsertChunks = 500;
 
-	/*
-	 * Factory class which instantiates the specified DAO factory object
-	 */
-	public static function getDbFactory($engine) {
-		/* 
-		 * Erase username/password so it won't show up in any stacktrace,
-		 * only erase them if they exist (eg: sqlite has no username and
-		 * password)
-		 */
-		switch ($engine) {
-			case 'mysql'		:
-			case 'pdo_mysql'	: return new dbeng_pdo_mysql(); break; 
-			case 'pdo_pgsql' 	: return new dbeng_pdo_pgsql(); break;
-			case 'pdo_sqlite'	: return new dbeng_pdo_sqlite(); break;
+    /*
+     * Factory class which instantiates the specified DAO factory object
+     */
+    public static function getDbFactory($engine)
+    {
+        /*
+         * Erase username/password so it won't show up in any stacktrace,
+         * only erase them if they exist (eg: sqlite has no username and
+         * password)
+         */
+        switch ($engine) {
+            case 'mysql':
+            case 'pdo_mysql': return new dbeng_pdo_mysql();
+            case 'pdo_pgsql': return new dbeng_pdo_pgsql();
+            case 'pdo_sqlite': return new dbeng_pdo_sqlite();
+            default: throw new Exception('Unknown database engine ('.$engine.') factory specified');
+        } // switch
+    }
 
-			default				: throw new Exception("Unknown database engine (" . $engine . ") factory specified");
-		} // switch
-	} # getDbFactory()
-	
-	/*
-	 * Connects to the database
-	 */
-	abstract function connect($host, $user, $pass, $db, $port);
-	
-	/*
-	 * Executes the query and discards any output. Returns true of no
-	 * error was found. No handling of the SQL statement is done
-	 */
-	abstract function rawExec($sql);
-	
-	/*
-	 * Executes the query with $params as parameters. All parameters are 
-	 * parsed through the safe() function to prevent SQL injection.
-	 *
-	 * Returns a single associative array when query succeeds, returns 
-	 * an exception when the query fails.
-	 */
-	abstract function singleQuery($sql, $params = array());
+    // getDbFactory()
 
-	/*
-	 * Executes the query with $params as parameters. All parameters are 
-	 * parsed through sthe safe() function to prevent SQL injection.
-	 *
-	 * Returns an array of associative arrays when query succeeds, returns 
-	 * an exception when the query fails.
-	 */
-	abstract function arrayQuery($sql, $params = array());
+    /*
+     * Connects to the database
+     */
+    abstract public function connect($host, $user, $pass, $db, $port);
 
-	/*
-	 * Database specific 'escape' or 'safe' function to escape strings
-	 */
-	abstract function safe($s);	
-	
-	/*
-	 * Returns the amount of effected rows
-	 */
-	abstract function rows();
-	
-	/* 
-	 * Begins an transaction
-	 */
-	abstract function beginTransaction();
-	
-	/* 
-	 * Commits an transaction
-	 */
-	abstract function commit();
-	
-	/* 
-	 * Rolls back an transaction
-	 */
-	abstract function rollback();
-	
-	/* 
-	 * Returns the last insertid
-	 */
-	abstract function lastInsertId($tableName);
+    /*
+     * Executes the query and discards any output. Returns true of no
+     * error was found. No handling of the SQL statement is done
+     */
+    abstract public function rawExec($sql);
+
+    /*
+     * Executes the query with $params as parameters. All parameters are
+     * parsed through the safe() function to prevent SQL injection.
+     *
+     * Returns a single associative array when query succeeds, returns
+     * an exception when the query fails.
+     */
+    abstract public function singleQuery($sql, $params = []);
+
+    /*
+     * Executes the query with $params as parameters. All parameters are
+     * parsed through sthe safe() function to prevent SQL injection.
+     *
+     * Returns an array of associative arrays when query succeeds, returns
+     * an exception when the query fails.
+     */
+    abstract public function arrayQuery($sql, $params = []);
+
+    /*
+     * Database specific 'escape' or 'safe' function to escape strings
+     */
+    abstract public function safe($s);
+
+    /*
+     * Returns the amount of effected rows
+     */
+    abstract public function rows();
+
+    /*
+     * Begins an transaction
+     */
+    abstract public function beginTransaction();
+
+    /*
+     * Commits an transaction
+     */
+    abstract public function commit();
+
+    /*
+     * Rolls back an transaction
+     */
+    abstract public function rollback();
+
+    /*
+     * Returns the last insertid
+     */
+    abstract public function lastInsertId($tableName);
 
     /*
      * Transforms an array of values to an list usable by an
      * IN statement
      */
-    abstract function batchInsert($ar, $sql, $typs, $fields);
+    abstract public function batchInsert($ar, $sql, $typs, $fields);
 
-	/*
-	 * Executes the query and returns the (resource or handle)
-	 */
-	abstract function exec($s, $p = array());
+    /*
+     * Executes the query and returns the (resource or handle)
+     */
+    abstract public function exec($s, $p = []);
 
-	/*
-	 * INSERT or UPDATE statement, doesn't return anything. Exception 
-	 * thrown if a error occurs
-	 */
-	abstract function modify($s, $p = array());
-
-	/*
-	 * Transforms an array of keys to an list usable by an
-	 * IN statement
-	 */
-	function arrayKeyToIn($ar) {
-		$tmpList = '';
-
-		foreach($ar as $k => $v) {
-			$tmpList .= $this->safe((string) $k) . ",";
-		} # foreach
-		return substr($tmpList, 0, -1);
-	} # arrayKeyToIn
+    /*
+     * INSERT or UPDATE statement, doesn't return anything. Exception
+     * thrown if a error occurs
+     */
+    abstract public function modify($s, $p = []);
 
     /*
      * Transforms an array of keys to an list usable by an
      * IN statement
      */
-	function arrayKeyToInForComments($ar) {
-		$tmpList = '';
-        foreach($ar as $k => $v) {
+    public function arrayKeyToIn($ar)
+    {
+        $tmpList = '';
+
+        foreach ($ar as $k => $v) {
+            $tmpList .= $this->safe((string) $k).',';
+        } // foreach
+        return substr($tmpList, 0, -1);
+    }
+
+    // arrayKeyToIn
+
+    /*
+     * Transforms an array of keys to an list usable by an
+     * IN statement
+     */
+    public function arrayKeyToInForComments($ar)
+    {
+        $tmpList = '';
+        foreach ($ar as $k => $v) {
             // Exclude messageid's from spots which are disposed by the owner, only process real disposes
             if ($v['spotterid'] == '') {
-                $tmpList .= $this->safe($k) . ",";
+                $tmpList .= $this->safe($k).',';
             }
-		} # foreach
-		return substr($tmpList, 0, -1);
-	} # arrayKeyToIn
+        } // foreach
+        return substr($tmpList, 0, -1);
+    }
 
+    // arrayKeyToIn
 
-	/*
-	 * Transforms an array of values to an list usable by an
-	 * IN statement
-	 */
-	function arrayValToIn($ar, $val) {
-		$tmpList = '';
+    /*
+     * Transforms an array of values to an list usable by an
+     * IN statement
+     */
+    public function arrayValToIn($ar, $val)
+    {
+        $tmpList = '';
 
-		foreach($ar as $v) {
-			$tmpList .= $this->safe((string) $v[$val]) . ",";
-		} # foreach
-		return substr($tmpList, 0, -1);
-	} # arrayValToIn
+        foreach ($ar as $v) {
+            $tmpList .= $this->safe((string) $v[$val]).',';
+        } // foreach
+        return substr($tmpList, 0, -1);
+    }
 
-} # dbeng_abs
+    // arrayValToIn
+} // dbeng_abs

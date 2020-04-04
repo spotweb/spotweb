@@ -1,2 +1,5 @@
 <?php
-	class CorruptBWListException extends CustomException {};
+
+    class CorruptBWListException extends CustomException
+    {
+    }

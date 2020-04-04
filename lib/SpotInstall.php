@@ -4,19 +4,19 @@
  * Created by PhpStorm.
  * User: root
  * Date: 11/6/16
- * Time: 3:07 PM
+ * Time: 3:07 PM.
  */
 class SpotInstall
 {
     public static function showTemplate($tplname, $vars)
     {
         /**
-         * Make the variables availbale to the local context
+         * Make the variables availbale to the local context.
          */
         extract($vars, EXTR_REFS);
 
-        require_once __DIR__ . '/../templates/installer/includes/header.inc.php';
-        require_once __DIR__ . '/../templates/installer/' . $tplname;
+        require_once __DIR__.'/../templates/installer/includes/header.inc.php';
+        require_once __DIR__.'/../templates/installer/'.$tplname;
     }
 
     public static function performAndPrintTests()
@@ -25,7 +25,7 @@ class SpotInstall
         global $_testInstall_Ok;
 
         /**
-         * Load all the SSL signing code, we need it to create a private key
+         * Load all the SSL signing code, we need it to create a private key.
          */
         $spotSigning = Services_Signing_Base::factory();
         $privKey = $spotSigning->createPrivateKey($settings['openssl_cnf_path']);
@@ -36,16 +36,16 @@ class SpotInstall
         }
 
         /**
-         * Try to create the cache directory
+         * Try to create the cache directory.
          */
-        if (!file_exists(__DIR__ . '/../cache')) {
-            mkdir(__DIR__ . '/../cache', 0777);
+        if (!file_exists(__DIR__.'/../cache')) {
+            mkdir(__DIR__.'/../cache', 0777);
         }
 
         /**
-         * Load the template
+         * Load the template.
          */
-        static::showTemplate("step-001.inc.php", ['privKey' => $privKey]);
+        static::showTemplate('step-001.inc.php', ['privKey' => $privKey]);
     }
 
     public static function askDbSettings()
@@ -54,14 +54,14 @@ class SpotInstall
 
         if (!isset($settings['mydb'])) {
             $form = [
-                'engine' => 'pdo_mysql',
+                'engine'  => 'pdo_mysql',
                 'rootpwd' => '',
-                'host'   => 'localhost',
-                'port'   => '3306',   
-                'dbname' => 'spotweb',
-                'user'   => 'spotweb',
-                'pass'   => 'spotweb',
-                'submit' => ''
+                'host'    => 'localhost',
+                'port'    => '3306',
+                'dbname'  => 'spotweb',
+                'user'    => 'spotweb',
+                'pass'    => 'spotweb',
+                'submit'  => '',
             ];
         } else {
             $form = $settings['mydb'];
@@ -74,7 +74,7 @@ class SpotInstall
 
         /**
          * Did the user press submit? If so, try to
-         * connect to the database
+         * connect to the database.
          */
         $databaseCreated = false;
         if ($form['submit'] === 'Verify database') {
@@ -82,10 +82,10 @@ class SpotInstall
                 $dbCon = dbeng_abs::getDbFactory($form['engine']);
 
                 if (($form['engine'] == 'pdo_mysql' or $form['engine'] == 'pdo_pgsql') and (!empty($form['rootpwd']))) {
-                    $dbCon->connectRoot ($form['host'],$form['rootpwd'],$form['port']);
-                    $dbCon->createDb ($form['dbname'],$form['user'],$form['pass']);
+                    $dbCon->connectRoot($form['host'], $form['rootpwd'], $form['port']);
+                    $dbCon->createDb($form['dbname'], $form['user'], $form['pass']);
                 }
-                                
+
                 $dbCon->connect(
                     $form['host'],
                     $form['user'],
@@ -99,7 +99,7 @@ class SpotInstall
                 /**
                  * Store the given database settings in the
                  * SESSION object, we need it later to generate
-                 * a 'dbsettings.inc.php' file
+                 * a 'dbsettings.inc.php' file.
                  */
                 $_SESSION['spotsettings']['db'] = $form;
 
@@ -120,7 +120,7 @@ class SpotInstall
         global $settings;
 
         // Loading the file directly seems to sometimes result in a weird error. GH issue #1861
-        $serverList = simplexml_load_string(file_get_contents(__DIR__ . '/../usenetservers.xml'));
+        $serverList = simplexml_load_string(file_get_contents(__DIR__.'/../usenetservers.xml'));
         if (!isset($settings['mynntp'])) {
             $form = [
                 'name'   => 'custom',
@@ -129,7 +129,7 @@ class SpotInstall
                 'pass'   => '',
                 'port'   => 119,
                 'enc'    => false,
-                'submit' => '', 'ssl' => '', 'namefield' => 'custom' , 'verifyname'=> 'on'
+                'submit' => '', 'ssl' => '', 'namefield' => 'custom', 'verifyname'=> 'on',
             ];
         } else {
             $form = $settings['mynntp'];
@@ -144,7 +144,7 @@ class SpotInstall
 
         /**
          * Did the user press submit? If so, try to
-         * connect to the database
+         * connect to the database.
          */
         $nntpVerified = false;
         if (($form['submit'] === 'Verify usenet server') ||
@@ -168,45 +168,44 @@ class SpotInstall
                             $server = $provider->plain;
                         }
 
-                        if ((string)$provider['name'] == $form['name']) {
+                        if ((string) $provider['name'] == $form['name']) {
                             // Header usenet server
-                            $form['hdr']['host'] = (string)$server->header;
+                            $form['hdr']['host'] = (string) $server->header;
                             $form['hdr']['user'] = $form['user'];
                             $form['hdr']['pass'] = $form['pass'];
-                            if ((string)$server->header['ssl'] == 'yes') {
+                            if ((string) $server->header['ssl'] == 'yes') {
                                 $form['hdr']['enc'] = 'ssl';
                             } else {
                                 $form['hdr']['enc'] = false;
                             }
-                            $form['hdr']['port'] = (int)$server->header['port'];
-                            $form['hdr']['buggy'] = (boolean)$server['buggy'];
+                            $form['hdr']['port'] = (int) $server->header['port'];
+                            $form['hdr']['buggy'] = (bool) $server['buggy'];
                             $form['hdr']['verifyname'] = isset($form['verifyname']);
 
-
                             // NZB usenet server
-                            $form['nzb']['host'] = (string)$server->nzb;
+                            $form['nzb']['host'] = (string) $server->nzb;
                             $form['nzb']['user'] = $form['user'];
                             $form['nzb']['pass'] = $form['pass'];
-                            if ((string)$server->nzb['ssl'] == 'yes') {
+                            if ((string) $server->nzb['ssl'] == 'yes') {
                                 $form['nzb']['enc'] = 'ssl';
                             } else {
                                 $form['nzb']['enc'] = false;
                             }
-                            $form['nzb']['port'] = (int)$server->nzb['port'];
-                            $form['nzb']['buggy'] = (boolean)$server['buggy'];
+                            $form['nzb']['port'] = (int) $server->nzb['port'];
+                            $form['nzb']['buggy'] = (bool) $server['buggy'];
                             $form['nzb']['verifyname'] = isset($form['verifyname']);
 
                             // Posting usenet server
-                            $form['post']['host'] = (string)$server->post;
+                            $form['post']['host'] = (string) $server->post;
                             $form['post']['user'] = $form['user'];
                             $form['post']['pass'] = $form['pass'];
-                            if ((string)$server->post['ssl'] == 'yes') {
+                            if ((string) $server->post['ssl'] == 'yes') {
                                 $form['post']['enc'] = 'ssl';
                             } else {
                                 $form['post']['enc'] = false;
                             }
-                            $form['post']['port'] = (int)$server->post['port'];
-                            $form['post']['buggy'] = (boolean)$server['buggy'];
+                            $form['post']['port'] = (int) $server->post['port'];
+                            $form['post']['buggy'] = (bool) $server['buggy'];
                             $form['post']['verifyname'] = isset($form['verifyname']);
                         }
                     }
@@ -222,7 +221,7 @@ class SpotInstall
                 /**
                  * Store the given NNTP settings in the
                  * SESSION object, we need it later to update
-                 * the settings in the database
+                 * the settings in the database.
                  */
                 $_SESSION['spotsettings']['nntp'] = $form;
 
@@ -239,7 +238,7 @@ class SpotInstall
             static::showTemplate('step-003.inc.php', [
                 'form'       => $form,
                 'nntpVerified' > $nntpVerified,
-                'serverList' => $serverList
+                'serverList' => $serverList,
             ]);
         }
     }
@@ -257,7 +256,7 @@ class SpotInstall
                 'firstname'    => '',
                 'lastname'     => '',
                 'mail'         => '',
-                'userid'       => -1
+                'userid'       => -1,
             ];
         } else {
             $form = $settings['myadminuser'];
@@ -270,26 +269,25 @@ class SpotInstall
 
         /**
          * Did the user press submit? If so, try to
-         * connect to the database
+         * connect to the database.
          */
-        $userVerified = false;
         if ((isset($form['submit'])) && ($form['submit'] === 'Create system')) {
             try {
                 /**
                  * Store the given user settings in the
                  * SESSION object, we need it later to update
-                 * the settings in the database
+                 * the settings in the database.
                  */
                 $_SESSION['spotsettings']['adminuser'] = $form;
 
                 /**
-                 * Get the schema version and other constants
+                 * Get the schema version and other constants.
                  */
                 $bootstrap = new Bootstrap();
 
                 /**
                  * And initiate the user system, this allows us to use
-                 * validateUserRecord()
+                 * validateUserRecord().
                  */
                 $dbsettings = $_SESSION['spotsettings']['db'];
                 $dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
@@ -321,12 +319,9 @@ class SpotInstall
             }
         }
 
-        if (!$userVerified) {
-            static::showTemplate('step-004.inc.php', [
-                'form'         => $form,
-                'userVerified' => $userVerified
-            ]);
-        }
+        static::showTemplate('step-004.inc.php', [
+            'form'         => $form,
+        ]);
     }
 
     public static function createSystem()
@@ -334,17 +329,17 @@ class SpotInstall
         try {
             /**
              * The settings system is used to create a lot of output,
-             * we swallow it all
+             * we swallow it all.
              */
             ob_start();
 
             /**
-             * Get the schema version and other constants
+             * Get the schema version and other constants.
              */
             $bootstrap = new Bootstrap();
 
             /**
-             * Now create the database
+             * Now create the database.
              */
             $dbsettings = $_SESSION['spotsettings']['db'];
             $dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
@@ -360,7 +355,7 @@ class SpotInstall
             $daoFactory->setConnection($dbCon);
 
             /**
-             * The database must exist before we can get the Service_Settings_Base instance
+             * The database must exist before we can get the Service_Settings_Base instance.
              */
             $dbStruct = SpotStruct_abs::factory($dbsettings['engine'], $daoFactory->getConnection());
             $dbStruct->updateSchema();
@@ -369,47 +364,47 @@ class SpotInstall
             $svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $spotSettings, $dbsettings['engine']);
 
             /**
-             * Create all the different settings (only the default) ones
+             * Create all the different settings (only the default) ones.
              */
             $svcUpgradeBase->settings();
 
             /**
-             * Create the users
+             * Create the users.
              */
             $svcUpgradeBase->users();
 
             /**
-             * print all the output as HTML comment for debugging
+             * print all the output as HTML comment for debugging.
              */
             $dbCreateOutput = ob_get_contents();
             ob_end_clean();
 
             /**
              * Now it is time to do something with
-             * the information the user has given to us
+             * the information the user has given to us.
              */
 
             /**
-             * Update the NNTP settings in the databas
+             * Update the NNTP settings in the databas.
              */
             $spotSettings->set('nntp_nzb', $_SESSION['spotsettings']['nntp']['nzb']);
             $spotSettings->set('nntp_hdr', $_SESSION['spotsettings']['nntp']['hdr']);
             $spotSettings->set('nntp_post', $_SESSION['spotsettings']['nntp']['post']);
 
             /**
-             * Create the given user
+             * Create the given user.
              */
             $svcUserRecord = new Services_User_Record($daoFactory, $spotSettings);
             $spotUser = $_SESSION['spotsettings']['adminuser'];
 
             /**
-             * and actually add the user
+             * and actually add the user.
              */
             $spotUser['userid'] = $svcUserRecord->createUserRecord($spotUser)->getData('userid');
 
             /**
              * When the new user was created a random password was assigned,
-             * so now have to set the supplied password
+             * so now have to set the supplied password.
              */
             $svcUserRecord->setUserPassword($spotUser);
 
@@ -444,9 +439,9 @@ class SpotInstall
             static::showTemplate(
                 'step-final.inc.php',
                 [
-                    'createdDbSettings'  => file_exists(__DIR__ . '/../dbsettings.inc.php'),
+                    'createdDbSettings'  => file_exists(__DIR__.'/../dbsettings.inc.php'),
                     'dbCreateOutput'     => $dbCreateOutput,
-                    'dbConnectionString' => $dbConnectionString
+                    'dbConnectionString' => $dbConnectionString,
                 ]
             );
         } catch (Exception $x) {
@@ -467,12 +462,12 @@ class SpotInstall
 
         $settings = sprintf(
             '<?php%1$s%1$s'
-            . '$dbsettings[\'engine\'] = \'%2$s\';%1$s'
-            . '$dbsettings[\'host\'] = \'%3$s\';%1$s'
-            . '$dbsettings[\'dbname\'] = \'%4$s\';%1$s'
-            . '$dbsettings[\'user\'] = \'%5$s\';%1$s'
-            . '$dbsettings[\'pass\'] = \'%6$s\';%1$s'
-            . '$dbsettings[\'port\'] = \'%7$s\';%1$s',
+            .'$dbsettings[\'engine\'] = \'%2$s\';%1$s'
+            .'$dbsettings[\'host\'] = \'%3$s\';%1$s'
+            .'$dbsettings[\'dbname\'] = \'%4$s\';%1$s'
+            .'$dbsettings[\'user\'] = \'%5$s\';%1$s'
+            .'$dbsettings[\'pass\'] = \'%6$s\';%1$s'
+            .'$dbsettings[\'port\'] = \'%7$s\';%1$s',
             PHP_EOL,
             $engine,
             $dbSettings['host'],
@@ -482,9 +477,9 @@ class SpotInstall
             $dbSettings['port']
         );
 
-        if (is_writable(__DIR__ . '/../')) {
+        if (is_writable(__DIR__.'/../')) {
             file_put_contents(
-                __DIR__ . '/../dbsettings.inc.php',
+                __DIR__.'/../dbsettings.inc.php',
                 $settings
             );
         }
@@ -513,19 +508,19 @@ class SpotInstall
         return $val;
     }
 
-    public static function showResult($b, $isRequired, $okMsg = "", $nokMsg = "")
+    public static function showResult($b, $isRequired, $okMsg = '', $nokMsg = '')
     {
         global $_testInstall_Ok;
 
         if ($b) {
-            echo "OK";
+            echo 'OK';
             if (!empty($okMsg)) {
-                echo ' (' . $okMsg . ')';
+                echo ' ('.$okMsg.')';
             }
         } else {
-            echo "NOT OK";
+            echo 'NOT OK';
             if (!empty($nokMsg)) {
-                echo ' (' . $nokMsg . ')';
+                echo ' ('.$nokMsg.')';
             }
 
             if ($isRequired) {

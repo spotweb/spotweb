@@ -2,19 +2,19 @@
 
 error_reporting(2147483647);
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
-if (file_exists(__DIR__ . '/settings.php')) {
-    require_once __DIR__ . '/settings.php';
+if (file_exists(__DIR__.'/settings.php')) {
+    require_once __DIR__.'/settings.php';
 }
-if (file_exists(__DIR__ . '/dbsettings.inc.php')) {
-    require_once __DIR__ . '/dbsettings.inc.php';
+if (file_exists(__DIR__.'/dbsettings.inc.php')) {
+    require_once __DIR__.'/dbsettings.inc.php';
 }
 
 set_error_handler('SpotInstall::ownWarning', E_WARNING);
 
-if (file_exists(__DIR__ . '/reallymyownsettings.php')) {
-    require_once __DIR__ . '/reallymyownsettings.php';
+if (file_exists(__DIR__.'/reallymyownsettings.php')) {
+    require_once __DIR__.'/reallymyownsettings.php';
 }
 
 /**
@@ -25,7 +25,7 @@ ob_start();
 
 /**
  * We default to a succeeded install, let it prove
- * otherwise
+ * otherwise.
  */
 global $_testInstall_Ok;
 
@@ -45,7 +45,7 @@ if (!function_exists('_')) {
 
 /**
  * Only run the wizard when no database settings have been entered yet, to prevent
- * any information disclosure
+ * any information disclosure.
  */
 if ((isset($dbsettings)) && (isset($_GET['page']))) {
     SpotInstall::showTemplate(
@@ -56,7 +56,7 @@ if ((isset($dbsettings)) && (isset($_GET['page']))) {
 }
 
 /**
- * determine what page of the wizzard we are on, and display that one
+ * determine what page of the wizzard we are on, and display that one.
  */
 $pageNumber = (isset($_GET['page']) ? $_GET['page'] : 1);
 

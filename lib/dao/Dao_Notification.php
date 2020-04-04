@@ -1,9 +1,10 @@
 <?php
 
-interface Dao_Notification {
-	
-	function addNewNotification($userId, $objectId, $type, $title, $body);
-	function getUnsentNotifications($userId);
-	function updateNotification($msg);
+interface Dao_Notification
+{
+    public function addNewNotification($userId, $objectId, $type, $title, $body);
 
-} # Dao_Notification
+    public function getUnsentNotifications($userId);
+
+    public function updateNotification($msg);
+} // Dao_Notification

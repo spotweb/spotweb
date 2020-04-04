@@ -1,9 +1,11 @@
 <?php
+
     /*
      * Render the form results in the appropriate way, either
      * in JSON or HTML, depending on variables given by the system
      */
-    function showResults(Dto_FormResult $result, array $data = null) {
+    function showResults(Dto_FormResult $result, array $data = null)
+    {
         /*
          * First make sure the user actually tried
          * to submit this form, if so, return our
@@ -21,10 +23,10 @@
                 renderResultMessagesHtml($result);
             } else {
                 echo $result->toJSON();
-            } # else
+            } // else
 
             return true;
-        } # if
+        } // if
 
         /*
          * If there was no submit of the form, just show placeholders
@@ -33,21 +35,22 @@
         echo "<ul class='formerrors'></ul><ul class='forminformation'></ul>";
 
         return false;
-    } # showResults
+    } // showResults
 
     /*
      * Render a Dto_FormResult as a HTML error message box
      */
-    function renderResultMessagesHtml(Dto_FormResult $result) {
-        echo PHP_EOL . '<ul class="formerrors">' . PHP_EOL;
-        foreach($result->getErrors() as $formError) {
-            echo "  <li>" . $formError . "</li>" . PHP_EOL;
-        } # foreach
-        echo '</ul>' . PHP_EOL;
+    function renderResultMessagesHtml(Dto_FormResult $result)
+    {
+        echo PHP_EOL.'<ul class="formerrors">'.PHP_EOL;
+        foreach ($result->getErrors() as $formError) {
+            echo '  <li>'.$formError.'</li>'.PHP_EOL;
+        } // foreach
+        echo '</ul>'.PHP_EOL;
 
-        echo PHP_EOL . '<ul class="forminformation">' . PHP_EOL;
-        foreach($result->getInfo() as $formInfo) {
-            echo "  <li>" . $formInfo . "</li>" . PHP_EOL;
-        } # foreach
-        echo '</ul>' . PHP_EOL;
-    } # renderResultMessagesHtml()
+        echo PHP_EOL.'<ul class="forminformation">'.PHP_EOL;
+        foreach ($result->getInfo() as $formInfo) {
+            echo '  <li>'.$formInfo.'</li>'.PHP_EOL;
+        } // foreach
+        echo '</ul>'.PHP_EOL;
+    } // renderResultMessagesHtml()

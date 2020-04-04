@@ -1,52 +1,58 @@
 <?php
 
-class Services_Providers_Http {
-	private $_cacheDao;
+class Services_Providers_Http
+{
+    private $_cacheDao;
 
     /**
      * Wat kind of request should we perform? Currently, only
-     * GET or POST are supported
+     * GET or POST are supported.
+     *
      * @var string
      */
     /**
-     * Username for HTTP basic authentication
+     * Username for HTTP basic authentication.
+     *
      * @var string
      */
     private $_username = null;
     /**
-     * Token for HTTP Bearer authentication (used by OAuth)
+     * Token for HTTP Bearer authentication (used by OAuth).
+     *
      * @var string
      */
     private $_bearerAuth = null;
     /**
-     * Password for HTTP basic authentication
+     * Password for HTTP basic authentication.
+     *
      * @var string
      */
     private $_password = null;
     /**
-     * Content-Type for information we are posting to the server
+     * Content-Type for information we are posting to the server.
+     *
      * @var string
      */
     private $_contentType = null;
     /**
      * Array of 'key' => 'value' pairs, of stuff we want to post
-     * or get to the server
+     * or get to the server.
      *
      * @var mixed
      */
     private $_postContent = null;
     /**
-     * Array of 'key' => 'value' pairs of headers we want to send
+     * Array of 'key' => 'value' pairs of headers we want to send.
      */
-    private $_httpHeaders = array();
+    private $_httpHeaders = [];
     /**
-     * List of files to upload
+     * List of files to upload.
      *
      * @var mixed array with 4 elements: name, filename, mime, and data
      */
     private $_uploadFiles = null;
     /**
-     * Cookie string to send with request
+     * Cookie string to send with request.
      *
      * @var string
      */
@@ -58,12 +64,15 @@ class Services_Providers_Http {
      * @var string
      */
 
-	/*
-	 * constructor
-	 */
-	public function __construct(Dao_Cache $cacheDao = null) {
-		$this->_cacheDao = $cacheDao;
-	}  # ctor
+    /*
+     * constructor
+     */
+    public function __construct(Dao_Cache $cacheDao = null)
+    {
+        $this->_cacheDao = $cacheDao;
+    }
+
+    // ctor
 
     /**
      * Add files to a POST request with our custom boundary, this way we can
@@ -73,12 +82,16 @@ class Services_Providers_Http {
      * @param $postFields array|null fields to post
      * @param $files
      * @param $rawPostData array|null raw post data we will be sending
+     *
      * @throws NotImplementedException
      * @throws Exception
+     *
      * @internal param null|\sarray $file additional headers to send
+     *
      * @return void
      */
-    private function addPostFieldsToCurl($ch, $postFields, $files, $rawPostData) {
+    private function addPostFieldsToCurl($ch, $postFields, $files, $rawPostData)
+    {
 
         /*
          * Files posted to another webserver, need to be in another format
@@ -89,7 +102,7 @@ class Services_Providers_Http {
              * We need to create a unique  boundary string to be used between the
              * different attachments / post fields we use
              */
-            $boundary = '----------------------------' . microtime(true);
+            $boundary = '----------------------------'.microtime(true);
             $contentType = '';
             $contentLength = 0;
 
@@ -97,29 +110,29 @@ class Services_Providers_Http {
              * Process the actual fields, we expect (for now) a very basic field system where
              * there is either a key/value pair
              */
-            $body = array();
+            $body = [];
             if ($postFields != null) {
-                foreach($postFields as $key => $val) {
-                    $body[] = '--' . $boundary;
-                    $body[] = 'Content-Disposition: form-data; name="' . $key . '"';
+                foreach ($postFields as $key => $val) {
+                    $body[] = '--'.$boundary;
+                    $body[] = 'Content-Disposition: form-data; name="'.$key.'"';
                     $body[] = '';
                     $body[] = urlencode($val);
-                } # foreach
-            } # if
+                } // foreach
+            } // if
 
-            # process the file uploads
+            // process the file uploads
             if ($files != null) {
-                foreach($files as $val) {
-                    $body[] = '--' . $boundary;
-                    $body[] = 'Content-Disposition: form-data; name="' . $val['name'] . '"; filename="' . $val['filename'] . '"';
-                    $body[] = 'Content-Type: ' . $val['mime'];
+                foreach ($files as $val) {
+                    $body[] = '--'.$boundary;
+                    $body[] = 'Content-Disposition: form-data; name="'.$val['name'].'"; filename="'.$val['filename'].'"';
+                    $body[] = 'Content-Type: '.$val['mime'];
                     $body[] = '';
                     $body[] = $val['data'];
-                } # foreach
-            } # if
+                } // foreach
+            } // if
 
-            # signal end of request (note the trailing "--")
-            $body[] = '--' . $boundary . '--';
+            // signal end of request (note the trailing "--")
+            $body[] = '--'.$boundary.'--';
             $body[] = '';
 
             /*
@@ -127,7 +140,7 @@ class Services_Providers_Http {
              * the body array with CR/LF pair and set a correct content
              * length.
              */
-            $contentType = 'multipart/form-data; boundary=' . $boundary;
+            $contentType = 'multipart/form-data; boundary='.$boundary;
             $content = implode("\r\n", $body);
             $contentLength = strlen($content);
 
@@ -136,7 +149,7 @@ class Services_Providers_Http {
              */
             if (!empty($rawPostData)) {
                 throw new Exception("Don't know how to handle post or fileupload and raw postdata");
-            } # if
+            } // if
         } elseif (($files == null) && ($postFields != null)) {
             /*
              * If we are not posting files, but are posting POST
@@ -155,31 +168,34 @@ class Services_Providers_Http {
             $content = $rawPostData;
         } else {
             throw new NotImplementedException('Unknown combination of POST/FILE/RAW posting data');
-        } # else
+        } // else
 
         /*
          * Add our headers to the call
          */
-        $this->addHttpHeaders(array(
-            'Content-Length: ' . $contentLength,
-            'Content-Type: ' . $contentType,
-            'Expect: '
-        ));
-
+        $this->addHttpHeaders([
+            'Content-Length: '.$contentLength,
+            'Content-Type: '.$contentType,
+            'Expect: ',
+        ]);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
-    } # addPostFieldsToCurl
+    }
+
+    // addPostFieldsToCurl
 
     /**
-     * Retrieves an uncached GET from the web
+     * Retrieves an uncached GET from the web.
      *
      * @param $url string to retrieve
      * @param $lastModTime int Last modification time, can be null
      * @param int $redirTries Amount of tries already passed to follow a redirect
+     *
      * @return mixed array with first element the HTTP code, and second with the data (if any)
      */
-    public function perform($url, $lastModTime = null, $redirTries = 0) {
-        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+    public function perform($url, $lastModTime = null, $redirTries = 0)
+    {
+        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
 
         /*
          * Default our effectiveUrl to be the current URL,
@@ -188,36 +204,36 @@ class Services_Providers_Http {
         $effectiveUrl = $url;
 
         $ch = curl_init();
-        curl_setopt ($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0');
-        curl_setopt ($ch, CURLOPT_URL, $url);
-        curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt ($ch, CURLOPT_TIMEOUT, 60);
-        curl_setopt ($ch, CURLOPT_ENCODING, '');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0');
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
         // Don't use fail on error, because sometimes we do want to se
         // the output of the content
         //      curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
         // eg, if a site returns an 400 we might want to know why.
-        curl_setopt ($ch, CURLOPT_HEADER, 1);
-        curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt ($ch, CURLINFO_HEADER_OUT, true);
-        curl_setopt ($ch, CURLOPT_VERBOSE, true);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
 
         // send a cookie with the request if defined
         if ($this->getCookie() !== null) {
-            curl_setopt ($ch, CURLOPT_COOKIE, $this->getCookie());
-        } # if
+            curl_setopt($ch, CURLOPT_COOKIE, $this->getCookie());
+        } // if
 
         // Only use these curl options if no open base dir is set and php mode is off.
         $manualRedirect = false;
-        if (ini_get('open_basedir') <> '' || ini_get('safe_mode')) {
+        if (ini_get('open_basedir') != '') {
             $manualRedirect = true;
-            curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, false);
-            curl_setopt ($ch, CURLOPT_MAXREDIRS, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
         } else {
-            curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, true);
-        } # else
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        } // else
 
         /*
          * If specified, pass authorization for this request
@@ -225,9 +241,8 @@ class Services_Providers_Http {
         $username = $this->getUsername();
         if (!empty($username)) {
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-            curl_setopt($ch, CURLOPT_USERPWD, $this->getUsername() . ':' . $this->getPassword());
+            curl_setopt($ch, CURLOPT_USERPWD, $this->getUsername().':'.$this->getPassword());
         } // # if
-
 
         /*
          * OAuth 2.0 uses 'Bearer' authentication, we support this by manually sending the
@@ -235,15 +250,15 @@ class Services_Providers_Http {
          */
         $bearerAuth = $this->getBearerAuth();
         if (!empty($bearerAuth)) {
-            $this->addHttpHeaders(array('Authorization: Bearer ' . $this->getBearerAuth()));
-        } # if
+            $this->addHttpHeaders(['Authorization: Bearer '.$this->getBearerAuth()]);
+        } // if
 
         /*
          * Should we be posting?
          */
         if ($this->getMethod() == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
-        } # if
+        } // if
 
         /*
          * If we are passed fields to post to the server, actuall post them
@@ -253,7 +268,7 @@ class Services_Providers_Http {
              ($this->getRawPostData() != null)) &&
              ($this->getMethod() == 'POST')) {
             $this->addPostFieldsToCurl($ch, $this->getPostContent(), $this->getUploadFiles(), $this->getRawPostData());
-        } # if
+        } // if
 
         /*
          * If we already have content stored in our cache, just ask
@@ -263,7 +278,7 @@ class Services_Providers_Http {
         if (($lastModTime != null) && ($lastModTime > 0)) {
             curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
             curl_setopt($ch, CURLOPT_TIMEVALUE, $lastModTime);
-        } # if
+        } // if
 
         /*
          * Send our custom HTTP headers
@@ -271,7 +286,7 @@ class Services_Providers_Http {
         $httpHeaders = $this->getHttpHeaders();
         if (!empty($httpHeaders)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHttpHeaders());
-        } # if
+        } // if
 
         $response = curl_exec($ch);
         $errorStr = curl_error($ch);
@@ -290,7 +305,7 @@ class Services_Providers_Http {
                 $data = substr($response, $curl_info['header_size']);
             } else {
                 $data = '';
-            } # else
+            } // else
 
             /*
              * We also follow redirects, but PHP's safemode doesn't allow
@@ -298,12 +313,12 @@ class Services_Providers_Http {
              */
             $effectiveUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
             if ((
-                    ($effectiveUrl != $url) ||
+                ($effectiveUrl != $url) ||
                     ($http_code == 301) ||
                     ($http_code == 302)
-                ) &&
+            ) &&
                 (
-                     $manualRedirect
+                    $manualRedirect
                 )
                ) {
                 if (preg_match('/Location:(.*?)\n/', $response, $matches)) {
@@ -313,15 +328,15 @@ class Services_Providers_Http {
 
                     if ($redirTries < 20) {
                         return $this->perform($redirUrl, $lastModTime, $redirTries);
-                    } # if
-                } # if
-            } # if
+                    } // if
+                } // if
+            } // if
 
             // Get the url.
             if (preg_match('/meta.+?http-equiv\W+?refresh/i', $response)) {
                 preg_match('/content.+?url\W+?(.+?)\"/i', $response, $matches);
                 if (isset($matches[1])) {
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '-perform()', array('matches[1]' => $matches[1]));
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'-perform()', ['matches[1]' => $matches[1]]);
 
                     /*
                      * We can get either an relative redirect, or an fully
@@ -335,33 +350,32 @@ class Services_Providers_Http {
                     if ((stripos($redirUrl, 'http://') !== 0) &&
                         (stripos($redirUrl, 'https://') !== 0) &&
                         (stripos($redirUrl, '//') !== 0)) {
-                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), we have gotten an correct url');
+                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->perform(), we have gotten an correct url');
 
                         $urlParts = parse_url($url);
 
-                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform()', array('parse_url' => json_encode($urlParts)));
+                        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->perform()', ['parse_url' => json_encode($urlParts)]);
 
                         if ($redirUrl[0] == '/') {
-                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $redirUrl;
+                            $redirUrl = $urlParts['scheme'].'://'.$urlParts['host'].$redirUrl;
                         } else {
-                            $redirUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . $redirUrl;
-                        } # if
-                    } # if
+                            $redirUrl = $urlParts['scheme'].'://'.$urlParts['host'].$urlParts['path'].$redirUrl;
+                        } // if
+                    } // if
 
-                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__ . '->perform(), after metafresh', array('url' => $url));
+                    SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->perform(), after metafresh', ['url' => $url]);
                     $redirTries++;
 
                     if ($redirTries < 20) {
                         return $this->perform($redirUrl, $lastModTime, $redirTries);
-                    } # if
-                } # if
-            } # if
-
+                    } // if
+                } // if
+            } // if
         } else {
-            $http_code = 700; # Curl returned an error
+            $http_code = 700; // Curl returned an error
             $curl_info = curl_getinfo($ch);
             $data = '';
-        } # else
+        } // else
 
         curl_close($ch);
 
@@ -371,80 +385,88 @@ class Services_Providers_Http {
          * the error string manually.
          */
         if (($errorStr == '') && ($http_code == 0)) {
-            $errorStr = 'unable to connect to URL: ' . $url;
-        } # if
+            $errorStr = 'unable to connect to URL: '.$url;
+        } // if
 
-        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($url));
-        return array('http_code' => $http_code,
-                     'data' => $data,
-                     'finalurl' => $effectiveUrl,
-                     'successful' => ($http_code == 200 || $http_code == 304),
-                     'errorstr' => 'http returncode: ' . $http_code . ' / ' . $errorStr,
-                     'curl_info' => $curl_info);
-    } # performGet
-	
-	/* 
-	 * Retrieves an URL from the web and caches it when so required
-	 */
-	function performCachedGet($url, $storeWhenRedirected, $ttl = 900) {
-		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-		$url_md5 = md5($url);
-		
-		/*
-		 * Is this URL stored in the cache and is it still valid?
-		 */
-		$content = $this->_cacheDao->getCachedHttp($url_md5); 
-		if ((!$content) || ( (time()-(int) $content['stamp']) > $ttl)) {
+        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$url]);
+
+        return ['http_code' => $http_code,
+            'data'          => $data,
+            'finalurl'      => $effectiveUrl,
+            'successful'    => ($http_code == 200 || $http_code == 304),
+            'errorstr'      => 'http returncode: '.$http_code.' / '.$errorStr,
+            'curl_info'     => $curl_info, ];
+    }
+
+    // performGet
+
+    /*
+     * Retrieves an URL from the web and caches it when so required
+     */
+    public function performCachedGet($url, $storeWhenRedirected, $ttl = 900)
+    {
+        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
+        $url_md5 = md5($url);
+
+        /*
+         * Is this URL stored in the cache and is it still valid?
+         */
+        $content = $this->_cacheDao->getCachedHttp($url_md5);
+        if ((!$content) || ((time() - (int) $content['stamp']) > $ttl)) {
+            if (!$content) {
+                $content['stamp'] = null;
+            }
             $tmpData = $this->perform($url, $content['stamp']);
 
-			$data = $tmpData['data'];
+            $data = $tmpData['data'];
             $http_code = $tmpData['http_code'];
             $curl_info = $tmpData['curl_info'];
 
-			/*
-			 * HTTP return code is other than 200 (OK) and 
-			 * other than 304 (Resource not modified),
-			 * we have no use for the result
-			 */
-			if ($http_code != 200 && $http_code != 304) {
-				return array($http_code, false);
-			} # if
+            /*
+             * HTTP return code is other than 200 (OK) and
+             * other than 304 (Resource not modified),
+             * we have no use for the result
+             */
+            if ($http_code != 200 && $http_code != 304) {
+                return [$http_code, false];
+            } // if
 
-			/* 
-			 * A ttl > 0 is specified, meaning we are allowed to
-			 * store resources in the cache
-			 */
-			if ($ttl > 0) {
-				switch($http_code) {
-					case 304		: {
-						/*
-						 * Update the timestamp in the database to refresh this
-						 * cached resource.
-						 */
-						$this->_cacheDao->updateHttpCacheStamp($url_md5);
-						break;
-					} # 304 (resource not modified)
+            /*
+             * A ttl > 0 is specified, meaning we are allowed to
+             * store resources in the cache
+             */
+            if ($ttl > 0) {
+                switch ($http_code) {
+                    case 304:
+                        /*
+                         * Update the timestamp in the database to refresh this
+                         * cached resource.
+                         */
+                        $this->_cacheDao->updateHttpCacheStamp($url_md5);
+                        break;
+                     // 304 (resource not modified)
 
-					default 		: {
-						/*
-						 * Store the retrieved information in the cache
-						 */
-						if (($storeWhenRedirected) || ($curl_info['redirect_count'] == 0)) {
-							$this->_cacheDao->saveHttpCache($url_md5, $data);
-						} # if
-					} # if
-				} # switch
+                    default:
+                        /*
+                         * Store the retrieved information in the cache
+                         */
+                        if (($storeWhenRedirected) || ($curl_info['redirect_count'] == 0)) {
+                            $this->_cacheDao->saveHttpCache($url_md5, $data);
+                        } // if
+                     // if
+                } // switch
+            } // else
+        } else {
+            $http_code = 304;
+            $data = $content['content'];
+        } // else
 
-			} # else
-		} else {
-			$http_code = 304;
-			$data = $content['content'];
-		} # else
+        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$url, $storeWhenRedirected, $ttl]);
 
-		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($url, $storeWhenRedirected, $ttl));
+        return [$http_code, $data];
+    }
 
-		return array($http_code, $data);
-	} # performCachedGet
+    // performCachedGet
 
     /**
      * @param mixed $password
@@ -477,6 +499,7 @@ class Services_Providers_Http {
     {
         return $this->_username;
     }
+
     /**
      * @param string $contentType
      */
@@ -508,6 +531,7 @@ class Services_Providers_Http {
     {
         return $this->_postContent;
     }
+
     private $_method = 'GET';
 
     /**
@@ -525,6 +549,7 @@ class Services_Providers_Http {
     {
         return $this->_method;
     }
+
     /**
      * @param null $uploadFiles
      */
@@ -540,6 +565,7 @@ class Services_Providers_Http {
     {
         return $this->_uploadFiles;
     }
+
     private $_rawPostData = '';
 
     /**
@@ -557,6 +583,7 @@ class Services_Providers_Http {
     {
         return $this->_rawPostData;
     }
+
     /**
      * @param string $bearerAuth
      */
@@ -579,7 +606,9 @@ class Services_Providers_Http {
     public function addHttpHeaders($httpHeaders)
     {
         $this->_httpHeaders = array_merge($this->_httpHeaders, $httpHeaders);
-    } # addHttpHeaders
+    }
+
+    // addHttpHeaders
 
     /**
      * @return mixed
@@ -592,16 +621,20 @@ class Services_Providers_Http {
     /**
      * @param null $cookie
      */
-    public function setCookie($cookie) {
+    public function setCookie($cookie)
+    {
         $this->_cookie = $cookie;
-    } # setCookie
+    }
+
+    // setCookie
 
     /**
      * @return null
      */
-    public function getCookie() {
+    public function getCookie()
+    {
         return $this->_cookie;
-    } # getCookie
+    }
 
-
-} # Services_Providers_Http
+    // getCookie
+} // Services_Providers_Http

@@ -1,40 +1,120 @@
+build:
+    tests:
+        override:
+                - vendor/bin/phpunit
+    dependencies:
+        before:
+        override:
+           - 'composer update'
+           - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
+    nodes:
+        php56:
+            environment:
+                php: 
+                    version: 5.6
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
+        php70:
+            environment:
+                php:
+                    version: 7.0
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'                   
+        php71:
+            environment:
+                php:
+                    version: 7.1
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'                    
+        php72:
+            environment:
+                php: 
+                    version: 7.2
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
+        php73:
+            environment:
+                php:
+                    version: 7.3
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'                    
+        php74:
+            environment:
+                php:
+                    version: 7.4
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
+                        
 filter:
     excluded_paths:
-        - "tests/*"
-        - "vendor/*"
-    dependency_paths:
-        - "vendor/*"
+      - "js/*"
+      - "vendor/*"
 
 checks:
-    php: true
-    javascript: true
+    php:
+        code_rating: true
+        remove_extra_empty_lines: true
+        remove_php_closing_tag: true
+        remove_trailing_whitespace: true
+        fix_use_statements:
+          remove_unused: true
+          preserve_multiple: false
+          preserve_blanklines: true
+          order_alphabetically: true
+        fix_php_opening_tag: true
+        fix_linefeed: true
+        fix_line_ending: true
+        fix_identation_4spaces: true
+        fix_doc_comments: true
 
 tools:
     php_analyzer: true
-    php_code_sniffer:
-        config:
-            standard: "PSR2"
-    php_cs_fixer:
-        enabled: true
-        config: { level: psr2 }
-    php_mess_detector: true
-    php_loc:
-        enabled: true
-        excluded_dirs: [vendor]
-    php_code_coverage:
-        test_command: "vendor/bin/phpunit"
-
-build:
-    environment:
-        timezone: "Europe/Amsterdam"
-        php: "7.0"
-        mysql: false
-        postgresql: false
-        redis: false
-    tests:
-        override:
-            -
-                command: "vendor/bin/phpunit"
-                coverage:
-                    file: "clover.xml"
-                    format: "clover"
+    php_cs_fixer: true

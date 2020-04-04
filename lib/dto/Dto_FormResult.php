@@ -1,202 +1,253 @@
 <?php
 
-class Dto_FormResult {
-	private $_result;
+class Dto_FormResult
+{
+    private $_result;
 
     private $_data;
 
-	private $_errors;
-	private $_warnings;
-	private $_info;
+    private $_errors;
+    private $_warnings;
+    private $_info;
 
-	public function __construct($result = 'success') {
-		$this->setResult($result);
-		$this->_data = array();
-		$this->_errors = array();
-		$this->_warnings = array();
-		$this->_info = array();
-	} # ctor
+    public function __construct($result = 'success')
+    {
+        $this->setResult($result);
+        $this->_data = [];
+        $this->_errors = [];
+        $this->_warnings = [];
+        $this->_info = [];
+    }
 
-	/*
-	 * Set a specific result
-	 */
-	public function setResult($s) {
-		$validResults = array('success' => true,
-							  'warning' => true,
-							  'failure' => true,
-							  'notsubmitted' => true);
+    // ctor
 
-		if (!isset($validResults[$s])) {
-			throw new Exception("Invalid result (" . $s . ") chosen");
-		} # if
+    /*
+     * Set a specific result
+     */
+    public function setResult($s)
+    {
+        $validResults = ['success' => true,
+            'warning'              => true,
+            'failure'              => true,
+            'notsubmitted'         => true, ];
+
+        if (!isset($validResults[$s])) {
+            throw new Exception('Invalid result ('.$s.') chosen');
+        } // if
 
         $this->_result = $s;
-	} # setResult
+    }
 
-	/*
-	 * Returns true when the form is in success
-	 * state
-	 */
-	function isSuccess() {
-		return $this->_result == 'success';
-	} # isSuccess
+    // setResult
 
-	/*
-	 * Returns true when the form is in error
-	 * state
-	 */
-	function isError() {
-		return $this->_result == 'error';
-	} # isError
+    /*
+     * Returns true when the form is in success
+     * state
+     */
+    public function isSuccess()
+    {
+        return $this->_result == 'success';
+    }
 
-	/*
-	 * Returns the current result of this form
-	 */
-	function getResult() {
-		return $this->_result;
-	} # getResult
+    // isSuccess
 
-	/*
-	 * Add an error to the list of errors
-	 */
-	public function addError($s) {
-		if (empty($s)) {
-			return ;
-		} # if
+    /*
+     * Returns true when the form is in error
+     * state
+     */
+    public function isError()
+    {
+        return $this->_result == 'error';
+    }
 
-		$this->setResult("failure");
+    // isError
 
-		if (is_array($s)) {
-			$this->_errors += $s;
-		} else {
-			$this->_errors[] = $s;
-		} # else
-	} # addError
+    /*
+     * Returns the current result of this form
+     */
+    public function getResult()
+    {
+        return $this->_result;
+    }
 
-	/*
-	 * Add an info field to the list of infomessages
-	 */
-	public function addInfo($s) {
-		if (empty($s)) {
-			return ;
-		} # if
+    // getResult
 
-		if (is_array($s)) {
-			$this->_info += $s;
-		} else {
-			$this->_info[] = $s;
-		} # else
-	} # addInfo
+    /*
+     * Add an error to the list of errors
+     */
+    public function addError($s)
+    {
+        if (empty($s)) {
+            return;
+        } // if
 
-	/*
-	 * Add an warning filed to the list of warningmessages
-	 */
-	public function addWarning($s) {
-		if (empty($s)) {
-			return ;
-		} # if
+        $this->setResult('failure');
 
-		/* 
-		 * Error trumps warnings 
-		 */
-		if ($this->getResult() != 'error') {
-			$this->setResult("warning");
-		} # if
+        if (is_array($s)) {
+            $this->_errors += $s;
+        } else {
+            $this->_errors[] = $s;
+        } // else
+    }
 
-		if (is_array($s)) {
-			$this->_warnings += $s;
-		} else {
-			$this->_warnings[] = $s;
-		} # else
-	} # addWarning
+    // addError
 
-	/*
-	 * add a data field to the result
-	 */
-	public function addData($field, $value) {
-		$this->_data[$field] = $value;
-	} # addData
+    /*
+     * Add an info field to the list of infomessages
+     */
+    public function addInfo($s)
+    {
+        if (empty($s)) {
+            return;
+        } // if
+
+        if (is_array($s)) {
+            $this->_info += $s;
+        } else {
+            $this->_info[] = $s;
+        } // else
+    }
+
+    // addInfo
+
+    /*
+     * Add an warning filed to the list of warningmessages
+     */
+    public function addWarning($s)
+    {
+        if (empty($s)) {
+            return;
+        } // if
+
+        /*
+         * Error trumps warnings
+         */
+        if ($this->getResult() != 'error') {
+            $this->setResult('warning');
+        } // if
+
+        if (is_array($s)) {
+            $this->_warnings += $s;
+        } else {
+            $this->_warnings[] = $s;
+        } // else
+    }
+
+    // addWarning
+
+    /*
+     * add a data field to the result
+     */
+    public function addData($field, $value)
+    {
+        $this->_data[$field] = $value;
+    }
+
+    // addData
 
     /*
      * remove a data field from the result
      */
-    public function removeData($field) {
+    public function removeData($field)
+    {
         unset($this->_data[$field]);
-    } # removeData
+    }
+
+    // removeData
 
     /*
      * Return a list of data fields
      */
-	public function getData($field = null) {
-		if (($field === null) or (empty($this->_data[$field]))) {
-			return $this->_data;	
-		} # if
+    public function getData($field = null)
+    {
+        if (($field === null) or (empty($this->_data[$field]))) {
+            return $this->_data;
+        } // if
 
-		return $this->_data[$field];
-	} # getData
+        return $this->_data[$field];
+    }
 
-	/*
-	 * Return a list of errors
-	 */
-	public function getErrors() {
-		return $this->_errors;
-	} # getErrors
+    // getData
 
-	/*
-	 * Return a list of info fields
-	 */
-	public function getInfo() {
-		return $this->_info;
-	} # getInfo
+    /*
+     * Return a list of errors
+     */
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
 
-	/*
-	 * Returns a list of warnings
-	 */
-	public function getWarnings() {
-		return $this->_warnings;
-	} # getWarnings
+    // getErrors
 
-	/*
-	 * Merge the result object from 
-	 * another instance into this one
-	 */
-	public function mergeResult($result) {
-		foreach($result->getInfo() as $info) {
-			$this->addInfo($info);
-		} # if
+    /*
+     * Return a list of info fields
+     */
+    public function getInfo()
+    {
+        return $this->_info;
+    }
 
-		foreach($result->getWarnings() as $warning) {
-			$this->addWarning($warning);
-		} # if
+    // getInfo
 
-		foreach($result->getErrors() as $error) {
-			$this->addError($error);
-		} # if
+    /*
+     * Returns a list of warnings
+     */
+    public function getWarnings()
+    {
+        return $this->_warnings;
+    }
+
+    // getWarnings
+
+    /*
+     * Merge the result object from
+     * another instance into this one
+     */
+    public function mergeResult($result)
+    {
+        foreach ($result->getInfo() as $info) {
+            $this->addInfo($info);
+        } // if
+
+        foreach ($result->getWarnings() as $warning) {
+            $this->addWarning($warning);
+        } // if
+
+        foreach ($result->getErrors() as $error) {
+            $this->addError($error);
+        } // if
 
         $dataFields = $result->getData();
-		foreach($dataFields as $dataKey => $dataVal) {
-			$this->addData($dataKey, $dataVal);
-		} # if
-	} # mergeResult
+        foreach ($dataFields as $dataKey => $dataVal) {
+            $this->addData($dataKey, $dataVal);
+        } // if
+    }
+
+    // mergeResult
 
     /*
      * Returns true when a form was tried to be submitted
      */
-    function isSubmitted() {
+    public function isSubmitted()
+    {
         return $this->_result != 'notsubmitted';
-    } # isSubmitted
+    }
+
+    // isSubmitted
 
     /*
      * Convert this struct to JSON
      */
-    function toJSON() {
+    public function toJSON()
+    {
         return json_encode(
-            array('result' => $this->getResult(),
-                  'data' => $this->getData(),
-                  'info' => $this->getInfo(),
-                  'warnings' => $this->getWarnings(),
-                  'errors' => $this->getErrors())
+            ['result'      => $this->getResult(),
+                'data'     => $this->getData(),
+                'info'     => $this->getInfo(),
+                'warnings' => $this->getWarnings(),
+                'errors'   => $this->getErrors(), ]
         );
-    } # toJSON
+    }
 
-} # Dto_FormResult
+    // toJSON
+} // Dto_FormResult

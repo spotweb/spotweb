@@ -1,18 +1,16 @@
 <?php
 if (!empty($loginresult)) {
-	if ($loginresult['result'] != 'success') {
-		var_dump($formmessages);
-	} else {
-		$tplHelper->redirect($tplHelper->makeBaseUrl('')); 
+    if ($loginresult['result'] != 'success') {
+        var_dump($formmessages);
+    } else {
+        $tplHelper->redirect($tplHelper->makeBaseUrl(''));
 
-		return ;
-	} # if
-} # if
+        return;
+    } // if
+} // if
 
 if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) {
-	require __DIR__ . '/includes/form-messages.inc.php'; 
-
-?>
+    require __DIR__.'/includes/form-messages.inc.php'; ?>
 <!DOCTYPE html> 
 <html> 
 	<head>
@@ -47,7 +45,7 @@ if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_useri
 	</fieldset>
 </form>
 <?php
-	}
+}
 ?>
 </div><!-- /page -->
 

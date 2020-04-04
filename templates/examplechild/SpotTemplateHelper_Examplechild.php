@@ -1,40 +1,45 @@
 <?php
-class SpotTemplateHelper_Examplechild extends SpotTemplateHelper_We1rdo {
 
-	function getFilterIcons() {
-		$filterIcons = parent::getFilterIcons();
+class SpotTemplateHelper_Examplechild extends SpotTemplateHelper_We1rdo
+{
+    public function getFilterIcons()
+    {
+        $filterIcons = parent::getFilterIcons();
 
-		$filterIcons['extraicon'] = _('Extra icon from Example Child Theme');
+        $filterIcons['extraicon'] = _('Extra icon from Example Child Theme');
 
-		return $filterIcons;
-	} # getFilterIcons
+        return $filterIcons;
+    }
 
+    // getFilterIcons
 
-	/*
-	 * Returns an array of parent template paths
-	 */
-	function getParentTemplates() {
-		$tmpList = parent::getParentTemplates();
-		$tmpList[] = 'we1rdo';
-		
-		return $tmpList;
-	} // getParentTemplates
+    /*
+     * Returns an array of parent template paths
+     */
+    public function getParentTemplates()
+    {
+        $tmpList = parent::getParentTemplates();
+        $tmpList[] = 'we1rdo';
 
+        return $tmpList;
+    }
 
-	function getStaticFiles($type) {
-		$tmpList = parent::getStaticFiles($type);
+    // getParentTemplates
 
-		switch($type) {
-			case 'css'	: {
-				$tmpList[] = 'templates/examplechild/css/extraspoticons.css';
-				
-				break;
-			} # case css
-		} # switch
+    public function getStaticFiles($type)
+    {
+        $tmpList = parent::getStaticFiles($type);
 
-		return $tmpList;
-	} # getStaticFiles
-							 
+        switch ($type) {
+            case 'css':
+                $tmpList[] = 'templates/examplechild/css/extraspoticons.css';
 
+                break;
+             // case css
+        } // switch
 
-} # SpotTemplateHelper_ExampleChild
+        return $tmpList;
+    }
+
+    // getStaticFiles
+} // SpotTemplateHelper_ExampleChild

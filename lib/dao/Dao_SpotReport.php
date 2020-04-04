@@ -1,13 +1,16 @@
 <?php
 
-interface Dao_SpotReport {
+interface Dao_SpotReport
+{
+    public function removeExtraReports($messageId);
 
-	function removeExtraReports($messageId);
-	function matchReportMessageIds($hdrList);
-	function addReportRefs($reportList);
-	function isReportPlaced($messageid, $userId);
-	function isReportMessageIdUnique($messageid);
-	function addPostedReport($userId, $report);
+    public function matchReportMessageIds($hdrList);
 
+    public function addReportRefs($reportList);
 
-} # Dao_SpotReport
+    public function isReportPlaced($messageid, $userId);
+
+    public function isReportMessageIdUnique($messageid);
+
+    public function addPostedReport($userId, $report);
+} // Dao_SpotReport

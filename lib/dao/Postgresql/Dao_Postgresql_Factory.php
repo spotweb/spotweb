@@ -1,97 +1,153 @@
 <?php
 
- class Dao_Postgresql_Factory extends Dao_Factory {
- 	private $_conn;
-    private $_cachePath;
+ class Dao_Postgresql_Factory extends Dao_Factory
+ {
+     private $_conn;
+     private $_cachePath;
 
-    /*
-     * Actual cachepath to use
-     */
-    public function setCachePath($cachePath) {
-        $this->_cachePath = $cachePath;
-    } # setCachePath
+     /*
+      * Actual cachepath to use
+      */
+     public function setCachePath($cachePath)
+     {
+         $this->_cachePath = $cachePath;
+     }
 
-    /*
-     * Returns the currently configured cachepath
-     */
-    public function getCachePath() {
-        return $this->_cachePath;
-    } # getCachePath
+     // setCachePath
 
- 	/*
- 	 * Actual connection object to be used in
- 	 * data retrieval
- 	 */
-	public function setConnection(dbeng_abs $conn) {
-		$this->_conn = $conn;
-	} # setConnection
+     /*
+      * Returns the currently configured cachepath
+      */
+     public function getCachePath()
+     {
+         return $this->_cachePath;
+     }
 
-	/*
-	 * Returns the currently passed connection object
-	 */
-	public function getConnection() {
-		return $this->_conn;
-	} # getConnection
+     // getCachePath
 
+     /*
+      * Actual connection object to be used in
+      * data retrieval
+      */
+     public function setConnection(dbeng_abs $conn)
+     {
+         $this->_conn = $conn;
+     }
 
-	public function getSpotDao() {
-		return new Dao_Postgresql_Spot($this->_conn);
-	} # getSpotDao
+     // setConnection
 
-	public function getUserDao() {
-		return new Dao_Postgresql_User($this->_conn);
-	} # getUserDao
+     /*
+      * Returns the currently passed connection object
+      */
+     public function getConnection()
+     {
+         return $this->_conn;
+     }
 
-	public function getCacheDao() {
-		return new Dao_Postgresql_Cache($this->_conn, $this->getCachePath());
-	} # getCacheDao
+     // getConnection
 
-	public function getAuditDao() {
-		return new Dao_Postgresql_Audit($this->_conn);
-	} # getAuditDao
+     public function getSpotDao()
+     {
+         return new Dao_Postgresql_Spot($this->_conn);
+     }
 
-	public function getUserFilterDao() {
-		return new Dao_Postgresql_UserFilter($this->_conn);
-	} # getUserFilterDao
+     // getSpotDao
 
-	public function getSessionDao() {
-		return new Dao_Postgresql_Session($this->_conn);
-	} # getSessionDao
+     public function getUserDao()
+     {
+         return new Dao_Postgresql_User($this->_conn);
+     }
 
-	public function getBlackWhiteListDao() {
-		return new Dao_Postgresql_BlackWhiteList($this->_conn);
-	} # getBlackWhiteListDao
+     // getUserDao
 
-	public function getNotificationDao() {
-		return new Dao_Postgresql_Notification($this->_conn);
-	} # getNotificationDao
-		
-	public function getCommentDao() {
-		return new Dao_Postgresql_Comment($this->_conn);
-	} # getCommentDao
+     public function getCacheDao()
+     {
+         return new Dao_Postgresql_Cache($this->_conn, $this->getCachePath());
+     }
 
-	public function getSpotReportDao() {
-		return new Dao_Postgresql_SpotReport($this->_conn);
-	} # getSpotReportDao
+     // getCacheDao
 
-	public function getSettingDao() {
-		return new Dao_Postgresql_Setting($this->_conn);
-	} # getSettingDao
+     public function getAuditDao()
+     {
+         return new Dao_Postgresql_Audit($this->_conn);
+     }
 
-	public function getUserFilterCountDao() {
-		return new Dao_Postgresql_UserFilterCount($this->_conn);
-	} # getSettingDao
+     // getAuditDao
 
-	public function getSpotStateListDao() {
-		return new Dao_Postgresql_SpotStateList($this->_conn);
-	} # getSpotStateListDao
+     public function getUserFilterDao()
+     {
+         return new Dao_Postgresql_UserFilter($this->_conn);
+     }
 
-	public function getUsenetStateDao() {
-		return new Dao_Postgresql_UsenetState($this->_conn);
-	} # getUsenetStateDao
+     // getUserFilterDao
 
-    public function getModeratedRingBufferDao() {
-        return new Dao_Postgresql_ModeratedRingBuffer($this->_conn);
-    } # getModeratedRingBufferDao
+     public function getSessionDao()
+     {
+         return new Dao_Postgresql_Session($this->_conn);
+     }
 
-} // Dao_Postgresql_Factory
+     // getSessionDao
+
+     public function getBlackWhiteListDao()
+     {
+         return new Dao_Postgresql_BlackWhiteList($this->_conn);
+     }
+
+     // getBlackWhiteListDao
+
+     public function getNotificationDao()
+     {
+         return new Dao_Postgresql_Notification($this->_conn);
+     }
+
+     // getNotificationDao
+
+     public function getCommentDao()
+     {
+         return new Dao_Postgresql_Comment($this->_conn);
+     }
+
+     // getCommentDao
+
+     public function getSpotReportDao()
+     {
+         return new Dao_Postgresql_SpotReport($this->_conn);
+     }
+
+     // getSpotReportDao
+
+     public function getSettingDao()
+     {
+         return new Dao_Postgresql_Setting($this->_conn);
+     }
+
+     // getSettingDao
+
+     public function getUserFilterCountDao()
+     {
+         return new Dao_Postgresql_UserFilterCount($this->_conn);
+     }
+
+     // getSettingDao
+
+     public function getSpotStateListDao()
+     {
+         return new Dao_Postgresql_SpotStateList($this->_conn);
+     }
+
+     // getSpotStateListDao
+
+     public function getUsenetStateDao()
+     {
+         return new Dao_Postgresql_UsenetState($this->_conn);
+     }
+
+     // getUsenetStateDao
+
+     public function getModeratedRingBufferDao()
+     {
+         return new Dao_Postgresql_ModeratedRingBuffer($this->_conn);
+     }
+
+     // getModeratedRingBufferDao
+ } // Dao_Postgresql_Factory
