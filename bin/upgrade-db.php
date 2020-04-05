@@ -4,13 +4,14 @@ error_reporting(2147483647);
 
 function delete_files($target)
 {
-    $scan_result = scandir($target);
-    if (!is_link($target) && is_dir($target) && ($scan_result != false)) {
-        // it's a directory; recursively delete everything in it
-
-        $files = array_diff(scandir($target), ['.', '..']);
-        foreach ($files as $file) {
-            delete_files("$target/$file");
+    if (!is_link($target) && is_dir($target)) {
+        $scan_result = scandir($target);
+        if ($scan_result) {
+            // it's a directory; recursively delete everything in it
+            $files = array_diff(scandir($target), ['.', '..']);
+            foreach ($files as $file) {
+                delete_files("$target/$file");
+            }
         }
         rmdir($target);
     } else {
@@ -226,8 +227,8 @@ try {
 
             /* delete cache folder and re-create. */
             $cachePath = $settings->get('cache_path');
-            delete_files(str_replace('\\', '/', dirname(__FILE__, 2).'/'.substr($cachePath, 2)));
-            $dir = str_replace('\\', '/', dirname(__FILE__, 2).'/'.substr($cachePath, 2));
+            delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/'.substr($cachePath, 2)));
+            $dir = str_replace('\\', '/', realpath(__DIR__.'/..').'/'.substr($cachePath, 2));
             $oldmask = umask(0);
             mkdir($dir, 0777, true);
             $oldmask = umask(0);
