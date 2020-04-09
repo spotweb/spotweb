@@ -17,6 +17,13 @@ define('SPOTWEB_ANONYMOUS_USERID', 1);
 define('SPOTWEB_ADMIN_USERID', 2);
 
 /*
+ * Define variables
+ * $settings and $dbsettings
+ */
+$settings = [];
+$dbsettings = [];
+
+/*
  * Spotweb bootstrapping code.
  *
  */
@@ -93,13 +100,13 @@ class Bootstrap
     {
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
 
-        if (file_exists(__DIR__.'/../dbsettings.inc.php')) {
-            require __DIR__.'/../dbsettings.inc.php';
+        if (!file_exists(__DIR__.'/../dbsettings.inc.php')) { 
+            throw new DatabaseConnectionException("No database settings have been entered, please use the 'install.php' wizard to install and configure Spotweb.".PHP_EOL.'If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first'); 
+        } 
+        else { 
+            require __DIR__.'/../dbsettings.inc.php'; 
         }
-        if (empty($dbsettings)) {
-            throw new DatabaseConnectionException("No database settings have been entered, please use the 'install.php' wizard to install and configure Spotweb.".PHP_EOL.
-                                                      'If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first');
-        } // if
+
 
         /*
          * Store the DB settings so we can retrieve them later, if so desired,
