@@ -2,18 +2,38 @@
     $spot = $tplHelper->formatSpot($spot);
     $comments = $tplHelper->getSpotComments($spot['messageid'], $spot['prevMsgids'], 0, 99999);
     $comments = $tplHelper->formatComments($comments);
-
     $setpath = $tplHelper->makeBaseUrl('path');
 
     // fix the sabnzbdurl en searchurl
     $spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
     $spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
 ?>
-<div data-role="page" id="spots"> 
-	<div data-role="header" data-backbtn="false">
-	<h1>Spot info</h1>
-<?php if (!empty($spot['sabnzbdurl'])) { ?>
-                  <a href="<?php echo str_replace('getnzb', 'getnzbmobile', $spot['sabnzbdurl']); ?>"  data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">SAVE</a></th>
+<div data-role="page" id="spots">
+    <div data-role="header" data-backbtn="false">
+    <h1>Spot info</h1>
+    <?php if (!empty($spot['sabnzbdurl'])) { ?>
+
+    <script type="text/javascript">
+        $("#loadnzb").on( "click", function(e) {
+        $("#loadnzb .ui-btn-text").text("WAIT...")
+        e.preventDefault()
+        e.stopPropagation()
+
+    $.ajax({ 
+        type: "GET",
+        url: $(this).attr('href'),
+        cache: false,
+        success: onSuccess
+    });
+
+    function onSuccess(data)
+    {
+        $("#loadnzb .ui-btn-text").text("DONE!")
+    }
+
+    })
+    </script>
+    <a href="<?php echo $spot['sabnzbdurl']; ?>" id="loadnzb"   data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">SAVE</a></th>
 <?php } else { ?>	
   <a class="nzb" href="<?php echo $setpath ?>index.php?page=getnzbmobile&amp;messageid=<?php echo $spot['messageid']; ?>"  data-transition='fade' data-icon="plus" data-rel="dialog" class="ui-btn-right">NZB</a>
 <?php } ?>		
@@ -25,7 +45,6 @@
 <?php
     if (!$spot['verified']) {
         ?>
-	* niet geverifieerd *
 <?php
     }
 ?>
@@ -95,4 +114,3 @@ if (count($comments) > 0) { ?>
 ?>    
             </div>
 		</div>
-
