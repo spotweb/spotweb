@@ -890,6 +890,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'SpotPage_erasedls' => __DIR__ . '/../..' . '/lib/page/SpotPage_erasedls.php',
         'SpotPage_getimage' => __DIR__ . '/../..' . '/lib/page/SpotPage_getimage.php',
         'SpotPage_getnzb' => __DIR__ . '/../..' . '/lib/page/SpotPage_getnzb.php',
+        'SpotPage_getnzbmobile' => __DIR__ . '/../..' . '/lib/page/SpotPage_getnzbmobile.php',
         'SpotPage_getspot' => __DIR__ . '/../..' . '/lib/page/SpotPage_getspot.php',
         'SpotPage_index' => __DIR__ . '/../..' . '/lib/page/SpotPage_index.php',
         'SpotPage_login' => __DIR__ . '/../..' . '/lib/page/SpotPage_login.php',
