@@ -1,50 +1,60 @@
 <?php
-class SpotPage_getnzbmobile extends SpotPage_Abs {
-	private $_messageid;
-	private $_action;
-	
-	function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params) {
-		parent::__construct($db, $settings, $currentSession);
-		$this->_messageid = $params['messageid'];
-		$this->_action = $params['action'];
-	} # ctor
 
-	
-	function render() {
-		$hdr_spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
+class SpotPage_getnzbmobile extends SpotPage_Abs
+{
+    private $_messageid;
+    private $_action;
 
-		# Controleer de users' rechten
-		$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
+    public function __construct(SpotDb $db, SpotSettings $settings, $currentSession, $params)
+    {
+        parent::__construct($db, $settings, $currentSession);
+        $this->_messageid = $params['messageid'];
+        $this->_action = $params['action'];
+    }
 
-		# als het niet display is, check of we ook download integratie rechten hebben
-		if ($this->_action != 'display') {
-			$this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_download_integration, $this->_action);
-		} # if
+    // ctor
 
-		/* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
-		$settings_nntp_hdr = $this->_settings->get('nntp_hdr');
-		$settings_nntp_nzb = $this->_settings->get('nntp_nzb');
-		if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
-			$nzb_spotnntp = $hdr_spotnntp;
-		} else {
-			$nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
-		} # else
+    public function render()
+    {
+        $hdr_spotnntp = new SpotNntp($this->_settings->get('nntp_hdr'));
 
-		# NZB files mogen liever niet gecached worden op de client
-		$this->sendExpireHeaders(true);
+        // Controleer de users' rechten
+        $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_retrieve_nzb, '');
 
-		try {
-			$spotNzb = new SpotNzb($this->_db, $this->_settings);
-			$spotNzb->handleNzbAction($this->_messageid, $this->_currentSession,
-							$this->_action, $hdr_spotnntp, $nzb_spotnntp);
-			
-			if ($this->_action != 'display') {
-				echo "<div data-role=page><div data-role=content><p>NZB saved.</p><a href='" .$this->_settings->get('spotweburl') ."' rel=external data-role='button'>OK</a></div></div>";			
-			} # if
-		}
-		catch(Exception $x) {
-			echo "<div data-role=page><div data-role=content><p>" . $x->getMessage() . "</p><a href='". $this->_settings->get('spotweburl') ."' rel=external data-role='button'>OK</a></div></div>";
-		} # catch
-	} # render
-	
-} # SpotPage_getnzb
+        // als het niet display is, check of we ook download integratie rechten hebben
+        if ($this->_action != 'display') {
+            $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_download_integration, $this->_action);
+        } // if
+
+        /* Als de HDR en de NZB host hetzelfde zijn, zet geen tweede verbinding op */
+        $settings_nntp_hdr = $this->_settings->get('nntp_hdr');
+        $settings_nntp_nzb = $this->_settings->get('nntp_nzb');
+        if ($settings_nntp_hdr['host'] == $settings_nntp_nzb['host']) {
+            $nzb_spotnntp = $hdr_spotnntp;
+        } else {
+            $nzb_spotnntp = new SpotNntp($this->_settings->get('nntp_nzb'));
+        } // else
+
+        // NZB files mogen liever niet gecached worden op de client
+        $this->sendExpireHeaders(true);
+
+        try {
+            $spotNzb = new SpotNzb($this->_db, $this->_settings);
+            $spotNzb->handleNzbAction(
+                $this->_messageid,
+                $this->_currentSession,
+                $this->_action,
+                $hdr_spotnntp,
+                $nzb_spotnntp
+            );
+
+            if ($this->_action != 'display') {
+                echo "<div data-role=page><div data-role=content><p>NZB saved.</p><a href='".$this->_settings->get('spotweburl')."' rel=external data-role='button'>OK</a></div></div>";
+            } // if
+        } catch (Exception $x) {
+            echo '<div data-role=page><div data-role=content><p>'.$x->getMessage()."</p><a href='".$this->_settings->get('spotweburl')."' rel=external data-role='button'>OK</a></div></div>";
+        } // catch
+    }
+
+    // render
+} // SpotPage_getnzb
