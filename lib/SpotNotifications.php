@@ -197,7 +197,6 @@ class SpotNotifications
         // geen security-checks gedaan voor de ontvanger.
         if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'welcomemail')) {
             $notification = $this->_notificationTemplate->template('user_added_email', ['user' => $user, 'adminUser' => $this->_currentSession['user']]);
-
             $user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
             $user['prefs']['notifications']['email']['receiver'] = $user['mail'];
             $this->_notificationServices['email'] = Notifications_Factory::build('Spotweb', 'email', $user['prefs']['notifications']['email']);

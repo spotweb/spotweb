@@ -33,8 +33,6 @@ class Notifications_Email extends Notifications_abs
             $mail->WordWrap = 78;
             $mail->XMailer = null;
             $mail->Hostname = $this->_settings->smtp['host'];
-            $mail->$mail->Helo = 
-            $mail->Host = 
             $mail->SMTPAuth = true;
             $mail->Username = $this->_settings->smtp['user'];
             $mail->Password = $this->_settings->smtp['pass'];

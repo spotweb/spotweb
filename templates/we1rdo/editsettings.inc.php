@@ -4,9 +4,7 @@
             $tplHelper->redirect($http_referer);
 
             return;
-        } else {
-            showResults($result, ['renderhtml' => 1]);
-        } // else
+        }
     } // if
 
     require __DIR__.'/includes/header.inc.php';
