@@ -8,18 +8,18 @@ $setpath = $tplHelper->makeBaseUrl('path');
 
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">
-	<h1>Spotweb<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
-	<a href='<?php echo $setpath; ?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
-	<div data-role="navbar">
-		<ul>
-			<li><a href="#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
-			<li><a href="#search"  data-icon="search">Zoek</a></li>
-			<li><a href="#filters" data-icon="star">Filters</a></li>
-
-		</ul>
-	</div><!-- /navbar -->
-
-</div>
+	    <h1>Spots<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
+	    <a href='<?php echo $setpath; ?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
+	    <div data-role="navbar">
+		    <ul>
+			    <li><a href="#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
+			    <li><a href="#search"  data-icon="search">Zoek</a></li>
+			    <li><a href="#filters" data-icon="star">Filters</a></li>
+                <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
+			    
+		    </ul>
+	    </div><!-- /navbar -->
+    </div>
 <div data-role="content">
 		
 
