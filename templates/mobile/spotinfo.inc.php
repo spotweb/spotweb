@@ -12,7 +12,7 @@
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">
 	<h1>Spot info</h1>
-        <?php if (!empty($spot['sabnzbdurl']) and $spot['nzbhandlertype'] <> 'save') { ?>
+        <?php if (!empty($spot['sabnzbdurl']) and $spot['nzbhandlertype'] != 'save') { ?>
         <script type="text/javascript">
             $("#loadnzb").on( "click", function(e) {
                                                     $("#loadnzb") .html("Wait..")

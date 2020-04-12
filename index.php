@@ -130,14 +130,14 @@ try {
 
         case 'getnzb':
                  $page = new SpotPage_getnzb(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['messageid'   => $req->getDef('messageid', ''),
-                        'action'   => $req->getDef('action', 'display'),
-                        'username' => $req->getDef('username', ''),
-                        'apikey'   => $req->getDef('apikey', ''), ]
-                );
+                     $daoFactory,
+                     $settings,
+                     $currentSession,
+                     ['messageid'   => $req->getDef('messageid', ''),
+                         'action'   => $req->getDef('action', 'display'),
+                         'username' => $req->getDef('username', ''),
+                         'apikey'   => $req->getDef('apikey', ''), ]
+                 );
                 $page->render();
                 break;
 
