@@ -129,7 +129,7 @@ try {
          // getspot
 
         case 'getnzb':
-                $page = new SpotPage_getnzb(
+                 $page = new SpotPage_getnzb(
                     $daoFactory,
                     $settings,
                     $currentSession,
@@ -140,18 +140,6 @@ try {
                 );
                 $page->render();
                 break;
-
-        case 'getnzbmobile':
-                $page = new SpotPage_getnzbmobile(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['messageid' => $req->getDef('messageid', ''),
-                        'action' => $req->getDef('action', 'display'), ]
-                );
-                $page->render();
-                break;
-         // getnzbmobile
 
         case 'erasedls':
                 $page = new SpotPage_erasedls($daoFactory, $settings, $currentSession);
