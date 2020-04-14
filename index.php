@@ -375,12 +375,6 @@ try {
                 break;
          // reportpost
 
-        case 'versioncheck':
-                $page = new SpotPage_versioncheck($daoFactory, $settings, $currentSession, []);
-                $page->render();
-                break;
-         // versioncheck
-
         case 'blacklistspotter':
                 $page = new SpotPage_blacklistspotter(
                     $daoFactory,
