@@ -5,7 +5,3 @@
     Order Allow,Deny
     Allow from all
 </Files>
-<Files "upgrade-db.php">
-    Order Allow,Deny
-    Allow from all
-</Files>
