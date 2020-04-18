@@ -476,7 +476,7 @@ class SpotTemplateHelper
             return '';
         } // if
 
-        return $this->makeBaseUrl('full').'retrieve.php?output=xml'.$this->makeApiRequestString();
+        return $this->makeBaseUrl('full').'bin\retrieve.php?output=xml'.$this->makeApiRequestString();
     }
 
     // makeRetrieveUrl
