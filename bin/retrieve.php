@@ -52,7 +52,7 @@ try {
          */
         if (($userSession === false) || (!$userSession['security']->allowed(SpotSecurity::spotsec_retrieve_spots, ''))) {
             //throw new PermissionDeniedException(SpotSecurity::spotsec_retrieve_spots, '');
-			die("Cannot run retriever without an API key from the browser.");
+			die("Permission denied: Not allowed to run retriever from browser without an API-key!");
         } // if
 
         // Add the user's ip addres, we need it for sending notifications
