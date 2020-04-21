@@ -54,7 +54,11 @@
 			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
 			    <li><a href="#search" data-icon="search">Zoek</a></li>
 			    <li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
-                <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
+			    <?php if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) { ?>
+                	    		<li><a href="index.php?page=login" data-icon="power">Login</a></li>
+			    <?php } else { ?>
+			    		<li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
+			    <?php } ?>
 
 		    </ul>
 	    </div><!-- /navbar -->
