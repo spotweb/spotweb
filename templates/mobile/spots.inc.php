@@ -13,7 +13,7 @@ $setpath = $tplHelper->makeBaseUrl('path');
 	    <div data-role="navbar">
 		    <ul>
 			    <li><a href="#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
-			    <li><a href="#search"  data-icon="search">Zoek</a></li>
+			    <li><a href="#search"  data-icon="search">Search</a></li>
 			    <li><a href="#filters" data-icon="star">Filters</a></li>
                 <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
 			    
@@ -29,22 +29,29 @@ $count = 0;
 
     foreach ($spots as $spot) {
         // Format the spot header
-        $spot = $tplHelper->formatSpotHeader($spot);
-
-        echo "<li><a href='".$setpath.'index.php?page=getspot&amp;messageid='.$spot['messageid']."' data-rel='dialog' data-transition='slidedown'><h3>[".SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']).'] '.$spot['title'].'</h3><p>'.strtoupper($tplHelper->formatDate($spot['stamp'], 'spotlist'))."</p></a></li>\n";
-    }
+        $spot = $tplHelper->formatSpotHeader($spot);		
+        echo "<li><a href='".$setpath.'index.php?page=getspot&amp;messageid='.$spot['messageid']."' data-rel='dialog' data-transition='slidedown'><h3>[".SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']).'] '.$spot['title'].'</h3><p>'.strtoupper($tplHelper->formatDate($spot['stamp'], 'spotlist'))."";
+		if ($settings->get('imageover_subcats') > 0) 
+		{
+		echo "<center><img src='". $tplHelper->makeImageUrl($spot, 150, 150) ."' height='100' /></center></p></a></li>\n";
+		}
+		else 
+		{
+		echo "</p></a></li>\n";	
+		}
+	}
 
 ?>
 </ul>
-
+<br>
 <fieldset class="ui-grid-a">
 	<?php if ($prevPage >= 0) { ?> 
-	<div class="ui-block-a"><a href="<?php echo $setpath; ?>index.php?direction=prev&amp;pagenr=<?php echo $prevPage.$tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams(); ?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Vorige</a></div>
+	<div class="ui-block-a"><a href="<?php echo $setpath; ?>index.php?direction=prev&amp;pagenr=<?php echo $prevPage.$tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams(); ?>#spots" disabled data-theme="a" rel=external data-role="button" data-icon="arrow-l" >Previous</a></div>
 			<?php } else { ?>
 	<div class="ui-block-a"><a href="<?php echo $setpath; ?>#" disabled data-theme="c" rel=external data-role="button" data-icon="minus">&nbsp;</a></div>
 			<?php } ?> 
 			<?php if ($nextPage > 0) { ?>
-	<div class="ui-block-b"><a href="<?php echo $setpath; ?>index.php?direction=next&amp;pagenr=<?php echo $nextPage.$tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams(); ?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Volgende</a></div>	
+	<div class="ui-block-b"><a href="<?php echo $setpath; ?>index.php?direction=next&amp;pagenr=<?php echo $nextPage.$tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams(); ?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Next</a></div>	
 	<?php } ?>   
 </fieldset>
 <?php
