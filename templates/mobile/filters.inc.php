@@ -4,14 +4,14 @@
  ?>
 <div data-role="page" id="search"> 
 	<div data-role="header" data-backbtn="false">
-	    <h1>Zoek<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
+	    <h1>Search<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
 	
 	    <div data-role="navbar">
 		    <ul>
 			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
 			    <li><a href="#search" class="ui-btn-active" data-icon="search">Search</a></li>
 			    <li><a href="#filters" data-icon="star">Filters</a></li>
-                <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
+                	    <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
 		    </ul>
 	    </div><!-- /navbar -->
 
