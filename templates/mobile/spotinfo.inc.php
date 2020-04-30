@@ -54,7 +54,7 @@
                 
 				<table class="spotinfo">
                 	<tbody>
-                        <tr><th> Categorie </th> <td> <?php echo $spot['catname']; ?> </td> </tr>
+                        <tr><th> Category </th> <td> <?php echo $spot['catname']; ?> </td> </tr>
 <?php
     if (!empty($spot['subcatlist'])) {
         foreach ($spot['subcatlist'] as $sub) {
