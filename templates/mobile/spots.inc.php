@@ -15,8 +15,7 @@ $setpath = $tplHelper->makeBaseUrl('path');
 			    <li><a href="#spots" class="ui-btn-active" data-icon="grid" >Spots</a></li>
 			    <li><a href="#search"  data-icon="search">Search</a></li>
 			    <li><a href="#filters" data-icon="star">Filters</a></li>
-                <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
-			    
+                	    <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>  
 		    </ul>
 	    </div><!-- /navbar -->
     </div>
