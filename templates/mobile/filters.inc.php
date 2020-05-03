@@ -130,9 +130,11 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-
-                //echo $filter['tree'];
                 if (strpos($filter['tree'], 'cat0') !== false) {
+                    if (strpos($filter['title'], 'Image') !== false) { //first we check if the url contains the string 'en-us'
+        $filter['title'] = str_replace('Image', 'All Image', $filter['title']); //if yes, we simply replace it with en
+                    }
+
                     echo '<li>';
                     echo '<a href="'.$imageFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processImage($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
@@ -202,9 +204,11 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-
-                //echo $filter['tree'];
                 if (strpos($filter['tree'], 'cat1') !== false) {
+                    if (strpos($filter['title'], 'Sounds') !== false) { //first we check if the url contains the string 'en-us'
+        $filter['title'] = str_replace('Sounds', 'All Sounds', $filter['title']); //if yes, we simply replace it with en
+                    }
+
                     echo '<li>';
                     echo '<a href="'.$soundsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processSounds($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
@@ -274,9 +278,11 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-
-                //echo $filter['tree'];
                 if (strpos($filter['tree'], 'cat2') !== false) {
+                    if (strpos($filter['title'], 'Games') !== false) { //first we check if the url contains the string 'en-us'
+        $filter['title'] = str_replace('Games', 'All Games', $filter['title']); //if yes, we simply replace it with en
+                    }
+
                     echo '<li>';
                     echo '<a href="'.$gamesFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processGames($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
@@ -346,9 +352,11 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-
-                //echo $filter['tree'];
                 if (strpos($filter['tree'], 'cat3') !== false) {
+                    if (strpos($filter['title'], 'Applications') !== false) { //first we check if the url contains the string 'en-us'
+        $filter['title'] = str_replace('Applications', 'All Applications', $filter['title']); //if yes, we simply replace it with en
+                    }
+
                     echo '<li>';
                     echo '<a href="'.$appsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processApps($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
