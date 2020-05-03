@@ -131,8 +131,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
                 // Output HTML
                 if (strpos($filter['tree'], 'cat0') !== false) {
-                    if (strpos($filter['title'], 'Image') !== false) { //first we check if the url contains the string 'en-us'
-        $filter['title'] = str_replace('Image', 'All Image', $filter['title']); //if yes, we simply replace it with en
+                    if (strpos($filter['title'], 'Image') !== false) { 
+        $filter['title'] = str_replace('Image', 'All Image', $filter['title']); 
                     }
 
                     echo '<li>';
@@ -205,8 +205,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
                 // Output HTML
                 if (strpos($filter['tree'], 'cat1') !== false) {
-                    if (strpos($filter['title'], 'Sounds') !== false) { //first we check if the url contains the string 'en-us'
-        $filter['title'] = str_replace('Sounds', 'All Sounds', $filter['title']); //if yes, we simply replace it with en
+                    if (strpos($filter['title'], 'Sounds') !== false) {
+        $filter['title'] = str_replace('Sounds', 'All Sounds', $filter['title']);
                     }
 
                     echo '<li>';
@@ -279,8 +279,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
                 // Output HTML
                 if (strpos($filter['tree'], 'cat2') !== false) {
-                    if (strpos($filter['title'], 'Games') !== false) { //first we check if the url contains the string 'en-us'
-        $filter['title'] = str_replace('Games', 'All Games', $filter['title']); //if yes, we simply replace it with en
+                    if (strpos($filter['title'], 'Games') !== false) {
+        $filter['title'] = str_replace('Games', 'All Games', $filter['title']);
                     }
 
                     echo '<li>';
@@ -353,8 +353,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
                 // Output HTML
                 if (strpos($filter['tree'], 'cat3') !== false) {
-                    if (strpos($filter['title'], 'Applications') !== false) { //first we check if the url contains the string 'en-us'
-        $filter['title'] = str_replace('Applications', 'All Applications', $filter['title']); //if yes, we simply replace it with en
+                    if (strpos($filter['title'], 'Applications') !== false) {
+        $filter['title'] = str_replace('Applications', 'All Applications', $filter['title']);
                     }
 
                     echo '<li>';
