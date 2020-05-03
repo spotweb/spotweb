@@ -131,8 +131,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
                 // Output HTML
                 if (strpos($filter['tree'], 'cat0') !== false) {
-                    if (strpos($filter['title'], 'Image') !== false) { 
-        $filter['title'] = str_replace('Image', 'All Image', $filter['title']); 
+                    if (strpos($filter['title'], 'Image') !== false) {
+                        $filter['title'] = str_replace('Image', 'All Image', $filter['title']);
                     }
 
                     echo '<li>';
@@ -206,7 +206,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 // Output HTML
                 if (strpos($filter['tree'], 'cat1') !== false) {
                     if (strpos($filter['title'], 'Sounds') !== false) {
-        $filter['title'] = str_replace('Sounds', 'All Sounds', $filter['title']);
+                        $filter['title'] = str_replace('Sounds', 'All Sounds', $filter['title']);
                     }
 
                     echo '<li>';
@@ -280,7 +280,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 // Output HTML
                 if (strpos($filter['tree'], 'cat2') !== false) {
                     if (strpos($filter['title'], 'Games') !== false) {
-        $filter['title'] = str_replace('Games', 'All Games', $filter['title']);
+                        $filter['title'] = str_replace('Games', 'All Games', $filter['title']);
                     }
 
                     echo '<li>';
@@ -354,7 +354,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 // Output HTML
                 if (strpos($filter['tree'], 'cat3') !== false) {
                     if (strpos($filter['title'], 'Applications') !== false) {
-        $filter['title'] = str_replace('Applications', 'All Applications', $filter['title']);
+                        $filter['title'] = str_replace('Applications', 'All Applications', $filter['title']);
                     }
 
                     echo '<li>';
