@@ -1,4 +1,4 @@
-<?php 	
+<?php
 $setpath = $tplHelper->makeBaseUrl('path');
 $sortType = $currentSession['user']['prefs']['defaultsortfield'];
  ?>
@@ -112,15 +112,15 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
         function processImage($tplHelper, $count_newspots, $filterList, $defaultSortField)
         {
             $selfUrl = $tplHelper->makeSelfUrl('path');
-            foreach ($filterList as $filter) {	
-				$imageFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
+            foreach ($filterList as $filter) {
+                $imageFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
                 if (!empty($filter['valuelist'])) {
                     foreach ($filter['valuelist'] as $value) {
                         $imageFilter .= '&amp;search[value][]='.$value;
                     } // foreach
                 } // if
                 if (!empty($filter['sorton'])) {
-					$imageFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];				
+                    $imageFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];
                 } else {
                     $sortType = $defaultSortField;
                 } // if
@@ -130,15 +130,14 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-				
-				//echo $filter['tree'];
-				if( strpos( $filter['tree'], 'cat0' ) !== false ){
-				echo '<li>';
-				echo '<a href="'.$imageFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';     										
-				processImage($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
-				echo '</li>';
-				}
 
+                //echo $filter['tree'];
+                if (strpos($filter['tree'], 'cat0') !== false) {
+                    echo '<li>';
+                    echo '<a href="'.$imageFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    processImage($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
+                    echo '</li>';
+                }
             } // foreach
         } // processFilters
 
@@ -185,15 +184,15 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
         {
             $selfUrl = $tplHelper->makeSelfUrl('path');
 
-            foreach ($filterList as $filter) {             
-				$soundsFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
+            foreach ($filterList as $filter) {
+                $soundsFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
                 if (!empty($filter['valuelist'])) {
                     foreach ($filter['valuelist'] as $value) {
                         $soundsFilter .= '&amp;search[value][]='.$value;
                     } // foreach
                 } // if
                 if (!empty($filter['sorton'])) {
-					$soundsFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];				
+                    $soundsFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];
                 } else {
                     $sortType = $defaultSortField;
                 } // if
@@ -203,15 +202,14 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-				
-				//echo $filter['tree'];
-				if( strpos( $filter['tree'], 'cat1' ) !== false ){
-				echo '<li>';	
-				echo '<a href="'.$soundsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';     										
-				processSounds($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
-				echo '</li>';
-				}
 
+                //echo $filter['tree'];
+                if (strpos($filter['tree'], 'cat1') !== false) {
+                    echo '<li>';
+                    echo '<a href="'.$soundsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    processSounds($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
+                    echo '</li>';
+                }
             } // foreach
         } // processFilters
 
@@ -258,15 +256,15 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
         {
             $selfUrl = $tplHelper->makeSelfUrl('path');
 
-            foreach ($filterList as $filter) {             
-				$gamesFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
+            foreach ($filterList as $filter) {
+                $gamesFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
                 if (!empty($filter['valuelist'])) {
                     foreach ($filter['valuelist'] as $value) {
                         $gamesFilter .= '&amp;search[value][]='.$value;
                     } // foreach
                 } // if
                 if (!empty($filter['sorton'])) {
-					$gamesFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];				
+                    $gamesFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];
                 } else {
                     $sortType = $defaultSortField;
                 } // if
@@ -276,15 +274,14 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-				              
-				//echo $filter['tree'];
-				if( strpos( $filter['tree'], 'cat2' ) !== false ){
-				echo '<li>';	
-				echo '<a href="'.$gamesFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';     										
-				processGames($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
-				echo '</li>';
-				}
 
+                //echo $filter['tree'];
+                if (strpos($filter['tree'], 'cat2') !== false) {
+                    echo '<li>';
+                    echo '<a href="'.$gamesFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    processGames($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
+                    echo '</li>';
+                }
             } // foreach
         } // processFilters
 
@@ -331,15 +328,15 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
         {
             $selfUrl = $tplHelper->makeSelfUrl('path');
 
-            foreach ($filterList as $filter) {             
-				$appsFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
+            foreach ($filterList as $filter) {
+                $appsFilter = $tplHelper->getPageUrl('index').'&amp;search[tree]='.$filter['tree'];
                 if (!empty($filter['valuelist'])) {
                     foreach ($filter['valuelist'] as $value) {
                         $appsFilter .= '&amp;search[value][]='.$value;
                     } // foreach
                 } // if
                 if (!empty($filter['sorton'])) {
-					$appsFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];				
+                    $appsFilter .= '&amp;sortby='.$filter['sorton'].'&amp;sortdir='.$filter['sortorder'];
                 } else {
                     $sortType = $defaultSortField;
                 } // if
@@ -349,15 +346,14 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                 $filter['icon'] = htmlentities($filter['icon'], ENT_NOQUOTES, 'UTF-8');
 
                 // Output HTML
-				
-				//echo $filter['tree'];
-				if( strpos( $filter['tree'], 'cat3' ) !== false ){
-				echo '<li>';
-				echo '<a href="'.$appsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';     										
-				processApps($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
-				echo '</li>';
-				}
 
+                //echo $filter['tree'];
+                if (strpos($filter['tree'], 'cat3') !== false) {
+                    echo '<li>';
+                    echo '<a href="'.$appsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    processApps($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
+                    echo '</li>';
+                }
             } // foreach
         } // processFilters
 
