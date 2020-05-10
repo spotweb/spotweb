@@ -672,6 +672,7 @@ return array(
     'SpotPage_blacklistspotter' => $baseDir . '/lib/page/SpotPage_blacklistspotter.php',
     'SpotPage_catsjson' => $baseDir . '/lib/page/SpotPage_catsjson.php',
     'SpotPage_createuser' => $baseDir . '/lib/page/SpotPage_createuser.php',
+    'SpotPage_createuser2' => $baseDir . '/lib/page/SpotPage_createuser2.php',
     'SpotPage_editfilter' => $baseDir . '/lib/page/SpotPage_editfilter.php',
     'SpotPage_editsecgroup' => $baseDir . '/lib/page/SpotPage_editsecgroup.php',
     'SpotPage_editsettings' => $baseDir . '/lib/page/SpotPage_editsettings.php',

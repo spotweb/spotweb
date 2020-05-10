@@ -881,6 +881,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'SpotPage_blacklistspotter' => __DIR__ . '/../..' . '/lib/page/SpotPage_blacklistspotter.php',
         'SpotPage_catsjson' => __DIR__ . '/../..' . '/lib/page/SpotPage_catsjson.php',
         'SpotPage_createuser' => __DIR__ . '/../..' . '/lib/page/SpotPage_createuser.php',
+        'SpotPage_createuser2' => __DIR__ . '/../..' . '/lib/page/SpotPage_createuser2.php',
         'SpotPage_editfilter' => __DIR__ . '/../..' . '/lib/page/SpotPage_editfilter.php',
         'SpotPage_editsecgroup' => __DIR__ . '/../..' . '/lib/page/SpotPage_editsecgroup.php',
         'SpotPage_editsettings' => __DIR__ . '/../..' . '/lib/page/SpotPage_editsettings.php',
