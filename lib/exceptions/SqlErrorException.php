@@ -1,2 +1,5 @@
 <?php
-class SqlErrorException extends CustomException {};
+
+class SqlErrorException extends CustomException
+{
+}

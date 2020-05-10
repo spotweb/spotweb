@@ -1,26 +1,31 @@
 <?php
 
-interface Services_Settings_IContainer {
+interface Services_Settings_IContainer
+{
     /**
-     * Loads content of datasource
+     * Loads content of datasource.
      *
      * @param array $cfg
+     *
      * @return void
      */
     public function initialize(array $cfg);
 
     /**
-     * Returns an array with all settings stored in this container
+     * Returns an array with all settings stored in this container.
+     *
      * @return array
      */
     public function getAllSettings();
 
     /**
-     * Removes a setting from this datasource
+     * Removes a setting from this datasource.
      *
      * @param $name Name of setting to remove
-     * @return void
+     *
      * @throws InvalidSettingsUpdateException
+     *
+     * @return void
      */
     public function remove($name);
 
@@ -32,9 +37,10 @@ interface Services_Settings_IContainer {
      *
      * @param $name
      * @param $value
-     * @return void
+     *
      * @throws InvalidSettingsUpdateException
+     *
+     * @return void
      */
     public function set($name, $value);
-
-} # interface Services_Settings_IContainer
+} // interface Services_Settings_IContainer

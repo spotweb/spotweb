@@ -1,4 +1,4 @@
-# This file is distributed under the same license as the SpotWeb package. 
+# This file is distributed under the same license as the SpotWeb package.
 # Copyright (c) 2013, Spotweb
 # All rights reserved.
 # 
@@ -397,6 +397,9 @@ msgstr ""
 msgid "Find spots in this category"
 msgstr ""
 
+msgid "Sort by"
+msgstr ""
+
 msgid "Sort on sender [0-Z]"
 msgstr ""
 
@@ -434,6 +437,9 @@ msgid "Date"
 msgstr ""
 
 msgid "Size"
+msgstr ""
+
+msgid "Spotted with"
 msgstr ""
 
 msgid "Website"
@@ -548,6 +554,9 @@ msgid "Use different server for headers?"
 msgstr ""
 
 msgid "Use different server for posting?"
+msgstr ""
+
+msgid "Verify name (CN) on certificate"
 msgstr ""
 
 msgid "Retention on spots (in days). Older spots will be erased. Select 0 to keep all spots."
@@ -782,7 +791,7 @@ msgstr ""
 msgid "Portnumber of nzbget?"
 msgstr ""
 
-msgid "Username for nzbget?"
+msgid "Username for nzbget? Attention: At this moment only <u>nzbget</u> is a valid name!"
 msgstr ""
 
 msgid "Password for nzbget?"
@@ -1874,5 +1883,48 @@ msgid "Whitelisted by user"
 msgstr ""
 
 msgid "Minimum number of spamreports before showing spamreports icon?"
+msgstr ""
+
+msgid "Change user preferences"
+msgstr ""
+
+msgid "Administrators"
+msgstr ""
+
+msgid "Anonymous user - closed system"
+msgstr ""
+
+msgid "Anonymous user - open system"
+msgstr ""
+
+msgid "Authenticated users"
+msgstr ""
+
+msgid "Trusted users"
+msgstr ""
+
+msgid "Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires a so-called Client ID and a SecretID which you need to request at Microsoft. Please enter the values in below fields."
+msgstr ""
+
+msgid "Note:"
+msgstr ""
+
+msgid "The edited spot will not be posted to usenet. The changes will only be visible for users of this Spotweb site."
+msgstr ""
+
+msgid "Deleting a spot will remove the spot from this Spotweb site only. It will not be removed from other websites and/or other Spotnet clients."
+msgstr ""
+
+#: lib/SpotCategories.php
+msgid "Optimization software"
+msgstr ""
+
+msgid "Security software"
+msgstr ""
+
+msgid "System software"
+msgstr ""
+
+msgid "Navigation systems"
 msgstr ""
 

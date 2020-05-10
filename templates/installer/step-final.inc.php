@@ -38,4 +38,4 @@
     </tr>
 </table>
 
-<?php echo '<!-- ' . $dbCreateOutput . ' -->'; ?>
+<?php echo '<!-- '.$dbCreateOutput.' -->'; ?>

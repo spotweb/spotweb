@@ -1,13 +1,18 @@
 <?php
 
-interface Dao_SpotStateList {
+interface Dao_SpotStateList
+{
+    public function markAllAsRead($ourUserId);
 
-	function markAllAsRead($ourUserId);
-	function clearDownloadList($ourUserId);
-	function cleanSpotStateList();
-	function removeFromWatchList($messageid, $ourUserId);
-	function addToWatchList($messageid, $ourUserId);
-	function addToSeenList($messageid, $ourUserId);
-	function addToDownloadList($messageid, $ourUserId);
-	
-} # Dao_SpotStateList
+    public function clearDownloadList($ourUserId);
+
+    public function cleanSpotStateList();
+
+    public function removeFromWatchList($messageid, $ourUserId);
+
+    public function addToWatchList($messageid, $ourUserId);
+
+    public function addToSeenList($messageid, $ourUserId);
+
+    public function addToDownloadList($messageid, $ourUserId);
+} // Dao_SpotStateList

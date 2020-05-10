@@ -1,13 +1,18 @@
 <?php
 
-interface Dao_UserFilterCount {
+interface Dao_UserFilterCount
+{
+    public function setCachedFilterCount($userId, $filterHashes);
 
-	function setCachedFilterCount($userId, $filterHashes);
-	function getNewCountForFilters($userId);
-	function createFilterCountsForEveryone();
-	function getCachedFilterCount($userId);
-	function resetFilterCountForUser($userId);
-	function updateCurrentFilterCounts();
-	function markFilterCountAsSeen($userId);
-	
-} # Dao_UserFilterCount
+    public function getNewCountForFilters($userId);
+
+    public function createFilterCountsForEveryone();
+
+    public function getCachedFilterCount($userId);
+
+    public function resetFilterCountForUser($userId);
+
+    public function updateCurrentFilterCounts();
+
+    public function markFilterCountAsSeen($userId);
+} // Dao_UserFilterCount

@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/includes/form-messages.inc.php';
+require __DIR__.'/includes/form-messages.inc.php';
 
 if (isset($result)) {
     if ($result->isSubmitted()) {
@@ -7,15 +7,15 @@ if (isset($result)) {
         showResults($result);
 
         return;
-    } # if
-} # if
+    } // if
+} // if
 
 /*
  * If we are called driectly, exit
  */
 if (!isset($spot)) {
-    return ;
-} # if
+    return;
+} // if
 
 ?>
 <form class="postcommentform" name="postcommentform" action="<?php echo $tplHelper->makePostCommentAction(); ?>" method="post">
@@ -31,10 +31,10 @@ if (!isset($spot)) {
 			<dd><input class="greyButton" type="submit" name="dummysubmit" title="<?php echo _('Add comment'); ?>" value="<?php echo _('Post'); ?>"></dd>
 			<dd>
 <?php
-	$smileyList = $tplHelper->getSmileyList();
-	foreach ($smileyList as $name => $image) {
-		echo "<a onclick=\"addText(' [img=" . $name . "]', 'postcommentform[body]'); return false;\"><img src=\"" . $image . "\" alt=\"" . $name . "\" name=\"" . $name . "\"></a> ";
-	}
+    $smileyList = $tplHelper->getSmileyList();
+    foreach ($smileyList as $name => $image) {
+        echo "<a onclick=\"addText(' [img=".$name."]', 'postcommentform[body]'); return false;\"><img src=\"".$image.'" alt="'.$name.'" name="'.$name.'"></a> ';
+    }
 ?>
 			</dd>
 		</dl>

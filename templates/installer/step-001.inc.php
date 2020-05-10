@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/includes/header.inc.php' ;
+require_once __DIR__.'/includes/header.inc.php';
 
 global $_testInstall_Ok;
 
@@ -17,43 +17,52 @@ global $_testInstall_Ok;
         <td><?php echo phpversion(); ?></td>
         <td><?php
             SpotInstall::showResult(
-                (version_compare(PHP_VERSION, '5.3.0') >= 0),
-                true,
-                "",
-                "PHP 5.3 or later is recommended"
-            );
+    (version_compare(PHP_VERSION, '5.3.0') >= 0),
+    true,
+    '',
+    'PHP 5.3 or later is recommended'
+);
             ?></td>
     </tr>
     <tr>
         <td>timezone settings</td>
-        <td><?php echo ini_get("date.timezone"); ?></td>
-        <td><?php SpotInstall::showResult(ini_get("date.timezone"), true, "",
-                "Please specify date.timezone in your PHP.ini"); ?></td>
+        <td><?php echo ini_get('date.timezone'); ?></td>
+        <td><?php SpotInstall::showResult(
+                ini_get('date.timezone'),
+                true,
+                '',
+                'Please specify date.timezone in your PHP.ini'
+            ); ?></td>
     </tr>
     <tr>
         <td> Open base dir</td>
-        <td><?php echo ini_get("open_basedir"); ?></td>
-        <td><?php SpotInstall::showResult(!ini_get("open_basedir"), true, "",
-                "Not empty, <strong>might</strong> be a problem"); ?></td>
+        <td><?php echo ini_get('open_basedir'); ?></td>
+        <td><?php SpotInstall::showResult(
+                !ini_get('open_basedir'),
+                true,
+                '',
+                'Not empty, <strong>might</strong> be a problem'
+            ); ?></td>
     </tr>
     <tr>
         <td> Allow furl open</td>
-        <td><?php echo ini_get("allow_url_fopen"); ?></td>
-        <td><?php SpotInstall::showResult(ini_get("allow_url_fopen") == 1, true, "",
-                "allow_url_fopen not on -- will cause problems to retrieve external data"); ?></td>
-    </tr>
-    <tr>
-        <td> PHP safe mode</td>
-        <td><?php echo ini_get("safe_mode"); ?></td>
-        <td><?php SpotInstall::showResult(!ini_get("safe_mode"), true, "",
-                "Safe mode set -- will cause problems for retrieve.php"); ?></td>
+        <td><?php echo ini_get('allow_url_fopen'); ?></td>
+        <td><?php SpotInstall::showResult(
+                ini_get('allow_url_fopen') == 1,
+                true,
+                '',
+                'allow_url_fopen not on -- will cause problems to retrieve external data'
+            ); ?></td>
     </tr>
     <tr>
         <td> Memory limit</td>
-        <td><?php echo ini_get("memory_limit"); ?></td>
-        <td><?php SpotInstall::showResult(SpotInstall::returnBytes(ini_get("memory_limit")) >= (128 * 1024 * 1024),
-                true, "",
-                "memory_limit below 128M"); ?></td>
+        <td><?php echo ini_get('memory_limit'); ?></td>
+        <td><?php SpotInstall::showResult(
+                SpotInstall::returnBytes(ini_get('memory_limit')) >= (128 * 1024 * 1024),
+                true,
+                '',
+                'memory_limit below 128M'
+            ); ?></td>
     </tr>
 </table>
 <br/>
@@ -66,8 +75,12 @@ global $_testInstall_Ok;
     <tr>
         <td colspan="2"> curl</td>
         <!--<td><?php SpotInstall::showResult(extension_loaded('curl'), true); ?></td>-->
-        <td><?php SpotInstall::showResult(extension_loaded('curl'), false, "",
-                "You need this module to communicate with sabnzbd/nzbget"); ?></td>
+        <td><?php SpotInstall::showResult(
+                extension_loaded('curl'),
+                false,
+                '',
+                'You need this module to communicate with sabnzbd/nzbget'
+            ); ?></td>
     </tr>
     <tr>
         <td colspan="2"> DOM</td>
@@ -91,8 +104,12 @@ global $_testInstall_Ok;
     </tr>
     <tr>
         <td colspan="2"> zip</td>
-        <td><?php SpotInstall::showResult(extension_loaded('zip'), false, "",
-                "You need this module to select multiple NZB files"); ?></td>
+        <td><?php SpotInstall::showResult(
+                extension_loaded('zip'),
+                false,
+                '',
+                'You need this module to select multiple NZB files'
+            ); ?></td>
     </tr>
     <tr>
         <td colspan="2"> zlib</td>
@@ -101,8 +118,10 @@ global $_testInstall_Ok;
 
     <tr>
         <th colspan="2"> Database support</th>
-        <td><?php SpotInstall::showResult(extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'),
-                true); ?></td>
+        <td><?php SpotInstall::showResult(
+                extension_loaded('pdo_mysql') || extension_loaded('pdo_pgsql'),
+                true
+            ); ?></td>
     </tr>
     <tr>
         <td colspan="2"> MySQL (PDO)</td>
@@ -117,11 +136,10 @@ global $_testInstall_Ok;
         <td><?php SpotInstall::showResult(extension_loaded('pdo_sqlite'), false); ?></td>
     </tr>
     <?php if (extension_loaded('gd')) {
-       $gdInfo = gd_info();
-    } 
-    else {
-       $gdInfo = array('FreeType Support' => 0, 'GIF Read Support' => 0,'GIF Create Support' => 0,'JPEG Support' => 0,'JPG Support' => 0,'PNG Support' => 0); 
-    }?>
+                $gdInfo = gd_info();
+            } else {
+                $gdInfo = ['FreeType Support' => 0, 'GIF Read Support' => 0, 'GIF Create Support' => 0, 'JPEG Support' => 0, 'JPG Support' => 0, 'PNG Support' => 0];
+            }?>
     <tr>
         <th colspan="2"> GD</th>
         <td><?php SpotInstall::showResult(extension_loaded('gd'), true); ?></td>
@@ -164,8 +182,10 @@ global $_testInstall_Ok;
     </tr>
     <tr>
         <td colspan="2"> Can create private key?</td>
-        <td><?php SpotInstall::showResult(isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']),
-                true); ?></td>
+        <td><?php SpotInstall::showResult(
+                isset($privKey['public']) && !empty($privKey['public']) && !empty($privKey['private']),
+                true
+            ); ?></td>
     </tr>
     <tr>
         <th colspan="3"> Cache directory</th>
@@ -184,13 +204,13 @@ global $_testInstall_Ok;
     </tr>
     <tr>
         <td> Settings file</td>
-        <td><?php $result = SpotInstall::testInclude(__DIR__ . '/../../settings.php');
+        <td><?php $result = SpotInstall::testInclude(__DIR__.'/../../settings.php');
             echo SpotInstall::showResult($result, true, $result); ?></td>
     </tr>
     <tr>
         <td> Own settings file</td>
-        <td><?php $result = SpotInstall::testInclude(__DIR__ . '/../../ownsettings.php');
-            echo SpotInstall::showResult($result, true, $result, "optional"); ?></td>
+        <td><?php $result = SpotInstall::testInclude(__DIR__.'/../../ownsettings.php');
+            echo SpotInstall::showResult($result, true, $result, 'optional'); ?></td>
     </tr>
 </table>
 <br/>

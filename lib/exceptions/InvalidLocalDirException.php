@@ -1,2 +1,5 @@
 <?php
-	class InvalidLocalDirException extends CustomException {};
+
+    class InvalidLocalDirException extends CustomException
+    {
+    }

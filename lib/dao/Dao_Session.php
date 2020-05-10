@@ -1,12 +1,16 @@
 <?php
 
-interface Dao_Session {
+interface Dao_Session
+{
+    public function getSession($sessionid, $userid);
 
-	function getSession($sessionid, $userid);
-	function addSession($session);
-	function deleteSession($sessionid);
-	function deleteAllUserSessions($userid);
-	function deleteExpiredSessions($maxLifeTime);
-	function hitSession($sessionid);
-	
-} # Dao_Session
+    public function addSession($session);
+
+    public function deleteSession($sessionid);
+
+    public function deleteAllUserSessions($userid);
+
+    public function deleteExpiredSessions($maxLifeTime);
+
+    public function hitSession($sessionid);
+} // Dao_Session

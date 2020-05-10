@@ -1,78 +1,99 @@
 <?php
 
-class Dao_Base_Setting implements Dao_Setting {
-	protected $_conn;
+class Dao_Base_Setting implements Dao_Setting
+{
+    protected $_conn;
 
-	/*
-	 * constructs a new Dao_Base_Comment object, 
-	 * connection object is given
-	 */
-	public function __construct(dbeng_abs $conn) {
-		$this->_conn = $conn;
-	} # ctor
+    /*
+     * constructs a new Dao_Base_Comment object,
+     * connection object is given
+     */
+    public function __construct(dbeng_abs $conn)
+    {
+        $this->_conn = $conn;
+    }
 
-	/* 
-	 * Retrieves all settings from the database
-	 */
-	function getAllSettings() {
-		$tmpSettings = array();
+    // ctor
 
-		$dbSettings = $this->_conn->arrayQuery('SELECT name, value, serialized FROM settings');
-		foreach($dbSettings as $item) {
-			if ($item['serialized']) {
-				$item['value'] = unserialize($item['value']);
-			} # if
-			
-			$tmpSettings[$item['name']] = $item['value'];
-		} # foreach
-		
-		return $tmpSettings;
-	} # getAllSettings
+    /*
+     * Retrieves all settings from the database
+     */
+    public function getAllSettings()
+    {
+        $tmpSettings = [];
 
-	/*
-	 * Removes a setting from the database
-	 */
-	function removeSetting($name) {
-		$this->_conn->exec("DELETE FROM settings WHERE name = :name",
-            array(
-                ':name' => array($name, PDO::PARAM_STR)
-            ));
-	} # removeSetting
-	
-	/*
-	 * Update setting
-	 */
-	function updateSetting($name, $value) {
-		# When necessary, serialize the data
-		if ((is_array($value) || is_object($value))) {
-			$value = serialize($value);
-			$serialized = true;
-		} else {
-			$serialized = false;
-		} # if
-		
-		$this->_conn->exec("UPDATE settings SET value = :value, serialized = :serialized WHERE name = :name",
-            array(
-                ':value' => array($value, PDO::PARAM_STR),
-                ':serialized' => array($serialized, PDO::PARAM_BOOL),
-                ':name' => array($name, PDO::PARAM_STR)
-            ));
+        $dbSettings = $this->_conn->arrayQuery('SELECT name, value, serialized FROM settings');
+        foreach ($dbSettings as $item) {
+            if ($item['serialized']) {
+                $item['value'] = unserialize($item['value']);
+            } // if
 
-		if ($this->_conn->rows() == 0) {
-			$this->_conn->modify("INSERT INTO settings(name,value,serialized) VALUES(:name, :value, :serialized)",
-                array(
-                    ':name' => array($name, PDO::PARAM_STR),
-                    ':value' => array($value, PDO::PARAM_STR),
-                    ':serialized' => array($serialized, PDO::PARAM_BOOL)
-                ));
-		} # if
-	} # updateSetting
+            $tmpSettings[$item['name']] = $item['value'];
+        } // foreach
 
-	/*
-	 * Returns the current schema version
-	 */
-	function getSchemaVer() {
-		return $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
-	} # getSchemaVer
+        return $tmpSettings;
+    }
 
-} # Dao_Base_Setting
+    // getAllSettings
+
+    /*
+     * Removes a setting from the database
+     */
+    public function removeSetting($name)
+    {
+        $this->_conn->exec(
+            'DELETE FROM settings WHERE name = :name',
+            [
+                ':name' => [$name, PDO::PARAM_STR],
+            ]
+        );
+    }
+
+    // removeSetting
+
+    /*
+     * Update setting
+     */
+    public function updateSetting($name, $value)
+    {
+        // When necessary, serialize the data
+        if ((is_array($value) || is_object($value))) {
+            $value = serialize($value);
+            $serialized = true;
+        } else {
+            $serialized = false;
+        } // if
+
+        $this->_conn->exec(
+            'UPDATE settings SET value = :value, serialized = :serialized WHERE name = :name',
+            [
+                ':value'      => [$value, PDO::PARAM_STR],
+                ':serialized' => [$serialized, PDO::PARAM_BOOL],
+                ':name'       => [$name, PDO::PARAM_STR],
+            ]
+        );
+
+        if ($this->_conn->rows() == 0) {
+            $this->_conn->modify(
+                'INSERT INTO settings(name,value,serialized) VALUES(:name, :value, :serialized)',
+                [
+                    ':name'       => [$name, PDO::PARAM_STR],
+                    ':value'      => [$value, PDO::PARAM_STR],
+                    ':serialized' => [$serialized, PDO::PARAM_BOOL],
+                ]
+            );
+        } // if
+    }
+
+    // updateSetting
+
+    /*
+     * Returns the current schema version
+     */
+    public function getSchemaVer()
+    {
+        return $this->_conn->singleQuery("SELECT value FROM settings WHERE name = 'schemaversion'");
+    }
+
+    // getSchemaVer
+} // Dao_Base_Setting

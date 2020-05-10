@@ -1,5 +1,5 @@
 <?php
-    require __DIR__ . '/includes/form-messages.inc.php';
+    require __DIR__.'/includes/form-messages.inc.php';
 
     /*
      * Do we need to redirect on success? If so, perform this
@@ -7,8 +7,8 @@
     if (isset($data['performredirect']) && ($result->isSuccess())) {
         $tplHelper->redirect($loginform['http_referer']);
 
-        return ;
-    } # if
+        return;
+    } // if
 
     $didSubmitForm = showResults($result, $data);
 
@@ -20,18 +20,18 @@
      * If not, we try to re-render the form again
      */
     if (($didSubmitForm) && (!isset($data['renderhtml']))) {
-        return ;
-    } # if
+        return;
+    } // if
 
     /*
      * If no HTML headers are sent just yet, make sure
      * we send them to the client
      */
     if (!isset($data['htmlheaderssent'])) {
-        require_once __DIR__ . '/includes/basic-html-header.inc.php';
+        require_once __DIR__.'/includes/basic-html-header.inc.php';
 
         $data['renderhtml'] = true;
-    } # if
+    } // if
 ?>
 <h1>Your Spotweb login is different than your NZBFinder login!</h1>
 <br />
@@ -59,6 +59,6 @@
 </form>
 <?php
 
-	if (isset($data['renderhtml'])) {
-		echo "</div></body></html>";
-	} # if
+    if (isset($data['renderhtml'])) {
+        echo '</div></body></html>';
+    } // if

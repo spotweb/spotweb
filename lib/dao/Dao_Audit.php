@@ -1,7 +1,6 @@
 <?php
 
-interface Dao_Audit {
-
-	function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr);
-	
-} # Dao_Audit
+interface Dao_Audit
+{
+    public function addAuditEntry($userid, $perm, $objectid, $allowed, $ipaddr);
+} // Dao_Audit

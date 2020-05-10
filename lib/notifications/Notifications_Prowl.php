@@ -1,35 +1,44 @@
 <?php
-class Notifications_Prowl extends Notifications_abs {
-	private $_apikey;
-	private $_appName;
-	var $prowlObj;
 
-	function __construct($appName, array $dataArray) {
-		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-			$this->prowlObj = new \Prowl\Connector();
-		} # if
+class Notifications_Prowl extends Notifications_abs
+{
+    private $_apikey;
+    private $_appName;
+    public $prowlObj;
 
-		$this->_appName = $appName;
-		$this->_apikey = $dataArray['apikey'];
-	} # ctor
+    public function __construct($appName, array $dataArray)
+    {
+        if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+            $this->prowlObj = new \Prowl\Connector();
+        } // if
 
-	function register() {
-		return;
-	} # register
+        $this->_appName = $appName;
+        $this->_apikey = $dataArray['apikey'];
+    }
 
-	function sendMessage($type, $title, $body, $sourceUrl) {
-		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-			$oMsg = new \Prowl\Message();
-			$oMsg->addApiKey($this->_apikey);
-			$oMsg->setApplication($this->_appName);
-			$oMsg->setEvent($title);
-			$oMsg->setDescription($body);
+    // ctor
 
-			$oFilter = new \Prowl\Security\PassthroughFilterImpl();
-			$this->prowlObj->setFilter($oFilter);
-			$this->prowlObj->setIsPostRequest(true);
-			$this->prowlObj->push($oMsg);
-		} # if
-	} # sendMessage
+    public function register()
+    {
+    }
 
-} # Notifications_Prowl
+    // register
+
+    public function sendMessage($type, $title, $body, $sourceUrl)
+    {
+        if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+            $oMsg = new \Prowl\Message();
+            $oMsg->addApiKey($this->_apikey);
+            $oMsg->setApplication($this->_appName);
+            $oMsg->setEvent($title);
+            $oMsg->setDescription($body);
+
+            $oFilter = new \Prowl\Security\PassthroughFilterImpl();
+            $this->prowlObj->setFilter($oFilter);
+            $this->prowlObj->setIsPostRequest(true);
+            $this->prowlObj->push($oMsg);
+        } // if
+    }
+
+    // sendMessage
+} // Notifications_Prowl

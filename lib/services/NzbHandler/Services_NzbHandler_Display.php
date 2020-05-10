@@ -2,23 +2,25 @@
 
 class Services_NzbHandler_Display extends Services_NzbHandler_abs
 {
-	function __construct(Services_Settings_Container $settings, array $nzbHandling)
-	{
-		parent::__construct($settings, 'Display', 'Show', $nzbHandling);
-	} # __construct
+    public function __construct(Services_Settings_Container $settings, array $nzbHandling)
+    {
+        parent::__construct($settings, 'Display', 'Show', $nzbHandling);
+    }
 
-	public function processNzb($fullspot, $nzblist)
-	{
-		$nzb = $this->prepareNzb($fullspot, $nzblist);
-		
-		Header("Content-Type: " . $nzb['mimetype']);
-		
-		switch($this->_nzbHandling['prepare_action']) {
-			case 'zip'	: Header("Content-Disposition: attachment; filename=\"" . $nzb['filename'] . "\""); break;
-			default		: Header("Content-Disposition: inline; filename=\"" . $nzb['filename'] . "\"");
-		} # switch
-		echo $nzb['nzb'];
+    // __construct
 
-	} # processNzb
+    public function processNzb($fullspot, $nzblist)
+    {
+        $nzb = $this->prepareNzb($fullspot, $nzblist);
 
-} # class Services_NzbHandler_Display
+        header('Content-Type: '.$nzb['mimetype']);
+
+        switch ($this->_nzbHandling['prepare_action']) {
+            case 'zip': header('Content-Disposition: attachment; filename="'.$nzb['filename'].'"'); break;
+            default: header('Content-Disposition: inline; filename="'.$nzb['filename'].'"');
+        } // switch
+        echo $nzb['nzb'];
+    }
+
+    // processNzb
+} // class Services_NzbHandler_Display

@@ -1,11 +1,10 @@
 <?php
-    require __DIR__ . '/includes/form-messages.inc.php';
+    require __DIR__.'/includes/form-messages.inc.php';
 
     if (!showResults($result)) {
 
-	# Retrieve the requested security group
-	$permList = $tplHelper->getSecGroupPerms($securitygroup['id']);
-?>
+    // Retrieve the requested security group
+    $permList = $tplHelper->getSecGroupPerms($securitygroup['id']); ?>
 	<table class="ui-widget ui-widget-content secgroupperms" summary="Permissions">
 		<thead>
 			<tr class="ui-widget-header head">
@@ -26,29 +25,28 @@
 		</thead>
 
 		<tbody id="secgroupermlist">
-<?php 
-# make sure we have an even number of permissions so that both columns are always filled in
+<?php
+// make sure we have an even number of permissions so that both columns are always filled in
 $nrOfPermission = count($permList);
-if ($nrOfPermission % 2 == 1) {
-	$permList[] = array('permissionid' => -1,
-						'permissionname' => '&nbsp;',
-						'objectid' => '&nbsp;');
+        if ($nrOfPermission % 2 == 1) {
+            $permList[] = ['permissionid' => -1,
+                'permissionname'          => '&nbsp;',
+                'objectid'                => '&nbsp;', ];
 
-	# we now have one permission more
-	$nrOfPermission++;
-}
+            // we now have one permission more
+            $nrOfPermission++;
+        }
 
-$rows = $nrOfPermission / 2;
+        $rows = $nrOfPermission / 2;
 
-for($i = 0; $i < $rows; $i++) { 
-		echo '<tr>';
-		for($j = 0; $j < 2; $j++) { 
-			($j==0)?$perm = $permList[$i]:$perm = $permList[$i+$rows];
-?>
+        for ($i = 0; $i < $rows; $i++) {
+            echo '<tr>';
+            for ($j = 0; $j < 2; $j++) {
+                ($j == 0) ? $perm = $permList[$i] : $perm = $permList[$i + $rows]; ?>
 				<td> <?php echo $perm['permissionname']; ?> </td>
 				<td> <?php echo $perm['objectid']; ?> </td>
 				<?php if ($securitygroup['id'] > 5) {
-						if ($perm['permissionid'] != -1) { ?>
+                    if ($perm['permissionid'] != -1) { ?>
 				<td> 
 					<form action="<?php echo $tplHelper->makeEditSecGroupAction(); ?>" method="post">
 						<input type="hidden" name="editsecgroupform[permissionid]" value="<?php echo $perm['permissionid']; ?>">
@@ -75,18 +73,16 @@ for($i = 0; $i < $rows; $i++) {
 				</td>
 				<?php 	} else { ?>
 				<td>&nbsp;</td><td>&nbsp;</td>
-				<?php 	} # else
-					  } # if ?>
+				<?php 	} // else
+                } // if?>
 				
 <?php
-			if ($j == 0) {
-				echo '<td></td>';
-			} # if
-
-		} // for j
-		echo '</tr>';
-	}
-?>
+            if ($j == 0) {
+                echo '<td></td>';
+            } // if
+            } // for j
+            echo '</tr>';
+        } ?>
 		</tbody>
 	</table>
 
@@ -105,7 +101,7 @@ for($i = 0; $i < $rows; $i++) {
 			<dd>
 				<select name="editsecgroupform[permissionid]">
 			
-<?php foreach($tplHelper->getAllAvailablePerms() as $key => $val) { ?>
+<?php foreach ($tplHelper->getAllAvailablePerms() as $key => $val) { ?>
 					<option value="<?php echo $key; ?>"><?php echo $val; ?></option>
 <?php } ?>
 				</select>

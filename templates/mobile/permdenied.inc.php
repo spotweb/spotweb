@@ -36,14 +36,14 @@
 	<br>
 	
 	<?php
-		/* Als de user nog niet ingelogged is, geven we hem - mits hij dat recht heeft - de mogelijkheid in te loggen */
-		if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '') && ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid'))) {
-			# loginform verwacht deze twee variables door de renderer, dus die faken we
-			$data['performredirect'] = true;
-			$loginform = array('username' => '', 'password' => '');
-			
-			require_once __DIR__ . '/login.inc.php';
-		} # if
-	?>
+        /* Als de user nog niet ingelogged is, geven we hem - mits hij dat recht heeft - de mogelijkheid in te loggen */
+        if ($tplHelper->allowed(SpotSecurity::spotsec_perform_login, '') && ($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid'))) {
+            // loginform verwacht deze twee variables door de renderer, dus die faken we
+            $data['performredirect'] = true;
+            $loginform = ['username' => '', 'password' => ''];
+
+            require_once __DIR__.'/login.inc.php';
+        } // if
+    ?>
 	</body>
 </html>

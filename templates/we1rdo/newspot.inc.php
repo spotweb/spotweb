@@ -1,9 +1,9 @@
 <?php
-require __DIR__ . '/includes/form-messages.inc.php';
+require __DIR__.'/includes/form-messages.inc.php';
 
 if (showResults($result)) {
-    return ;
-} # if
+    return;
+} // if
 
 ?>
 
@@ -21,7 +21,7 @@ if (showResults($result)) {
 				<dt id='txtcategory'><?php echo _('Category'); ?></dt>
 				<dd>
 					<select id='spotcategoryselectbox' name='newspotform[category]' onchange="categorySelectChanged()">
-			<?php foreach(SpotCategories::$_head_categories as $catnr => $catvalue) { ?>
+			<?php foreach (SpotCategories::$_head_categories as $catnr => $catvalue) { ?>
 							<option value="<?php echo $catnr; ?>"><?php echo $catvalue; ?></option>
 			<?php } ?>
 					</select>
@@ -54,11 +54,11 @@ if (showResults($result)) {
 			<dd><textarea name="newspotform[body]" id="newspotform[body]" cols="70" rows="8"><?php echo htmlspecialchars($currentSession['user']['prefs']['newspotdefault_body']); ?></textarea><br />
 
 	<?php
-		$smileyList = $tplHelper->getSmileyList();
-		foreach ($smileyList as $name => $image) {
-			echo "<a onclick=\"addText(' [img=" . $name . "]', 'newspotform[body]'); return false;\"><img src=\"" . $image . "\" alt=\"" . $name . "\" name=\"" . $name . "\"></a> ";
-		}
-	?>
+        $smileyList = $tplHelper->getSmileyList();
+        foreach ($smileyList as $name => $image) {
+            echo "<a onclick=\"addText(' [img=".$name."]', 'newspotform[body]'); return false;\"><img src=\"".$image.'" alt="'.$name.'" name="'.$name.'"></a> ';
+        }
+    ?>
 			</dd>
 
 			<dt><label for="newspotform[tag]"><?php echo _('Tag'); ?></label></dt>

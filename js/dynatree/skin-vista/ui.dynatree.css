@@ -25,9 +25,8 @@ ul.dynatree-container li
 	list-style-image: none;
 	list-style-position: outside;
 	list-style-type: none;
-	-moz-background-clip:border;
-	-moz-background-inline-policy: continuous;
-	-moz-background-origin: padding;
+	background-clip: border-box;
+	background-origin: padding-box;
 	background-attachment: scroll;
 	background-color: transparent;
 	background-position: 0 0;

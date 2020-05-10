@@ -3,7 +3,7 @@
 error_reporting(2147483647);
 
 try {
-    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__.'/../vendor/autoload.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,
@@ -23,13 +23,13 @@ try {
      * it cannot be made configurable in the database anyway
      * and this is just the lazy way out, really
      */
-    $dirCache = __DIR__ . '/../cache/';
+    $dirCache = __DIR__.'/../cache/';
     $daoFactory->setCachePath($dirCache);
     $cacheDao = $daoFactory->getCacheDao();
 
     if (!file_exists($dirCache)) {
         mkdir($dirCache, 0777);
-    } # if
+    } // if
 
     /*
      * Now try to get all current cache items
@@ -42,73 +42,71 @@ try {
     $svcFullSpot = new Services_Providers_FullSpot($daoFactory->getSpotDao(), new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'hdr')));
     $svcNzb = new Services_Providers_Nzb($cacheDao, new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'bin')));
     $svcPrvHttp = new Services_Providers_Http($cacheDao);
-    $svcImage = new Services_Providers_SpotImage($svcPrvHttp,
-                                                 new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'bin')),
-                                                 $cacheDao);
+    $svcImage = new Services_Providers_SpotImage(
+        $svcPrvHttp,
+        new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'bin')),
+        $cacheDao
+    );
 
     $counter = 0;
-    while(true) {
+    while (true) {
         $counter++;
-        echo "Validating cache content, items " . (($counter - 1) * 1000) . ' to ' . ($counter * 1000);
+        echo 'Validating cache content, items '.(($counter - 1) * 1000).' to '.($counter * 1000);
 
-        $results = $dbConnection->arrayQuery("SELECT * FROM cache LIMIT 1001 OFFSET " . (($counter - 1) * 1000) );
+        $results = $dbConnection->arrayQuery('SELECT * FROM cache LIMIT 1001 OFFSET '.(($counter - 1) * 1000));
 
-        foreach($results as $cacheItem) {
+        foreach ($results as $cacheItem) {
             $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
+
             try {
                 $cacheDao->getCacheContent($cacheItem['id'], $cacheItem['cachetype'], $cacheItem['metadata']);
-            } catch(CacheIsCorruptException $x) {
-                echo PHP_EOL . '  Trying to fetch #' . $cacheItem['id'] . ' for ' . $cacheItem['resourceid'] . ' again, ';
+            } catch (CacheIsCorruptException $x) {
+                echo PHP_EOL.'  Trying to fetch #'.$cacheItem['id'].' for '.$cacheItem['resourceid'].' again, ';
 
-                switch($cacheItem['cachetype']) {
-                    case Dao_Cache::SpotNzb             : {
+                switch ($cacheItem['cachetype']) {
+                    case Dao_Cache::SpotNzb:
                         try {
                             $fullSpot = $svcFullSpot->fetchFullSpot($cacheItem['resourceid'], 1);
                             $svcNzb->fetchNzb($fullSpot);
 
                             $cacheInfo = $cacheDao->getCachedNzb($cacheItem['resourceid']);
-                            echo 'retrieved NZB as ' . $cacheInfo['id'] . PHP_EOL;
-                        } catch(Exception $x) {
-                            echo 'error redownloading NZB: '. $x->getMessage() . PHP_EOL;
-                        } # catch
+                            echo 'retrieved NZB as '.$cacheInfo['id'].PHP_EOL;
+                        } catch (Exception $x) {
+                            echo 'error redownloading NZB: '.$x->getMessage().PHP_EOL;
+                        } // catch
 
                         break;
-                    }
 
-                    case Dao_Cache::SpotImage           : {
+                    case Dao_Cache::SpotImage:
                         try {
                             $fullSpot = $svcFullSpot->fetchFullSpot($cacheItem['resourceid'], 1);
                             $svcImage->fetchSpotImage($fullSpot);
 
                             $cacheInfo = $cacheDao->getCachedSpotImage($cacheItem['resourceid']);
-                            echo 'retrieved image as ' . $cacheInfo['id'] . PHP_EOL;
-                        } catch(Exception $x) {
-                            echo 'error redownloading image: '. $x->getMessage() . PHP_EOL;
-                        } # catch
+                            echo 'retrieved image as '.$cacheInfo['id'].PHP_EOL;
+                        } catch (Exception $x) {
+                            echo 'error redownloading image: '.$x->getMessage().PHP_EOL;
+                        } // catch
 
                         break;
-                    }
-                    default : ;
-                } # switch
-            } # catch
-        } # results
 
-        echo ", done. " . PHP_EOL;
+                    default:;
+                } // switch
+            } // catch
+        } // results
+
+        echo ', done. '.PHP_EOL;
 
         if (count($results) == 0) {
             break;
-        } # if
-    } # while
-
-}
-catch(Exception $x) {
-    echo PHP_EOL . PHP_EOL;
-    echo 'SpotWeb crashed' . PHP_EOL . PHP_EOL;
-    echo "Validation of complete cache:" . PHP_EOL;
-    echo "   " . $x->getMessage() . PHP_EOL;
-    echo PHP_EOL . PHP_EOL;
+        } // if
+    } // while
+} catch (Exception $x) {
+    echo PHP_EOL.PHP_EOL;
+    echo 'SpotWeb crashed'.PHP_EOL.PHP_EOL;
+    echo 'Validation of complete cache:'.PHP_EOL;
+    echo '   '.$x->getMessage().PHP_EOL;
+    echo PHP_EOL.PHP_EOL;
     echo $x->getTraceAsString();
     die(1);
-} # catch
-
-
+} // catch

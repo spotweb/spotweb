@@ -1,8 +1,9 @@
 <?php
 
-class Services_Settings_DbContainer implements Services_Settings_IContainer {
+class Services_Settings_DbContainer implements Services_Settings_IContainer
+{
     /**
-     * List of settings in this container
+     * List of settings in this container.
      *
      * @var array
      */
@@ -14,35 +15,47 @@ class Services_Settings_DbContainer implements Services_Settings_IContainer {
     private $_settingsDao;
 
     /**
-     * Loads content of datasource
+     * Loads content of datasource.
      *
      * @param array $cfg
+     *
      * @return void
      */
-    public function initialize(array $cfg) {
+    public function initialize(array $cfg)
+    {
         $this->_settingsDao = $cfg['dao'];
 
-        # Retrieve all settings and prepare those
+        // Retrieve all settings and prepare those
         $this->_settings = $this->_settingsDao->getAllSettings();
-    } # initialize()
+    }
+
+    // initialize()
 
     /**
-     * Returns an array with all settings stored in this container
+     * Returns an array with all settings stored in this container.
+     *
      * @return array
      */
-    public function getAllSettings() {
+    public function getAllSettings()
+    {
         return $this->_settings;
-    } # getAllSettings()
+    }
+
+    // getAllSettings()
 
     /**
-     * Removes a setting from this datasource
+     * Removes a setting from this datasource.
      *
      * @param $name Name of setting to remove
+     *
      * @return void
      */
-    public function remove($name) {
+    public function remove($name)
+    {
         $this->_settingsDao->removeSetting($name);
-    } # remove()
+    }
+
+    // remove()
 
     /**
      * Updates a setting. If the source provider cannot update
@@ -52,11 +65,15 @@ class Services_Settings_DbContainer implements Services_Settings_IContainer {
      *
      * @param $name
      * @param $value
-     * @return void
+     *
      * @throws InvalidSettingsUpdateException
+     *
+     * @return void
      */
-    public function set($name, $value) {
+    public function set($name, $value)
+    {
         $this->_settingsDao->updateSetting($name, $value);
-    } # set()
+    }
 
-} # class Services_Settings_DbContainer
+    // set()
+} // class Services_Settings_DbContainer

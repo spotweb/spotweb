@@ -1,66 +1,74 @@
 <?php
 
-class Services_Providers_CommentImage {
-	private $_serviceHttp;
-	private $_svc_ImageUtil;
+class Services_Providers_CommentImage
+{
+    private $_serviceHttp;
+    private $_svc_ImageUtil;
 
-	/*
-	 * constructor
-	 */
-	public function __construct(Services_Providers_Http $serviceHttp) { 
-		$this->_serviceHttp = $serviceHttp;
-		$this->_svc_ImageUtil = new Services_Image_Util();
-	}  # ctor
+    /*
+     * constructor
+     */
+    public function __construct(Services_Providers_Http $serviceHttp)
+    {
+        $this->_serviceHttp = $serviceHttp;
+        $this->_svc_ImageUtil = new Services_Image_Util();
+    }
 
-	
-	/*
-	 * Returns an the data of an gravatar comments url
-	 */
-	public function fetchGravatarImage($imageParams) {
-		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+    // ctor
 
-		$imgDefaults = array('md5' => false,
-							 'size' => 80,
-							 'default' => 'identicon',
-							 'rating' => 'g');
-		$imgSettings = array_merge($imgDefaults, $imageParams);
+    /*
+     * Returns an the data of an gravatar comments url
+     */
+    public function fetchGravatarImage($imageParams)
+    {
+        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
 
-		if ($imgSettings['size'] < 1 || $imgSettings['size'] > 512) {
-			$imgSettings['size'] = $imgDefaults['size'];
-		} # if
+        $imgDefaults = ['md5' => false,
+            'size'            => 80,
+            'default'         => 'identicon',
+            'rating'          => 'g', ];
+        $imgSettings = array_merge($imgDefaults, $imageParams);
 
-		if (!in_array($imgSettings['default'], array('identicon', 'mm', 'monsterid', 'retro', 'wavatar'))) {
-			$imgSettings['default'] = $imgDefaults['default'];
-		} # if
+        if ($imgSettings['size'] < 1 || $imgSettings['size'] > 512) {
+            $imgSettings['size'] = $imgDefaults['size'];
+        } // if
 
-		if (!in_array($imgSettings['rating'], array('g', 'pg', 'r', 'x'))) {
-			$imgSettings['rating'] = $imgDefaults['rating'];
-		} # if
+        if (!in_array($imgSettings['default'], ['identicon', 'mm', 'monsterid', 'retro', 'wavatar'])) {
+            $imgSettings['default'] = $imgDefaults['default'];
+        } // if
 
-		$data = $this->getAvatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
+        if (!in_array($imgSettings['rating'], ['g', 'pg', 'r', 'x'])) {
+            $imgSettings['rating'] = $imgDefaults['rating'];
+        } // if
 
-		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array());
+        $data = $this->getAvatarImage($imgSettings['md5'], $imgSettings['size'], $imgSettings['default'], $imgSettings['rating']);
 
-		return $data;
-	} # fetchGravatarImage
+        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, []);
 
-	/*
-	 * Returns an Spotweb commenters' avatar image
-	 */
-	private function getAvatarImage($md5, $size, $default, $rating) {
-		SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
-		$url = 'http://www.gravatar.com/avatar/' . $md5 . "?s=" . $size . "&d=" . $default . "&r=" . $rating;
+        return $data;
+    }
 
-		list($return_code, $data) = $this->_serviceHttp->performCachedGet($url, true, 60*60);
+    // fetchGravatarImage
 
-		$dimensions = $this->_svc_ImageUtil->getImageDimensions($data);
+    /*
+     * Returns an Spotweb commenters' avatar image
+     */
+    private function getAvatarImage($md5, $size, $default, $rating)
+    {
+        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
+        $url = 'http://www.gravatar.com/avatar/'.$md5.'?s='.$size.'&d='.$default.'&r='.$rating;
 
-		$data = array('content' => $data);
-		$data['metadata'] = $dimensions;
-		$data['ttl'] = (24 * 7 * 60 * 60);
-		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($md5, $size, $default, $rating));
-		return $data;
-	} # getAvatarImage
+        list($return_code, $data) = $this->_serviceHttp->performCachedGet($url, true, 60 * 60);
 
-	
-} # Services_Providers_SpotImage
+        $dimensions = $this->_svc_ImageUtil->getImageDimensions($data);
+
+        $data = ['content' => $data];
+        $data['metadata'] = $dimensions;
+        $data['ttl'] = (24 * 7 * 60 * 60);
+        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$md5, $size, $default, $rating]);
+
+        return $data;
+    }
+
+    // getAvatarImage
+} // Services_Providers_SpotImage

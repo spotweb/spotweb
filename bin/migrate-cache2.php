@@ -2,31 +2,30 @@
 <?php
 error_reporting(2147483647);
 
-function cleanupDirs($dir, $curlevel) {
-    echo 'Scanning directory: ' . $dir . ' (level: ' . $curlevel . ')' . PHP_EOL;
+function cleanupDirs($dir, $curlevel)
+{
+    echo 'Scanning directory: '.$dir.' (level: '.$curlevel.')'.PHP_EOL;
 
     $objects = scandir($dir);
     foreach ($objects as $object) {
-
-        if ($object != "." && $object != "..") {
+        if ($object != '.' && $object != '..') {
             if (strlen(basename($object)) == 3) {
                 if (is_dir($dir)) {
-                    cleanupDirs($dir."/".$object, $curlevel+1);
+                    cleanupDirs($dir.'/'.$object, $curlevel + 1);
                 }
             } elseif ($curlevel > 2) {
-                echo 'Removing file: ' . $dir."/".$object . PHP_EOL;
-                unlink($dir."/".$object);
+                echo 'Removing file: '.$dir.'/'.$object.PHP_EOL;
+                unlink($dir.'/'.$object);
             }
         }
-
     }
 
-    echo 'Trying to remove directory: ' . $dir . PHP_EOL;
+    echo 'Trying to remove directory: '.$dir.PHP_EOL;
     @rmdir($dir);
-} # cleanupDirs
+} // cleanupDirs
 
 try {
-    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__.'/../vendor/autoload.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,
@@ -48,70 +47,68 @@ try {
 
     if (!file_exists($dirCache)) {
         mkdir($dirCache, 0777);
-    } # if
+    } // if
 
     /*
      * Now try to get all current cache items
      */
     $dbConnection = $daoFactory->getConnection();
 
-    # Update old blacklisttable
-    $schemaVer = $dbConnection->singleQuery("SELECT `value` FROM `settings` WHERE `name` = 'schemaversion'", array());
+    // Update old blacklisttable
+    $schemaVer = $dbConnection->singleQuery("SELECT `value` FROM `settings` WHERE `name` = 'schemaversion'", []);
     if ($schemaVer >= 0.63) {
-        throw new Exception("Your cache is already upgraded");
-    } # if
+        throw new Exception('Your cache is already upgraded');
+    } // if
 
     $counter = 0;
-    while(true) {
+    while (true) {
         $counter++;
-        echo "Migrating cache content, items " . (($counter - 1) * 1000) . ' to ' . ($counter * 1000);
+        echo 'Migrating cache content, items '.(($counter - 1) * 1000).' to '.($counter * 1000);
 
-        $results = $dbConnection->arrayQuery('SELECT id, cachetype, metadata FROM cache LIMIT 1001 OFFSET ' . (($counter - 1) * 1000) );
+        $results = $dbConnection->arrayQuery('SELECT id, cachetype, metadata FROM cache LIMIT 1001 OFFSET '.(($counter - 1) * 1000));
 
-        foreach($results as $cacheItem) {
+        foreach ($results as $cacheItem) {
             $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
             $cacheDao->migrateCacheToNewStorage($cacheItem['id'], $cacheItem['cachetype'], $cacheItem['metadata']);
-        } # results
+        } // results
 
-        echo ", done. " . PHP_EOL;
+        echo ', done. '.PHP_EOL;
 
         if (count($results) == 0) {
             break;
-        } # if
-    } # while
+        } // if
+    } // while
 
     /*
       * try to remove the directories
      */
-    echo "Removing old and empty cache directories (can take a while)..." . PHP_EOL;
+    echo 'Removing old and empty cache directories (can take a while)...'.PHP_EOL;
 
     /*
      * Removing orphaned files
      */
-    $cacheBasePath = '.' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-    cleanUpDirs($cacheBasePath . 'image' . DIRECTORY_SEPARATOR, 0);
-    cleanUpDirs($cacheBasePath . 'nzb' . DIRECTORY_SEPARATOR, 0);
-    cleanUpDirs($cacheBasePath . 'stats' . DIRECTORY_SEPARATOR, 0);
-    cleanUpDirs($cacheBasePath . 'web' . DIRECTORY_SEPARATOR, 0);
-    cleanUpDirs($cacheBasePath . 'translatedcomments' . DIRECTORY_SEPARATOR, 0);
-    cleanUpDirs($cacheBasePath . 'translatertoken' . DIRECTORY_SEPARATOR, 0);
+    $cacheBasePath = '.'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+    cleanUpDirs($cacheBasePath.'image'.DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath.'nzb'.DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath.'stats'.DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath.'web'.DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath.'translatedcomments'.DIRECTORY_SEPARATOR, 0);
+    cleanUpDirs($cacheBasePath.'translatertoken'.DIRECTORY_SEPARATOR, 0);
 
     /*
      * And actually start updating or creating the schema and settings
     */
-    echo "Updating schema..(" . $dbSettings['engine'] . ")" . PHP_EOL;
+    echo 'Updating schema..('.$dbSettings['engine'].')'.PHP_EOL;
 
-    # update the database with this specific schemaversion
-    $dbConnection->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", array());
-    $dbConnection->rawExec("INSERT INTO settings(name, value) VALUES('schemaversion', '" . SPOTDB_SCHEMA_VERSION . "')");
-
-}
-catch(Exception $x) {
-    echo PHP_EOL . PHP_EOL;
-    echo 'SpotWeb crashed' . PHP_EOL . PHP_EOL;
-    echo "Cache migration failed:" . PHP_EOL;
-    echo "   " . $x->getMessage() . PHP_EOL;
-    echo PHP_EOL . PHP_EOL;
+    // update the database with this specific schemaversion
+    $dbConnection->rawExec("DELETE FROM settings WHERE name = 'schemaversion'", []);
+    $dbConnection->rawExec("INSERT INTO settings(name, value) VALUES('schemaversion', '".SPOTDB_SCHEMA_VERSION."')");
+} catch (Exception $x) {
+    echo PHP_EOL.PHP_EOL;
+    echo 'SpotWeb crashed'.PHP_EOL.PHP_EOL;
+    echo 'Cache migration failed:'.PHP_EOL;
+    echo '   '.$x->getMessage().PHP_EOL;
+    echo PHP_EOL.PHP_EOL;
     echo $x->getTraceAsString();
     die(1);
-} # catch
+} // catch

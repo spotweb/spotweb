@@ -1,40 +1,55 @@
 <?php
 
-interface Dao_Cache {
-	const SpotImage			= 1;
-	const SpotNzb			= 2;
-	const Web				= 3;
-	const Statistics		= 4;
-    const TranslaterToken   = 5;
-    const TranslatedComments= 6;
+interface Dao_Cache
+{
+    const SpotImage = 1;
+    const SpotNzb = 2;
+    const Web = 3;
+    const Statistics = 4;
+    const TranslaterToken = 5;
+    const TranslatedComments = 6;
 
-	function expireCache($expireDays);
+    public function expireCache($expireDays);
 
-    function getMassCacheRecords($resourceIdList);
+    public function getMassCacheRecords($resourceIdList);
 
-	function getCachedNzb($resourceId);
-    function hasCachedNzb($resourceId);
-	function updateNzbCacheStamp($resourceId);
-	function saveNzbCache($resourceId, $content, $performExpire);
+    public function getCachedNzb($resourceId);
 
-	function getCachedHttp($resourceId);
-    function hasCachedHttp($resourceId);
-	function updateHttpCacheStamp($resourceId);
-	function saveHttpCache($resourceId, $content);
+    public function hasCachedNzb($resourceId);
 
-	function getCachedSpotImage($resourceId);
-    function hasCachedSpotImage($resourceId);
-	function updateSpotImageCacheStamp($resourceId, $metadata);
-	function saveSpotImageCache($resourceId, $metadata, $content, $performExpire);
+    public function updateNzbCacheStamp($resourceId);
 
-	function getCachedStats($resourceId);
-    function hasCachedStats($resourceId);
-	function updateStatsCacheStamp($resourceId);
-	function saveStatsCache($resourceId, $content);
+    public function saveNzbCache($resourceId, $content, $performExpire);
 
-    function getCachedTranslaterToken($resourceId);
-    function saveTranslaterTokenCache($resourceId, $expireTime, $content);
+    public function getCachedHttp($resourceId);
 
-    function getCachedTranslatedComments($resourceId, $language);
-    function saveTranslatedCommentCache($resourceId, $language, $content);
-} # Dao_Cache
+    public function hasCachedHttp($resourceId);
+
+    public function updateHttpCacheStamp($resourceId);
+
+    public function saveHttpCache($resourceId, $content);
+
+    public function getCachedSpotImage($resourceId);
+
+    public function hasCachedSpotImage($resourceId);
+
+    public function updateSpotImageCacheStamp($resourceId, $metadata);
+
+    public function saveSpotImageCache($resourceId, $metadata, $content, $performExpire);
+
+    public function getCachedStats($resourceId);
+
+    public function hasCachedStats($resourceId);
+
+    public function updateStatsCacheStamp($resourceId);
+
+    public function saveStatsCache($resourceId, $content);
+
+    public function getCachedTranslaterToken($resourceId);
+
+    public function saveTranslaterTokenCache($resourceId, $expireTime, $content);
+
+    public function getCachedTranslatedComments($resourceId, $language);
+
+    public function saveTranslatedCommentCache($resourceId, $language, $content);
+} // Dao_Cache

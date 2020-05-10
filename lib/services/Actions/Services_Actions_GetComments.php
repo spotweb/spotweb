@@ -1,6 +1,7 @@
 <?php
 
-class Services_Actions_GetComments {
+class Services_Actions_GetComments
+{
     /**
      * Define what we think is the native language of the Spots, if we get
      * asked to provide comments in our 'native' language, we just skip translation.
@@ -28,27 +29,30 @@ class Services_Actions_GetComments {
      */
     private $_svcTranslate;
 
-    function __construct(Services_Settings_Container $settings, Dao_Factory $daoFactory, SpotSecurity $spotSec) {
+    public function __construct(Services_Settings_Container $settings, Dao_Factory $daoFactory, SpotSecurity $spotSec)
+    {
         $this->_settings = $settings;
         $this->_daoFactory = $daoFactory;
         $this->_spotSec = $spotSec;
         $this->_cacheDao = $daoFactory->getCacheDao();
 
         $this->_svcTranslate = new Services_Translation_Microsoft($settings, $daoFactory->getCacheDao());
-    } # ctor
+    }
+
+    // ctor
 
     /*
      * Returns the spot comments, and translates them when asked to,
      * tries to minimize the amount of requests to the translator API
      */
-    public function getSpotComments($msgId, $prevMsgids, $userId, $start, $length, $language) {
-        # Check users' permissions
+    public function getSpotComments($msgId, $prevMsgids, $userId, $start, $length, $language)
+    {
+        // Check users' permissions
         $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
 
         $svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
         $svcProvComments = new Services_Providers_Comments($this->_daoFactory->getCommentDao(), $svcNntpSpotReading);
-        $tryTranslate = (Services_Actions_GetComments::nativeLanguage !== $language);
-
+        $tryTranslate = (self::nativeLanguage !== $language);
 
         /*
          * Basically we are retrieving the comments from the database, for them to be translated
@@ -57,27 +61,27 @@ class Services_Actions_GetComments {
         $comments = $svcProvComments->fetchSpotComments($msgId, $prevMsgids, $userId, $start, $length);
         if (!$tryTranslate) {
             return $comments;
-        } # if
+        } // if
 
         /*
          * In our cache, we store an key => value pair with the original string and
          * the translation, so we can do very quick lookups.
          */
-        $toBeTranslated = array();
+        $toBeTranslated = [];
         $translated = $this->_cacheDao->getCachedTranslatedComments($msgId, $language);
         if ($translated === false) {
-            $translated = array();
-        } # if
+            $translated = [];
+        } // if
 
-        foreach($comments as &$comment) {
+        foreach ($comments as &$comment) {
             $tmpBody = $comment['body'];
 
             if (isset($translated[$tmpBody])) {
                 $comment['body_translated'] = $translated[$tmpBody];
             } else {
                 $toBeTranslated[] = $comment;
-            } # else
-        } # foreach
+            } // else
+        } // foreach
 
         /*
          * Actually translate our list of comments, and merge
@@ -87,36 +91,37 @@ class Services_Actions_GetComments {
             $svcTranslate = new Services_Translation_Microsoft($this->_settings, $this->_cacheDao);
             if (!$svcTranslate->isAvailable()) {
                 return $comments;
-            } # if
+            } // if
             $translations = $svcTranslate->translateMultiple($language, $toBeTranslated, 'body');
 
             /*
              * copy the translations into the cache
              */
             if (!empty($translations)) {
-                foreach($translations as $v) {
+                foreach ($translations as $v) {
                     $tmpBody = $v['body'];
                     $translated[$tmpBody] = $v['body_translated'];
-                } # foreach
+                } // foreach
 
                 /*
                  * Convert the comments once again
                  */
-                foreach($comments as &$comment) {
+                foreach ($comments as &$comment) {
                     $tmpBody = $comment['body'];
                     if (isset($translated[$tmpBody])) {
                         $comment['body_translated'] = $translated[$tmpBody];
-                    } # else
-                } # foreach
-            } # if
+                    } // else
+                } // foreach
+            } // if
 
             /*
              * and save the translated bodies into the cache
              */
             $this->_cacheDao->saveTranslatedCommentCache($msgId, $language, $translated);
-        } # if
+        } // if
 
         return $comments;
-    } # getSpotComments
+    }
 
-} # Services_Actions_GetComments
+    // getSpotComments
+} // Services_Actions_GetComments

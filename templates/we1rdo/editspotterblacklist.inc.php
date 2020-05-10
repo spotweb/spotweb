@@ -1,6 +1,6 @@
 <?php
-	# We zetten deze zo ver mogelijk bovenaan om een schone error afhandeling te kunnen hebben
-	$blacklist = $tplHelper->getSpotterList();
+    // We zetten deze zo ver mogelijk bovenaan om een schone error afhandeling te kunnen hebben
+    $blacklist = $tplHelper->getSpotterList();
 ?>
 	<!-- We need our own editdialogdiv because this form can be embedded into another dialog as a whole -->
 	<div id='editblacklistdialogdiv'></div>
@@ -16,15 +16,23 @@
 		<tbody id="blacklist">
 				
 <?php
-	foreach($blacklist as $bannedspotter) {
-?>
+    foreach ($blacklist as $bannedspotter) {
+        ?>
 				<td> <?php echo $bannedspotter['spotterid']; ?> </td>
-				<td> <?php if ($bannedspotter['idtype'] == 1) { echo _("Blacklisted"); } else { echo _("Whitelisted"); } ?> </td>
+				<td> <?php if ($bannedspotter['idtype'] == 1) {
+            echo _('Blacklisted');
+        } else {
+            echo _('Whitelisted');
+        } ?> </td>
 				<td> <?php echo $bannedspotter['origin']; ?> </td>
-				<td><a href="" onclick="return openDialog('editblacklistdialogdiv', '<?php if ($bannedspotter['idtype'] == 1) { echo _('Remove spotter from blacklist'); } else { echo _('Remove spotter from whitelist'); } ?>', '?page=render&tplname=editspotterblacklistdelete&data[spotterid]=<?php echo $bannedspotter['spotterid']; ?>', null, 'autoclose', function() { refreshTab('edituserpreferencetabs')}, null); "><span class="ui-icon ui-icon-circle-close"></span></a></td>
+				<td><a href="" onclick="return openDialog('editblacklistdialogdiv', '<?php if ($bannedspotter['idtype'] == 1) {
+            echo _('Remove spotter from blacklist');
+        } else {
+            echo _('Remove spotter from whitelist');
+        } ?>', '?page=render&tplname=editspotterblacklistdelete&data[spotterid]=<?php echo $bannedspotter['spotterid']; ?>', null, 'autoclose', function() { refreshTab('edituserpreferencetabs')}, null); "><span class="ui-icon ui-icon-circle-close"></span></a></td>
 			</tr>
 <?php
-	}
+    }
 ?>
 		</tbody>
 	</table>

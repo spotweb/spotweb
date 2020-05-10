@@ -1,9 +1,8 @@
 <?php
-    require __DIR__ . '/includes/form-messages.inc.php';
-
+    require __DIR__.'/includes/form-messages.inc.php';
 
 if (!showResults($result)) {
-?>
+    ?>
 <form class="createuserform" name="createuserform" action="<?php echo $tplHelper->makeCreateUserAction(); ?>" method="post">
 	<input type="hidden" name="createuserform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('createuserform'); ?>">
 	<fieldset>
@@ -29,4 +28,5 @@ if (!showResults($result)) {
 	</fieldset>
 </form>
 
-<?php }
+<?php
+}

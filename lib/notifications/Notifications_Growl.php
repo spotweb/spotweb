@@ -1,23 +1,33 @@
 <?php
+
 define('GROWL_SOCK', 'fsock');
 
-class Notifications_Growl extends Notifications_abs {
-	private $_connection;
-	var $growlObj;
+class Notifications_Growl extends Notifications_abs
+{
+    private $_connection;
+    public $growlObj;
 
-	function __construct($appName, array $dataArray) {
-		$this->growlObj = new Growl($appName);
-		$this->_connection = array('address' => $dataArray['host'], 'password' => $dataArray['password']);
-	} # ctor
+    public function __construct($appName, array $dataArray)
+    {
+        $this->growlObj = new Growl($appName);
+        $this->_connection = ['address' => $dataArray['host'], 'password' => $dataArray['password']];
+    }
 
-	function register() {
-		$this->growlObj->addNotification('Single');
-		$this->growlObj->addNotification('Multi');
-		$this->growlObj->register($this->_connection);
-	} # register
+    // ctor
 
-	function sendMessage($type, $title, $body, $sourceUrl) {
-		$this->growlObj->notify($this->_connection, $type, $title, $body);
-	} # sendMessage
+    public function register()
+    {
+        $this->growlObj->addNotification('Single');
+        $this->growlObj->addNotification('Multi');
+        $this->growlObj->register($this->_connection);
+    }
 
-} # Notifications_Growl
+    // register
+
+    public function sendMessage($type, $title, $body, $sourceUrl)
+    {
+        $this->growlObj->notify($this->_connection, $type, $title, $body);
+    }
+
+    // sendMessage
+} // Notifications_Growl

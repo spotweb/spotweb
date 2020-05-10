@@ -1,2 +1,5 @@
 <?php
-	class InvalidOwnSettingsSettingException extends CustomException {};
+
+    class InvalidOwnSettingsSettingException extends CustomException
+    {
+    }

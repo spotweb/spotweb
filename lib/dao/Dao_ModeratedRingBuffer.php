@@ -1,22 +1,23 @@
 <?php
 
-interface Dao_ModeratedRingBuffer {
-
+interface Dao_ModeratedRingBuffer
+{
     /**
      * @param array $messageIds
-     * @return boolean
+     *
+     * @return bool
      */
-    function addToRingBuffer(array $messageIds);
+    public function addToRingBuffer(array $messageIds);
 
     /**
      * @param array $messageIds
+     *
      * @return array
      */
-    function matchAgainst(array $messageIds);
+    public function matchAgainst(array $messageIds);
 
     /**
      * @return void
      */
-    function deleteOldest();
-
-} # interface Dao_ModeratedRingBuffer
+    public function deleteOldest();
+} // interface Dao_ModeratedRingBuffer

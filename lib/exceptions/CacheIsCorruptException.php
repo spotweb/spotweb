@@ -1,2 +1,5 @@
 <?php
-class CacheIsCorruptException extends CustomException {};
+
+class CacheIsCorruptException extends CustomException
+{
+}

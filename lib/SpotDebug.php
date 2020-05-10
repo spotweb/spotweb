@@ -1,21 +1,21 @@
 <?php
 
-use \Monolog\Logger;
-use \Monolog\Handler\RotatingFileHandler;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
 
 class SpotDebug
 {
-    const DISABLED           = 999999;
-    const TRACE              = 10;
-    const DEBUG              = 20;
-    const INFO               = 30;
-    const WARN               = 40;
-    const ERROR              = 50;
-    const FATAL              = 60;
+    const DISABLED = 999999;
+    const TRACE = 10;
+    const DEBUG = 20;
+    const INFO = 30;
+    const WARN = 40;
+    const ERROR = 50;
+    const FATAL = 60;
 
-    static private $_level = self::DISABLED;
-    static private $_logDir = __DIR__ . '/../logs';
-    static private $_debugLogDao = null;
+    private static $_level = self::DISABLED;
+    private static $_logDir = __DIR__.'/../logs';
+    private static $_debugLogDao = null;
 
     protected static function spotlevelToMonolevel($lvl)
     {
@@ -45,21 +45,26 @@ class SpotDebug
             mkdir(self::$_logDir, 0755);
         }
         self::$_debugLogDao = new Logger('SpotWeb');
-        $handler = new RotatingFileHandler(self::$_logDir . '/spotweb.log', 7, self::spotlevelToMonolevel($lvl));
+        $handler = new RotatingFileHandler(self::$_logDir.'/spotweb.log', 7, self::spotlevelToMonolevel($lvl));
         $handler->getFormatter()->ignoreEmptyContextAndExtra(true);
         self::$_debugLogDao->pushHandler($handler);
-    } # enable()
+    }
+
+    // enable()
 
     public static function disable()
     {
         self::$_level = self::DISABLED;
-    } # disable()
+    }
 
-    public static function msg($lvl, $msg, $context = array())
+    // disable()
+
+    public static function msg($lvl, $msg, $context = [])
     {
         if (!is_null(self::$_debugLogDao)) {
             self::$_debugLogDao->addRecord(self::spotlevelToMonolevel($lvl), $msg, $context);
         }
-    } # msg
+    }
 
-} # class SpotDebug
+    // msg
+} // class SpotDebug

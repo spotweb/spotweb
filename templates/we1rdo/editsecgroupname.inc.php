@@ -1,17 +1,16 @@
 <?php
-    require __DIR__ . '/includes/form-messages.inc.php';
+    require __DIR__.'/includes/form-messages.inc.php';
     renderResultMessagesHtml(new Dto_FormResult());
 
-    # is form voor het toevoegen van een groep ipv wijzigen van een
-	$isNew = (isset($data['isnew']));
-	
-	# vraag de opgegeven securitygroup op
-	if (!$isNew) {
-		$securitygroup = $tplHelper->getSecGroup($data['groupid']);
-	} else {
-		$securitygroup = array('name' => '');
-	}# if
+    // is form voor het toevoegen van een groep ipv wijzigen van een
+    $isNew = (isset($data['isnew']));
 
+    // vraag de opgegeven securitygroup op
+    if (!$isNew) {
+        $securitygroup = $tplHelper->getSecGroup($data['groupid']);
+    } else {
+        $securitygroup = ['name' => ''];
+    }// if
 
 ?>
 
