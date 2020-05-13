@@ -1,21 +1,13 @@
 <?php
 $setpath = $tplHelper->makeBaseUrl('path');
 $sortType = $currentSession['user']['prefs']['defaultsortfield'];
- ?>
+?>
 <div data-role="page" id="search"> 
-	<div data-role="header">
-	    <h1>Search<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
-	
-	    <div data-role="navbar">
-		    <ul>
-			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
-			    <li><a href="#search" class="ui-btn-active" data-icon="search">Search</a></li>
-			    <li><a href="#filters" data-icon="star">Filters</a></li>
-                <li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
-		    </ul>
-	    </div><!-- /navbar -->
-
+	<div data-role="header" data-fullscreen="true">
+            <h1><?php echo _('Search'); ?><?php require __DIR__.'/getusername.inc.php'; ?></h1>
+            <?php $active='search'; require __DIR__.'/includes/navbar.inc.php'; ?>
     </div>
+
     <div data-role="content">
 	    <div data-role="fieldcontain" >
 		    <form id="filterform" action="<?php echo $setpath; ?>index.php?page=search#spots" method="get" data-ajax="false">
@@ -40,6 +32,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 	         		    <label for="radio-choice-3b">Tag</label>
 			    </fieldset>
 		        <input type="search" type="text" name="search[text]" value="" />
+				<input type="submit" value="<?php echo _('Search'); ?>" data-icon="search" data-inline="true">
     	    </form>
 	    </div>
     </div>
@@ -47,21 +40,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
 <div data-role="page" id="filters"> 
 	<div data-role="header">
-	    <h1>Filters<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
-
-	    <div data-role="navbar">
-		    <ul>
-			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
-			    <li><a href="#search" data-icon="search">Search</a></li>
-			    <li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
-			    <?php if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) { ?>
-                	    <li><a href="index.php?page=login" data-icon="power">Login</a></li>
-			    <?php } else { ?>
-			    		<li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
-			    <?php } ?>
-
-		    </ul>
-	    </div><!-- /navbar -->
+	    <h1>Filters<?php require __DIR__.'/getusername.inc.php'; ?></h1>
+        <?php $active='filters';  require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -79,21 +59,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
 <div data-role="page" id="Image"> 
 	<div data-role="header">
-	    <h1>Image<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
-		
-		<div data-role="navbar">
-		    <ul>
-			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
-			    <li><a href="#search" data-icon="search">Search</a></li>
-			    <li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
-			    <?php if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) { ?>
-                	    <li><a href="index.php?page=login" data-icon="power">Login</a></li>
-			    <?php } else { ?>
-			    		<li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
-			    <?php } ?>
-
-		    </ul>
-	    </div><!-- /navbar -->
+	    <h1>Image<?php require __DIR__.'/getusername.inc.php'; ?></h1>
+		<?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -152,21 +119,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
 <div data-role="page" id="Sounds"> 
 	<div data-role="header">
-	    <h1>Sounds<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
-		
-		<div data-role="navbar">
-		    <ul>
-			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
-			    <li><a href="#search" data-icon="search">Search</a></li>
-			    <li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
-			    <?php if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) { ?>
-                	    <li><a href="index.php?page=login" data-icon="power">Login</a></li>
-			    <?php } else { ?>
-			    		<li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
-			    <?php } ?>
-
-		    </ul>
-	    </div><!-- /navbar -->
+	    <h1>Sounds<?php require __DIR__.'/getusername.inc.php'; ?></h1>
+		<?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -226,21 +180,8 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
 <div data-role="page" id="Games"> 
 	<div data-role="header">
-	    <h1>Games<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
-		
-		<div data-role="navbar">
-		    <ul>
-			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
-			    <li><a href="#search" data-icon="search">Search</a></li>
-			    <li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
-			    <?php if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) { ?>
-                	    <li><a href="index.php?page=login" data-icon="power">Login</a></li>
-			    <?php } else { ?>
-			    		<li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
-			    <?php } ?>
-
-		    </ul>
-	    </div><!-- /navbar -->
+	    <h1>Games<?php require __DIR__.'/getusername.inc.php'; ?></h1>
+		<?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -300,22 +241,9 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 
 <div data-role="page" id="Apps"> 
 	<div data-role="header">
-	    <h1>Apps<?php require __DIR__.'/logincontrol.inc.php'; ?></h1>
-		
-		<div data-role="navbar">
-		    <ul>
-			    <li><a href="#spots" data-icon="grid" >Spots</a></li>
-			    <li><a href="#search" data-icon="search">Search</a></li>
-			    <li><a href="#filters" data-icon="star" class="ui-btn-active" >Filters</a></li>
-			    <?php if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) { ?>
-                	    <li><a href="index.php?page=login" data-icon="power">Login</a></li>
-			    <?php } else { ?>
-			    		<li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
-			    <?php } ?>
-
-		    </ul>
-	    </div><!-- /navbar -->
-		
+	    <h1>Apps<?php require __DIR__.'/getusername.inc.php'; ?></h1>
+        <?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>    
+        		
 		<div data-role="navbar">
 		<br>
 		    <ul>				
