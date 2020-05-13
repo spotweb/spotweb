@@ -51,7 +51,7 @@ class SpotPage_login extends SpotPage_Abs
                     $spotAudit->audit(SpotSecurity::spotsec_perform_login, 'incorrect user or pass', false);
                 } // if
 
-                $result->addError(_('Invalid username or password'));
+                $result->addError(_('Login Failed'));
             } else {
                 $result->setResult('success');
                 $this->_currentSession = $tryLogin;

@@ -11,8 +11,9 @@
 		<title><?php echo $pagetitle?></title>
 		<link rel='stylesheet' type='text/css' href='js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.css'>
 		<link rel='shortcut icon' href='images/favicon.ico'>
-		<script src='js/jquery/jquery.min.js' type='text/javascript'></script>
+		<script src='https://code.jquery.com/jquery-1.8.2.js' type='text/javascript'></script>
 		<script src='js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.js' type='text/javascript'></script>
+        <script src='templates/mobile/includes/js/spotdialogs.js' type='text/javascript'></script>
 		<style>
 		    th{text-align:left;}
 		</style>
@@ -39,3 +40,5 @@
 		</script>
 	</head>
 <body>
+		<div id="overlay"></div>
+		<div class="container" id="container">
