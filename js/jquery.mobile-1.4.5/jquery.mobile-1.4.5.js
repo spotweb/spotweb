@@ -9,6 +9,12 @@
 *
 */
 
+// Define default main page for mobile template
+
+$(document).ready(function() {
+  window.location.hash = 'spots';
+  $.mobile.initializePage();
+});
 
 (function ( root, doc, factory ) {
 	if ( typeof define === "function" && define.amd ) {
