@@ -5,7 +5,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 <div data-role="page" id="search"> 
 	<div data-role="header" data-fullscreen="true">
             <h1><?php echo _('Search'); ?><?php require __DIR__.'/getusername.inc.php'; ?></h1>
-            <?php $active='search'; require __DIR__.'/includes/navbar.inc.php'; ?>
+            <?php $active = 'search'; require __DIR__.'/includes/navbar.inc.php'; ?>
     </div>
 
     <div data-role="content">
@@ -41,7 +41,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 <div data-role="page" id="filters"> 
 	<div data-role="header">
 	    <h1>Filters<?php require __DIR__.'/getusername.inc.php'; ?></h1>
-        <?php $active='filters';  require __DIR__.'/includes/navbar.inc.php'; ?>
+        <?php $active = 'filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -60,7 +60,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 <div data-role="page" id="Image"> 
 	<div data-role="header">
 	    <h1>Image<?php require __DIR__.'/getusername.inc.php'; ?></h1>
-		<?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
+		<?php $active = 'filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -120,7 +120,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 <div data-role="page" id="Sounds"> 
 	<div data-role="header">
 	    <h1>Sounds<?php require __DIR__.'/getusername.inc.php'; ?></h1>
-		<?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
+		<?php $active = 'filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -181,7 +181,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 <div data-role="page" id="Games"> 
 	<div data-role="header">
 	    <h1>Games<?php require __DIR__.'/getusername.inc.php'; ?></h1>
-		<?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
+		<?php $active = 'filters'; require __DIR__.'/includes/navbar.inc.php'; ?>
 		
 		<div data-role="navbar">
 		<br>
@@ -242,7 +242,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 <div data-role="page" id="Apps"> 
 	<div data-role="header">
 	    <h1>Apps<?php require __DIR__.'/getusername.inc.php'; ?></h1>
-        <?php $active='filters'; require __DIR__.'/includes/navbar.inc.php'; ?>    
+        <?php $active = 'filters'; require __DIR__.'/includes/navbar.inc.php'; ?>    
         		
 		<div data-role="navbar">
 		<br>
