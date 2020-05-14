@@ -10,6 +10,7 @@ $setpath = $tplHelper->makeBaseUrl('path');
 	    <h1>Spots<?php require __DIR__.'/getusername.inc.php'; ?></h1>
 		<a href='<?php echo $setpath; ?>index.php' data-transition='fade' rel="external" data-icon="refresh" class="ui-btn-right">Reset filter</a>
         <?php $active = 'spots'; require __DIR__.'/includes/navbar.inc.php'; ?>
+	</div>
 <div data-role="content">
 	<ul data-role="listview">
 		<?php
