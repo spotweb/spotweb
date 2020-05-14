@@ -14,20 +14,20 @@ $setpath = $tplHelper->makeBaseUrl('path');
 <div data-role="content">
 	<ul data-role="listview">
 		<?php
-		$count = 0;
+        $count = 0;
 
-			foreach ($spots as $spot) {
-				// Format the spot header
-				$spot = $tplHelper->formatSpotHeader($spot);
-				echo "<li><a href='".$setpath.'index.php?page=getspot&amp;messageid='.$spot['messageid']."' data-rel='dialog' data-transition='slidedown'><h3>[".SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']).'] '.$spot['title'].'</h3><p>'.strtoupper($tplHelper->formatDate($spot['stamp'], 'spotlist')).'';
-				if ($settings->get('imageover_subcats') > 0) {
-					echo "<center><img src='".$tplHelper->makeImageUrl($spot, 150, 150)."' height='100' /></center></p></a></li>\n";
-				} else {
-					echo "</p></a></li>\n";
-				}
-			}
+            foreach ($spots as $spot) {
+                // Format the spot header
+                $spot = $tplHelper->formatSpotHeader($spot);
+                echo "<li><a href='".$setpath.'index.php?page=getspot&amp;messageid='.$spot['messageid']."' data-rel='dialog' data-transition='slidedown'><h3>[".SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']).'] '.$spot['title'].'</h3><p>'.strtoupper($tplHelper->formatDate($spot['stamp'], 'spotlist')).'';
+                if ($settings->get('imageover_subcats') > 0) {
+                    echo "<center><img src='".$tplHelper->makeImageUrl($spot, 150, 150)."' height='100' /></center></p></a></li>\n";
+                } else {
+                    echo "</p></a></li>\n";
+                }
+            }
 
-		?>
+        ?>
 	</ul>
 	<br>
 	<fieldset class="ui-grid-a">
@@ -47,6 +47,6 @@ $setpath = $tplHelper->makeBaseUrl('path');
 /* Render de search and filter template */
 require_once __DIR__.'/filters.inc.php';
 /* Render de footer template */
-echo "</div>";
+echo '</div>';
 require_once __DIR__.'/footer.inc.php';
 ?>
