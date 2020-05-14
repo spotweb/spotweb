@@ -15,8 +15,15 @@
 		<script>
             	$(document).on("mobileinit",function() {
                 $.mobile.autoInitializePage = false;
-            	});        
+            	});      
         	</script>
+		<script>
+		// Define default main page for mobile template
+		$(document).ready(function() {
+		window.location.hash = 'spots';
+  		$.mobile.initializePage();
+		});
+		</script>
 		<script src='js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.js' type='text/javascript'></script>
         	<script src='templates/mobile/includes/js/spotdialogs.js' type='text/javascript'></script>
 		<style>
