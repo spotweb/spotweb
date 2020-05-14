@@ -3,6 +3,7 @@ $setpath = $tplHelper->makeBaseUrl('path');
 $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 ?>
 <div data-role="page" id="search"> 
+
 	<div data-role="header" data-fullscreen="true">
             <h1><?php echo _('Search'); ?><?php require __DIR__.'/getusername.inc.php'; ?></h1>
             <?php $active = 'search'; require __DIR__.'/includes/navbar.inc.php'; ?>
@@ -12,31 +13,26 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
 	    <div data-role="fieldcontain" >
 		    <form id="filterform" action="<?php echo $setpath; ?>index.php?page=search#spots" method="get" data-ajax="false">
 			    <fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
-	         		
-	         		    <input type="radio" id="radio-choice-1" name="sortby" value="" <?php echo $sortType == '' ? 'checked="checked"' : '' ?>>
-	         		    <label for="radio-choice-1"><?php echo _('Relevance'); ?></label> 
-	         	
-                        <input type="radio" id="radio-choice-2"  name="sortby" value="stamp" <?php echo $sortType == 'stamp' ? 'checked="checked"' : '' ?>>
-                        <label for="radio-choice-2"><?php echo _('Date'); ?></label> 
-                    
-                   </fieldset>
-               
-                   <fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
-	         		    <input type="radio" name="search[type]" value="Titel" id="radio-choice-1b" checked="checked" />
-	         		    <label for="radio-choice-1b">Title</label>
-	
-		         	    <input type="radio"  name="search[type]" value="Poster" id="radio-choice-2b" />
-	    	     	    <label for="radio-choice-2b">Poster</label>
-	
-	        	 	    <input type="radio" name="search[type]" value="Tag" id="radio-choice-3b"  />
-	         		    <label for="radio-choice-3b">Tag</label>
-			    </fieldset>
+					<input type="radio" id="radio-choice-1" name="sortby" value="" <?php echo $sortType == '' ? 'checked="checked"' : '' ?>>
+					<label for="radio-choice-1"><?php echo _('Relevance'); ?></label> 
+					<input type="radio" id="radio-choice-2"  name="sortby" value="stamp" <?php echo $sortType == 'stamp' ? 'checked="checked"' : '' ?>>
+					<label for="radio-choice-2"><?php echo _('Date'); ?></label> 
+                 </fieldset>
+				<fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
+					<input type="radio" name="search[type]" value="Titel" id="radio-choice-1b" checked="checked" />
+					<label for="radio-choice-1b">Title</label>
+					<input type="radio"  name="search[type]" value="Poster" id="radio-choice-2b" />
+					<label for="radio-choice-2b">Poster</label>
+					<input type="radio" name="search[type]" value="Tag" id="radio-choice-3b"  />
+					<label for="radio-choice-3b">Tag</label>
+				</fieldset>
 		        <input type="search" type="text" name="search[text]" value="" />
 				<input type="submit" value="<?php echo _('Search'); ?>" data-icon="search" data-inline="true">
     	    </form>
-	    </div>
-    </div>
-</div>
+	    </div> <!-- fieldcontain -->
+    </div>  <!-- content -->
+
+</div> <!-- page -->
 
 <div data-role="page" id="filters"> 
 	<div data-role="header">
