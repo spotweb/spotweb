@@ -21,8 +21,8 @@ $setpath = $tplHelper->makeBaseUrl('path');
 				<?php if ($nextPage > 0) { ?>
 		<div class="ui-block-b"><a href="<?php echo $setpath; ?>index.php?direction=next&amp;pagenr=<?php echo $nextPage.$tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams(); ?>#spots" data-theme="a" rel="external" data-role="button" data-icon="arrow-r">Next</a></div>	
 		<?php } ?>
-	<br>
 	</fieldset>
+	<br>
 	<ul data-role="listview">
 		<?php
         $count = 0;
