@@ -14,10 +14,10 @@
 				<li><a href="#filters" <?php echo ($active == 'filters') ? 'class="ui-btn-active ui-state-persist"' : ''; ?> data-icon="star">Filters</a></li>
 				<?php if (($currentSession['user']['userid'] == $settings->get('nonauthenticated_userid')) && (empty($loginresult))) { ?>
 				<li><a href="#" data-icon="power" onclick="return openDialog(<?php echo "'".$randomString."'"; ?>, '<?php echo _('Login'); ?>', '?page=login&data[htmlheaderssent]=true', null, 'autoclose', function() { window.location.reload(); }, null); "><?php echo _('Login'); ?> </a></li>
+				<li><a href="#" data-icon="user" onclick="return openDialog(<?php echo "'".$randomString."'"; ?>, '<?php echo _('Add user'); ?>', '?page=createuser', null, 'showresultsonly', null, null); "><?php echo _('Register'); ?> </a></li>
 				<?php } else { ?>
 					<li><a href="#" id="anchorLoginControl" data-icon="power">Logout</a></li>
 				<?php } ?>
-				<li><a href="#" data-icon="plus" onclick="return openDialog(<?php echo "'".$randomString."'"; ?>, '<?php echo _('Add user'); ?>', '?page=createuser', null, 'showresultsonly', null, null); "><?php echo _('Add'); ?> </a></li>
 		    </ul>
 		</div><!-- /navbar -->
 
