@@ -937,8 +937,12 @@ class SpotTemplateHelper
         $commentCount = count($comments);
         for ($i = 0; $i < $commentCount; $i++) {
             $comments[$i]['fromhdr'] = htmlentities($comments[$i]['fromhdr'], ENT_NOQUOTES, 'UTF-8');
-
-            // we joinen eerst de contents zodat we het kunnen parsen als 1 string
+			// verwijder AVG commentaar
+			$q = strstr($comments[$i]['body'],"-- ".PHP_EOL, true);
+			if ($q <> false) {
+				$comments[$i]['body'] = $q;
+			}
+			// we joinen eerst de contents zodat we het kunnen parsen als 1 string
             // en tags over meerdere lijnen toch nog werkt. We voegen een extra \n toe
             // om zeker te zijn dat we altijd een array terugkrijgen
             $comments[$i]['body'] = $this->formatContent($comments[$i]['body']);
