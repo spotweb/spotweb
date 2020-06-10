@@ -56,6 +56,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
         if ($rowsFound == 0) {
             $this->exec('CREATE DATABASE '.$db);
         } //$rowsFound == 0
+
         try {
             $userexists = $this->exec(
                 'SELECT 1 FROM mysql.user WHERE user = :user',

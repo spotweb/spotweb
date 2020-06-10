@@ -555,6 +555,7 @@ class SpotTemplateHelper
                 $sortdir = 'ASC';
             } // else
         } // if
+
         return $this->makeBaseUrl('path').'?page='.$page.$this->convertFilterToQueryParams().'&amp;sortby='.$sortby.'&amp;sortdir='.$sortdir;
     }
 
@@ -1121,6 +1122,7 @@ class SpotTemplateHelper
         if (substr_count($s, '.') > 3) {
             $s = str_replace('.', ' ', $s);
         } // if
+
         return $s;
     }
 

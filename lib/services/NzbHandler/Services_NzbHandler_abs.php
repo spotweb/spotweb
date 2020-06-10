@@ -233,6 +233,7 @@ abstract class Services_NzbHandler_abs
                 $domNzbXml->appendChild($domFile);
             } // foreach
         } // foreach
+
         return $nzbXml->asXml();
     }
 
