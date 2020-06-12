@@ -4,7 +4,6 @@ define('SABNZBD_TIMEOUT', 15);
 
 class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
 {
-    private $_url = null;
     private $_sabnzbd = null;
     private $_username = null;
     private $_password = null;
@@ -16,10 +15,6 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
         $sabnzbd = $nzbHandling['sabnzbd'];
 
         $this->_sabnzbd = $sabnzbd;
-
-        // prepare sabnzbd url
-        $this->_url = $sabnzbd['url'].'api?mode=addfile&apikey='.$sabnzbd['apikey'].'&output=text';
-
         $this->_username = $sabnzbd['username'];
         $this->_password = $sabnzbd['password'];
     }
@@ -34,8 +29,8 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
         $title = urlencode($this->cleanForFileSystem($fullspot['title']));
         $category = urlencode($this->convertCatToSabnzbdCat($fullspot));
 
-        // yes, using a local variable instead of the member variable is intentional
-        $url = $this->_url.'&nzbname='.$title.'&cat='.$category;
+        // Prepare sab url for addfile
+        $url = $this->_sabnzbd['url'].'api?mode=addfile&apikey='.$this->_sabnzbd['apikey'].'&output=json'.'&nzbname='.$title.'&cat='.$category;
 
         /*
          * Actually perform the HTTP POST
@@ -51,13 +46,20 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
                 'data'     => $nzb['nzb'], ],
         ]);
         $output = $svcProvHttp->perform($url, null);
-        $errorStr = 'sabnzbd push : '.$output['errorstr'].' / '.$output['data'];
-
-        if (($output['successful'] === false) || (strtolower(trim($output['data'])) != 'ok')) {
+        $errorStr = 'sabnzbd push : '.$output['errorstr'];
+        if ($output['successful'] === false)  {
             error_log($errorStr);
-
-            throw new Exception($errorStr);
+			throw new Exception($errorStr);
         } // if
+		$response = json_decode($output['data'], true);
+		if (json_last_error() != JSON_ERROR_NONE) { 
+			$errorStr .= 'Not valid json response';
+			throw new Exception($errorStr);
+		}
+		if ($response['status'] == false) {
+			$errorStr .= $response['error'];
+			throw new Exception($errorStr);
+		}
     }
 
     // processNzb
