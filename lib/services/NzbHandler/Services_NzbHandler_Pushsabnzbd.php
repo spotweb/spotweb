@@ -47,19 +47,22 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
         ]);
         $output = $svcProvHttp->perform($url, null);
         $errorStr = 'sabnzbd push : '.$output['errorstr'];
-        if ($output['successful'] === false)  {
+        if ($output['successful'] === false) {
             error_log($errorStr);
-			throw new Exception($errorStr);
+
+            throw new Exception($errorStr);
         } // if
-		$response = json_decode($output['data'], true);
-		if (json_last_error() != JSON_ERROR_NONE) { 
-			$errorStr .= 'Not valid json response';
-			throw new Exception($errorStr);
-		}
-		if ($response['status'] == false) {
-			$errorStr .= $response['error'];
-			throw new Exception($errorStr);
-		}
+        $response = json_decode($output['data'], true);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            $errorStr .= 'Not valid json response';
+
+            throw new Exception($errorStr);
+        }
+        if ($response['status'] == false) {
+            $errorStr .= $response['error'];
+
+            throw new Exception($errorStr);
+        }
     }
 
     // processNzb
