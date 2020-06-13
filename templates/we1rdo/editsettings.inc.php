@@ -334,11 +334,15 @@
 					<dd><input type="checkbox" name="editsettingsform[external_blacklist]" <?php if ($this->_settings->get('external_blacklist')) {
     echo 'checked="checked"';
 } ?>></dd>
-
+					<dt><label for="editsettingsform[blacklist_url]"><?php echo _('Blacklist used during retrieve:'); ?></label></dt>
+					<dd><input style="width: 300px;" type="text" name="editsettingsform[blacklist_url]" value="<?php echo htmlspecialchars($this->_settings->get('blacklist_url'), ENT_QUOTES); ?>"></dd>
+					
 					<dt><label for="editsettingsform[external_whitelist]"><?php echo _('Fetch the external whitelist during retrieve'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[external_whitelist]" <?php if ($this->_settings->get('external_whitelist')) {
     echo 'checked="checked"';
 } ?>></dd>
+					<dt><label for="editsettingsform[whitelist_url]"><?php echo _('Whitelist used during retrieve:'); ?></label></dt>
+					<dd><input style="width: 300px;" type="text" name="editsettingsform[whitelist_url]" value="<?php echo htmlspecialchars($this->_settings->get('whitelist_url'), ENT_QUOTES); ?>"></dd>
 				</dl>
 			</fieldset>
 		</div>
