@@ -206,7 +206,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
             if ($slots[$i]['nzo_id'] == $id) {
                 $index = $slots[$i]['index'];
                 if ($index <= ($totaldownloads - 1)) { // we can't go lower than the bottom of the queue
-                    $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2='.($index + 1));
+                    $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2='.($index + 1).'&output=json');
 
                     $response = json_decode($output, true);
                     $position = $response['result']['position'];
@@ -238,7 +238,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
             if ($slots[$i]['nzo_id'] == $id) {
                 $index = $slots[$i]['index'];
                 if ($index >= 0) { // we can't go beyond the top of the queue
-                    $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2='.($index - 1));
+                    $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2='.($index - 1).'&output=json');
 
                     $response = json_decode($output, true);
                     $position = $response['result']['position'];
@@ -258,7 +258,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
      */
     public function moveTop($id)
     {
-        $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2=0');
+        $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2=0'.'&output=json');
         $response = json_decode($output, true);
 
         return $response['result']['position'] == 0;
@@ -272,7 +272,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
      */
     public function moveBottom($id)
     {
-        $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2=-1');
+        $output = $this->querySabnzbd('mode=switch&value='.$id.'&value2=-1'.'&output=json');
         $response = json_decode($output, true);
 
         // Sabnzbd returns the new position. So to verify whether or not the call was successful
@@ -291,7 +291,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
     public function setCategory($id, $category)
     {
         $category = urlencode($category);
-        $output = $this->querySabnzbd('mode=change_cat&value='.$id.'&value2='.$category);
+        $output = $this->querySabnzbd('mode=change_cat&value='.$id.'&value2='.$category.'&output=json');
         $response = json_decode($output, true);
 
         return $response['status'] == true;
@@ -312,7 +312,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
             return false;
         }
 
-        $output = $this->querySabnzbd('mode=queue&name=priority&value='.$id.'&value2='.$priority);
+        $output = $this->querySabnzbd('mode=queue&name=priority&value='.$id.'&value2='.$priority.'&output=json');
         $response = json_decode($output, true);
 
         // Sabnzbd returns the new position, so we simply return true.
@@ -368,7 +368,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
      */
     public function pause($id)
     {
-        $output = $this->querySabnzbd('mode=queue&name=pause&value='.$id);
+        $output = $this->querySabnzbd('mode=queue&name=pause&value='.$id.'&output=json');
         $response = json_decode($output, true);
 
         return $response['status'] == true;
@@ -382,7 +382,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
      */
     public function resume($id)
     {
-        $output = $this->querySabnzbd('mode=queue&name=resume&value='.$id);
+        $output = $this->querySabnzbd('mode=queue&name=resume&value='.$id.'&output=json');
         $response = json_decode($output, true);
 
         return $response['status'] == true;
@@ -431,7 +431,7 @@ class Services_NzbHandler_Pushsabnzbd extends Services_NzbHandler_abs
      */
     private function querySabnzbd($request)
     {
-        $url = $this->_sabnzbd['url'].'api?'.$request.'&apikey='.$this->_sabnzbd['apikey'].'&output=json';
+        $url = $this->_sabnzbd['url'].'api?'.$request.'&apikey='.$this->_sabnzbd['apikey'];
 
         $svcProvHttp = new Services_Providers_Http(null);
         $svcProvHttp->setUsername($this->_username);
