@@ -37,9 +37,12 @@ class Services_Upgrade_Settings
         $this->remove('max_newcount');
         $this->remove('action');
         $this->remove('submitedit');
+        //Assure usage of the newer black/whitelists when settingsversion is lower then 31.
+        if ($this->_settings->get('settingsversion') < 0.31) {
         $this->remove('blacklist_url');
         $this->remove('whitelist_url');
-
+        } // if
+	
         $this->setIfNot('cookie_expires', 30);
         $this->setIfNot('sendwelcomemail', true);
         $this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
