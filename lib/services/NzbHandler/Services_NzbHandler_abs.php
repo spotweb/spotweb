@@ -223,6 +223,32 @@ abstract class Services_NzbHandler_abs
 											<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb"></nzb>');
 
         $domNzbXml = dom_import_simplexml($nzbXml);
+
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $domHead = $dom->createElement('head');
+        foreach ($nzbList as $nzb) {
+            $oneNzbFile = simplexml_load_string($nzb['nzb']);
+
+            // go through all the head -> meta elements
+            foreach ($oneNzbFile->head->meta as $meta) {
+                // check for password type
+                if ($meta['type'] == 'password') {
+                    // create a meta element with the password as value
+                    $domMeta = $dom->createElement('meta', ''.$meta[0]);
+                    // create attribute: type=password
+                    $domAttribute = $dom->createAttribute('type');
+                    $domAttribute->value = 'password';
+                    // append attribute to meta-element
+                    $domMeta->appendChild($domAttribute);
+                    // append meta-element to head
+                    $domHead->appendChild($domMeta);
+                }
+            }
+        }
+        // import head into result xml
+        $domHead = $domNzbXml->ownerDocument->importNode($domHead, true);
+        $domNzbXml->appendChild($domHead);
+
         foreach ($nzbList as $nzb) {
             $oneNzbFile = simplexml_load_string($nzb['nzb']);
 
