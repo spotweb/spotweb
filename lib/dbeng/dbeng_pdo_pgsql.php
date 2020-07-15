@@ -57,6 +57,7 @@ class dbeng_pdo_pgsql extends dbeng_pdo
         if ($rowsFound == 0) {
             $this->exec('CREATE DATABASE '.$db);
         } //$rowsFound == 0
+
         try {
             $usrfound = $this->exec('SELECT 1 FROM pg_roles WHERE rolname = :usr', [':usr' => [$usr, PDO::PARAM_STR]])->rowCount();
             if ($usrfound == 0) {

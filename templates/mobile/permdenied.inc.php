@@ -28,7 +28,7 @@
 		<div class='container'>
 			<div class='permdenied'>
 				<p>
-					<strong>Toegang geweigerd</strong> voor [<strong><?php echo $tplHelper->permToString($exception->getPermId()); ?> (<?php echo $exception->getPermId(); ?>)</strong>]::[<strong><?php echo $exception->getObject(); ?></strong>]
+					<strong>Access denied</strong> for [<strong><?php echo $tplHelper->permToString($exception->getPermId()); ?> (<?php echo $exception->getPermId(); ?>)</strong>]::[<strong><?php echo $exception->getObject(); ?></strong>]
 				</p>
 			</div>
 		</div>

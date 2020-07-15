@@ -129,29 +129,17 @@ try {
          // getspot
 
         case 'getnzb':
-                $page = new SpotPage_getnzb(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['messageid'   => $req->getDef('messageid', ''),
-                        'action'   => $req->getDef('action', 'display'),
-                        'username' => $req->getDef('username', ''),
-                        'apikey'   => $req->getDef('apikey', ''), ]
-                );
+                 $page = new SpotPage_getnzb(
+                     $daoFactory,
+                     $settings,
+                     $currentSession,
+                     ['messageid'   => $req->getDef('messageid', ''),
+                         'action'   => $req->getDef('action', 'display'),
+                         'username' => $req->getDef('username', ''),
+                         'apikey'   => $req->getDef('apikey', ''), ]
+                 );
                 $page->render();
                 break;
-
-        case 'getnzbmobile':
-                $page = new SpotPage_getnzbmobile(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['messageid' => $req->getDef('messageid', ''),
-                        'action' => $req->getDef('action', 'display'), ]
-                );
-                $page->render();
-                break;
-         // getnzbmobile
 
         case 'erasedls':
                 $page = new SpotPage_erasedls($daoFactory, $settings, $currentSession);
@@ -386,12 +374,6 @@ try {
                 $page->render();
                 break;
          // reportpost
-
-        case 'versioncheck':
-                $page = new SpotPage_versioncheck($daoFactory, $settings, $currentSession, []);
-                $page->render();
-                break;
-         // versioncheck
 
         case 'blacklistspotter':
                 $page = new SpotPage_blacklistspotter(
