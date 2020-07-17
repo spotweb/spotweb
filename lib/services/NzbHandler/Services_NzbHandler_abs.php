@@ -230,18 +230,21 @@ abstract class Services_NzbHandler_abs
             $oneNzbFile = simplexml_load_string($nzb['nzb']);
 
             // go through all the head -> meta elements
-            foreach ($oneNzbFile->head->meta as $meta) {
-                // check for password type
-                if ($meta['type'] == 'password') {
-                    // create a meta element with the password as value
-                    $domMeta = $dom->createElement('meta', ''.$meta[0]);
-                    // create attribute: type=password
-                    $domAttribute = $dom->createAttribute('type');
-                    $domAttribute->value = 'password';
-                    // append attribute to meta-element
-                    $domMeta->appendChild($domAttribute);
-                    // append meta-element to head
-                    $domHead->appendChild($domMeta);
+            if (is_object($oneNzbFile->head->meta))
+            {
+                foreach ($oneNzbFile->head->meta as $meta) {
+                    // check for password type
+                    if ($meta['type'] == 'password') {
+                        // create a meta element with the password as value
+                        $domMeta = $dom->createElement('meta', ''.$meta[0]);
+                        // create attribute: type=password
+                        $domAttribute = $dom->createAttribute('type');
+                        $domAttribute->value = 'password';
+                        // append attribute to meta-element
+                        $domMeta->appendChild($domAttribute);
+                        // append meta-element to head
+                        $domHead->appendChild($domMeta);
+                    }
                 }
             }
         }
