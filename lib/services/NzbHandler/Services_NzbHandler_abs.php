@@ -230,8 +230,7 @@ abstract class Services_NzbHandler_abs
             $oneNzbFile = simplexml_load_string($nzb['nzb']);
 
             // go through all the head -> meta elements
-            if (is_object($oneNzbFile->head->meta))
-            {
+            if (is_object($oneNzbFile->head->meta)) {
                 foreach ($oneNzbFile->head->meta as $meta) {
                     // check for password type
                     if ($meta['type'] == 'password') {
