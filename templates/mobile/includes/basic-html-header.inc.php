@@ -1,16 +1,15 @@
 <html>
 	<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<style type='text/css'>
 			html {
 				overflow:auto;
 				height:100%;
 			}
 
-			body {
-				margin: 10px;
-				padding: 25px 0 0 0;
-				font:11px Arial, Helvetica, sans-serif;
-			}
+			div.container {
+				position:center; 
+				font:11px Arial, Helvetica, sans-serif;}
 
 			div.permdenied {
 				border: 1px solid red;
@@ -30,6 +29,12 @@
 			} 
 			
 			div.permdenied p {
+				text-align: center;
+				margin-left: 10px;
+				margin-right: 10px;
+			} 
+			
+			div.login {
 				text-align: center;
 			} 
 
