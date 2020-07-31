@@ -9,6 +9,12 @@
         $limit = array_shift($limitKeys);
     } // if
 ?>
+<style>
+.responsive {
+  max-width: 25%;
+  height: auto;
+}
+</style>
 <div id="statistics" class="statistics">
 <?php
     echo "<form><select name='limits' onchange=\"window.location.href=this.form.limits.options[this.form.limits.selectedIndex].value\">".PHP_EOL;
@@ -22,7 +28,7 @@
     echo '</select></form><br /><br />'.PHP_EOL.PHP_EOL;
 
     foreach ($validGraphs as $graphValue => $graphName) {
-        echo "<img src='?page=getimage&amp;image[type]=statistics&amp;image[graph]=".$graphValue.'&amp;image[limit]='.$limit."'> ".PHP_EOL;
+        echo "<a class='image' href='?page=getimage&amp;image[type]=statistics&amp;image[graph]=".$graphValue.'&amp;image[limit]='.$limit."' target='_blank'><img class='responsive' src='?page=getimage&amp;image[type]=statistics&amp;image[graph]=".$graphValue.'&amp;image[limit]='.$limit."'></a>".PHP_EOL;
     } // foreach
 ?>
 </div>
