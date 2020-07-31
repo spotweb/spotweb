@@ -33,7 +33,7 @@ try {
             'set-systemtype'     => false, 'reset-password' => false, 'mass-userprefchange' => false, 'reset-db' => false, 'clear-cache' => false, ]
     );
     if (!SpotCommandline::isCommandline()) {
-        die('upgrade-db.php can only be run from the console, it cannot be run from the web browser');
+        exit('upgrade-db.php can only be run from the console, it cannot be run from the web browser');
     } // if
 
     /*
@@ -244,17 +244,17 @@ try {
         echo 'Basic database optimalisation done'.PHP_EOL;
     }
 } catch (CacheMustBeMigratedException $x) {
-    die('Your current Spotweb installation has an old way of storing Spotweb related files like images and NZB files. '.PHP_EOL.
+    exit('Your current Spotweb installation has an old way of storing Spotweb related files like images and NZB files. '.PHP_EOL.
         "We provide the script 'migrate-cache.php' to migrate the cache without losing your data. Depending on the ".PHP_EOL.
         'size of your cache this can take a very long time.'.PHP_EOL.PHP_EOL.
         "Please run the 'bin/migrate-cache.php' script because attempting to run 'upgrade-db.php' again will erase your cache completely".PHP_EOL);
 } catch (CacheMustBeMigrated2Exception $x) {
-    die('Apologies for the inconvience, but Spotweb has once again changed the way we store files for cache. This '.PHP_EOL.
+    exit('Apologies for the inconvience, but Spotweb has once again changed the way we store files for cache. This '.PHP_EOL.
         "means you need to run the script 'migrate-cache2.php' again.  ".PHP_EOL.
         'Depending on the size of your cache this can take a very long time.'.PHP_EOL.PHP_EOL.
         "Please run the 'bin/migrate-cache.php2' script again");
 } catch (SpotwebCannotBeUpgradedToooldException $x) {
-    die('Your current Spotweb installation is too old to be upgraded to this current version of Spotweb. '.PHP_EOL.
+    exit('Your current Spotweb installation is too old to be upgraded to this current version of Spotweb. '.PHP_EOL.
         'Please download an earlier version of Spotweb (https://github.com/spotweb/spotweb/zipball/'.$x->getMessage().'), '.PHP_EOL.
         'run bin/upgrade-db.php using that version and then upgrade back to this version to run upgrade-db.php once more.');
 } // SpotwebCannotBeUpgradedToooldException
@@ -271,5 +271,5 @@ catch (Exception $x) {
     echo '   '.$x->getMessage().PHP_EOL;
     echo PHP_EOL.PHP_EOL;
     echo $x->getTraceAsString();
-    die(1);
+    exit(1);
 } // catch
