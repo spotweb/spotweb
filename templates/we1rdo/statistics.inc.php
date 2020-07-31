@@ -11,7 +11,7 @@
 ?>
 <style>
 .responsive {
-  max-width: 25%;
+  max-width: 42%;
   height: auto;
 }
 </style>
