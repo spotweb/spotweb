@@ -497,35 +497,6 @@ class Dao_Base_Spot implements Dao_Spot
     // updateSpotInfoFromFull
 
     /*
-     * adds a list of fullspots to the database. Don't use this without having an entry in the header
-     * table as it will remove the spot from the list
-     */
-    public function addFullSpots($fullSpots)
-    {
-        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
-
-        /*
-         * Prepare the array for insertion
-         */
-        foreach ($fullSpots as &$fullSpot) {
-            $fullSpot['verified'] = (int) $fullSpot['verified'];
-            $fullSpot['user-key'] = base64_encode(serialize($fullSpot['user-key']));
-        } // foreach
-
-        $this->_conn->batchInsert(
-            $fullSpots,
-            'INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
-								  	VALUES',
-            [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml']
-        );
-
-        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);
-    }
-
-    // addFullSpot
-
-    /*
      * Update a spot in the spots and spotsfull tables after editing the spot
      */
     public function updateSpot($fullSpot, $editor)
