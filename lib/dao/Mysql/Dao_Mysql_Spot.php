@@ -2,7 +2,7 @@
 
 class Dao_Mysql_Spot extends Dao_Base_Spot
 {
-	/*
+    /*
      * adds a list of fullspots to the database. Don't use this without having an entry in the header
      * table as it will remove the spot from the list
      */
@@ -23,7 +23,8 @@ class Dao_Mysql_Spot extends Dao_Base_Spot
             'INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES',
             [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'], 'ON DUPLICATE KEY UPDATE messageid=messageid'
+            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'],
+            'ON DUPLICATE KEY UPDATE messageid=messageid'
         );
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);

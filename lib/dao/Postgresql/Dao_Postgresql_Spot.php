@@ -2,8 +2,7 @@
 
 class Dao_Postgresql_Spot extends Dao_Base_Spot
 {
-	
-	/*
+    /*
      * adds a list of fullspots to the database. Don't use this without having an entry in the header
      * table as it will remove the spot from the list
      */
