@@ -20,11 +20,10 @@ class Dao_Mysql_Spot extends Dao_Base_Spot
 
         $this->_conn->batchInsert(
             $fullSpots,
-            'INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
+            'INSERT IGNORE INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES',
             [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'],
-            'ON DUPLICATE KEY UPDATE messageid=messageid'
+            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml']       
         );
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);
