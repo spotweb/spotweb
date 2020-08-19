@@ -59,6 +59,7 @@ class SpotInstall
                 'host'    => 'localhost',
                 'port'    => '3306',
                 'dbname'  => 'spotweb',
+				'schema'  => 'public',
                 'user'    => 'spotweb',
                 'pass'    => 'spotweb',
                 'submit'  => '',
@@ -84,12 +85,13 @@ class SpotInstall
                 if (($form['engine'] == 'pdo_mysql' or $form['engine'] == 'pdo_pgsql') and (!empty($form['rootpwd']))) {
                     $dbCon->connectRoot($form['host'], $form['rootpwd'], $form['port']);
                     $dbCon->createDb($form['dbname'], $form['user'], $form['pass']);
+					$schema = $form['schema'];
                 }
 
                 $dbCon->connect(
                     $form['host'],
                     $form['user'],
-                    $form['pass'],
+                    $form['pass'],					
                     $form['dbname'],
                     $form['port']
                 );
@@ -337,7 +339,8 @@ class SpotInstall
              * Get the schema version and other constants.
              */
             $bootstrap = new Bootstrap();
-
+			$schema = 'public';
+			
             /**
              * Now create the database.
              */
