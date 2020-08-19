@@ -64,22 +64,22 @@
                        value='<?php echo htmlspecialchars($form['rootpwd']); ?>'/></td>
         </tr>
         <tr>
-            <td id="spdb"> Spotweb database name (database)</td>
+            <td id="spdb"> Spotweb database name (database):</td>
             <td><input type='text' maxlength='40' name='dbform[dbname]'
                        value='<?php echo htmlspecialchars($form['dbname']); ?>'/></td>
         </tr>
 		<tr id="spsh" style="visibility: collapse;">
-            <td> Spotweb schema name (schema)</td>
+            <td> PostGreSQL schema name (Default:public)</td>
             <td><input type='text' maxlength='40' name='dbform[schema]'
                        value='<?php echo htmlspecialchars($form['schema']); ?>'/></td>
         </tr>
         <tr id="spuser">
-            <td> Spotweb db user name</td>
+            <td> Spotweb db user name:</td>
             <td><input type='text' maxlength='40' name='dbform[user]'
                        value='<?php echo htmlspecialchars($form['user']); ?>'/></td>
         </tr>
         <tr id="sppass">
-            <td> Spotweb db user password</td>
+            <td> Spotweb db user password:</td>
             <td><input type='text' maxlength='40' name='dbform[pass]'
                        value='<?php echo htmlspecialchars($form['pass']); ?>'/></td>
         </tr>
