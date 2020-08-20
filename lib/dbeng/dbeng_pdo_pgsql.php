@@ -19,14 +19,14 @@ class dbeng_pdo_pgsql extends dbeng_pdo
             if ($port == '' || !isset($port)) {
                 $port = '5432';
             }
-			if ($schema == '' || !isset($schema)) {
-				$schema = 'public';
-			}
+            if ($schema == '' || !isset($schema)) {
+                $schema = 'public';
+            }
             $db_conn = 'host='.$host.';port='.$port;
 
             try {
                 $this->_conn = new PDO('pgsql:'.$db_conn.';dbname='.$db, $usr, $pass);
-				$this->_conn->exec('SET search_path TO ' . $schema . '');
+                $this->_conn->exec('SET search_path TO '.$schema.'');
             } catch (PDOException $e) {
                 throw new DatabaseConnectionException($e->getMessage(), -1);
             } // catch

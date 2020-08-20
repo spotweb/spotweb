@@ -93,7 +93,7 @@ class SpotInstall
                     $form['pass'],
                     $form['dbname'],
                     $form['port'],
-					$form['schema']
+                    $form['schema']
                 );
 
                 $databaseCreated = true;
@@ -299,7 +299,7 @@ class SpotInstall
                     $dbsettings['pass'],
                     $dbsettings['dbname'],
                     $dbsettings['port'],
-					$dbsettings['schema']
+                    $dbsettings['schema']
                 );
                 $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
                 $daoFactory->setConnection($dbCon);
@@ -464,8 +464,8 @@ class SpotInstall
     public static function createDbSettingsFile($engine)
     {
         $dbSettings = $_SESSION['spotsettings']['db'];
-	switch ($_SESSION['spotsettings']['db']['engine']) {
-	case 'pdo_pgsql':
+        switch ($_SESSION['spotsettings']['db']['engine']) {
+    case 'pdo_pgsql':
         $settings = sprintf(
             '<?php%1$s%1$s'
             .'$dbsettings[\'engine\'] = \'%2$s\';%1$s'
@@ -483,30 +483,30 @@ class SpotInstall
             $dbSettings['pass'],
             $dbSettings['port'],
             $dbSettings['schema']
-			);
-			break;
-	case 'pdo_mysql':
-	case 'pdo_sqlite':
-			$settings = sprintf(
-            '<?php%1$s%1$s'
+        );
+            break;
+    case 'pdo_mysql':
+    case 'pdo_sqlite':
+            $settings = sprintf(
+                '<?php%1$s%1$s'
             .'$dbsettings[\'engine\'] = \'%2$s\';%1$s'
             .'$dbsettings[\'host\'] = \'%3$s\';%1$s'
             .'$dbsettings[\'dbname\'] = \'%4$s\';%1$s'
             .'$dbsettings[\'user\'] = \'%5$s\';%1$s'
             .'$dbsettings[\'pass\'] = \'%6$s\';%1$s'
             .'$dbsettings[\'port\'] = \'%7$s\';%1$s'
-			.'$dbsettings[\'schema\'] = \'\';',			
-            PHP_EOL,
-            $engine,
-            $dbSettings['host'],
-            $dbSettings['dbname'],
-            $dbSettings['user'],
-            $dbSettings['pass'],
-            $dbSettings['port']
-			);
-			break;
-	}
-        
+            .'$dbsettings[\'schema\'] = \'\';',
+                PHP_EOL,
+                $engine,
+                $dbSettings['host'],
+                $dbSettings['dbname'],
+                $dbSettings['user'],
+                $dbSettings['pass'],
+                $dbSettings['port']
+            );
+            break;
+    }
+
         if (is_writable(__DIR__.'/../')) {
             file_put_contents(
                 __DIR__.'/../dbsettings.inc.php',
