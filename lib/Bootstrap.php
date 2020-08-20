@@ -140,7 +140,7 @@ class Bootstrap
             $dbsettings['pass'],
             $dbsettings['dbname'],
             $dbsettings['port'],
-			$dbsettings['schema']
+            $dbsettings['schema']
         );
 
         $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
