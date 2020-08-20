@@ -47,7 +47,7 @@
             <td><select id="pdo" name='dbform[engine]' onchange="dohide()" >
 					<option value='pdo_mysql'>MySQL</option>
 					<option value='pdo_pgsql'>PostgreSQL</option>					
-                    <option value='pdo_sqlite'>SQLite (untested)</option>
+                    <option value='pdo_sqlite'>SQLite</option>
                 </select></td>
         </tr>
         <tr id="rhost">

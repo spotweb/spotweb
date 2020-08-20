@@ -16,7 +16,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
         $this->_batchInsertChunks = 100;
     }
 
-    public function connect($host, $user, $pass, $db, $port)
+    public function connect($host, $user, $pass, $db, $port, $schema)
     {
         if (!$this->_conn instanceof PDO) {
             if ($host[0] === '/') {
