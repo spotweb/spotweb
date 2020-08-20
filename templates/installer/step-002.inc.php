@@ -7,10 +7,12 @@
 			if (r == 'pdo_pgsql') {
                 document.getElementById("portfield").value = 5432;
 				document.getElementById("spsh").style.visibility = "visible";
+				document.getElementById("spdb").textContent = " Postgres database:"
             };   
             if (r == 'pdo_mysql') {
                 document.getElementById("portfield").value = 3306;
 				document.getElementById("spsh").style.visibility = "collapse";
+				document.getElementById("spdb").textContent = " MySQL database:"
             };     
             if (r == 'pdo_sqlite') {
                 document.getElementById("rhost").style.visibility = "collapse";
@@ -26,7 +28,7 @@
                 document.getElementById("rpwd").style.visibility = "visible";
                 document.getElementById("spuser").style.visibility = "visible";				
                 document.getElementById("sppass").style.visibility = "visible";
-                document.getElementById("spdb").textContent = " Spotweb database (schema)"
+                
             }
         }
     </script>
@@ -59,27 +61,27 @@
                        value='<?php echo htmlspecialchars($form['port']); ?>'/></td>
         </tr>
         <tr id="rpwd">
-            <td> root password for create spotweb db/user <br> Leave blank if database and user are already created. </td>
+            <td> Root password to create spotweb database/user <br> Leave blank if database and user are already created. </td>
             <td><input type='password' length='40' name='dbform[rootpwd]'
                        value='<?php echo htmlspecialchars($form['rootpwd']); ?>'/></td>
         </tr>
         <tr>
-            <td id="spdb"> Spotweb database name (database):</td>
+            <td id="spdb"> MySQL database:</td>
             <td><input type='text' maxlength='40' name='dbform[dbname]'
                        value='<?php echo htmlspecialchars($form['dbname']); ?>'/></td>
         </tr>
 		<tr id="spsh" style="visibility: collapse;">
-            <td> PostGreSQL schema name (Default:public)</td>
+            <td> Postgres schema (default: public)</td>
             <td><input type='text' maxlength='40' name='dbform[schema]'
                        value='<?php echo htmlspecialchars($form['schema']); ?>'/></td>
         </tr>
         <tr id="spuser">
-            <td> Spotweb db user name:</td>
+            <td> Database user name:</td>
             <td><input type='text' maxlength='40' name='dbform[user]'
                        value='<?php echo htmlspecialchars($form['user']); ?>'/></td>
         </tr>
         <tr id="sppass">
-            <td> Spotweb db user password:</td>
+            <td> Database user password:</td>
             <td><input type='text' maxlength='40' name='dbform[pass]'
                        value='<?php echo htmlspecialchars($form['pass']); ?>'/></td>
         </tr>
