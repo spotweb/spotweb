@@ -13,16 +13,22 @@ class dbeng_pdo_pgsql extends dbeng_pdo
         $this->_batchInsertChunks = 250;
     }
 
-    public function connect($host, $usr, $pass, $db, $port)
+    public function connect($host, $usr, $pass, $db, $port, $schema)
     {
         if (!$this->_conn instanceof PDO) {
             if ($port == '' || !isset($port)) {
                 $port = '5432';
             }
+            if ($schema == '' || !isset($schema)) {
+                $schema = 'public';
+            }
             $db_conn = 'host='.$host.';port='.$port;
 
             try {
                 $this->_conn = new PDO('pgsql:'.$db_conn.';dbname='.$db, $usr, $pass);
+                //$this->_conn->exec('CREATE SCHEMA IF NOT EXISTS '.$schema.' AUTHORIZATION '.$usr.'');
+                $this->_conn->exec('CREATE SCHEMA IF NOT EXISTS '.$schema.'');
+                $this->_conn->exec('SET search_path TO '.$schema.'');
             } catch (PDOException $e) {
                 throw new DatabaseConnectionException($e->getMessage(), -1);
             } // catch

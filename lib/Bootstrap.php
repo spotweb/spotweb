@@ -121,6 +121,9 @@ class Bootstrap
             case 'pdo_pgsql': if (!isset($dbsettings['port'])) {
                 $dbsettings['port'] = '5432';
             }
+                              if (!isset($dbsettings['schema'])) {
+                                  $dbsettings['schema'] = 'public';
+                              }
                                   break;
             default: if (!isset($dbsettings['port'])) {
                 $dbsettings['port'] = '';
@@ -136,7 +139,8 @@ class Bootstrap
             $dbsettings['user'],
             $dbsettings['pass'],
             $dbsettings['dbname'],
-            $dbsettings['port']
+            $dbsettings['port'],
+            $dbsettings['schema']
         );
 
         $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);

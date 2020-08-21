@@ -28,7 +28,7 @@ abstract class dbeng_abs
     /*
      * Connects to the database
      */
-    abstract public function connect($host, $user, $pass, $db, $port);
+    abstract public function connect($host, $user, $pass, $db, $port, $schema);
 
     /*
      * Executes the query and discards any output. Returns true of no
