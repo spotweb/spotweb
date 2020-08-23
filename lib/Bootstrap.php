@@ -114,19 +114,34 @@ class Bootstrap
 
         switch ($dbsettings['engine']) {
             case 'mysql':
-            case 'pdo_mysql': if (!isset($dbsettings['port'])) {
+            case 'pdo_mysql':
+            if (!isset($dbsettings['port']))
+            {
                 $dbsettings['port'] = '3306';
             }
+            if (!isset($dbsettings['schema']))
+            {
+                $dbsettings['schema'] = '';
+            }
                                   break;
-            case 'pdo_pgsql': if (!isset($dbsettings['port'])) {
+            case 'pdo_pgsql':
+            if (!isset($dbsettings['port']))
+            {
                 $dbsettings['port'] = '5432';
             }
-                              if (!isset($dbsettings['schema'])) {
-                                  $dbsettings['schema'] = 'public';
-                              }
+            if (!isset($dbsettings['schema']))
+            {
+                $dbsettings['schema'] = 'public';
+            }
                                   break;
-            default: if (!isset($dbsettings['port'])) {
+            default:
+            if (!isset($dbsettings['port']))
+            {
                 $dbsettings['port'] = '';
+            }
+            if (!isset($dbsettings['schema']))
+            {
+                $dbsettings['schema'] = '';
             }
         }
         $this->_dbSettings = $dbsettings;
