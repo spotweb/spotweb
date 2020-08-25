@@ -181,7 +181,7 @@ class SpotReq
                 case 'none': return $var;
                                break;
 
-                default: die('Unknown escape type: '.$escapeType);
+                default: exit('Unknown escape type: '.$escapeType);
             } // switch
         } //else
     }

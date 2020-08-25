@@ -294,5 +294,5 @@ catch (Exception $x) {
     echo $x->getTraceAsString();
     echo PHP_EOL.PHP_EOL;
     $retriever->quit();
-    die();
+    exit();
 } // catch

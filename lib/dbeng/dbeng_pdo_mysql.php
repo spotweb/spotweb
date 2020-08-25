@@ -16,7 +16,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
         $this->_batchInsertChunks = 100;
     }
 
-    public function connect($host, $user, $pass, $db, $port)
+    public function connect($host, $user, $pass, $db, $port, $schema)
     {
         if (!$this->_conn instanceof PDO) {
             if ($host[0] === '/') {
@@ -56,6 +56,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
         if ($rowsFound == 0) {
             $this->exec('CREATE DATABASE '.$db);
         } //$rowsFound == 0
+
         try {
             $userexists = $this->exec(
                 'SELECT 1 FROM mysql.user WHERE user = :user',

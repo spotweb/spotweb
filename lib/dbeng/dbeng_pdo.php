@@ -224,7 +224,7 @@ abstract class dbeng_pdo extends dbeng_abs
          * Sanity check
          */
         if (count($typs) != count($fields)) {
-            die('SQL wrong. Nr of types='.count($typs).' nr of fields='.count($fields).' sql='.$sql);
+            exit('SQL wrong. Nr of types='.count($typs).' nr of fields='.count($fields).' sql='.$sql);
         } // if
 
         /*

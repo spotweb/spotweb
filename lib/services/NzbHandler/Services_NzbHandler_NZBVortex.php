@@ -313,7 +313,7 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         $tmpfile = '/tmp/'.$filename;
         $filetype = 'application/octet-stream';
 
-        $myfile = fopen($tmpfile, 'w') or die('Unable to open file!');
+        $myfile = fopen($tmpfile, 'w') or exit('Unable to open file!');
         fwrite($myfile, $nzbdata);
         fclose($myfile);
 
@@ -336,7 +336,7 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         curl_close($ch);
         // 'Cleanup' temporary file
         if (!unlink($tmpfile)) {
-            $myfile = fopen($tmpfile, 'w') or die('Unable to open file!');
+            $myfile = fopen($tmpfile, 'w') or exit('Unable to open file!');
             fwrite($myfile, '');
             fclose($myfile);
         }

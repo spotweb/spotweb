@@ -133,50 +133,50 @@ class Net_NNTP_Protocol_Client
     // {{{ properties
 
     /**
-     * The socket resource being used to connect to the NNTP server.
-     *
-     * @var resource
-     * @access private
-     */
+	 * The socket resource being used to connect to the NNTP server.
+	 *
+	 * @var resource
+	 * @access private
+	 */
     var $_socket = null;
 
     /**
-     * Contains the last recieved status response code and text
-     *
-     * @var array
-     * @access private
-     */
+	 * Contains the last recieved status response code and text
+	 *
+	 * @var array
+	 * @access private
+	 */
     var $_currentStatusResponse = null;
 
     /**
-     *
-     *
-     * @var     object
-     * @access  private
-     */
+	 *
+	 *
+	 * @var     object
+	 * @access  private
+	 */
     var $_logger = null;
 
     /**
-     * Contains false on non-ssl connection and true when ssl
-     *
-     * @var     object
-     * @access  private
-     */
+	 * Contains false on non-ssl connection and true when ssl
+	 *
+	 * @var     object
+	 * @access  private
+	 */
     var $_ssl = false;
 
     // }}}
     // {{{ constructor
 
     /**
-     * Constructor
-     *
-     * @access public
-     */
+	 * Constructor
+	 *
+	 * @access public
+	 */
     function __construct()
     {
 
     	//
-//    	parent::PEAR('Net_NNTP_Error');
+		//    	parent::PEAR('Net_NNTP_Error');
     	//parent::PEAR();
     }
 
@@ -184,36 +184,36 @@ class Net_NNTP_Protocol_Client
     // {{{ getPackageVersion()
 
     /**
-     *
-     *
-     * @access public
-     */
+	 *
+	 *
+	 * @access public
+	 */
     function getPackageVersion() {
-	return '1.5.0RC1';
+		return '1.5.0RC1';
     }
 
     // }}}
     // {{{ getApiVersion()
 
     /**
-     *
-     *
-     * @access public
-     */
+	 *
+	 *
+	 * @access public
+	 */
     function getApiVersion() {
-	return '0.9.0';
+		return '0.9.0';
     }
 
     // }}}
     // {{{ setLogger()
 
     /**
-     *
-     *
-     * @param object $logger
-     *
-     * @access protected
-     */
+	 *
+	 *
+	 * @param object $logger
+	 *
+	 * @access protected
+	 */
     function setLogger($logger)
     {
         $this->_logger = $logger;
@@ -223,8 +223,8 @@ class Net_NNTP_Protocol_Client
     // {{{ setDebug()
 
     /**
-     * @deprecated
-     */
+	 * @deprecated
+	 */
     function setDebug($debug = true)
     {
     	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: setDebug() ! Debugging in now automatically handled when a logger is given.', E_USER_NOTICE);
@@ -234,29 +234,29 @@ class Net_NNTP_Protocol_Client
     // {{{ _clearSSLErrors()
 
     /**
-     * Clears ssl errors from the openssl error stack
-     */
+	 * Clears ssl errors from the openssl error stack
+	 */
     function _clearSSLErrors()
     {
-	if ($this->_ssl) {
-		while ($msg = openssl_error_string()) {};
-	}
+		if ($this->_ssl) {
+			while ($msg = openssl_error_string()) {};
+		}
     }
 
     // }}}
     // {{{ _sendCommand()
 
     /**
-     * Send command
-     *
-     * Send a command to the server. A carriage return / linefeed (CRLF) sequence
-     * will be appended to each command string before it is sent to the IMAP server.
-     *
-     * @param string $cmd The command to launch, ie: "ARTICLE 1004853"
-     *
-     * @return mixed (int) response code on success or (object) pear_error on failure
-     * @access private
-     */
+	 * Send command
+	 *
+	 * Send a command to the server. A carriage return / linefeed (CRLF) sequence
+	 * will be appended to each command string before it is sent to the IMAP server.
+	 *
+	 * @param string $cmd The command to launch, ie: "ARTICLE 1004853"
+	 *
+	 * @return mixed (int) response code on success or (object) pear_error on failure
+	 * @access private
+	 */
     function _sendCommand($cmd)
     {
         // NNTP/RFC977 only allows command up to 512 (-2) chars.
@@ -264,12 +264,12 @@ class Net_NNTP_Protocol_Client
             $this->throwError('Failed writing to socket! (Command to long - max 510 chars)');
         }
 
-/***************************************************************************************/
-/* Credit: Thanks to Brendan Coles <bcoles@gmail.com> (http://itsecuritysolutions.org) */
-/*         for pointing out possibility to inject pipelined NNTP commands into pretty  */
-/*         much any Net_NNTP command-sending function with user input, by appending    */
-/*         a new line character followed by the injection.                             */
-/***************************************************************************************/
+		/***************************************************************************************/
+		/* Credit: Thanks to Brendan Coles <bcoles@gmail.com> (http://itsecuritysolutions.org) */
+		/*         for pointing out possibility to inject pipelined NNTP commands into pretty  */
+		/*         much any Net_NNTP command-sending function with user input, by appending    */
+		/*         a new line character followed by the injection.                             */
+		/***************************************************************************************/
         // Prevent new line (and possible future) characters in the NNTP commands
         // Net_NNTP does not support pipelined commands. Inserting a new line charecter
         // allows sending multiple commands and thereby making the communication between
@@ -287,7 +287,7 @@ class Net_NNTP_Protocol_Client
         }
 
     	// Send the command
-	$this->_clearSSLErrors();
+		$this->_clearSSLErrors();
     	$R = @fwrite($this->_socket, $cmd . "\r\n");
         if ($R === false) {
             $this->throwError('Failed to write to socket!');
@@ -306,15 +306,15 @@ class Net_NNTP_Protocol_Client
     // {{{ _getStatusResponse()
 
     /**
-     * Get servers status response after a command.
-     *
-     * @return mixed (int) statuscode on success or (object) pear_error on failure
-     * @access private
-     */
+	 * Get servers status response after a command.
+	 *
+	 * @return mixed (int) statuscode on success or (object) pear_error on failure
+	 * @access private
+	 */
     function _getStatusResponse()
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
-	$this->_clearSSLErrors();
+		$this->_clearSSLErrors();
     	$response = @fgets($this->_socket);
         if ($response === false) {
             $this->throwError('Failed to read from socket...!');
@@ -346,13 +346,13 @@ class Net_NNTP_Protocol_Client
     // {{{ _getTextResponse()
 
     /**
-     * Retrieve textural data
-     *
-     * Get data until a line with only a '.' in it is read and return data.
-     *
-     * @return mixed (array) text response on success or (object) pear_error on failure
-     * @access private
-     */
+	 * Retrieve textural data
+	 *
+	 * Get data until a line with only a '.' in it is read and return data.
+	 *
+	 * @return mixed (array) text response on success or (object) pear_error on failure
+	 * @access private
+	 */
     function _getTextResponse()
     {
         $data = array();
@@ -365,7 +365,7 @@ class Net_NNTP_Protocol_Client
         while (!feof($this->_socket)) {
 
             // Retrieve and append up to 8192 characters from the server.
-	    $this->_clearSSLErrors();
+			$this->_clearSSLErrors();
             $recieved = @fgets($this->_socket, 8192);
 
             if ($recieved === false) {
@@ -439,13 +439,13 @@ class Net_NNTP_Protocol_Client
     }
 
     /**
-     * Retrieve blob
-     *
-     * Get data and assume we do not hit any blindspots
-     *
-     * @return mixed (array) text response on success or (object) pear_error on failure
-     * @access private
-     */
+	 * Retrieve blob
+	 *
+	 * Get data and assume we do not hit any blindspots
+	 *
+	 * @return mixed (array) text response on success or (object) pear_error on failure
+	 * @access private
+	 */
     function _getCompressedResponse()
     {
         $data = array();
@@ -456,48 +456,48 @@ class Net_NNTP_Protocol_Client
 		// - Just a gzip drop
 		//
 		// We try to autodetect which one this uses
-//echo "DEBUG: Entering getCompressedResponse()" . PHP_EOL;
+		//echo "DEBUG: Entering getCompressedResponse()" . PHP_EOL;
 		
 		$line = @fread($this->_socket, 1024);
 
-//		echo "DEBUG: getCompressedResponse(): called "  . PHP_EOL;
+		//		echo "DEBUG: getCompressedResponse(): called "  . PHP_EOL;
 		
 		if (substr($line, 0, 7) == '=ybegin') {
 			$data = $this->_getTextResponse();
 			$data = $line . "\r\n" . implode("", $data);
-   	    	$data = $this->yencDecode($data);
+			$data = $this->yencDecode($data);
 			$data = explode("\r\n", gzinflate($data));
 			
 			return $data;
 		} # if
 
 		// We cannot use blocked I/O on this one
-//echo "DEBUG: Unsetting blocking calls "  . PHP_EOL;
+		//echo "DEBUG: Unsetting blocking calls "  . PHP_EOL;
 		$streamMetadata = stream_get_meta_data($this->_socket);
 		stream_set_blocking($this->_socket, false);
-//echo "DEBUG: Unset blocking calls "  . PHP_EOL;
+		//echo "DEBUG: Unset blocking calls "  . PHP_EOL;
 		
         // Continue until connection is lost or we don't receive any data anymore
 		$tries = 0;
 		$uncompressed = '';
-//echo "DEBUG: Before while loop: " . feof($this->_socket) . PHP_EOL;
+		//echo "DEBUG: Before while loop: " . feof($this->_socket) . PHP_EOL;
         while (!feof($this->_socket)) {
 
             # Retrieve and append up to 32k characters from the server
             $received = @fread($this->_socket, 32768);
 			if (strlen($received) == 0) {
-//				echo "DEBUG: In while loop, received 0 : " . feof($this->_socket) . PHP_EOL;
+				//				echo "DEBUG: In while loop, received 0 : " . feof($this->_socket) . PHP_EOL;
 				$tries++;
 				
 				# Try decompression
 				$uncompressed = @gzuncompress($line);
 				if (($uncompressed !== false) || ($tries > 500)) {
-//					echo "DEBUG: In while loop, received 0 and tries: " . feof($this->_socket) . ' / ' . $tries . PHP_EOL;
+					//					echo "DEBUG: In while loop, received 0 and tries: " . feof($this->_socket) . ' / ' . $tries . PHP_EOL;
 					break;
 				} # if
 				
 				if ($tries % 50 == 0) {
-//					echo "DEBUG: In while loop, sleeping: " . feof($this->_socket) . ' / ' . $tries . PHP_EOL;
+					//					echo "DEBUG: In while loop, sleeping: " . feof($this->_socket) . ' / ' . $tries . PHP_EOL;
 					usleep(50000);
 				} # if
 			} # if
@@ -508,12 +508,12 @@ class Net_NNTP_Protocol_Client
 				$this->_socket = false;
 			} # if
 			
-//echo "DEBUG: In while loop: " . feof($this->_socket) . ' / ' . strlen($line) . PHP_EOL;
+			//echo "DEBUG: In while loop: " . feof($this->_socket) . ' / ' . strlen($line) . PHP_EOL;
 
             $line .= $received;
         } # while
 
-//echo "DEBUG: Out of while loo " . feof($this->_socket) . ' / ' . $uncompressed . PHP_EOL;
+		//echo "DEBUG: Out of while loo " . feof($this->_socket) . ' / ' . $uncompressed . PHP_EOL;
 		
 		# and set the stream to its original blocked(?) value
 		stream_set_blocking($this->_socket, $streamMetadata['blocked']);
@@ -538,95 +538,95 @@ class Net_NNTP_Protocol_Client
     // {{{ _sendText()
 
     /**
-     *
-     *
-     * @access private
-     */
+	 *
+	 *
+	 * @access private
+	 */
     function _sendArticle($article)
     {
     	/* data should be in the format specified by RFC850 */
 
     	switch (true) {
-    	case is_string($article):
-    	    //
-	    $this->_clearSSLErrors();
-            @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $article));
-	    $this->_clearSSLErrors();
-    	    @fwrite($this->_socket, "\r\n.\r\n");
+			case is_string($article):
+				//
+				$this->_clearSSLErrors();
+				@fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $article));
+				$this->_clearSSLErrors();
+				@fwrite($this->_socket, "\r\n.\r\n");
 
-    	    //
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-    	        foreach (explode("\r\n", $article) as $line) {
-    		    $this->_logger->debug('D: ' . $line);
-    	        }
-    	    	$this->_logger->debug('D: .');
-    	    }
-	    break;
+				//
+				if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+					foreach (explode("\r\n", $article) as $line) {
+						$this->_logger->debug('D: ' . $line);
+					}
+					$this->_logger->debug('D: .');
+				}
+				break;
 
-    	case is_array($article):
-    	    //
-    	    $header = reset($article);
-    	    $body = next($article);
+			case is_array($article):
+				//
+				$header = reset($article);
+				$body = next($article);
 
-/* Experimental...
-    	    // If header is an array, implode it.
-    	    if (is_array($header)) {
+				/* Experimental...
+				// If header is an array, implode it.
+				if (is_array($header)) {
     	        $header = implode("\r\n", $header) . "\r\n";
-    	    }
-*/
+				}
+				 */
 
-    	    // Send header (including separation line)
-	    $this->_clearSSLErrors();
-            @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $header));
-	    $this->_clearSSLErrors();
-    	    @fwrite($this->_socket, "\r\n");
+				// Send header (including separation line)
+				$this->_clearSSLErrors();
+				@fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $header));
+				$this->_clearSSLErrors();
+				@fwrite($this->_socket, "\r\n");
 
-    	    //
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-    	        foreach (explode("\r\n", $header) as $line) {
-    	    	    $this->_logger->debug('D: ' . $line);
-    	    	}
-    	    }
+				//
+				if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+					foreach (explode("\r\n", $header) as $line) {
+						$this->_logger->debug('D: ' . $line);
+					}
+				}
 
 
-/* Experimental...
-    	    // If body is an array, implode it.
-    	    if (is_array($body)) {
+				/* Experimental...
+				// If body is an array, implode it.
+				if (is_array($body)) {
     	        $header = implode("\r\n", $body) . "\r\n";
-    	    }
-*/
+				}
+				 */
 
-    	    // Send body
-	    $this->_clearSSLErrors();
-            @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $body));
-	    $this->_clearSSLErrors();
-    	    @fwrite($this->_socket, "\r\n.\r\n");
+				// Send body
+				$this->_clearSSLErrors();
+				@fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $body));
+				$this->_clearSSLErrors();
+				@fwrite($this->_socket, "\r\n.\r\n");
 
-    	    //
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-    	        foreach (explode("\r\n", $body) as $line) {
-    	    	    $this->_logger->debug('D: ' . $line);
-    	    	}
-    	        $this->_logger->debug('D: .');
-    	    }
-	    break;
+				//
+				if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+					foreach (explode("\r\n", $body) as $line) {
+						$this->_logger->debug('D: ' . $line);
+					}
+					$this->_logger->debug('D: .');
+				}
+				break;
 
-	default:
-    	    $this->throwError('Ups...', null, null);
+			default:
+				$this->throwError('Ups...', null, null);
     	}
 
-	return true;
+		return true;
     }
 
     // }}}
     // {{{ _currentStatusResponse()
 
     /**
-     *
-     *
-     * @return string status text
-     * @access private
-     */
+	 *
+	 *
+	 * @return string status text
+	 * @access private
+	 */
     function _currentStatusResponse()
     {
     	return $this->_currentStatusResponse[1];
@@ -636,23 +636,23 @@ class Net_NNTP_Protocol_Client
     // {{{ _handleUnexpectedResponse()
 
     /**
-     *
-     *
-     * @param int $code Status code number
-     * @param string $text Status text
-     *
-     * @return mixed
-     * @access private
-     */
+	 *
+	 *
+	 * @param int $code Status code number
+	 * @param string $text Status text
+	 *
+	 * @return mixed
+	 * @access private
+	 */
     function _handleUnexpectedResponse($code = null, $text = null)
     {
     	if ($code === null) {
     	    $code = $this->_currentStatusResponse[0];
-	}
+		}
 
     	if ($text === null) {
     	    $text = $this->_currentStatusResponse();
-	}
+		}
 
     	switch ($code) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERMITTED: // 502, 'access restriction or permission denied' / service permanently unavailable
@@ -665,22 +665,22 @@ class Net_NNTP_Protocol_Client
 
     // }}}
 
-/* Session administration commands */
+	/* Session administration commands */
 
     // {{{ Connect()
 
     /**
-     * Connect to a NNTP server
-     *
-     * @param string	$host	(optional) The address of the NNTP-server to connect to, defaults to 'localhost'.
-     * @param mixed	$encryption	(optional)
-     * @param int	$port	(optional) The port number to connect to, defaults to 119.
-     * @param int	$timeout	(optional)
-     *
-     * @return mixed (bool) on success (true when posting allowed, otherwise false) or (object) pear_error on failure
-     * @access protected
-     */
-    function connect($host = null, $encryption = null, $port = null, $timeout = null)
+	 * Connect to a NNTP server
+	 *
+	 * @param string	$host	(optional) The address of the NNTP-server to connect to, defaults to 'localhost'.
+	 * @param mixed	$encryption	(optional)
+	 * @param int	$port	(optional) The port number to connect to, defaults to 119.
+	 * @param int	$timeout	(optional)
+	 *
+	 * @return mixed (bool) on success (true when posting allowed, otherwise false) or (object) pear_error on failure
+	 * @access protected
+	 */
+    function connect($host = null, $encryption = null, $port = null, $timeout = null, $verifyname = null)
     {
     	//
         if ($this->_isConnected() ) {
@@ -689,9 +689,9 @@ class Net_NNTP_Protocol_Client
 
     	// v1.0.x API
     	if (is_int($encryption)) {
-	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: connect() !', E_USER_NOTICE);
+			trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: connect() !', E_USER_NOTICE);
     	    $port = $encryption;
-	    $encryption = false;
+			$encryption = false;
     	}
 
     	//
@@ -701,18 +701,18 @@ class Net_NNTP_Protocol_Client
 
     	// Choose transport based on encryption, and if no port is given, use default for that encryption
     	switch ($encryption) {
-	    case null:
-	    case false:
-		$transport = 'tcp';
+			case null:
+			case false:
+				$transport = 'tcp';
     	    	$port = is_null($port) ? 119 : $port;
-		break;
-	    case 'ssl':
-	    case 'tls':
-		$transport = $encryption;
+				break;
+			case 'ssl':
+			case 'tls':
+				$transport = $encryption;
     	    	$port = is_null($port) ? 563 : $port;
-		$this->_ssl = true;
-		break;
-	    default:
+				$this->_ssl = true;
+				break;
+			default:
     	    	trigger_error('$encryption parameter must be either tcp, tls or ssl.', E_USER_ERROR);
     	}
 
@@ -722,7 +722,11 @@ class Net_NNTP_Protocol_Client
     	}
 
     	// Open Connection
-    	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
+        $context = stream_context_create();
+        if (isset($verifyname)) {
+            stream_context_set_option($context, $transport,'verify_peer_name',$verifyname);
+        };
+    	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout,STREAM_CLIENT_CONNECT,$context);
     	if ($R === false) {
     	    if ($this->_logger) {
     	        $this->_logger->notice("Connection to $transport://$host:$port failed.");
@@ -755,7 +759,7 @@ class Net_NNTP_Protocol_Client
     	    	    $this->_logger->info('Posting not allowed!');
     	    	}
 
-	    	// TODO: Set some variable before return
+				// TODO: Set some variable before return
 
     	    	return true;
     	        break;
@@ -774,10 +778,10 @@ class Net_NNTP_Protocol_Client
     // {{{ disconnect()
 
     /**
-     * alias for cmdQuit()
-     *
-     * @access protected
-     */
+	 * alias for cmdQuit()
+	 *
+	 * @access protected
+	 */
     function disconnect()
     {
     	return $this->cmdQuit();
@@ -787,11 +791,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdCapabilities()
 
     /**
-     * Returns servers capabilities
-     *
-     * @return mixed (array) list of capabilities on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Returns servers capabilities
+	 *
+	 * @return mixed (array) list of capabilities on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdCapabilities()
     {
         // tell the newsserver we want an article
@@ -811,11 +815,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdModeReader()
 
     /**
-     *
-     *
-     * @return mixed (bool) true when posting allowed, false when postind disallowed or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @return mixed (bool) true when posting allowed, false when postind disallowed or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdModeReader()
     {
         // tell the newsserver we want an article
@@ -824,7 +828,7 @@ class Net_NNTP_Protocol_Client
     	switch ($response) {
             case NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_ALLOWED: // 200, RFC2980: 'Hello, you can post'
 
-	    	// TODO: Set some variable before return
+				// TODO: Set some variable before return
 
     	    	return true;
     	        break;
@@ -833,7 +837,7 @@ class Net_NNTP_Protocol_Client
     	    	    $this->_logger->info('Posting not allowed!');
     	    	}
 
-	    	// TODO: Set some variable before return
+				// TODO: Set some variable before return
 
     	    	return false;
     	    	break;
@@ -849,11 +853,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdQuit()
 
     /**
-     * Disconnect from the NNTP server
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Disconnect from the NNTP server
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdQuit()
     {
     	// Tell the server to close the connection
@@ -879,16 +883,16 @@ class Net_NNTP_Protocol_Client
 
     // }}}
 
-/* */
+	/* */
 
     // {{{ cmdStartTLS()
 
     /**
-     *
-     *
-     * @return mixed (bool) on success or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @return mixed (bool) on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdStartTLS()
     {
         $response = $this->_sendCommand('STARTTLS');
@@ -926,20 +930,20 @@ class Net_NNTP_Protocol_Client
 
     // }}}
 
-/* Article posting and retrieval */
+	/* Article posting and retrieval */
 
     /* Group and article selection */
 
     // {{{ cmdGroup()
 
     /**
-     * Selects a news group (issue a GROUP command to the server)
-     *
-     * @param string $newsgroup The newsgroup name
-     *
-     * @return mixed (array) groupinfo on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Selects a news group (issue a GROUP command to the server)
+	 *
+	 * @param string $newsgroup The newsgroup name
+	 *
+	 * @return mixed (array) groupinfo on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdGroup($newsgroup)
     {
         $response = $this->_sendCommand('GROUP '.$newsgroup);
@@ -969,14 +973,14 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdListgroup()
 
     /**
-     *
-     *
-     * @param optional string $newsgroup
-     * @param optional mixed $range
-     *
-     * @return array | optional mixed (array) on success or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @param optional string $newsgroup
+	 * @param optional mixed $range
+	 *
+	 * @return array | optional mixed (array) on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdListgroup($newsgroup = null, $range = null)
     {
         if (is_null($newsgroup)) {
@@ -997,14 +1001,14 @@ class Net_NNTP_Protocol_Client
     	    	$articles = $this->_getTextResponse();
     	        $response_arr = explode(' ', trim($this->_currentStatusResponse()), 4);
 
-		// If server does not return group summary in status response, return null'ed array
+				// If server does not return group summary in status response, return null'ed array
     	    	if (!is_numeric($response_arr[0]) || !is_numeric($response_arr[1]) || !is_numeric($response_arr[2]) || empty($response_arr[3])) {
     	    	    return array('group'    => null,
     	        	         'first'    => null,
     	    	    	         'last'     => null,
     	    	    		 'count'    => null,
     	    	    	         'articles' => $articles);
-		}
+				}
 
     	    	return array('group'    => $response_arr[3],
     	                     'first'    => $response_arr[1],
@@ -1027,11 +1031,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdLast()
 
     /**
-     *
-     *
-     * @return mixed (array) or (string) or (int) or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @return mixed (array) or (string) or (int) or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdLast()
     {
         //
@@ -1064,11 +1068,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdNext()
 
     /**
-     *
-     *
-     * @return mixed (array) or (string) or (int) or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @return mixed (array) or (string) or (int) or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdNext()
     {
         //
@@ -1105,13 +1109,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdArticle()
 
     /**
-     * Get an article from the currently open connection.
-     *
-     * @param mixed $article Either a message-id or a message-number of the article to fetch. If null or '', then use current article.
-     *
-     * @return mixed (array) article on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Get an article from the currently open connection.
+	 *
+	 * @param mixed $article Either a message-id or a message-number of the article to fetch. If null or '', then use current article.
+	 *
+	 * @return mixed (array) article on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdArticle($article = null)
     {
         if (is_null($article)) {
@@ -1153,13 +1157,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdHead()
 
     /**
-     * Get the headers of an article from the currently open connection.
-     *
-     * @param mixed $article Either a message-id or a message-number of the article to fetch the headers from. If null or '', then use current article.
-     *
-     * @return mixed (array) headers on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Get the headers of an article from the currently open connection.
+	 *
+	 * @param mixed $article Either a message-id or a message-number of the article to fetch the headers from. If null or '', then use current article.
+	 *
+	 * @return mixed (array) headers on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdHead($article = null)
     {
         if (is_null($article)) {
@@ -1202,13 +1206,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdBody()
 
     /**
-     * Get the body of an article from the currently open connection.
-     *
-     * @param mixed $article Either a message-id or a message-number of the article to fetch the body from. If null or '', then use current article.
-     *
-     * @return mixed (array) body on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Get the body of an article from the currently open connection.
+	 *
+	 * @param mixed $article Either a message-id or a message-number of the article to fetch the body from. If null or '', then use current article.
+	 *
+	 * @return mixed (array) body on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdBody($article = null)
     {
         if (is_null($article)) {
@@ -1251,13 +1255,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdStat
 
     /**
-     *
-     *
-     * @param mixed $article
-     *
-     * @return mixed (array) or (string) or (int) or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @param mixed $article
+	 *
+	 * @return mixed (array) or (string) or (int) or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdStat($article = null)
     {
         if (is_null($article)) {
@@ -1300,11 +1304,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdPost()
 
     /**
-     * Post an article to a newsgroup.
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Post an article to a newsgroup.
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdPost()
     {
         // tell the newsserver we want to post an article
@@ -1327,13 +1331,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdPost2()
 
     /**
-     * Post an article to a newsgroup.
-     *
-     * @param mixed $article (string/array)
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Post an article to a newsgroup.
+	 *
+	 * @param mixed $article (string/array)
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdPost2($article)
     {
     	/* should be presented in the format specified by RFC850 */
@@ -1360,13 +1364,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdIhave()
 
     /**
-     *
-     *
-     * @param string $id
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @param string $id
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdIhave($id)
     {
         // tell the newsserver we want to post an article
@@ -1391,13 +1395,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdIhave2()
 
     /**
-     *
-     *
-     * @param mixed $article (string/array)
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @param mixed $article (string/array)
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdIhave2($article)
     {
     	/* should be presented in the format specified by RFC850 */
@@ -1425,16 +1429,16 @@ class Net_NNTP_Protocol_Client
 
     // }}}
 
-/* Information commands */
+	/* Information commands */
 
     // {{{ cmdDate()
 
     /**
-     * Get the date from the newsserver format of returned date
-     *
-     * @return mixed (string) 'YYYYMMDDhhmmss' / (int) timestamp on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Get the date from the newsserver format of returned date
+	 *
+	 * @return mixed (string) 'YYYYMMDDhhmmss' / (int) timestamp on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdDate()
     {
         $response = $this->_sendCommand('DATE');
@@ -1451,11 +1455,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdHelp()
 
     /**
-     * Returns the server's help text
-     *
-     * @return mixed (array) help text on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Returns the server's help text
+	 *
+	 * @return mixed (array) help text on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdHelp()
     {
         // tell the newsserver we want an article
@@ -1475,17 +1479,17 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdNewgroups()
 
     /**
-     * Fetches a list of all newsgroups created since a specified date.
-     *
-     * @param int $time Last time you checked for groups (timestamp).
-     * @param optional string $distributions (deprecaded in rfc draft)
-     *
-     * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetches a list of all newsgroups created since a specified date.
+	 *
+	 * @param int $time Last time you checked for groups (timestamp).
+	 * @param optional string $distributions (deprecaded in rfc draft)
+	 *
+	 * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdNewgroups($time, $distributions = null)
     {
-	$date = gmdate('ymd His', $time);
+		$date = gmdate('ymd His', $time);
 
         if (is_null($distributions)) {
     	    $command = 'NEWGROUPS ' . $date . ' GMT';
@@ -1523,15 +1527,15 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdNewnews()
 
     /**
-     *
-     *
-     * @param $time
-     * @param mixed $newsgroups (string or array of strings)
-     * @param mixed $distribution (string or array of strings)
-     *
-     * @return mixed
-     * @access protected
-     */
+	 *
+	 *
+	 * @param $time
+	 * @param mixed $newsgroups (string or array of strings)
+	 * @param mixed $distribution (string or array of strings)
+	 *
+	 * @return mixed
+	 * @access protected
+	 */
     function cmdNewnews($time, $newsgroups, $distribution = null)
     {
         $date = gmdate('ymd His', $time);
@@ -1544,13 +1548,13 @@ class Net_NNTP_Protocol_Client
     	    $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT';
     	} else {
     	    if (is_array($distribution)) {
-    		$distribution = implode(',', $distribution);
+				$distribution = implode(',', $distribution);
     	    }
 
     	    $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT <' . $distribution . '>';
         }
 
-	// TODO: the lenght of the request string may not exceed 510 chars
+		// TODO: the lenght of the request string may not exceed 510 chars
 
         $response = $this->_sendCommand($command);
 
@@ -1574,11 +1578,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdList()
 
     /**
-     * Fetches a list of all avaible newsgroups
-     *
-     * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetches a list of all avaible newsgroups
+	 *
+	 * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdList()
     {
         $response = $this->_sendCommand('LIST');
@@ -1608,13 +1612,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdListActive()
 
     /**
-     * Fetches a list of all avaible newsgroups
-     *
-     * @param string $wildmat
-     *
-     * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetches a list of all avaible newsgroups
+	 *
+	 * @param string $wildmat
+	 *
+	 * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdListActive($wildmat = null)
     {
         if (is_null($wildmat)) {
@@ -1656,13 +1660,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdListNewsgroups()
 
     /**
-     * Fetches a list of (all) avaible newsgroup descriptions.
-     *
-     * @param string $wildmat Wildmat of the groups, that is to be listed, defaults to null;
-     *
-     * @return mixed (array) nested array with description of existing newsgroups on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetches a list of (all) avaible newsgroup descriptions.
+	 *
+	 * @param string $wildmat Wildmat of the groups, that is to be listed, defaults to null;
+	 *
+	 * @return mixed (array) nested array with description of existing newsgroups on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdListNewsgroups($wildmat = null)
     {
         if (is_null($wildmat)) {
@@ -1694,7 +1698,7 @@ class Net_NNTP_Protocol_Client
     	        }
 
     	        return $groups;
-    		break;
+				break;
     	    case 503: // RFC2980: 'program error, function not performed'
     	    	$this->throwError('Internal server error, function not performed', $response, $this->_currentStatusResponse());
     	    	break;
@@ -1705,25 +1709,25 @@ class Net_NNTP_Protocol_Client
 
     // }}}
 
-/* Article field access commands */
+	/* Article field access commands */
 
     // {{{ cmdOver()
 
     /**
-     * Fetch message header from message number $first until $last
-     *
-     * The format of the returned array is:
-     * $messages[][header_name]
-     *
-     * @param optional string $range articles to fetch
-     *
-     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetch message header from message number $first until $last
+	 *
+	 * The format of the returned array is:
+	 * $messages[][header_name]
+	 *
+	 * @param optional string $range articles to fetch
+	 *
+	 * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdOver($range = null)
     {
         if (is_null($range)) {
-	    $command = 'OVER';
+			$command = 'OVER';
     	} else {
     	    $command = 'OVER ' . $range;
         }
@@ -1765,25 +1769,25 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdXOver()
 
     /**
-     * Fetch message header from message number $first until $last
-     *
-     * The format of the returned array is:
-     * $messages[message_id][header_name]
-     *
-     * @param optional string $range articles to fetch
-     *
-     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetch message header from message number $first until $last
+	 *
+	 * The format of the returned array is:
+	 * $messages[message_id][header_name]
+	 *
+	 * @param optional string $range articles to fetch
+	 *
+	 * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdXOver($range = null)
     {
-	// deprecated API (the code _is_ still in alpha state)
+		// deprecated API (the code _is_ still in alpha state)
     	if (func_num_args() > 1 ) {
     	    die('The second parameter in cmdXOver() has been deprecated! Use x-y instead...');
         }
 
         if (is_null($range)) {
-	    $command = 'XOVER';
+			$command = 'XOVER';
     	} else {
     	    $command = 'XOVER ' . $range;
         }
@@ -1874,16 +1878,16 @@ class Net_NNTP_Protocol_Client
 	} # yencDecode()
 	
     /**
-     * Fetch message header from message number $first until $last
-     *
-     * The format of the returned array is:
-     * $messages[message_id][header_name]
-     *
-     * @param optional string $range articles to fetch
-     *
-     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetch message header from message number $first until $last
+	 *
+	 * The format of the returned array is:
+	 * $messages[message_id][header_name]
+	 *
+	 * @param optional string $range articles to fetch
+	 *
+	 * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdXZver($range = null)
     {
         if (is_null($range)) {
@@ -1925,11 +1929,11 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdListOverviewFmt()
 	
     /**
-     * Returns a list of avaible headers which are send from newsserver to client for every news message
-     *
-     * @return mixed (array) of header names on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Returns a list of avaible headers which are send from newsserver to client for every news message
+	 *
+	 * @return mixed (array) of header names on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdListOverviewFmt()
     {
     	$response = $this->_sendCommand('LIST OVERVIEW.FMT');
@@ -1942,13 +1946,13 @@ class Net_NNTP_Protocol_Client
 
     	        foreach ($data as $line) {
 
-		    // Check if postfixed by ':full' (case-insensitive)
-		    if (0 == strcasecmp(substr($line, -5, 5), ':full')) {
-    	    		// ':full' is _not_ included in tag, but value set to true
-    	    		$format[substr($line, 0, -5)] = true;
-		    } else {
-    	    		// ':' is _not_ included in tag; value set to false
-    	    		$format[substr($line, 0, -1)] = false;
+					// Check if postfixed by ':full' (case-insensitive)
+					if (0 == strcasecmp(substr($line, -5, 5), ':full')) {
+						// ':full' is _not_ included in tag, but value set to true
+						$format[substr($line, 0, -5)] = true;
+					} else {
+						// ':' is _not_ included in tag; value set to false
+						$format[substr($line, 0, -1)] = false;
     	            }
     	        }
 
@@ -1969,21 +1973,21 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdXHdr()
 
     /**
-     *
-     *
-     * The format of the returned array is:
-     * $messages[message_id]
-     *
-     * @param optional string $field
-     * @param optional string $range articles to fetch
-     *
-     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * The format of the returned array is:
+	 * $messages[message_id]
+	 *
+	 * @param optional string $field
+	 * @param optional string $range articles to fetch
+	 *
+	 * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdXHdr($field, $range = null)
     {
         if (is_null($range)) {
-	    $command = 'XHDR ' . $field;
+			$command = 'XHDR ' . $field;
     	} else {
     	    $command = 'XHDR ' . $field . ' ' . $range;
         }
@@ -2039,14 +2043,14 @@ class Net_NNTP_Protocol_Client
 
 
     /**
-     * Fetches a list of (all) avaible newsgroup descriptions.
-     * Depresated as of RFC2980.
-     *
-     * @param string $wildmat Wildmat of the groups, that is to be listed, defaults to '*';
-     *
-     * @return mixed (array) nested array with description of existing newsgroups on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetches a list of (all) avaible newsgroup descriptions.
+	 * Depresated as of RFC2980.
+	 *
+	 * @param string $wildmat Wildmat of the groups, that is to be listed, defaults to '*';
+	 *
+	 * @return mixed (array) nested array with description of existing newsgroups on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdXGTitle($wildmat = '*')
     {
         $response = $this->_sendCommand('XGTITLE '.$wildmat);
@@ -2077,16 +2081,16 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdXROver()
 
     /**
-     * Fetch message references from message number $first to $last
-     *
-     * @param optional string $range articles to fetch
-     *
-     * @return mixed (array) assoc. array of message references on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Fetch message references from message number $first to $last
+	 *
+	 * @param optional string $range articles to fetch
+	 *
+	 * @return mixed (array) assoc. array of message references on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdXROver($range = null)
     {
-	// Warn about deprecated API (the code _is_ still in alpha state)
+		// Warn about deprecated API (the code _is_ still in alpha state)
     	if (func_num_args() > 1 ) {
     	    die('The second parameter in cmdXROver() has been deprecated! Use x-y instead...');
     	}
@@ -2132,19 +2136,19 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdXPat()
 
     /**
-     *
-     *
-     * @param string $field
-     * @param string $range
-     * @param mixed $wildmat
-     *
-     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
-     * @access protected
-     */
+	 *
+	 *
+	 * @param string $field
+	 * @param string $range
+	 * @param mixed $wildmat
+	 *
+	 * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdXPat($field, $range, $wildmat)
     {
         if (is_array($wildmat)) {
-	    $wildmat = implode(' ', $wildmat);
+			$wildmat = implode(' ', $wildmat);
     	}
 
         $response = $this->_sendCommand('XPAT ' . $field . ' ' . $range . ' ' . $wildmat);
@@ -2176,14 +2180,14 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdAuthinfo()
 
     /**
-     * Authenticate using 'original' method
-     *
-     * @param string $user The username to authenticate as.
-     * @param string $pass The password to authenticate with.
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Authenticate using 'original' method
+	 *
+	 * @param string $user The username to authenticate as.
+	 * @param string $pass The password to authenticate with.
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdAuthinfo($user, $pass)
     {
     	// Send the username
@@ -2201,7 +2205,7 @@ class Net_NNTP_Protocol_Client
     	    	    $this->_logger->info("Authenticated (as user '$user')");
     	    	}
 
-	    	// TODO: Set some variable before return
+				// TODO: Set some variable before return
 
     	        return true;
     	        break;
@@ -2214,10 +2218,10 @@ class Net_NNTP_Protocol_Client
     	    case 502: // RFC2980: 'No permission'
     	    	$this->throwError('Authentication rejected', $response, $this->_currentStatusResponse());
     	    	break;
-//    	    case 500:
-//    	    case 501:
-//    	    	$this->throwError('Authentication failed', $response, $this->_currentStatusResponse());
-//    	    	break;
+			//    	    case 500:
+			//    	    case 501:
+			//    	    	$this->throwError('Authentication failed', $response, $this->_currentStatusResponse());
+			//    	    	break;
     	    default:
     	    	return $this->_handleUnexpectedResponse($response);
     	}
@@ -2227,14 +2231,14 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdAuthinfoSimple()
 
     /**
-     * Authenticate using 'simple' method
-     *
-     * @param string $user The username to authenticate as.
-     * @param string $pass The password to authenticate with.
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Authenticate using 'simple' method
+	 *
+	 * @param string $user The username to authenticate as.
+	 * @param string $pass The password to authenticate with.
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdAuthinfoSimple($user, $pass)
     {
         $this->throwError("The auth mode: 'simple' is has not been implemented yet", null);
@@ -2244,14 +2248,14 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdAuthinfoGeneric()
 
     /**
-     * Authenticate using 'generic' method
-     *
-     * @param string $user The username to authenticate as.
-     * @param string $pass The password to authenticate with.
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access protected
-     */
+	 * Authenticate using 'generic' method
+	 *
+	 * @param string $user The username to authenticate as.
+	 * @param string $pass The password to authenticate with.
+	 *
+	 * @return mixed (bool) true on success or (object) pear_error on failure
+	 * @access protected
+	 */
     function cmdAuthinfoGeneric($user, $pass)
     {
         $this->throwError("The auth mode: 'generic' is has not been implemented yet", null);
@@ -2261,11 +2265,11 @@ class Net_NNTP_Protocol_Client
     // {{{ _isConnected()
 
     /**
-     * Test whether we are connected or not.
-     *
-     * @return bool true or false
-     * @access protected
-     */
+	 * Test whether we are connected or not.
+	 *
+	 * @return bool true or false
+	 * @access protected
+	 */
     function _isConnected()
     {
         return (is_resource($this->_socket) && (!feof($this->_socket)));
@@ -2288,5 +2292,3 @@ class Net_NNTP_Protocol_Client
  * c-hanging-comment-ender-p: nil
  * End:
  */
-
-

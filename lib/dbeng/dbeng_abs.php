@@ -28,7 +28,7 @@ abstract class dbeng_abs
     /*
      * Connects to the database
      */
-    abstract public function connect($host, $user, $pass, $db, $port);
+    abstract public function connect($host, $user, $pass, $db, $port, $schema);
 
     /*
      * Executes the query and discards any output. Returns true of no
@@ -112,6 +112,7 @@ abstract class dbeng_abs
         foreach ($ar as $k => $v) {
             $tmpList .= $this->safe((string) $k).',';
         } // foreach
+
         return substr($tmpList, 0, -1);
     }
 
@@ -130,6 +131,7 @@ abstract class dbeng_abs
                 $tmpList .= $this->safe($k).',';
             }
         } // foreach
+
         return substr($tmpList, 0, -1);
     }
 
@@ -146,6 +148,7 @@ abstract class dbeng_abs
         foreach ($ar as $v) {
             $tmpList .= $this->safe((string) $v[$val]).',';
         } // foreach
+
         return substr($tmpList, 0, -1);
     }
 
