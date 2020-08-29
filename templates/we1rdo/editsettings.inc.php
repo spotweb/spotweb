@@ -4,7 +4,9 @@
             $tplHelper->redirect($http_referer);
 
             return;
-        }
+        } else {
+            showResults($result, ['renderhtml' => 1]);
+        } // else
     } // if
 
     require __DIR__.'/includes/header.inc.php';
@@ -13,7 +15,6 @@
     $nntp_nzb = $this->_settings->get('nntp_nzb');
     $nntp_hdr = $this->_settings->get('nntp_hdr');
     $nntp_post = $this->_settings->get('nntp_post');
-    $smtp = $this->_settings->get('smtp');
 
     if (!isset($nntp_nzb['verifyname'])) {
         $nntp_nzb['verifyname'] = true;
@@ -62,7 +63,7 @@
 		</ul>
 			
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '')) { ?>		
-		<div id="editsettingstab-1" class="ui-tabs-hide newsservers">
+		<div id="editsettingstab-1" class="ui-tabs-hide">
 			<fieldset>
 				<dl>
 					<dt><label for="editsettingsform[deny_robots]"><?php echo _('Try to prevent robots from indexing this installation'); ?></label></dt>
@@ -78,34 +79,15 @@
     echo 'checked="checked"';
 } ?>></dd>
 
-					<dt><label for="use_smtp"><?php echo _('Use SMTP (keep disabled to use PHP\'s internal mail function)'); ?></label></dt>
-					<dd><input type="checkbox" class="enabler" name="editsettingsform[smtp][use][switch]" id="use_smtp" <?php if (isset($smtp['use']) && $smtp['use']) {
-    echo 'checked="checked"';
-} ?>>
-					<fieldset id="content_use_smtp" class="serverSettings">
-						<dt><label for="editsettingsform[smtp][host]"><?php echo _('Hostname'); ?></label></dt>
-						<dd><input type="text" name="editsettingsform[smtp][host]" value="<?php echo htmlspecialchars($smtp['host'], ENT_QUOTES); ?>"></dd>
-
-						<dt><label for="editsettingsform[smtp][user]"><?php echo _('Username'); ?></label></dt>
-						<dd><input type="text" name="editsettingsform[smtp][user]" value="<?php echo htmlspecialchars($smtp['user'], ENT_QUOTES); ?>"></dd>
-
-						<dt><label for="editsettingsform[smtp][pass]"><?php echo _('Password'); ?></label></dt>
-						<dd><input type="password" name="editsettingsform[smtp][pass]" value="<?php echo htmlspecialchars($smtp['pass'], ENT_QUOTES); ?>"></dd>
-
-						<dt><label for="editsettingsform[smtp][port]"><?php echo _('Port'); ?></label></dt>
-						<dd><input type="text" name="editsettingsform[smtp][port]" value="<?php echo htmlspecialchars($smtp['port'], ENT_QUOTES); ?>"></dd>
-					</fieldset>
-
 					<dt><label for="editsettingsform[cookie_expires]"><?php echo _('Cookie expires after (in days)'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[cookie_expires]" value="<?php echo htmlspecialchars($this->_settings->get('cookie_expires'), ENT_QUOTES); ?>"></dd>
 
-					<!-- Add some explanation about the MS translator API -->
-					<p>
-						<?php echo _('Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires either a subscription key from Microsoft Cognitive Services in the Azure Portal. You can find instructions at <a href="http://docs.microsofttranslator.com/text-translate.html">http://docs.microsofttranslator.com/text-translate.html</a>. Please enter the subscription key in the field below.'); ?>
-
-					</p>
-					<dt><label for="editsettingsform[ms_translator_subscriptionkey]"><?php echo _('Microsoft Cognitive Services - Subscription Key'); ?></label></dt>
-					<dd><input type="text" name="editsettingsform[ms_translator_subscriptionkey]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_subscriptionkey'), ENT_QUOTES); ?>"></dd>
+                    <!-- Add some explanation about the MS translator API -->
+                    <p>
+                        <?php echo _('Spotweb can use the Microsoft Translator API to translate comments and Spot description to the users native language. This requires either a subscription key from Microsoft Cognitive Services in the Azure Portal. You can find instructions at <a href="http://docs.microsofttranslator.com/text-translate.html">http://docs.microsofttranslator.com/text-translate.html</a>. Please enter the subscription key in the field below.'); ?>
+                    </p>
+                    <dt><label for="editsettingsform[ms_translator_subscriptionkey]"><?php echo _('Microsoft Cognitive Services - Subscription Key'); ?></label></dt>
+                    <dd><input type="text" name="editsettingsform[ms_translator_subscriptionkey]" value="<?php echo htmlspecialchars($this->_settings->get('ms_translator_subscriptionkey'), ENT_QUOTES); ?>"></dd>
 
 				</dl>
 
