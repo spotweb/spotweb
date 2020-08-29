@@ -14,7 +14,6 @@ class Notifications_Email extends Notifications_abs
 
     public function __construct($appName, array $dataArray)
     {
-        parent::__construct();
         $this->_appName = $appName;
         $this->_dataArray = $dataArray;
     }
