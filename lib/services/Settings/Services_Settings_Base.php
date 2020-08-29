@@ -96,6 +96,33 @@ class Services_Settings_Base
             $result->addError(_('Custom CSS is too large'));
         } // if
 
+	// validate smtp settings or sett default if not used
+	$settings['smtp']['use'] = (isset($settings['smtp']['use']['switch'])) ? true : false;
+	if ($settings['smtp']['use']) {
+            $settings['smtp']['host'] = trim($settings['smtp']['host']);
+            $settings['smtp']['user'] = trim($settings['smtp']['user']);
+            $settings['smtp']['pass'] = trim($settings['smtp']['pass']);
+            $settings['smtp']['port'] = trim($settings['smtp']['port']);
+	    if (!strlen($settings['smtp']['host']))
+	        $result->addError(_('SMTP Hostname cannot be empty if SMTP is to be used'));
+	    if (!strlen($settings['smtp']['user']))
+	        $result->addError(_('SMTP Username may not be empty if SMTP is to be used (don\'t use open relays!)'));
+	    if (!strlen($settings['smtp']['pass']))
+	        $result->addError(_('SMTP Password may not be empty if SMTP is to be used (don\'t use open relays!)'));
+	    if (is_numeric($settings['smtp']['port'])) {
+		$settings['smtp']['port'] +=0;
+		if (!is_int($settings['smtp']['port']) || ($settings['smtp']['port']<1) || ($settings['smtp']['port']>65535))
+	            $result->addError(_('SMTP Port must be integer between 1 and 65535'));
+	    } else
+	        $result->addError(_('SMTP Port must be numeric'));
+	} else {
+            $settings['smtp'] = ['use' => false,
+		        'host'                 => '',
+                'user'                 => '',
+                'pass'                 => '',
+                'port'                 => 587, ];
+	} // if
+
         // Convert other settings (usually checkboxes) to be simply boolean settings
         $settings['deny_robots'] = (isset($settings['deny_robots'])) ? true : false;
         $settings['sendwelcomemail'] = (isset($settings['sendwelcomemail'])) ? true : false;
