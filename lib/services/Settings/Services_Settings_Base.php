@@ -117,7 +117,7 @@ class Services_Settings_Base
 	        $result->addError(_('SMTP Port must be numeric'));
 	} else {
             $settings['smtp'] = ['use' => false,
-		'host'                 => '',
+		        'host'                 => '',
                 'user'                 => '',
                 'pass'                 => '',
                 'port'                 => 587, ];
