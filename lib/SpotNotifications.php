@@ -200,7 +200,7 @@ class SpotNotifications
             $user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
             $user['prefs']['notifications']['email']['receiver'] = $user['mail'];
             $this->_notificationServices['email'] = Notifications_Factory::build('Spotweb', 'email', $user['prefs']['notifications']['email']);
-            $this->_notificationServices['email']->sendMessage('Single', $notification['title'], implode(PHP_EOL, $notification['body']), $this->_settings->get('spotweburl'));
+            $this->_notificationServices['email']->sendMessage('Single', $notification['title'], implode(PHP_EOL, $notification['body']), $this->_settings->get('spotweburl'), $this->_settings->get('smtp'));
             $this->_notificationServices = [];
         } // if
     }
@@ -316,7 +316,6 @@ class SpotNotifications
             foreach ($newMessages as $newMessage) {
                 $objectId = $newMessage['objectid'];
                 $spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
-                $smtp = $this->_settings->get('smtp');
                 $notifProviders = Notifications_Factory::getActiveServices();
                 foreach ($notifProviders as $notifProvider) {
                     if ($user['prefs']['notifications'][$notifProvider]['enabled'] && $user['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
@@ -328,7 +327,7 @@ class SpotNotifications
 
                 // Now the message really is sent.
                 foreach ($this->_notificationServices as $notificationService) {
-                    $notificationService->sendMessage($newMessage['type'], utf8_decode($newMessage['title']), utf8_decode($newMessage['body']), $spotweburl, $smtp);
+                    $notificationService->sendMessage($newMessage['type'], utf8_decode($newMessage['title']), utf8_decode($newMessage['body']), $spotweburl, $this->_settings->get('smtp'));
                 } // foreach
 
                 // Reset all service these cannot be re-used.
