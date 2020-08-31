@@ -1,6 +1,6 @@
 <?php
 
-//Not used
+use PHPMailer\PHPMailer\Exception; //Not used
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP; //Not used
 
@@ -40,7 +40,7 @@ class Notifications_Email extends Notifications_abs
             $mail->CharSet = PHPMailer::CHARSET_UTF8;
             $mail->Encoding = PHPMailer::ENCODING_BASE64;
             $mail->Priority = 1;
-            $mail->dsn = 'NEVER';
+            $mail->SMTPOptions = array ('ssl' => array('verify_peer_name'  => false));
             $mail->WordWrap = 78;
             $mail->XMailer = null;
             $mail->Host = $smtp['host'];
