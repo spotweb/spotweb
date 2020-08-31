@@ -1,6 +1,6 @@
 <?php
 
-//Not used
+use PHPMailer\PHPMailer\Exception; //Not used
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP; //Not used
 
