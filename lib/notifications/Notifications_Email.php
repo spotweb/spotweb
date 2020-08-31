@@ -34,13 +34,12 @@ class Notifications_Email extends Notifications_abs
             $mail->isSMTP();
             $mail->isHTML(false);
             $mail->SMTPAuth = true;
-            $mail->SMTPDebug = 2; //SMTP::DEBUG_OFF; https://github.com/PHPMailer/PHPMailer/wiki/SMTP-Debugging
+            $mail->SMTPDebug = 0; //SMTP::DEBUG_OFF; https://github.com/PHPMailer/PHPMailer/wiki/SMTP-Debugging
             $mail->SMTPAutoTLS = true;
             $mail->SMTPSecure = 'tls';
             $mail->CharSet = PHPMailer::CHARSET_UTF8;
             $mail->Encoding = PHPMailer::ENCODING_BASE64;
             $mail->Priority = 1;
-            //$mail->dsn = 'NEVER';
             $mail->SMTPOptions = array ('ssl' => array('verify_peer_name'  => false));
             $mail->WordWrap = 78;
             $mail->XMailer = null;
