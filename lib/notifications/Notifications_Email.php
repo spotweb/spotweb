@@ -1,12 +1,14 @@
 <?php
 
-use PHPMailer\PHPMailer\Exception; //Not used
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP; //Not used
+//use PHPMailer\PHPMailer\SMTP; //Not used
 
-require 'vendor/phpmailer/phpmailer/src/Exception.php';
-require 'vendor/phpmailer/phpmailer/src/PHPMailer.php';
-require 'vendor/phpmailer/phpmailer/src/SMTP.php';
+$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__).'/../../');
+
+require($_SERVER['DOCUMENT_ROOT'] . '/vendor/phpmailer/phpmailer/src/Exception.php');
+require($_SERVER['DOCUMENT_ROOT'] . '/vendor/phpmailer/phpmailer/src/PHPMailer.php');
+//require($_SERVER['DOCUMENT_ROOT'] . '/vendor/phpmailer/phpmailer/src/SMTP.php');
 
 class Notifications_Email extends Notifications_abs
 {
@@ -30,6 +32,7 @@ class Notifications_Email extends Notifications_abs
     public function sendMessage($type, $title, $body, $sourceUrl, $smtp)
     {
         if (isset($smtp['use']) && ($smtp['use'] === true)) {
+            try {
             $mail = new PHPMailer(true);
             $mail->isSMTP();
             $mail->isHTML(false);
@@ -53,6 +56,10 @@ class Notifications_Email extends Notifications_abs
             $mail->Subject = $title;
             $mail->Body = $body;
             $mail->send();
+            } catch (Exception $e) {
+                echo "PHPMailer Error : " . $e->getMessage() . " check your SMTP settings.";
+                exit;
+            }
         } else {
             $body = wordwrap($body, 78);
             $header = 'From: '.$this->_appName.' <'.$this->_dataArray['sender'].">\r\n";
