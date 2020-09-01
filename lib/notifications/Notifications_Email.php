@@ -1,15 +1,10 @@
 <?php
 
+$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__).'/../../');
+require $_SERVER['DOCUMENT_ROOT'].'/vendor/autoload.php';
+
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
-
-//use PHPMailer\PHPMailer\SMTP; //Not used
-
-$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__).'/../../');
-
-require $_SERVER['DOCUMENT_ROOT'].'/vendor/phpmailer/phpmailer/src/Exception.php';
-require $_SERVER['DOCUMENT_ROOT'].'/vendor/phpmailer/phpmailer/src/PHPMailer.php';
-//require($_SERVER['DOCUMENT_ROOT'] . '/vendor/phpmailer/phpmailer/src/SMTP.php');
 
 class Notifications_Email extends Notifications_abs
 {
