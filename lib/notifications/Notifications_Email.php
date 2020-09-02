@@ -53,7 +53,7 @@ class Notifications_Email extends Notifications_abs
                 $mail->Body = $body;
                 $mail->send();
             } catch (Exception $e) {
-                echo 'PHPMailer Error : '.$e->getMessage().' check your SMTP settings.';
+                echo 'PHPMailer Error : '.$e->getMessage().' check your SMTP settings.\n';
                 exit;
             }
         } else {
