@@ -1,14 +1,17 @@
 <?php
-    if ($result->isSubmitted()) {
-        if ($result->isSuccess()) {
-            $tplHelper->redirect($http_referer);
 
-            return;
-        }
-    } // if
+require __DIR__.'/includes/header.inc.php';
+require __DIR__.'/includes/form-messages.inc.php';
 
-    require __DIR__.'/includes/header.inc.php';
-    require __DIR__.'/includes/form-messages.inc.php';
+if ($result->isSubmitted()) {
+    if ($result->isSuccess()) {
+        $tplHelper->redirect($http_referer);
+
+        return;
+    } else {
+            showResults($result, ['renderhtml' => 1]);
+    } // else
+} // if
 
     $nntp_nzb = $this->_settings->get('nntp_nzb');
     $nntp_hdr = $this->_settings->get('nntp_hdr');

@@ -91,6 +91,12 @@ class Services_Settings_Base
             $result->addError(_('Not a valid email address'));
         } // if
 
+        // check the highcount
+        $settings['highcount'] = (int) $settings['highcount'];
+        if ($settings['highcount'] < 1) {
+            $result->addError(_('If "Highlight spots" is enabled the amount of comments must be a number above 1'));
+        }
+
         // We don't want to save megabyts of CSS, so put a limit to the size
         if (strlen($settings['customcss'] > 1024 * 10)) {
             $result->addError(_('Custom CSS is too large'));
