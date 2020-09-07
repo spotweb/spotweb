@@ -42,7 +42,6 @@
  */
 function renderResultMessagesHtml(Dto_FormResult $result)
 {
-
     echo PHP_EOL.'<ul class="formerrors">'.PHP_EOL;
     foreach ($result->getErrors() as $formError) {
         echo '<script type="text/javascript">alert(JSON.stringify("'.$formError.'"))</script>';
@@ -51,8 +50,7 @@ function renderResultMessagesHtml(Dto_FormResult $result)
 
     echo PHP_EOL.'<ul class="forminformation">'.PHP_EOL;
     foreach ($result->getInfo() as $formInfo) {
-        echo("<script type='text/javascript'>alert('".$formInfo."'); </script>");
+        echo "<script type='text/javascript'>alert('".$formInfo."'); </script>";
     } // foreach
     echo '</ul>'.PHP_EOL;
-
 } // renderResultMessagesHtml()

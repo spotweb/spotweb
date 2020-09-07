@@ -9,7 +9,7 @@ if ($result->isSubmitted()) {
 
         return;
     } else {
-            showResults($result, ['renderhtml' => 1]);
+        showResults($result, ['renderhtml' => 1]);
     } // else
 } // if
 
