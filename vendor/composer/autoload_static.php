@@ -51,6 +51,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
             'Psr\\Container\\' => 14,
             'Prophecy\\' => 9,
             'PhpCoveralls\\' => 13,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'M' => 
         array (
@@ -150,6 +151,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'PhpCoveralls\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-coveralls/php-coveralls/src',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Monolog\\' => 
         array (

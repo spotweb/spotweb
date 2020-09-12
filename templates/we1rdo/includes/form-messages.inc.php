@@ -37,20 +37,20 @@
         return false;
     } // showResults
 
-    /*
-     * Render a Dto_FormResult as a HTML error message box
-     */
-    function renderResultMessagesHtml(Dto_FormResult $result)
-    {
-        echo PHP_EOL.'<ul class="formerrors">'.PHP_EOL;
-        foreach ($result->getErrors() as $formError) {
-            echo '  <li>'.$formError.'</li>'.PHP_EOL;
-        } // foreach
-        echo '</ul>'.PHP_EOL;
+/*
+ * Render a Dto_FormResult as a HTML error message box
+ */
+function renderResultMessagesHtml(Dto_FormResult $result)
+{
+    echo PHP_EOL.'<ul class="formerrors">'.PHP_EOL;
+    foreach ($result->getErrors() as $formError) {
+        echo '<script type="text/javascript">alert(JSON.stringify("'.$formError.'"))</script>';
+    } // foreach
+    echo '</ul>'.PHP_EOL;
 
-        echo PHP_EOL.'<ul class="forminformation">'.PHP_EOL;
-        foreach ($result->getInfo() as $formInfo) {
-            echo '  <li>'.$formInfo.'</li>'.PHP_EOL;
-        } // foreach
-        echo '</ul>'.PHP_EOL;
-    } // renderResultMessagesHtml()
+    echo PHP_EOL.'<ul class="forminformation">'.PHP_EOL;
+    foreach ($result->getInfo() as $formInfo) {
+        echo "<script type='text/javascript'>alert('".$formInfo."'); </script>";
+    } // foreach
+    echo '</ul>'.PHP_EOL;
+} // renderResultMessagesHtml()

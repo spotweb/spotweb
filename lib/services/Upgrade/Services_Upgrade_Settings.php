@@ -57,6 +57,7 @@ class Services_Upgrade_Settings
         $this->setIfNot('nntp_nzb', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true]);
         $this->setIfNot('nntp_hdr', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true]);
         $this->setIfNot('nntp_post', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true]);
+        $this->setIfNot('smtp', ['use' => false, 'host' => '', 'user' => '', 'pass' => '', 'port' => 587]);
         $this->setIfNot('retrieve_newer_than', 0);
         $this->setIfNot('retrieve_full', false);
         $this->setIfNot('prefetch_image', false);
