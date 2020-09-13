@@ -1,3 +1,3 @@
-Gebruiker toegevoegd
+User added.
 
-Gebruiker <?php echo $username; ?> met wachtwoord <?php echo $password; ?> is toegevoegd.
+User <?php echo $username; ?> with password: <?php echo $password; ?> has been added.

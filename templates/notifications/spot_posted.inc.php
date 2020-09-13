@@ -1,3 +1,3 @@
-Spot toegevoegd
+Spot added.
 
-<?php echo $spot['title']; ?> is toegevoegd en zal met een volgende retrieve verschijnen.
+<?php echo $spot['title']; ?> has been added and will appear upon next retrieve.

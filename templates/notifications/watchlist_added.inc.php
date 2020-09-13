@@ -1,3 +1,3 @@
-Spot toegevoegd aan watchlist
+Spot added to the watchlist.
 
-<?php echo $spot['title']; ?> is toegevoegd aan de watchlist.
+<?php echo $spot['title']; ?> has been added to the watchlist.
