@@ -44,7 +44,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
 
     public function connectRoot($host, $pass, $port)
     {
-        $this->connect($host, 'root', $pass, '', $port);
+        $this->connect($host, 'root', $pass, '', $port, '');
     }
 
     public function createDb($db, $usr, $pass)
