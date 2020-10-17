@@ -79,17 +79,14 @@ class SpotInstall
          */
         $databaseCreated = false;
         if ($form['submit'] === 'Verify database') {
-            
-            if (($form['engine'] == 'pdo_mysql') and (empty($form['port'])))
-                {
-                    $form['port'] = '3306';
-                }
+            if (($form['engine'] == 'pdo_mysql') and (empty($form['port']))) {
+                $form['port'] = '3306';
+            }
 
-            if (($form['engine'] == 'pdo_pgsql') and (empty($form['port'])))
-                {
-                    $form['port'] = '5432';
-                }
-            
+            if (($form['engine'] == 'pdo_pgsql') and (empty($form['port']))) {
+                $form['port'] = '5432';
+            }
+
             try {
                 $dbCon = dbeng_abs::getDbFactory($form['engine']);
 
