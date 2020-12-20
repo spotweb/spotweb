@@ -29,55 +29,53 @@ class Dao_Base_Spot implements Dao_Spot
          * which are always available in the query
          */
         $criteriaFilter = ' WHERE (bl.spotterid IS NULL) ';
-        if (!empty($parsedSearch['filter'])) {			
+        if (!empty($parsedSearch['filter'])) {
             $criteriaFilter .= ' AND '.$parsedSearch['filter'];
-		
-			/* Blacklisted SQL commands */
 
-			$notAllowedCommands = array(
-			'DELETE',
-			'TRUNCATE',
-			'AS',
-			'DROP',
-			'USE',
-			'SELECT',
-			'SLEEP',
-			'UPDATE',
-			'ALTER',
-			'CREATE',
-			'RENAME',
-			'GRANT',
-			'REVOKE',
-			'BETWEEN',
-			'COMMIT',
-			'SAVEPOINT',
-			'EXISTS',
-			'GROUP',
-			'HAVING',
-			'IN',
-			'INTO',
-			'INSERT',
-			'ORDER',
-			'BY',
-			'UNION',
-			'LEFT',
-			'RIGHT',
-			'FULL'
-			);					
-					
-			/* Check $criteriaFilter for blacklisted SQL commands */
-		
-			if(preg_match('[' . implode(' |', $notAllowedCommands ) . ']i', $criteriaFilter) == true) {
+            /* Blacklisted SQL commands */
 
-			echo '<script language="javascript">';
-			echo 'alert("This query is not allowed!")';
-			echo '</script>';
-			echo '<script language = "javascript">';
-			echo 'window.location.href = "/?search[tree]=&search[unfiltered]=true"';
-			echo '</script>';
-			exit();
-		
-			}	
+            $notAllowedCommands = [
+                'DELETE',
+                'TRUNCATE',
+                'AS',
+                'DROP',
+                'USE',
+                'SELECT',
+                'SLEEP',
+                'UPDATE',
+                'ALTER',
+                'CREATE',
+                'RENAME',
+                'GRANT',
+                'REVOKE',
+                'BETWEEN',
+                'COMMIT',
+                'SAVEPOINT',
+                'EXISTS',
+                'GROUP',
+                'HAVING',
+                'IN',
+                'INTO',
+                'INSERT',
+                'ORDER',
+                'BY',
+                'UNION',
+                'LEFT',
+                'RIGHT',
+                'FULL',
+            ];
+
+            /* Check $criteriaFilter for blacklisted SQL commands */
+
+            if (preg_match('['.implode(' |', $notAllowedCommands).']i', $criteriaFilter) == true) {
+                echo '<script language="javascript">';
+                echo 'alert("This query is not allowed!")';
+                echo '</script>';
+                echo '<script language = "javascript">';
+                echo 'window.location.href = "/?search[tree]=&search[unfiltered]=true"';
+                echo '</script>';
+                exit();
+            }
         } // if
 
         /*
