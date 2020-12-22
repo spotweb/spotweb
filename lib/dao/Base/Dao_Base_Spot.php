@@ -54,7 +54,6 @@ class Dao_Base_Spot implements Dao_Spot
                 'EXISTS',
                 'GROUP',
                 'HAVING',
-                'IN',
                 'INTO',
                 'INSERT',
                 'ORDER',
