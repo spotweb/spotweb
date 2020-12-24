@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPMailer RFC821 SMTP email transport class.
  * PHP Version 5.5.
@@ -9,7 +10,7 @@
  * @author    Jim Jagielski (jimjag) <jimjag@gmail.com>
  * @author    Andy Prevost (codeworxtech) <codeworxtech@users.sourceforge.net>
  * @author    Brent R. Matzelle (original founder)
- * @copyright 2012 - 2019 Marcus Bointon
+ * @copyright 2012 - 2020 Marcus Bointon
  * @copyright 2010 - 2012 Jim Jagielski
  * @copyright 2004 - 2009 Andy Prevost
  * @license   http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
@@ -34,7 +35,7 @@ class SMTP
      *
      * @var string
      */
-    const VERSION = '6.1.7';
+    const VERSION = '6.2.0';
 
     /**
      * SMTP line break constant.
@@ -417,8 +418,8 @@ class SMTP
         // Windows does not have support for this timeout function
         if (strpos(PHP_OS, 'WIN') !== 0) {
             $max = (int)ini_get('max_execution_time');
-            // Don't bother if unlimited
-            if (0 !== $max && $timeout > $max) {
+            // Don't bother if unlimited, or if set_time_limit is disabled
+            if (0 !== $max && $timeout > $max && strpos(ini_get('disable_functions'), 'set_time_limit') === false) {
                 @set_time_limit($timeout);
             }
             stream_set_timeout($connection, $timeout, 0);
@@ -539,11 +540,12 @@ class SMTP
                     return false;
                 }
                 // Send encoded username and password
-                if (!$this->sendCommand(
-                    'User & Password',
-                    base64_encode("\0" . $username . "\0" . $password),
-                    235
-                )
+                if (
+                    !$this->sendCommand(
+                        'User & Password',
+                        base64_encode("\0" . $username . "\0" . $password),
+                        235
+                    )
                 ) {
                     return false;
                 }
@@ -1086,8 +1088,10 @@ class SMTP
     {
         //If SMTP transcripts are left enabled, or debug output is posted online
         //it can leak credentials, so hide credentials in all but lowest level
-        if (self::DEBUG_LOWLEVEL > $this->do_debug &&
-            in_array($command, ['User & Password', 'Username', 'Password'], true)) {
+        if (
+            self::DEBUG_LOWLEVEL > $this->do_debug &&
+            in_array($command, ['User & Password', 'Username', 'Password'], true)
+        ) {
             $this->edebug('CLIENT -> SERVER: [credentials hidden]', self::DEBUG_CLIENT);
         } else {
             $this->edebug('CLIENT -> SERVER: ' . $data, self::DEBUG_CLIENT);
@@ -1207,7 +1211,8 @@ class SMTP
                     self::DEBUG_LOWLEVEL
                 );
 
-                //stream_select returns false when the `select` system call is interrupted by an incoming signal, try the select again
+                //stream_select returns false when the `select` system call is interrupted
+                //by an incoming signal, try the select again
                 if (stripos($message, 'interrupted system call') !== false) {
                     $this->edebug(
                         'SMTP -> get_lines(): retrying stream_select',
