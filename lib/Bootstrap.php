@@ -80,7 +80,7 @@ class Bootstrap
          * security issue.
          */
         if (\PHP_VERSION_ID < 80000) {
-        libxml_disable_entity_loader(true);
+            libxml_disable_entity_loader(true);
         }
 
         SpotTiming::stop('bootstrap');
