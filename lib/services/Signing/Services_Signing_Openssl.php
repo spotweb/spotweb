@@ -42,7 +42,10 @@ class Services_Signing_Openssl extends Services_Signing_Base
             if ($useCache) {
                 $this->_pubKeyCache[$rsaKey['modulo'].$rsaKey['exponent']] = $openSslPubKey;
             } else {
-                openssl_free_key($openSslPubKey);
+                	// PHP 8 automatically frees the key instance and deprecates the function
+				    if (\PHP_VERSION_ID < 80000) {
+					openssl_free_key($openSslPubKey);
+					}
             } // else
         } // else
 
