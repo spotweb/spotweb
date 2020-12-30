@@ -66,7 +66,10 @@ class Services_Signing_Openssl extends Services_Signing_Base
         openssl_pkey_export($opensslPrivKey, $privateKey, null, ['config' => realpath($sslCnfPath)]);
         $publicKey = openssl_pkey_get_details($opensslPrivKey);
         $publicKey = $publicKey['key'];
-        openssl_free_key($opensslPrivKey);
+        // PHP 8 automatically frees the key instance and deprecates the function
+        if (\PHP_VERSION_ID < 80000) {
+            openssl_free_key($opensslPrivKey);
+        }
 
         return ['public' => $publicKey,
             'private'    => $privateKey, ];
