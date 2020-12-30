@@ -276,7 +276,7 @@ abstract class Services_NzbHandler_abs
         $tmpZip = tempnam(sys_get_temp_dir(), 'SpotWebZip');
 
         $zip = new ZipArchive();
-        $res = $zip->open($tmpZip, ZipArchive::CREATE);
+        $res = $zip->open($tmpZip, ZipArchive::OVERWRITE); /* truncate as empty file is not valid */
         if ($res !== true) {
             throw new Exception('Unable to create temporary ZIP file: '.$res);
         } // if
