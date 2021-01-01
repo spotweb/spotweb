@@ -412,16 +412,16 @@ class Services_User_Record
         $prefs['notifications']['twitter']['request_token_secret'] = $currentPrefs['notifications']['twitter']['request_token_secret'];
 
         // We don't want to save megabyts of CSS, so put a limit to the size
-        if (strlen($prefs['customcss'] > 1024 * 10)) {
+        if (strlen($prefs['customcss']) > 1024 * 10) {
             $result->addError(_('Custom CSS is too large'));
         } // if
 
         // We don't want to save megabytes of default newspot body, so limit it
-        if (strlen($prefs['newspotdefault_tag'] > 90)) {
+        if (strlen($prefs['newspotdefault_tag']) > 90) {
             $result->addError(_('Default value for a spots\' tag is too long'));
         } // if
 
-        if (strlen($prefs['newspotdefault_body'] > 9000)) {
+        if (strlen($prefs['newspotdefault_body']) > 9000) {
             $result->addError(_('Default value for a spots\' body is too long'));
         } // if
 
@@ -507,7 +507,7 @@ class Services_User_Record
         } // if
 
         // Make sure a valid password is entered for existing users
-        if ((strlen($user['newpassword1'] > 0)) && ($isEdit)) {
+        if ((strlen($user['newpassword1']) > 0) && ($isEdit)) {
             if (strlen($user['newpassword1']) < 5) {
                 $result->addError(_('Entered password is too short'));
             } // if
