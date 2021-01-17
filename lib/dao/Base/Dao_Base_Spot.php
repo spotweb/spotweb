@@ -276,7 +276,7 @@ class Dao_Base_Spot implements Dao_Spot
 
         // prepare a list of IN values
         $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
- 
+
         if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
@@ -311,7 +311,7 @@ class Dao_Base_Spot implements Dao_Spot
 
         // prepare a list of IN values
         $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
- 
+
         if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
@@ -343,7 +343,7 @@ class Dao_Base_Spot implements Dao_Spot
 
         // prepare a list of IN values
         $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
- 
+
         if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
