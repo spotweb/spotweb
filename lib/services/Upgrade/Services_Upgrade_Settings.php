@@ -69,9 +69,9 @@ class Services_Upgrade_Settings
         $this->setIfNot('spot_moderation', 'act');
         $this->setIfNot('prepare_statistics', true);
         $this->setIfNot('external_blacklist', true);
-        $this->setIfNot('blacklist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/whitelist.csv');
+        $this->setIfNot('blacklist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/blacklist.csv');
         $this->setIfNot('external_whitelist', true);
-        $this->setIfNot('whitelist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/blacklist.csv');
+        $this->setIfNot('whitelist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/whitelist.csv');
         $this->setIfNot('enable_timing', false);
         $this->setIfNot('cache_path', './cache');
         $this->setIfNot('enable_stacktrace', true);
