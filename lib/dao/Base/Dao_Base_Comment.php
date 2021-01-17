@@ -279,9 +279,9 @@ class Dao_Base_Comment implements Dao_Comment
      */
     public function removeComments($commentMsgIdList)
     {
-        if (count($commentMsgIdList) == 0) {
-            return;
-        } // if
+	if (!is_array($commentMsgIdList) || count($commentMsgIdList) == 0) {
+  	    return;
+	}    
 
         $msgIdList = $this->_conn->arrayKeyToInForComments($commentMsgIdList);
 
