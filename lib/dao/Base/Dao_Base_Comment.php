@@ -321,7 +321,7 @@ class Dao_Base_Comment implements Dao_Comment
         // prepare a list of IN values
         $msgIdList = $this->_conn->arrayKeyToInForComments($commentMsgIdList);
 
-        if (strlen($tmplist) > 0) {
+        if (strlen($msgIdList) > 0) {
             $this->_conn->modify(
                 'UPDATE commentsxover SET moderated = :moderated WHERE messageid IN ('.$msgIdList.')',
                 [
