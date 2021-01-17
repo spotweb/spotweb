@@ -204,7 +204,7 @@ class Dao_Base_Comment implements Dao_Comment
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
 
         $refs = $this->_conn->arrayKeyToIn($nntpRefs);
- 
+
         if (!isset($refs) || $refs == '') {
             return [];
         } // if
@@ -260,7 +260,7 @@ class Dao_Base_Comment implements Dao_Comment
 
         // prepare a list of IN values
         $msgIdList = $this->_conn->arrayKeyToIn($nntpRefList, 'messageid');
- 
+
         if (!isset($msgIdList) || $msgIdList == '') {
             return [];
         } // if
