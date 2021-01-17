@@ -23,12 +23,17 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer
     public function addToRingBuffer(array $messageIds)
     {
         // Empty list provided? Exit
-        if (count($messageIds) == 0) {
+        if (!is_array($messageIds) || count($messageIds) == 0) {
             return;
         } // if
 
         // match the ones we are going to add with these
         $msgIdList = $this->_conn->arrayKeyToIn($messageIds);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
+            return;
+        } // if
+
         $alreadyAddedList = $this->_conn->arrayQuery('SELECT messageid FROM moderatedringbuffer WHERE messageid IN ('.$msgIdList.')');
 
         // remove the messageid's we already have
@@ -63,7 +68,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer
     public function matchAgainst(array $messageIds)
     {
         // Empty list provided? Exit
-        if (count($messageIds) == 0) {
+        if (!is_array($messageIds) || count($messageIds) == 0) {
             return;
         } // if
 
@@ -71,6 +76,11 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer
          * Prepare the list of messageid's we want to match
          */
         $msgIdList = $this->_conn->arrayValToIn($messageIds, 'Message-ID');
+
+        if (!isset($msgIdList) || $msgIdList == '') {
+            return [];
+        } // if
+
         $rs = $this->_conn->arrayQuery('SELECT messageid FROM moderatedringbuffer WHERE messageid IN ('.$msgIdList.')');
 
         /*
