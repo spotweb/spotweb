@@ -56,8 +56,15 @@ class Dao_Base_SpotReport implements Dao_SpotReport
             return $idList;
         } // if
 
+        // prepare a list of IN values
+        $msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
+
+        if (!isset($msgIdList) || $msgIdList == '') {
+            return;
+        } // if
+
         // en vraag alle comments op die we kennen
-        $rs = $this->_conn->arrayQuery('SELECT messageid FROM reportsxover WHERE messageid IN ('.$this->_conn->arrayValToIn($hdrList, 'Message-ID').')');
+        $rs = $this->_conn->arrayQuery('SELECT messageid FROM reportsxover WHERE messageid IN ('.$msgIdList.')');
 
         // geef hier een array terug die kant en klaar is voor isset()
         foreach ($rs as $msgids) {
