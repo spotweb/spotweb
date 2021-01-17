@@ -109,6 +109,10 @@ abstract class dbeng_abs
     {
         $tmpList = '';
 
+        if (!is_array($ar) || count($ar) == 0) {
+            return $tmpList;
+        } // if
+
         foreach ($ar as $k => $v) {
             $tmpList .= $this->safe((string) $k).',';
         } // foreach
@@ -125,6 +129,11 @@ abstract class dbeng_abs
     public function arrayKeyToInForComments($ar)
     {
         $tmpList = '';
+
+        if (!is_array($ar) || count($ar) == 0) {
+            return $tmpList;
+        } // if
+
         foreach ($ar as $k => $v) {
             // Exclude messageid's from spots which are disposed by the owner, only process real disposes
             if ($v['spotterid'] == '') {
@@ -144,6 +153,10 @@ abstract class dbeng_abs
     public function arrayValToIn($ar, $val)
     {
         $tmpList = '';
+
+        if (!is_array($ar) || count($ar) == 0) {
+            return $tmpList;
+        } // if
 
         foreach ($ar as $v) {
             $tmpList .= $this->safe((string) $v[$val]).',';
