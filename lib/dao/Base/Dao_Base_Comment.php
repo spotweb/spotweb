@@ -301,7 +301,7 @@ class Dao_Base_Comment implements Dao_Comment
 
         $msgIdList = $this->_conn->arrayKeyToInForComments($commentMsgIdList);
 
-        if (isset($msgIdList) && $msgIdList !== '') {
+        if (isset($msgIdList) && !empty($msgIdList)) {
             $this->_conn->modify('DELETE FROM commentsfull WHERE messageid IN ('.$msgIdList.')');
             $this->_conn->modify('DELETE FROM commentsxover WHERE messageid IN ('.$msgIdList.')');
         }
