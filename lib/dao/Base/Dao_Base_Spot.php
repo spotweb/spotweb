@@ -32,9 +32,9 @@ class Dao_Base_Spot implements Dao_Spot
         if (!empty($parsedSearch['filter'])) {
             $criteriaFilter .= ' AND '.$parsedSearch['filter'];
 
-	    /* Blacklisted SQL commands */
+            /* Blacklisted SQL commands */
 
-            $notAllowedCommands = array(
+            $notAllowedCommands = [
                 'DELETE',
                 'TRUNCATE',
                 'AS',
@@ -61,20 +61,20 @@ class Dao_Base_Spot implements Dao_Spot
                 'UNION',
                 'LEFT',
                 'RIGHT',
-                'FULL'
-            );
+                'FULL',
+            ];
 
-        	/* Check $criteriaFilter for blacklisted SQL commands */
-								
-		if (preg_match_all("/\b(" . implode("|", $notAllowedCommands) . ")\b/i", $criteriaFilter, $matches) == true) {					
-		echo '<script language="javascript">';
+            /* Check $criteriaFilter for blacklisted SQL commands */
+
+            if (preg_match_all("/\b(".implode('|', $notAllowedCommands).")\b/i", $criteriaFilter, $matches) == true) {
+                echo '<script language="javascript">';
                 echo 'alert("This query is not allowed!")';
                 echo '</script>';
                 echo '<script language = "javascript">';
                 echo 'window.location.href = "/?search[tree]=&search[unfiltered]=true"';
                 echo '</script>';
                 exit();
-		} // if
+            } // if
         } // if
 
         /*
