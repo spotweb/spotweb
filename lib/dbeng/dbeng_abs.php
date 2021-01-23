@@ -117,6 +117,10 @@ abstract class dbeng_abs
             $tmpList .= $this->safe((string) $k).',';
         } // foreach
 
+        if (empty($tmpList)) { 
+            return $tmpList;
+        } // if
+
         return substr($tmpList, 0, -1);
     }
 
@@ -141,6 +145,10 @@ abstract class dbeng_abs
             }
         } // foreach
 
+        if (empty($tmpList)) { 
+            return $tmpList;
+        } // if
+
         return substr($tmpList, 0, -1);
     }
 
@@ -161,6 +169,10 @@ abstract class dbeng_abs
         foreach ($ar as $v) {
             $tmpList .= $this->safe((string) $v[$val]).',';
         } // foreach
+
+        if (empty($tmpList)) { 
+            return $tmpList;
+        } // if
 
         return substr($tmpList, 0, -1);
     }
