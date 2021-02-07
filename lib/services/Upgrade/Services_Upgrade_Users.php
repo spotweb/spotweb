@@ -434,7 +434,6 @@ class Services_Upgrade_Users
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'email')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'twitter')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'prowl')");
-            $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'nma')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'boxcar')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, '.SpotSecurity::spotsec_send_notifications_services.", 'growl')");
 
