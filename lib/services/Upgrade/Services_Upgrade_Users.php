@@ -296,11 +296,10 @@ class Services_Upgrade_Users
             $this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'host', '');
             $this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'port', '');
             $this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'apikey', '');
-
             $this->setSettingIfNot($user['prefs']['notifications']['boxcar'], 'email', '');
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
-            $this->setSettingIfNot($user['prefs']['notifications']['nma'], 'api', '');
+
             /* Notifo is discontinued. */
             $this->unsetSetting($user['prefs']['notifications'], 'notifo');
             $this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
