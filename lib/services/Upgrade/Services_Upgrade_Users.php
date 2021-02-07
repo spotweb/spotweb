@@ -300,7 +300,8 @@ class Services_Upgrade_Users
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
 
-            /* Notifo is discontinued. */
+            /* Notifo and NMA are discontinued. */
+            $this->unsetSetting($user['prefs']['notifications'], 'nma');
             $this->unsetSetting($user['prefs']['notifications'], 'notifo');
             $this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
             $this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'screen_name', '');
