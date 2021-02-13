@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'ecf36f070d106a52fd9fcc7ec0f8705af2edb47b',
+    'reference' => '147d0e7573ad8599c1daaee25b1eaf28b3d2951d',
     'name' => 'spotweb/spotweb',
   ),
   'versions' => 
@@ -26,6 +26,7 @@
       'version' => 'dev-master',
       'aliases' => 
       array (
+        0 => '9999999-dev',
       ),
       'reference' => '1357299c01bca1da57391f75a5de8214d927bd4d',
     ),
@@ -433,7 +434,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'ecf36f070d106a52fd9fcc7ec0f8705af2edb47b',
+      'reference' => '147d0e7573ad8599c1daaee25b1eaf28b3d2951d',
     ),
     'squizlabs/php_codesniffer' => 
     array (
@@ -524,15 +525,6 @@
       array (
       ),
       'reference' => '94d005c176db2080e98825d98e01e8b311a97a88',
-    ),
-    'uskr/nma-php' => 
-    array (
-      'pretty_version' => 'v0.0.4',
-      'version' => '0.0.4.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '862c559327d722cf5e36f77d32608eece19f00fe',
     ),
     'webmozart/assert' => 
     array (
