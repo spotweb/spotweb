@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "49367487ea0f2860de4c9266f67142fa",
+    "content-hash": "c33d428b368c5cc167cf14943ab54531",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -1858,53 +1858,6 @@
             "time": "2020-02-03T10:46:43+00:00"
         },
         {
-            "name": "uskr/nma-php",
-            "version": "v0.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mbirth/nma-php.git",
-                "reference": "862c559327d722cf5e36f77d32608eece19f00fe"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mbirth/nma-php/zipball/862c559327d722cf5e36f77d32608eece19f00fe",
-                "reference": "862c559327d722cf5e36f77d32608eece19f00fe",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "php": ">=4.0.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "class.nma.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Adriano Maia",
-                    "email": "adriano@locked.io",
-                    "homepage": "https://github.com/uskr",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This library provides an easy to use API for PHP that interfaces with Notify My Android public API.",
-            "homepage": "http://www.notifymyandroid.com/",
-            "keywords": [
-                "android",
-                "nma",
-                "notifications",
-                "notifymyandroid",
-                "push"
-            ],
-            "time": "2016-08-12T20:36:54+00:00"
-        },
-        {
             "name": "xenji/prowlphp",
             "version": "1.0.4",
             "source": {
@@ -3233,5 +3186,5 @@
         "php": ">=5.3.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }
