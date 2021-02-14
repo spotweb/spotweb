@@ -155,24 +155,24 @@ try {
         echo "Clear on-disk cache folder...\n";
 
         /* delete cache folder and re-create. */
-      		
+
         $dir = str_replace('\\', '/', realpath(__DIR__.'/..').'/'.substr($settings->get('cache_path'), 2));
-		$dir2 = str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2');
-					
-		if (file_exists($dir)) {
-			rename($dir, $dir2);
-		}
-        
-		$oldmask = umask(0);
+        $dir2 = str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2');
+
+        if (file_exists($dir)) {
+            rename($dir, $dir2);
+        }
+
+        $oldmask = umask(0);
         mkdir($dir, 0777, true);
         umask($oldmask);
 
         echo 'Starting reset of DB. (Depending on the size, this can take a while.)'.PHP_EOL;
         $svcUpgradeBase->resetdb();
         echo 'DB reset succesfully!'.PHP_EOL;
-		echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
-		delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
-		echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
+        echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
+        delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
+        echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
     } // if
 
     /*
@@ -197,23 +197,23 @@ try {
 
             /* delete cache folder and re-create. */
 
-			$dir = str_replace('\\', '/', realpath(__DIR__.'/..').'/'.substr($settings->get('cache_path'), 2));			
-			$dir2 = str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2');
-					
-			if (file_exists($dir)) {
-				rename($dir, $dir2);
-			}
-						
-			$oldmask = umask(0);
+            $dir = str_replace('\\', '/', realpath(__DIR__.'/..').'/'.substr($settings->get('cache_path'), 2));
+            $dir2 = str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2');
+
+            if (file_exists($dir)) {
+                rename($dir, $dir2);
+            }
+
+            $oldmask = umask(0);
             mkdir($dir, 0777, true);
             umask($oldmask);
-	        
+
             echo 'Truncating cache table.'.PHP_EOL;
             $svcUpgradeBase->clearcache();
-            echo 'Cleared cache succesfully!'.PHP_EOL;	
-			echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
-			delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
-			echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
+            echo 'Cleared cache succesfully!'.PHP_EOL;
+            echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
+            delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
+            echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
         // if
         } else {
             echo "No argument passed, type --clear-cache -yes to bypass this.\n";
@@ -242,25 +242,25 @@ try {
 
             /* delete cache folder and re-create. */
 
-			$dir = str_replace('\\', '/', realpath(__DIR__.'/..').'/'.substr($settings->get('cache_path'), 2));			
-			$dir2 = str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2');
-						
-			if (file_exists($dir)) {
-				rename($dir, $dir2);
-			}
-			
-			echo "Re-create on-disk cache folder.\n";
-			
-			$oldmask = umask(0);
+            $dir = str_replace('\\', '/', realpath(__DIR__.'/..').'/'.substr($settings->get('cache_path'), 2));
+            $dir2 = str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2');
+
+            if (file_exists($dir)) {
+                rename($dir, $dir2);
+            }
+
+            echo "Re-create on-disk cache folder.\n";
+
+            $oldmask = umask(0);
             mkdir($dir, 0777, true);
             umask($oldmask);
-	        
+
             echo 'Truncating cache table.'.PHP_EOL;
             $svcUpgradeBase->clearcache();
             echo 'Cleared cache succesfully!'.PHP_EOL.PHP_EOL;
-			echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
-			delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
-			echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
+            echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
+            delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
+            echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
         } // if
 
         echo 'Performing basic analysis of database tables'.PHP_EOL;
