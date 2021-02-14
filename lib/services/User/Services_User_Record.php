@@ -446,13 +446,6 @@ class Services_User_Record
             } // if
         } // if
 
-        // 'Notify My Android' requires an API key
-        if ($prefs['notifications']['nma']['enabled']) {
-            if (empty($prefs['notifications']['nma']['api'])) {
-                $result->addError(_('"Notify My Android" notifications require an API key'));
-            } // if
-        } // if
-
         // 'Prowl' requires an API key
         if ($prefs['notifications']['prowl']['enabled']) {
             if (empty($prefs['notifications']['prowl']['apikey'])) {

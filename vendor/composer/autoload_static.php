@@ -332,7 +332,6 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'Notifications_Prowl' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Prowl.php',
         'Notifications_Twitter' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Twitter.php',
         'Notifications_abs' => __DIR__ . '/../..' . '/lib/notifications/Notifications_abs.php',
-        'NotifyMyAndroid' => __DIR__ . '/..' . '/uskr/nma-php/class.nma.php',
         'OwnsettingsCreatedOutputException' => __DIR__ . '/../..' . '/lib/exceptions/OwnsettingsCreatedOutputException.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/AssertionFailedError.php',

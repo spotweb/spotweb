@@ -118,7 +118,6 @@ return array(
     'Notifications_Prowl' => $baseDir . '/lib/notifications/Notifications_Prowl.php',
     'Notifications_Twitter' => $baseDir . '/lib/notifications/Notifications_Twitter.php',
     'Notifications_abs' => $baseDir . '/lib/notifications/Notifications_abs.php',
-    'NotifyMyAndroid' => $vendorDir . '/uskr/nma-php/class.nma.php',
     'OwnsettingsCreatedOutputException' => $baseDir . '/lib/exceptions/OwnsettingsCreatedOutputException.php',
     'PHPUnit\\Framework\\Assert' => $vendorDir . '/phpunit/phpunit/src/ForwardCompatibility/Assert.php',
     'PHPUnit\\Framework\\AssertionFailedError' => $vendorDir . '/phpunit/phpunit/src/ForwardCompatibility/AssertionFailedError.php',

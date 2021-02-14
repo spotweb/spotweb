@@ -3182,66 +3182,17 @@
         ]
     },
     {
-        "name": "uskr/nma-php",
-        "version": "v0.0.4",
-        "version_normalized": "0.0.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mbirth/nma-php.git",
-            "reference": "862c559327d722cf5e36f77d32608eece19f00fe"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/mbirth/nma-php/zipball/862c559327d722cf5e36f77d32608eece19f00fe",
-            "reference": "862c559327d722cf5e36f77d32608eece19f00fe",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=4.0.0"
-        },
-        "time": "2016-08-12T20:36:54+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "class.nma.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Adriano Maia",
-                "email": "adriano@locked.io",
-                "homepage": "https://github.com/uskr",
-                "role": "Developer"
-            }
-        ],
-        "description": "This library provides an easy to use API for PHP that interfaces with Notify My Android public API.",
-        "homepage": "http://www.notifymyandroid.com/",
-        "keywords": [
-            "android",
-            "nma",
-            "notifications",
-            "notifymyandroid",
-            "push"
-        ]
-    },
-    {
         "name": "webmozart/assert",
         "version": "1.7.0",
         "version_normalized": "1.7.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/webmozart/assert.git",
+            "url": "https://github.com/webmozarts/assert.git",
             "reference": "aed98a490f9a8f78468232db345ab9cf606cf598"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/webmozart/assert/zipball/aed98a490f9a8f78468232db345ab9cf606cf598",
+            "url": "https://api.github.com/repos/webmozarts/assert/zipball/aed98a490f9a8f78468232db345ab9cf606cf598",
             "reference": "aed98a490f9a8f78468232db345ab9cf606cf598",
             "shasum": ""
         },
