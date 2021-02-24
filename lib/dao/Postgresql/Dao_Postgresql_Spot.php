@@ -149,46 +149,47 @@ class Dao_Postgresql_Spot extends Dao_Base_Spot
          * check whether any more results are available
          */
         $queryStr = 'select 	x.*, 
-                            l.download as downloadstamp, 
-                            l.watch as watchstamp,
-                            l.seen AS seenstamp,
-	                        f.verified ,
-						    COALESCE(x.idtype, wl.idtype, gwl.idtype) AS idtype
+                            f.verified ,
+                            COALESCE(x.idtype, wl.idtype, gwl.idtype) AS idtype
                             from 
                             (SELECT s.id AS id,
-								    s.messageid AS messageid,
-								    s.category AS category,
-								    s.poster AS poster,
-								    s.subcata AS subcata,
-								    s.subcatb AS subcatb,
-								    s.subcatc AS subcatc,
-								    s.subcatd AS subcatd,
-								    s.subcatz AS subcatz,
-								    s.title AS title,
-								    s.tag AS tag,
-								    s.stamp AS stamp,
-								    s.moderated AS moderated,
-								    s.filesize AS filesize,
-								    s.spotrating AS rating,
-								    s.commentcount AS commentcount,
-								    s.reportcount AS reportcount,
-								    s.spotterid AS spotterid,
- 								    s.editstamp AS editstamp,
- 								    s.editor AS editor,
+                                    s.messageid AS messageid,
+                                    s.category AS category,
+                                    s.poster AS poster,
+                                    s.subcata AS subcata,
+                                    s.subcatb AS subcatb,
+                                    s.subcatc AS subcatc,
+                                    s.subcatd AS subcatd,
+                                    s.subcatz AS subcatz,
+                                    s.title AS title,
+                                    s.tag AS tag,
+                                    s.stamp AS stamp,
+                                    s.moderated AS moderated,
+                                    s.filesize AS filesize,
+                                    s.spotrating AS rating,
+                                    s.commentcount AS commentcount,
+                                    s.reportcount AS reportcount,
+                                    s.spotterid AS spotterid,
+                                    s.editstamp AS editstamp,
+                                    s.editor AS editor,
+                                    l.download as downloadstamp, 
+                                    l.watch as watchstamp,
+                                    l.seen AS seenstamp,
                                     bl.idtype as idtype,
                                     s.reversestamp as reversestamp
-								    '.$extendedFieldList." \n
-								    FROM spots AS s ".
+                                    '.$extendedFieldList." \n
+                                    FROM spots AS s ".
                                     $additionalTableList." \n".
                                     $additionalJoinList." \n".
                                    'LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = '.$this->_conn->safe((int) $ourUserId).') OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-                                    '.$criteriaFilter." \n
-								    ORDER BY ".$sortList.' LIMIT '.(int) ($limit + 1).' OFFSET '.(int) $offset.'
+                                    LEFT JOIN spotstatelist AS l on ((s.messageid = l.messageid) AND (l.ouruserid = '.$this->_conn->safe((int) $ourUserId).'))
+
+                                   '.$criteriaFilter." \n
+                                    ORDER BY ".$sortList.' LIMIT '.(int) ($limit + 1).' OFFSET '.(int) $offset.'
                             ) as x
-					        LEFT JOIN spotstatelist AS l on ((x.messageid = l.messageid) AND (l.ouruserid = '.$this->_conn->safe((int) $ourUserId).'))
                             LEFT JOIN spotsfull AS f ON (f.messageid = x.messageid) 
- 					        LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = x.spotterid) AND ((wl.ouruserid = '.$this->_conn->safe((int) $ourUserId).') AND (wl.idtype = 2)))
-							LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = x.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) 
+                            LEFT JOIN spotteridblacklist as wl on ((wl.spotterid = x.spotterid) AND ((wl.ouruserid = '.$this->_conn->safe((int) $ourUserId).') AND (wl.idtype = 2)))
+                            LEFT JOIN spotteridblacklist as gwl on ((gwl.spotterid = x.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) 
                             ORDER BY '.$sortList2;
 
         return $queryStr;
