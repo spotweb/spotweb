@@ -3,7 +3,7 @@
 class Services_Translation_Microsoft
 {
     // actual translation URL
-    const translateUrl = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';  
+    const translateUrl = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
     // oAuth url
     const authUrl = 'https://westeurope.api.cognitive.microsoft.com/sts/v1.0/issueToken';
     // subscription key headers
@@ -12,7 +12,7 @@ class Services_Translation_Microsoft
     /*
      * These id's need to be copied from the Azure market place, please
      * check the following
-	 *      https://azure.microsoft.com/nl-nl/services/cognitive-services/translator/#pricing
+     *      https://azure.microsoft.com/nl-nl/services/cognitive-services/translator/#pricing
      */
     private $_subscriptionKey = '';
 
@@ -93,12 +93,12 @@ class Services_Translation_Microsoft
     {
         return false; // function not used anymore
     }
+
     // translateSingle
 
-
     /*
-	 * translate a list of body's
-	 */
+     * translate a list of body's
+     */
     public function translateMultiple($dstLanguage, $list, $field)
     {
         /*
@@ -132,11 +132,12 @@ class Services_Translation_Microsoft
                 $list[$listCounter][$field.'_translated'] = (string) $l->translations[0]->text;
                 $listCounter++;
             }
+
             return $list;
         } else {
             return false;
         }
     }
-    // translateMultiple
 
+    // translateMultiple
 } // class Services_Translation_Microsoft
