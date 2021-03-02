@@ -825,7 +825,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
                 case 'b': $newznabcat = $this->spotBcat2nabcat();
 
-					return @$newznabcat[$nr]; break;
+                    return @$newznabcat[$nr]; break;
             } // switch
         } // if
 
