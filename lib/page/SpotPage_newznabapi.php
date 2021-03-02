@@ -825,7 +825,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
                 case 'b': $newznabcat = $this->spotBcat2nabcat();
 
-return @$newznabcat[$nr]; break;
+					return @$newznabcat[$nr]; break;
             } // switch
         } // if
 
@@ -954,11 +954,11 @@ return @$newznabcat[$nr]; break;
             case 4040: return 'cat3_a4,cat3_a5,cat3_a6,cat3_a7';
             case 4050: return 'cat2_a';
 
-            case 5000: return 'cat0_z1';
-            case 5020: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
-            case 5030: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10';
-            case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9';
-            case 5050: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a10';
+            case 5000: return 'cat0_z1,cat0_z1_d';
+            case 5020: return 'cat0_z1,cat0_z1_d';
+            case 5030: return 'cat0_z1_a0,cat0_z1_a1,cat0_z1_a2,cat0_z1_a3,cat0_z1_a10,cat0_z1_d';
+            case 5040: return 'cat0_z1_a4,cat0_z1_a6,cat0_z1_a7,cat0_z1_a8,cat0_z1_a9,cat0_z1_a14,cat0_z1_a15,cat0_z1_d';
+            case 5050: return 'cat0_z1,cat0_z1_d';
             case 5060: return 'cat0_z1_d18';
             case 5070: return 'cat0_z1_d29';
 
@@ -1015,7 +1015,7 @@ return @$newznabcat[$nr]; break;
                               5  => '6000|6000',
                               6  => '6000|6040',
                               7  => '6000|6040',
-                              8  => '6000|65040',
+                              8  => '6000|6030',
                               9  => '6000|6040',
                               10 => '6000|6030',
                               11 => '6000|6000', ],
