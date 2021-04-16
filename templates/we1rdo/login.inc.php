@@ -36,27 +36,29 @@
 <h1>Your Spotweb login is different than your NZBFinder login!</h1>
 <br />
 <h2>If you're new, please check your inbox and spam folders first before contacting us.</h2>
-<form class="loginform" name="loginform" action="<?php echo $tplHelper->getPageUrl('login'); ?>" method="post">
-	<input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
-	<input type="hidden" name="loginform[http_referer]" value="<?php echo $http_referer; ?>">
-	<?php if (isset($data['performredirect'])) {?>
-		<input type="hidden" name="data[performredirect]" value="<?php echo $data['performredirect']; ?>">
-	<?php } ?>
-	<?php if (isset($data['renderhtml'])) {?>
-		<input type="hidden" name="data[renderhtml]" value="<?php echo $data['renderhtml']; ?>">
-	<?php } ?>
-	<fieldset>
-		<dl>
-			<dt><label for="loginform[username]"><?php echo _('Username'); ?></label></dt>
-			<dd><input type="text" name="loginform[username]" value="<?php echo htmlspecialchars($loginform['username']); ?>"></dd>
+<div class='login'>
+    <form class="loginform" name="loginform" action="<?php echo $tplHelper->getPageUrl('login'); ?>" method="post">
+        <input type="hidden" name="loginform[xsrfid]" value="<?php echo $tplHelper->generateXsrfCookie('loginform'); ?>">
+        <input type="hidden" name="loginform[http_referer]" value="<?php echo $http_referer; ?>">
+        <?php if (isset($data['performredirect'])) {?>
+            <input type="hidden" name="data[performredirect]" value="<?php echo $data['performredirect']; ?>">
+        <?php } ?>
+        <?php if (isset($data['renderhtml'])) {?>
+            <input type="hidden" name="data[renderhtml]" value="<?php echo $data['renderhtml']; ?>">
+        <?php } ?>
+        <fieldset>
+            <dl>
+                <dt><label for="loginform[username]"><?php echo _('Username'); ?></label></dt>
+                <dd><input type="text" name="loginform[username]" value="<?php echo htmlspecialchars($loginform['username']); ?>"></dd>
 
-			<dt><label for="loginform[password]"><?php echo _('Password'); ?></label></dt>
-			<dd><input type="password" name="loginform[password]" value=""></dd>
+                <dt><label for="loginform[password]"><?php echo _('Password'); ?></label></dt>
+                <dd><input type="password" name="loginform[password]" value=""></dd>
 
-			<dd><input class="greyButton" type="submit" name="loginform[submitlogin]" value="<?php echo _('Login'); ?>"></dd>
-		</dl>
-	</fieldset>
-</form>
+                <dd><input class="greyButton" type="submit" name="loginform[submitlogin]" value="<?php echo _('Login'); ?>"></dd>
+            </dl>
+        </fieldset>
+    </form>
+</div>
 <?php
 
     if (isset($data['renderhtml'])) {

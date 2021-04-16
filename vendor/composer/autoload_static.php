@@ -51,6 +51,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
             'Psr\\Container\\' => 14,
             'Prophecy\\' => 9,
             'PhpCoveralls\\' => 13,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'M' => 
         array (
@@ -150,6 +151,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'PhpCoveralls\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-coveralls/php-coveralls/src',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Monolog\\' => 
         array (
@@ -906,7 +911,6 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'SpotPage_statics' => __DIR__ . '/../..' . '/lib/page/SpotPage_statics.php',
         'SpotPage_statistics' => __DIR__ . '/../..' . '/lib/page/SpotPage_statistics.php',
         'SpotPage_twitteroauth' => __DIR__ . '/../..' . '/lib/page/SpotPage_twitteroauth.php',
-        'SpotPage_versioncheck' => __DIR__ . '/../..' . '/lib/page/SpotPage_versioncheck.php',
         'SpotReq' => __DIR__ . '/../..' . '/lib/SpotReq.php',
         'SpotSecurity' => __DIR__ . '/../..' . '/lib/SpotSecurity.php',
         'SpotStruct_abs' => __DIR__ . '/../..' . '/lib/dbstruct/SpotStruct_abs.php',
@@ -920,7 +924,6 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'SpotTiming' => __DIR__ . '/../..' . '/lib/SpotTiming.php',
         'SpotTranslation' => __DIR__ . '/../..' . '/lib/SpotTranslation.php',
         'SpotUbb_parser' => __DIR__ . '/../..' . '/lib/ubb/SpotUbb_parser.php',
-        'SpotWebVersionCheck' => __DIR__ . '/../..' . '/lib/SpotWebVersionCheck.php',
         'SpotwebCannotBeUpgradedTooOldException' => __DIR__ . '/../..' . '/lib/exceptions/SpotwebCannotBeUpgradedTooOldException.php',
         'SqlErrorException' => __DIR__ . '/../..' . '/lib/exceptions/SqlErrorException.php',
         'TagHandler' => __DIR__ . '/../..' . '/lib/ubb/TagHandler.inc.php',

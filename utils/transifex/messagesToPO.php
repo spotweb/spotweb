@@ -75,12 +75,12 @@ echo "Output File is $outputFile\n";
 // binary mode preserves the line endings in the input file
 // \n for Unix, \r\n for Windows.
 if (!$handle = fopen($outputFile, 'w+b')) {
-    die("Cannot open $outputFile");
+    exit("Cannot open $outputFile");
 }
 
 // open file and read contents into lines array
 if (!$lines = file($currentPOFile)) {
-    die("Cannot open $currentPOFile");
+    exit("Cannot open $currentPOFile");
 } else {
 
     // double check that we are really using an old format file
@@ -228,7 +228,7 @@ function wrap_fwrite($handle, $line, $outputFile)
 {
     if (!fwrite($handle, $line)) {
         fclose($handle);
-        die("Cannot write to $outputFile");
+        exit("Cannot write to $outputFile");
     }
 }
 

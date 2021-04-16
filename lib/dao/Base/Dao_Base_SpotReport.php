@@ -134,7 +134,7 @@ class Dao_Base_SpotReport implements Dao_SpotReport
                 ':messageid' => [$report['newmessageid'], PDO::PARAM_STR],
                 ':inreplyto' => [$report['inreplyto'], PDO::PARAM_STR],
                 ':randomstr' => [$report['randompart'], PDO::PARAM_STR],
-                ':body'      => arrray($report['body'], PDO::PARAM_STR),
+                ':body'      => [$report['body'], PDO::PARAM_STR],
                 ':stamp'     => [time(), PDO::PARAM_INT],
             ]
         );

@@ -21,3 +21,4 @@ cache/
 *.bak
 web.config
 logs/
+bin/.rnd

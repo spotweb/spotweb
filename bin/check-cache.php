@@ -108,5 +108,5 @@ try {
     echo '   '.$x->getMessage().PHP_EOL;
     echo PHP_EOL.PHP_EOL;
     echo $x->getTraceAsString();
-    die(1);
+    exit(1);
 } // catch

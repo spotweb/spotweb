@@ -93,13 +93,13 @@ function openSpot(id,url) {
 	$("#overlay").empty().show();
 
 	var scrollLocation = $(document).scrollTop();
-	$("#overlay").load(url+' #details', function() {
+	$("#overlay").load(url + ' #details', function (a, b) {
 		$("div.container").removeClass("visible").addClass("hidden");
 		$("#overlay").removeClass('loading notrans');
 		$("body").addClass("spotinfo");
 
 		if($("#overlay").children().size() == 0) {
-			alert("<t>Error while loading this page, you will be returned automaticly to the mainview</t>");
+			alert("<t>Error while loading this page, you will be returned automaticly to the mainview</t>" + a);
 			//closeDetails(scrollLocation);
             parent.history.back();
 			return false;
@@ -704,7 +704,15 @@ function downloadSabnzbd(id,url, dltype) {
             } else {
                 $(".sab_"+id).removeClass("loading").addClass("failure");
             } // else
-        } // success
+            if (data.result == 'failure') {
+                alert('Error occured\n' + data.errors[0]);
+            }
+        }, // success
+        error: function (data) {
+            alert(data.responseText);
+            $(".sab_" + id).removeClass("loading").addClass("failure");
+        }
+
     }); // ajax call om de form te submitten
 
     /*
@@ -812,8 +820,17 @@ function downloadMultiNZB(dltype) {
 
                     $("table.spots input[type=checkbox]").attr("checked", false);
                     multinzb();
-                } // success
-            }); // ajax call om de form te submitten
+                    if (data.result == 'failure') {
+                        alert('Error occured\n'+data.errors[0]);
+                    }
+                }, // success
+                error: function (data, textStatus, errorThrown) {
+                    alert(data.responseText);
+                    $(".sabnzbd-button").removeClass("loading").addClass("failure");
+                    $("table.spots input[type=checkbox]").attr("checked", false);
+                    multinzb();
+                }
+        }); // ajax call om de form te submitten
         } else {
             window.location.href = url;
 

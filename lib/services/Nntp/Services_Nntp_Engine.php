@@ -357,7 +357,7 @@ class Services_Nntp_Engine
         } catch (Exception $x) {
             $this->registerError($x);
 
-            echo PHP_EOL.'getBody(): Failed to retrieve article: '.$msgid.PHP_EOL;
+            //echo PHP_EOL.'getBody(): Failed to retrieve article: '.$msgid.PHP_EOL;
 
             /**
              * Try this operation again, but make sure we are not overloading

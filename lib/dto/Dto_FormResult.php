@@ -2,13 +2,11 @@
 
 class Dto_FormResult
 {
-    private $_result;
-
-    private $_data;
-
-    private $_errors;
-    private $_warnings;
-    private $_info;
+    public $_result;
+    public $_data;
+    public $_errors;
+    public $_warnings;
+    public $_info;
 
     public function __construct($result = 'success')
     {

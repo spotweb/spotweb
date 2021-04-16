@@ -193,15 +193,14 @@ class SpotNotifications
      */
     public function sendNewUserMail($user)
     {
-        // Omdat het versturen van dit bericht expliciet is opgegeven, worden er
-        // geen security-checks gedaan voor de ontvanger.
+        // Because sending if the message has been explicitily reqested,
+        // we do not run extra security-checks on the receiver.
         if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, 'welcomemail')) {
             $notification = $this->_notificationTemplate->template('user_added_email', ['user' => $user, 'adminUser' => $this->_currentSession['user']]);
-
             $user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
             $user['prefs']['notifications']['email']['receiver'] = $user['mail'];
             $this->_notificationServices['email'] = Notifications_Factory::build('Spotweb', 'email', $user['prefs']['notifications']['email']);
-            $this->_notificationServices['email']->sendMessage('Single', $notification['title'], implode(PHP_EOL, $notification['body']), $this->_settings->get('spotweburl'));
+            $this->_notificationServices['email']->sendMessage('Single', $notification['title'], implode(PHP_EOL, $notification['body']), $this->_settings->get('spotweburl'), $this->_settings->get('smtp'));
             $this->_notificationServices = [];
         } // if
     }
@@ -214,8 +213,8 @@ class SpotNotifications
      */
     private function newSingleMessage($user, $objectId, $type, $notification)
     {
-        // Aangezien het niet zeker kunnen zijn als welke user we dit stuk
-        // code uitvoeren, halen we voor de zekerheid opnieuw het user record op
+        // Because it's not certain which user we are at this point.
+        // we once again request the user records.
         $userDao = $this->_daoFactory->getUserDao();
         $notificationDao = $this->_daoFactory->getNotificationDao();
 
@@ -272,8 +271,6 @@ class SpotNotifications
 
     public function sendNowOrLater($userId)
     {
-        // TODO: optioneel maken of berichten direct worden verstuurd of via cron
-        // Tot die tijd versturen we ze direct
         $this->sendMessages($userId);
     }
 
@@ -292,8 +289,8 @@ class SpotNotifications
         } // else
 
         foreach ($userList as $user) {
-            // Omdat we vanuit getUserList() niet alle velden meekrijgen
-            // vragen we opnieuw het user record op
+            // Because getUserList() does not provide all fields
+            // we once again request the user record
             $user = $userDao->getUser($user['userid']);
             $security = new SpotSecurity(
                 $this->_daoFactory->getUserDao(),
@@ -303,15 +300,15 @@ class SpotNotifications
                 ''
             );
 
-            // Om e-mail te kunnen versturen hebben we iets meer data nodig
+            // In order to send mail we need some extra data nodig
             $user['prefs']['notifications']['email']['sender'] = $this->_settings->get('systemfrommail');
             $user['prefs']['notifications']['email']['receiver'] = $user['mail'];
 
-            // Twitter heeft ook extra settings nodig
+            // Twitter need extra settings
             $user['prefs']['notifications']['twitter']['consumer_key'] = $this->_settings->get('twitter_consumer_key');
             $user['prefs']['notifications']['twitter']['consumer_secret'] = $this->_settings->get('twitter_consumer_secret');
 
-            // Evenals Boxcar
+            // Also Boxcar
             $user['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
             $user['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
@@ -319,7 +316,6 @@ class SpotNotifications
             foreach ($newMessages as $newMessage) {
                 $objectId = $newMessage['objectid'];
                 $spotweburl = ($this->_settings->get('spotweburl') == 'http://mijnuniekeservernaam/spotweb/') ? '' : $this->_settings->get('spotweburl');
-
                 $notifProviders = Notifications_Factory::getActiveServices();
                 foreach ($notifProviders as $notifProvider) {
                     if ($user['prefs']['notifications'][$notifProvider]['enabled'] && $user['prefs']['notifications'][$notifProvider]['events'][$objectId]) {
@@ -329,16 +325,16 @@ class SpotNotifications
                     } // if
                 } // foreach
 
-                // nu wordt het bericht pas echt verzonden
+                // Now the message really is sent.
                 foreach ($this->_notificationServices as $notificationService) {
-                    $notificationService->sendMessage($newMessage['type'], utf8_decode($newMessage['title']), utf8_decode($newMessage['body']), $spotweburl);
+                    $notificationService->sendMessage($newMessage['type'], utf8_decode($newMessage['title']), utf8_decode($newMessage['body']), $spotweburl, $this->_settings->get('smtp'));
                 } // foreach
 
-                // Alle services resetten, deze mogen niet hergebruikt worden
+                // Reset all service these cannot be re-used.
                 $this->_notificationServices = [];
 
-                // Als dit bericht ging over het aanmaken van een nieuwe user, verwijderen we
-                // het plaintext wachtwoord uit de database uit veiligheidsoverwegingen.
+                // If this message involved a new user, we remove the
+                // plaintext password from the database as a precaution.
                 if ($objectId == self::notifytype_user_added) {
                     $body = explode(' ', $newMessage['body']);
                     $body[4] = '[deleted]';

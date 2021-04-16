@@ -1,3 +1,3 @@
-NZB verstuurd
+NZB sent.
 
-<?php echo $spot['title']; ?> verstuurd naar NZBGet.
+<?php echo $spot['title']; ?> sent to NZBGet.

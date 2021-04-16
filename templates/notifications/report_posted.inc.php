@@ -1,3 +1,3 @@
-Spot gerapporteerd
+Spot reported.
 
-<?php echo $spot['title']; ?> is met succes als spam gerapporteerd.
+<?php echo $spot['title']; ?> has been successfully reported as spam.

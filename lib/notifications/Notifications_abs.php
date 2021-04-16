@@ -11,5 +11,5 @@ abstract class Notifications_abs
     abstract public function register();
 
     /* verstuurt het bericht */
-    abstract public function sendMessage($type, $title, $body, $sourceUrl);
+    abstract public function sendMessage($type, $title, $body, $sourceUrl, $smtp);
 } // SpotNotifyService_abs

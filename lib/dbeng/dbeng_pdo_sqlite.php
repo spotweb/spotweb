@@ -14,7 +14,7 @@ class dbeng_pdo_sqlite extends dbeng_pdo
 
     // ctor
 
-    public function connect($host, $user, $pass, $db, $port)
+    public function connect($host, $user, $pass, $db, $port, $schema)
     {
         try {
             if (!$this->_conn instanceof PDO) {
