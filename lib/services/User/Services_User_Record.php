@@ -488,6 +488,22 @@ class Services_User_Record
                 $result->addError(_('Invalid username chosen'));
             } // if
         } // if
+        
+        // Check if username contains left and right chevrons.
+		if (preg_match('/[<>]/i', $user['username'])) {
+			//(preg_match ('/[^a-zA-Z0-9]/i', $getname))
+			$result->addError(_('Lastname may not contain "<" or ">"'));
+		} // if
+		
+		// Check if username contains left and right chevrons.
+		if (preg_match('/[<>]/i', $user['firstname'])) {
+			$result->addError(_('Lastname may not contain "<" or ">"'));
+		} // if
+		
+		// Check if username contains left and right chevrons.
+		if (preg_match('/[<>]/i', $user['lastname'])) {
+			$result->addError(_('Lastname may not contain "<" or ">"'));
+		} // if
 
         // Check a firstname is entered
         if (strlen($user['firstname']) < 2) {
