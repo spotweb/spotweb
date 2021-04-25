@@ -497,12 +497,12 @@ class Services_User_Record
 
         // Check if username contains left and right chevrons.
         if (preg_match('/[<>]/i', $user['username'])) {
-            $result->addError(_('Lastname may not contain "<" or ">"'));
+            $result->addError(_('Username may not contain "<" or ">"'));
         } // if
 
         // Check if username contains left and right chevrons.
         if (preg_match('/[<>]/i', $user['firstname'])) {
-            $result->addError(_('Lastname may not contain "<" or ">"'));
+            $result->addError(_('Firstname may not contain "<" or ">"'));
         } // if
 
         // Check if username contains left and right chevrons.
