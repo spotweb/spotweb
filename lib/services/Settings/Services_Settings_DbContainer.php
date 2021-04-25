@@ -71,13 +71,12 @@ class Services_Settings_DbContainer implements Services_Settings_IContainer
      * @return void
      */
     public function set($name, $value)
-    {		
-							
-		if (strpos($name, 'customcss') !== false) {
-			$value = strip_tags($value);
-			$value = htmlspecialchars($value, ENT_HTML5 | ENT_NOQUOTES | ENT_SUBSTITUTE, 'utf-8');
-			}
-			
+    {
+        if (strpos($name, 'customcss') !== false) {
+            $value = strip_tags($value);
+            $value = htmlspecialchars($value, ENT_HTML5 | ENT_NOQUOTES | ENT_SUBSTITUTE, 'utf-8');
+        }
+
         $this->_settingsDao->updateSetting($name, $value);
     }
 

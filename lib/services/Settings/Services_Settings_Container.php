@@ -98,12 +98,12 @@ class Services_Settings_Container
     {
         // Make sure we update our own settings system
         self::$_settings[$name] = $value;
-		
-			if (strpos($name, 'customcss') !== false) {
-			$value = strip_tags($value);
-			$value = htmlspecialchars($value, ENT_HTML5 | ENT_NOQUOTES | ENT_SUBSTITUTE, 'utf-8');
-			}
-			
+
+        if (strpos($name, 'customcss') !== false) {
+            $value = strip_tags($value);
+            $value = htmlspecialchars($value, ENT_HTML5 | ENT_NOQUOTES | ENT_SUBSTITUTE, 'utf-8');
+        }
+
         foreach (self::$_sources as $src) {
             $src->set($name, $value);
         } // foreach
