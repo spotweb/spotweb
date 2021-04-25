@@ -415,6 +415,12 @@ class Services_User_Record
         if (strlen($prefs['customcss']) > 1024 * 10) {
             $result->addError(_('Custom CSS is too large'));
         } // if
+        
+        // Remove < and > chevrons from Custom CSS
+        if (preg_match('/[<>]/i', $prefs['customcss'])) {	
+			$prefs['customcss'] = strip_tags($prefs['customcss']);
+			$prefs['customcss'] = htmlspecialchars($prefs['customcss'], ENT_HTML5 | ENT_NOQUOTES | ENT_SUBSTITUTE, 'utf-8');			
+		}
 
         // We don't want to save megabytes of default newspot body, so limit it
         if (strlen($prefs['newspotdefault_tag']) > 90) {
