@@ -328,7 +328,6 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'Notifications_Email' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Email.php',
         'Notifications_Factory' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Factory.php',
         'Notifications_Growl' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Growl.php',
-        'Notifications_NMA' => __DIR__ . '/../..' . '/lib/notifications/Notifications_NMA.php',
         'Notifications_Prowl' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Prowl.php',
         'Notifications_Twitter' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Twitter.php',
         'Notifications_abs' => __DIR__ . '/../..' . '/lib/notifications/Notifications_abs.php',
