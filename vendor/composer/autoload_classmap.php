@@ -114,7 +114,6 @@ return array(
     'Notifications_Email' => $baseDir . '/lib/notifications/Notifications_Email.php',
     'Notifications_Factory' => $baseDir . '/lib/notifications/Notifications_Factory.php',
     'Notifications_Growl' => $baseDir . '/lib/notifications/Notifications_Growl.php',
-    'Notifications_NMA' => $baseDir . '/lib/notifications/Notifications_NMA.php',
     'Notifications_Prowl' => $baseDir . '/lib/notifications/Notifications_Prowl.php',
     'Notifications_Twitter' => $baseDir . '/lib/notifications/Notifications_Twitter.php',
     'Notifications_abs' => $baseDir . '/lib/notifications/Notifications_abs.php',
