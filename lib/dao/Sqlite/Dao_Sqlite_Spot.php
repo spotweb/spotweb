@@ -190,7 +190,7 @@ class Dao_Sqlite_Spot extends Dao_Base_Spot
                 PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
                 PDO::PARAM_STR, PDO::PARAM_STR, ],
             ['messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
-                'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', ]
+                'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', ], ''
         );
 
         if (!empty($fullSpots)) {

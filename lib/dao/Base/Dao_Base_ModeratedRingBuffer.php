@@ -54,7 +54,7 @@ class Dao_Base_ModeratedRingBuffer implements Dao_ModeratedRingBuffer
             $idList,
             'INSERT INTO moderatedringbuffer(messageid) VALUES ',
             [PDO::PARAM_STR],
-            ['messageid']
+            ['messageid'], ''
         );
     }
 

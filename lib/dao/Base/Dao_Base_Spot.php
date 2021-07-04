@@ -599,7 +599,7 @@ class Dao_Base_Spot implements Dao_Spot
             'INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES',
             [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml']
+            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'], ''
         );
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);
