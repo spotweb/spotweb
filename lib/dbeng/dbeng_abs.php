@@ -88,7 +88,7 @@ abstract class dbeng_abs
      * Transforms an array of values to an list usable by an
      * IN statement
      */
-    abstract public function batchInsert($ar, $sql, $typs, $fields);
+    abstract public function batchInsert($ar, $sql, $typs, $fields, $sql2);
 
     /*
      * Executes the query and returns the (resource or handle)

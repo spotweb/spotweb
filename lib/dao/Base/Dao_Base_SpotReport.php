@@ -87,7 +87,7 @@ class Dao_Base_SpotReport implements Dao_SpotReport
             $reportList,
             'INSERT INTO reportsxover(messageid, fromhdr, keyword, nntpref) VALUES',
             [PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'fromhdr', 'keyword', 'nntpref']
+            ['messageid', 'fromhdr', 'keyword', 'nntpref'], ''
         );
     }
 
