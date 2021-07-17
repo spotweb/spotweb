@@ -23,7 +23,8 @@ class Dao_Postgresql_Spot extends Dao_Base_Spot
             'INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES',
             [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'], 'ON CONFLICT (messageid) DO NOTHING'
+            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'],
+            'ON CONFLICT (messageid) DO NOTHING'
         );
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);
