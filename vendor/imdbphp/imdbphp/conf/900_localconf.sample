@@ -1,0 +1,62 @@
+;
+; Rename this file to 9??_*.ini (e.g. 900_localconf.ini) and adjust the values
+; below to your needs. They will then overrule defaults from
+; \Imdb\Config class in src/Imdb/Config.php
+; For explanations of the options, please see src/Imdb/Config.php
+;
+; This is just an example file and might not contain all settings available.
+;
+
+[sites]
+; IMDB server to use.
+; imdbsite = "www.imdb.com"
+; Tell IMDB which is the preferred language (e.g. en-US, de-DE, pt-BR)
+; language = 
+
+[cache]
+; Directory to store the cache files
+; cachedir = '/path/to/cache/'
+; use cache for reading if available?
+usecache = 1
+; Store the pages retrieved for later use?
+storecache = 1
+; Use zip compression for caching the retrieved html-files?
+usezip = 1
+; Convert non-zip cache-files to zip (check file permissions!)?
+converttozip = 0
+; Cache expiration: 3600 = 1h, 86400 = 1d, 604800 = 1w (default), 2592000 = 1m
+cache_expire = 604800
+
+[images]
+; Where to store images retrieved from the IMDB site
+photodir = './images/'
+; URL corresponding to photodir
+photoroot = './images/'
+; Where the local IMDB images reside (look for the "showtimes/" directory)
+imdb_img_url = './imgs/'
+
+[misc]
+; Enable debug mode?
+debug = 0
+; Throw exceptions when a request to fetch some content fails?
+; throwHttpExceptions = 1
+
+[proxy]
+; Enable HTTP-Proxy support
+; use_proxy = 0
+; Set originating IP address of a client connecting to a web server through an HTTP proxy or a load balancer.
+; ip_address = ''
+; Set hostname of HTTP-Proxy
+; proxy_host = ''
+; Set port on which HTTP-Proxy is listening
+; proxy_port = ''
+; Set username for authentication against HTTP-Proxy, if the proxy requires login.
+; proxy_user = ''
+; Set password for authentication against HTTP-Proxy, if the proxy requires login.
+; proxy_pw = ''
+
+[tweaks]
+; Set the default user agent (if none is detected)
+; default_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0'
+; Enforce the use of a special user agent
+; force_agent = ''
