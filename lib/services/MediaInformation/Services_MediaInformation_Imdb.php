@@ -1,5 +1,5 @@
 <?php
-use imdbphp\Ímdb;
+use imdbphp\Imdb;
 class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs
 {
     /**
