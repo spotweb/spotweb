@@ -117,8 +117,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
                  */
                 $svcMediaInfoTvmaze = new Services_MediaInformation_Tvmaze($this->_daoFactory->getCacheDao());
                 $svcMediaInfoTvmaze->setSearchid($this->_params['rid']);
-                $tvInfo = $svcMediaInfoTvmaze->retrieveInfo();
                 $svcMediaInfoTvmaze->setSearchName('tvrage'); // Indicate tvmazeid usage
+                $tvInfo = $svcMediaInfoTvmaze->retrieveInfo();
                 $found = $tvInfo->isValid();
             }
             // third search on q (showname) if present
@@ -231,8 +231,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 * Actually retrieve the information from imdb, based on the
                 * imdbid passed by the API
                 */
-                $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
-                $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
+				$svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
+				$svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
                 $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
 
                 if (!$imdbInfo->isValid()) {

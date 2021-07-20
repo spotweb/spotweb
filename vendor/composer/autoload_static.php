@@ -46,6 +46,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
@@ -63,6 +64,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
             'Laminas\\Xml\\' => 12,
             'Laminas\\Xml2Json\\' => 17,
             'Laminas\\Json\\' => 13,
+        ),
+        'I' => 
+        array (
+            'Imdb\\' => 5,
         ),
         'G' => 
         array (
@@ -132,6 +137,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         array (
             0 => __DIR__ . '/..' . '/symfony/config',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -175,6 +184,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'Laminas\\Json\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-json/src',
+        ),
+        'Imdb\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/imdbphp/imdbphp/src/Imdb',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (

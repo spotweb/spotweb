@@ -1,0 +1,11 @@
+language: php
+matrix:
+  include:
+    - php: 7.3
+    - php: 7.4
+    - php: 8.0
+install:
+  composer install
+script:
+  - composer test
+  - composer phpstan

@@ -19,7 +19,8 @@
     "phpcompatibility/php-compatibility": "*",
     "php-coveralls/php-coveralls": ">=2.0",
     "phpmailer/phpmailer": "^6.1",
-    "symfony/polyfill-mbstring": "^1.15"
+    "symfony/polyfill-mbstring": "^1.15",
+    "imdbphp/imdbphp": "^7.2"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.6.2"
