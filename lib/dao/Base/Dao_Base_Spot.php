@@ -31,6 +31,50 @@ class Dao_Base_Spot implements Dao_Spot
         $criteriaFilter = ' WHERE (bl.spotterid IS NULL) ';
         if (!empty($parsedSearch['filter'])) {
             $criteriaFilter .= ' AND '.$parsedSearch['filter'];
+
+            /* Blacklisted SQL commands */
+
+            $notAllowedCommands = [
+                'DELETE',
+                'TRUNCATE',
+                'AS',
+                'DROP',
+                'USE',
+                'SELECT',
+                'SLEEP',
+                'UPDATE',
+                'ALTER',
+                'CREATE',
+                'RENAME',
+                'GRANT',
+                'REVOKE',
+                'BETWEEN',
+                'COMMIT',
+                'SAVEPOINT',
+                'EXISTS',
+                'GROUP',
+                'HAVING',
+                'INTO',
+                'INSERT',
+                'ORDER',
+                'BY',
+                'UNION',
+                'LEFT',
+                'RIGHT',
+                'FULL',
+            ];
+
+            /* Check $criteriaFilter for blacklisted SQL commands */
+
+            if (preg_match_all("/\b(".implode('|', $notAllowedCommands).")\b/i", $criteriaFilter, $matches) == true) {
+                echo '<script language="javascript">';
+                echo 'alert("This query is not allowed!")';
+                echo '</script>';
+                echo '<script language = "javascript">';
+                echo 'window.location.href = "/?search[tree]=&search[unfiltered]=true"';
+                echo '</script>';
+                exit();
+            } // if
         } // if
 
         /*
@@ -226,7 +270,14 @@ class Dao_Base_Spot implements Dao_Spot
     public function updateSpotRating($spotMsgIdList)
     {
         // Empty list provided? Exit
-        if (count($spotMsgIdList) == 0) {
+        if (!is_array($spotMsgIdList) || count($spotMsgIdList) == 0) {
+            return;
+        } // if
+
+        // prepare a list of IN values
+        $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
 
@@ -241,7 +292,7 @@ class Dao_Base_Spot implements Dao_Spot
 										spots.messageid = commentsxover.nntpref 
 										AND spotrating BETWEEN 1 AND 10
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN ('.$this->_conn->arrayKeyToIn($spotMsgIdList).')
+							WHERE spots.messageid IN ('.$msgIdList.')
 						');
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$spotMsgIdList]);
     }
@@ -254,7 +305,14 @@ class Dao_Base_Spot implements Dao_Spot
     public function updateSpotCommentCount($spotMsgIdList)
     {
         // Empty list provided? Exit
-        if (count($spotMsgIdList) == 0) {
+        if (!is_array($spotMsgIdList) || count($spotMsgIdList) == 0) {
+            return;
+        } // if
+
+        // prepare a list of IN values
+        $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
 
@@ -266,7 +324,7 @@ class Dao_Base_Spot implements Dao_Spot
 									 WHERE 
 										spots.messageid = commentsxover.nntpref 
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN ('.$this->_conn->arrayKeyToIn($spotMsgIdList).')
+							WHERE spots.messageid IN ('.$msgIdList.')
 						');
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$spotMsgIdList]);
     }
@@ -279,7 +337,14 @@ class Dao_Base_Spot implements Dao_Spot
     public function updateSpotReportCount($spotMsgIdList)
     {
         // Empty list provided? Exit
-        if (count($spotMsgIdList) == 0) {
+        if (!is_array($spotMsgIdList) || count($spotMsgIdList) == 0) {
+            return;
+        } // if
+
+        // prepare a list of IN values
+        $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
 
@@ -291,7 +356,7 @@ class Dao_Base_Spot implements Dao_Spot
 									 WHERE 
 										spots.messageid = reportsxover.nntpref 
 									 GROUP BY nntpref)
-							WHERE spots.messageid IN ('.$this->_conn->arrayKeyToIn($spotMsgIdList).')
+							WHERE spots.messageid IN ('.$msgIdList.')
 						');
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$spotMsgIdList]);
     }
@@ -303,15 +368,22 @@ class Dao_Base_Spot implements Dao_Spot
      */
     public function getDisposedSpots($spotMsgIdList)
     {
-        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
         $tmparray = [];
+
         // Empty list provided? Exit
-        if (count($spotMsgIdList) == 0) {
+        if (!is_array($spotMsgIdList) || count($spotMsgIdList) == 0) {
             return $tmparray;
         } // if
 
         // prepare a list of IN values
         $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
+            return $tmparray;
+        } // if
+
+        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
+
         $msgIdList = '('.$msgIdList.')';
 
         $tmpArray = $this->_conn->arrayQuery('SELECT s.messageid AS messageid, s.spotterid AS spotterid, s.stamp AS stamp
@@ -328,14 +400,18 @@ class Dao_Base_Spot implements Dao_Spot
     public function removeSpots($spotMsgIdList)
     {
         // Empty list provided? Exit
-        if (count($spotMsgIdList) == 0) {
+        if (!is_array($spotMsgIdList) || count($spotMsgIdList) == 0) {
+            return;
+        } // if
+
+        // prepare a list of IN values
+        $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
 
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
-
-        // prepare a list of IN values
-        $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
 
         $this->_conn->modify('DELETE FROM spots WHERE messageid IN ('.$msgIdList.')');
         $this->_conn->modify('DELETE FROM spotsfull WHERE messageid  IN ('.$msgIdList.')');
@@ -356,14 +432,20 @@ class Dao_Base_Spot implements Dao_Spot
     public function markSpotsModerated($spotMsgIdList)
     {
         // Empty list provided? Exit
-        if (count($spotMsgIdList) == 0) {
+        if (!is_array($spotMsgIdList) || count($spotMsgIdList) == 0) {
+            return;
+        } // if
+
+        // prepare a list of IN values
+        $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
 
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
         $this->_conn->modify(
-            'UPDATE spots SET moderated = :moderated WHERE messageid IN ('.
-                                $this->_conn->arrayKeyToIn($spotMsgIdList).')',
+            'UPDATE spots SET moderated = :moderated WHERE messageid IN ('.$msgIdList.')',
             [
                 ':moderated' => [true, PDO::PARAM_BOOL],
             ]
@@ -460,7 +542,8 @@ class Dao_Base_Spot implements Dao_Spot
                 PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR,
                 PDO::PARAM_INT, PDO::PARAM_STR, ],
             ['messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
-                'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', ]
+                'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', ],
+            ''
         );
 
         if (!empty($fullSpots)) {
@@ -517,7 +600,8 @@ class Dao_Base_Spot implements Dao_Spot
             'INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES',
             [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml']
+            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'],
+            ''
         );
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);
@@ -614,14 +698,18 @@ class Dao_Base_Spot implements Dao_Spot
         $idList = ['spot' => [], 'fullspot' => []];
 
         // Empty list, exit
-        if (count($hdrList) == 0) {
+        if (!is_array($hdrList) || count($hdrList) == 0) {
+            return $idList;
+        } // if
+
+        // Prepare a list of values
+        $msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
+
+        if (!isset($msgIdList) || $msgIdList == '') {
             return $idList;
         } // if
 
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
-
-        // Prepare a list of values
-        $msgIdList = $this->_conn->arrayValToIn($hdrList, 'Message-ID');
 
         // Because MySQL doesn't know anything about full joins, we use this trick
         $rs = $this->_conn->arrayQuery("SELECT messageid AS spot, '' AS fullspot FROM spots WHERE messageid IN (".$msgIdList.")

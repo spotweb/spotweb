@@ -412,16 +412,22 @@ class Services_User_Record
         $prefs['notifications']['twitter']['request_token_secret'] = $currentPrefs['notifications']['twitter']['request_token_secret'];
 
         // We don't want to save megabyts of CSS, so put a limit to the size
-        if (strlen($prefs['customcss'] > 1024 * 10)) {
+        if (strlen($prefs['customcss']) > 1024 * 10) {
             $result->addError(_('Custom CSS is too large'));
         } // if
 
+        // Remove < and > chevrons from Custom CSS
+        if (preg_match('/[<>]/i', $prefs['customcss'])) {
+            $prefs['customcss'] = strip_tags($prefs['customcss']);
+            $prefs['customcss'] = htmlspecialchars($prefs['customcss'], ENT_HTML5 | ENT_NOQUOTES | ENT_SUBSTITUTE, 'utf-8');
+        }
+
         // We don't want to save megabytes of default newspot body, so limit it
-        if (strlen($prefs['newspotdefault_tag'] > 90)) {
+        if (strlen($prefs['newspotdefault_tag']) > 90) {
             $result->addError(_('Default value for a spots\' tag is too long'));
         } // if
 
-        if (strlen($prefs['newspotdefault_body'] > 9000)) {
+        if (strlen($prefs['newspotdefault_body']) > 9000) {
             $result->addError(_('Default value for a spots\' body is too long'));
         } // if
 
@@ -443,13 +449,6 @@ class Services_User_Record
         if ($prefs['notifications']['growl']['enabled']) {
             if (empty($prefs['notifications']['growl']['host'])) {
                 $result->addError(_('Growl notifications require a growl host to be entered'));
-            } // if
-        } // if
-
-        // 'Notify My Android' requires an API key
-        if ($prefs['notifications']['nma']['enabled']) {
-            if (empty($prefs['notifications']['nma']['api'])) {
-                $result->addError(_('"Notify My Android" notifications require an API key'));
             } // if
         } // if
 
@@ -496,6 +495,21 @@ class Services_User_Record
             } // if
         } // if
 
+        // Check if username contains left and right chevrons.
+        if (preg_match('/[<>]/i', $user['username'])) {
+            $result->addError(_('Username may not contain "<" or ">"'));
+        } // if
+
+        // Check if username contains left and right chevrons.
+        if (preg_match('/[<>]/i', $user['firstname'])) {
+            $result->addError(_('Firstname may not contain "<" or ">"'));
+        } // if
+
+        // Check if username contains left and right chevrons.
+        if (preg_match('/[<>]/i', $user['lastname'])) {
+            $result->addError(_('Lastname may not contain "<" or ">"'));
+        } // if
+
         // Check a firstname is entered
         if (strlen($user['firstname']) < 2) {
             $result->addError(_('Not a valid firstname'));
@@ -507,7 +521,7 @@ class Services_User_Record
         } // if
 
         // Make sure a valid password is entered for existing users
-        if ((strlen($user['newpassword1'] > 0)) && ($isEdit)) {
+        if ((strlen($user['newpassword1']) > 0) && ($isEdit)) {
             if (strlen($user['newpassword1']) < 5) {
                 $result->addError(_('Entered password is too short'));
             } // if

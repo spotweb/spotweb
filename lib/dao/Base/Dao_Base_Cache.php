@@ -745,6 +745,10 @@ class Dao_Base_Cache implements Dao_Cache
         $idList = [];
         $msgIdList = $this->_conn->arrayValToIn($resourceIdList, 'Message-ID');
 
+        if (!isset($msgIdList) || $msgIdList == '') {
+            return [];
+        } // if
+
         $rs = $this->_conn->arrayQuery(
             'SELECT resourceid, cachetype
                                             FROM cache

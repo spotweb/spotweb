@@ -88,7 +88,7 @@ abstract class dbeng_abs
      * Transforms an array of values to an list usable by an
      * IN statement
      */
-    abstract public function batchInsert($ar, $sql, $typs, $fields);
+    abstract public function batchInsert($ar, $sql, $typs, $fields, $sql2);
 
     /*
      * Executes the query and returns the (resource or handle)
@@ -109,9 +109,17 @@ abstract class dbeng_abs
     {
         $tmpList = '';
 
+        if (!is_array($ar) || count($ar) == 0) {
+            return $tmpList;
+        } // if
+
         foreach ($ar as $k => $v) {
             $tmpList .= $this->safe((string) $k).',';
         } // foreach
+
+        if (empty($tmpList)) {
+            return $tmpList;
+        } // if
 
         return substr($tmpList, 0, -1);
     }
@@ -125,12 +133,21 @@ abstract class dbeng_abs
     public function arrayKeyToInForComments($ar)
     {
         $tmpList = '';
+
+        if (!is_array($ar) || count($ar) == 0) {
+            return $tmpList;
+        } // if
+
         foreach ($ar as $k => $v) {
             // Exclude messageid's from spots which are disposed by the owner, only process real disposes
             if ($v['spotterid'] == '') {
                 $tmpList .= $this->safe($k).',';
             }
         } // foreach
+
+        if (empty($tmpList)) {
+            return $tmpList;
+        } // if
 
         return substr($tmpList, 0, -1);
     }
@@ -145,9 +162,17 @@ abstract class dbeng_abs
     {
         $tmpList = '';
 
+        if (!is_array($ar) || count($ar) == 0) {
+            return $tmpList;
+        } // if
+
         foreach ($ar as $v) {
             $tmpList .= $this->safe((string) $v[$val]).',';
         } // foreach
+
+        if (empty($tmpList)) {
+            return $tmpList;
+        } // if
 
         return substr($tmpList, 0, -1);
     }

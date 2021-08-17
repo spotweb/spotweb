@@ -4,8 +4,8 @@
  * Define several version constants
  * used throughput Spotweb
  */
-define('SPOTWEB_SETTINGS_VERSION', '0.32');
-define('SPOTWEB_SECURITY_VERSION', '0.33');
+define('SPOTWEB_SETTINGS_VERSION', '0.33');
+define('SPOTWEB_SECURITY_VERSION', '0.34');
 define('SPOTDB_SCHEMA_VERSION', '0.68');
 define('SPOTWEB_VERSION', '0.'.(SPOTDB_SCHEMA_VERSION * 100).'.'.(SPOTWEB_SETTINGS_VERSION * 100).'.'.(SPOTWEB_SECURITY_VERSION * 100));
 
@@ -79,7 +79,9 @@ class Bootstrap
          * Disable XML entity loader as this might be an
          * security issue.
          */
-        libxml_disable_entity_loader(true);
+        if (\PHP_VERSION_ID < 80000) {
+            libxml_disable_entity_loader(true);
+        }
 
         SpotTiming::stop('bootstrap');
 

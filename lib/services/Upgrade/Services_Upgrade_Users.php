@@ -300,8 +300,8 @@ class Services_Upgrade_Users
             $this->setSettingIfNot($user['prefs']['notifications']['boxcar'], 'email', '');
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
-            $this->setSettingIfNot($user['prefs']['notifications']['nma'], 'api', '');
-            /* Notifo is discontinued. */
+            /* Notifo and NMA are discontinued. */
+            $this->unsetSetting($user['prefs']['notifications'], 'nma');
             $this->unsetSetting($user['prefs']['notifications'], 'notifo');
             $this->setSettingIfNot($user['prefs']['notifications']['prowl'], 'apikey', '');
             $this->setSettingIfNot($user['prefs']['notifications']['twitter'], 'screen_name', '');
@@ -434,7 +434,6 @@ class Services_Upgrade_Users
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'email')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'twitter')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'prowl')");
-            $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'nma')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'boxcar')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, '.SpotSecurity::spotsec_send_notifications_services.", 'growl')");
 
