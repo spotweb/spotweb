@@ -628,7 +628,7 @@ class Services_Search_QueryParser
                             'tablealias'                  => 'spost',
                             'jointype'                    => 'LEFT',
                             'joincondition'               => 'spost.messageid = s.messageid', ];
-                        $tmpFilterValue = ' (spost.ouruserid = '.$this->_dbEng->safe((int) $currentSession['user']['userid']).') ';
+                        $tmpFilterValue = ' (spots.ouruserid = '.$this->_dbEng->safe((int) $currentSession['user']['userid']).') ';
                         $sortFields[] = ['field' => 'spost.stamp',
                             'direction'          => 'DESC',
                             'autoadded'          => true,
@@ -683,7 +683,9 @@ class Services_Search_QueryParser
                         /** @noinspection PhpMissingBreakStatementInspection */
                         case 'g': $val *= (float) 1024;
                         /** @noinspection PhpMissingBreakStatementInspection */
+                        // no break
                         case 'm': $val *= (float) 1024;
+                        // no break
                         case 'k': $val *= (float) 1024;
                     } // switch
                     $tmpFilterValue = round($val, 0);
