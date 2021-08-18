@@ -625,11 +625,11 @@ class Services_Search_QueryParser
                     case 'mypostedspots':
                         $additionalFields[] = '1 AS mypostedspot';
                         $additionalJoins[] = ['tablename' => 'spotsposted',
-                            'tablealias'                  => 'spost',
+                            'tablealias'                  => 'spots',
                             'jointype'                    => 'LEFT',
-                            'joincondition'               => 'spost.messageid = s.messageid', ];
+                            'joincondition'               => 'spots.messageid = s.messageid', ];
                         $tmpFilterValue = ' (spotsposted.ouruserid = '.$this->_dbEng->safe((int) $currentSession['user']['userid']).') ';
-                        $sortFields[] = ['field' => 'spost.stamp',
+                        $sortFields[] = ['field' => 'spots.stamp',
                             'direction'          => 'DESC',
                             'autoadded'          => true,
                             'friendlyname'       => null, ];
