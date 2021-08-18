@@ -46,6 +46,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
@@ -63,6 +64,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
             'Laminas\\Xml\\' => 12,
             'Laminas\\Xml2Json\\' => 17,
             'Laminas\\Json\\' => 13,
+        ),
+        'I' => 
+        array (
+            'Imdb\\' => 5,
         ),
         'G' => 
         array (
@@ -132,6 +137,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         array (
             0 => __DIR__ . '/..' . '/symfony/config',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -175,6 +184,10 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'Laminas\\Json\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-json/src',
+        ),
+        'Imdb\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/imdbphp/imdbphp/src/Imdb',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -328,11 +341,9 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'Notifications_Email' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Email.php',
         'Notifications_Factory' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Factory.php',
         'Notifications_Growl' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Growl.php',
-        'Notifications_NMA' => __DIR__ . '/../..' . '/lib/notifications/Notifications_NMA.php',
         'Notifications_Prowl' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Prowl.php',
         'Notifications_Twitter' => __DIR__ . '/../..' . '/lib/notifications/Notifications_Twitter.php',
         'Notifications_abs' => __DIR__ . '/../..' . '/lib/notifications/Notifications_abs.php',
-        'NotifyMyAndroid' => __DIR__ . '/..' . '/uskr/nma-php/class.nma.php',
         'OwnsettingsCreatedOutputException' => __DIR__ . '/../..' . '/lib/exceptions/OwnsettingsCreatedOutputException.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/AssertionFailedError.php',

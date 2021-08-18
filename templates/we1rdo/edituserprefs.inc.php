@@ -490,23 +490,6 @@ if (!$dialogembedded) { ?>
 			</fieldset>
 <?php } ?>
 
-<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'nma')) { ?>
-<!-- Notify My Android -->
-			<fieldset>
-				<dt><label for="use_nma"><?php echo _('Use Notiy My Android?'); ?></label></dt>
-				<dd><input type="checkbox" class="enabler" name="edituserprefsform[notifications][nma][enabled]" id="use_nma" <?php if ($edituserprefsform['notifications']['nma']['enabled']) {
-    echo 'checked="checked"';
-} ?>></dd>
-
-				<fieldset id="content_use_nma" class="notificationSettings">
-					<dt><label for="edituserprefsform[notifications][nma][api]">Notify My Android <a href="https://www.notifymyandroid.com/account.php"><?php echo _('API key'); ?></a>?</label></dt>
-					<dd><input type="text" name="edituserprefsform[notifications][nma][api]" value="<?php echo htmlspecialchars($edituserprefsform['notifications']['nma']['api']); ?>"></dd>
-
-					<?php showNotificationOptions('nma', $edituserprefsform, $tplHelper); ?>
-				</fieldset>
-			</fieldset>
-<?php } ?>
-
 <?php if (version_compare(PHP_VERSION, '5.3.0') >= 0) { ?>
 	<?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, 'prowl')) { ?>
 <!-- Prowl -->

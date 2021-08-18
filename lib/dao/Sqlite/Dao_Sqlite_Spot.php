@@ -23,7 +23,8 @@ class Dao_Sqlite_Spot extends Dao_Base_Spot
             'INSERT INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES',
             [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml']
+            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'],
+            ''
         );
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);
@@ -190,7 +191,8 @@ class Dao_Sqlite_Spot extends Dao_Base_Spot
                 PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_INT,
                 PDO::PARAM_STR, PDO::PARAM_STR, ],
             ['messageid', 'poster', 'title', 'tag', 'category', 'subcata', 'subcatb', 'subcatc',
-                'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', ]
+                'subcatd', 'subcatz', 'stamp', 'reversestamp', 'filesize', 'spotterid', ],
+            ''
         );
 
         if (!empty($fullSpots)) {

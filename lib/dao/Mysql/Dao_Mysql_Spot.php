@@ -23,7 +23,8 @@ class Dao_Mysql_Spot extends Dao_Base_Spot
             'INSERT IGNORE INTO spotsfull(messageid, verified, usersignature, userkey, xmlsignature, fullxml)
 								  	VALUES',
             [PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR],
-            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml']
+            ['messageid', 'verified', 'user-signature', 'user-key', 'xml-signature', 'fullxml'],
+            ''
         );
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$fullSpots]);
@@ -36,7 +37,14 @@ class Dao_Mysql_Spot extends Dao_Base_Spot
      */
     public function removeSpots($spotMsgIdList)
     {
-        if (count($spotMsgIdList) == 0) {
+        if (!is_array($spotMsgIdList) || count($spotMsgIdList) == 0) {
+            return;
+        } // if
+
+        // prepare a list of IN values
+        $msgIdList = $this->_conn->arrayKeyToIn($spotMsgIdList);
+
+        if (!isset($msgIdList) || $msgIdList == '') {
             return;
         } // if
 
@@ -45,7 +53,7 @@ class Dao_Mysql_Spot extends Dao_Base_Spot
                             LEFT JOIN reportsxover ON spots.messageid=reportsxover.nntpref
 							LEFT JOIN spotstatelist ON spots.messageid=spotstatelist.messageid
 							LEFT JOIN reportsposted ON spots.messageid=reportsposted.inreplyto
-							WHERE spots.messageid  IN ('.$this->_conn->arrayKeyToIn($spotMsgIdList).')');
+							WHERE spots.messageid  IN ('.$msgIdList.')');
     }
 
     // removeSpots

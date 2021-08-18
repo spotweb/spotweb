@@ -56,7 +56,7 @@
 				<td> 
 <?php
         echo '<a href="'.$tplHelper->makeEditUserUrl($user['userid'], 'edit').'" '.
-                'onclick="return openDialog(\'editdialogdiv\', \''.vsprintf(_('Editting user preferences for \\\'%s\\\''), $user['username']).'\', \'?page=edituserprefs&userid='.$user['userid'].'&dialogembedded=1\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, function() { initializeUserPreferencesScreen(); }); "><span class="ui-icon ui-icon-pencil"></span></a>'; ?> 
+                'onclick="return openDialog(\'editdialogdiv\', \''.sprintf(_('Editting user preferences for \\\'%s\\\''), $user['username']).'\', \'?page=edituserprefs&userid='.$user['userid'].'&dialogembedded=1\', null, \'autoclose\', function() { refreshTab(\'usermanagementtabs\')}, function() { initializeUserPreferencesScreen(); }); "><span class="ui-icon ui-icon-pencil"></span></a>'; ?> 
 				</td>
 		</tr>
 <?php

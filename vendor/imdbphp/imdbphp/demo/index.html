@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>IMDbPHP - Movie Search</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h2 class="text-center">Movie Search</h2>
+    <form action="search.php" method="get">
+      <table>
+        <tr><th colspan="2">IMDbPHP</th></tr>
+        <tr>
+          <td class="bb-none text-right pl-10 pr-10">Name:</td>
+          <td>
+            <input type="text" name="name" size="30" maxlength="50"><br>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-right pl-10 pr-10">Type:</td>
+          <td>
+            <select name="searchtype">
+              <option value="movie">Movie</option>
+              <option value="episode">Episode</option>
+              <option value="nm">Person</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-right pl-10 pr-10">or IMDb ID:</td>
+          <td><input type="text" name="mid" size="30" maxlength="10"></td>
+        </tr>
+        <tr><td colspan="2" class="text-center"><input type="submit" value="search"></td></tr>
+      </table>
+    </form>
+    <p class="text-center"><a href="cache.php">View cache contents</a></p>
+  </body>
+</html>

@@ -14,11 +14,19 @@ class Services_MediaInformation_Tvmaze extends Services_MediaInformation_Abs
          * Create URL to retrive info from, for this provider
          * we only support direct id lookups for now
          */
-        if ($this->getSearchName() == 'tvmaze') {
-            $url = 'http://api.tvmaze.com/shows/'.$this->getSearchid();
-        } else {
-            $url = 'http://api.tvmaze.com/lookup/shows?tvrage='.$this->getSearchid();
-        } //if
+        switch ($this->getSearchName()) {
+            case 'tvmaze':
+                $url = 'http://api.tvmaze.com/shows/'.$this->getSearchid();
+                break;
+            case 'tvrage':
+                $url = 'http://api.tvmaze.com/lookup/shows?tvrage='.$this->getSearchid();
+                break;
+            case 'imdbid':
+                $url = 'http://api.tvmaze.com/lookup/shows?imdb='.'tt'.$this->getSearchid();
+                break;
+            default:
+                return $mediaInfo;
+        }
 
         list($http_code, $tvmaze) = $this->_httpProvider->performCachedGet($url, false, 31 * 24 * 60 * 60);
 

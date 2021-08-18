@@ -216,7 +216,7 @@ abstract class dbeng_pdo extends dbeng_abs
      * Transforms an array of values to an list usable by an
      * IN statement
      */
-    public function batchInsert($ar, $sql, $typs, $fields)
+    public function batchInsert($ar, $sql, $typs, $fields, $sql2)
     {
         $this->beginTransaction();
 
@@ -224,7 +224,7 @@ abstract class dbeng_pdo extends dbeng_abs
          * Sanity check
          */
         if (count($typs) != count($fields)) {
-            exit('SQL wrong. Nr of types='.count($typs).' nr of fields='.count($fields).' sql='.$sql);
+            exit('SQL wrong. Nr of types='.count($typs).' nr of fields='.count($fields).' sql='.$sql.' sql2='.$sql2);
         } // if
 
         /*
@@ -244,7 +244,7 @@ abstract class dbeng_pdo extends dbeng_abs
             $placeHolderPerRow = '('.substr(str_repeat('?,', count($fields)), 0, -1).'),';
             $placeHolders = substr(str_repeat($placeHolderPerRow, count($items)), 0, -1);
 
-            $stmt = $this->_conn->prepare($sql.$placeHolders);
+            $stmt = $this->_conn->prepare($sql.$placeHolders.$sql2);
             if (!$stmt instanceof PDOStatement) {
                 $x = $stmt->errorInfo();
 
