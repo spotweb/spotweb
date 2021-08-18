@@ -432,7 +432,7 @@ try {
             $page->render();
             break;
          // twitteroauth
-
+/*
         case 'statistics':
             $page = new SpotPage_statistics(
                 $daoFactory,
@@ -442,6 +442,7 @@ try {
             );
             $page->render();
             break;
+            */
          // statistics
 
         default:
