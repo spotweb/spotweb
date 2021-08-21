@@ -55,7 +55,6 @@ class SpotNotifications
     public function register()
     {
         if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-
             $notifProviders = Notifications_Factory::getActiveServices();
             foreach ($notifProviders as $notifProvider) {
                 if ($this->_currentSession['user']['prefs']['notifications'][$notifProvider]['enabled']) {
