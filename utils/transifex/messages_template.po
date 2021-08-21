@@ -809,12 +809,6 @@ msgstr ""
 msgid "API-Key for NZBVortex?"
 msgstr ""
 
-msgid "Use Boxcar?"
-msgstr ""
-
-msgid "Boxcar e-mail address?"
-msgstr ""
-
 msgid "Send e-mail to"
 msgstr ""
 
