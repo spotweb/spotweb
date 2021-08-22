@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c70c60d3243ea99853fa2832de2759ab",
+    "content-hash": "c7536fdac684fd6b1deb2a33434d32dd",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -53,52 +53,6 @@
                 "twitter"
             ],
             "time": "2014-11-18T00:05:59+00:00"
-        },
-        {
-            "name": "boxcar/boxcar",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mbirth/boxcar-php.git",
-                "reference": "1357299c01bca1da57391f75a5de8214d927bd4d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mbirth/boxcar-php/zipball/1357299c01bca1da57391f75a5de8214d927bd4d",
-                "reference": "1357299c01bca1da57391f75a5de8214d927bd4d",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "boxcar_api.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "ISC"
-            ],
-            "authors": [
-                {
-                    "name": "Russell Smith",
-                    "email": "russell.smith@ukd1.co.uk",
-                    "homepage": "http://www.ukd1.co.uk/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A simple boxcar provider implementation for PHP.",
-            "homepage": "https://boxcar.io/",
-            "keywords": [
-                "boxcar",
-                "ios",
-                "notifications",
-                "push"
-            ],
-            "time": "2016-08-12T20:03:30+00:00"
         },
         {
             "name": "digitalstratum/fts_parser",
@@ -3281,8 +3235,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "digitalstratum/fts_parser": 20,
-        "boxcar/boxcar": 20
+        "digitalstratum/fts_parser": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

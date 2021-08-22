@@ -50,54 +50,6 @@
         ]
     },
     {
-        "name": "boxcar/boxcar",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mbirth/boxcar-php.git",
-            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/mbirth/boxcar-php/zipball/1357299c01bca1da57391f75a5de8214d927bd4d",
-            "reference": "1357299c01bca1da57391f75a5de8214d927bd4d",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=5.3.0"
-        },
-        "time": "2016-08-12T20:03:30+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "classmap": [
-                "boxcar_api.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "ISC"
-        ],
-        "authors": [
-            {
-                "name": "Russell Smith",
-                "email": "russell.smith@ukd1.co.uk",
-                "homepage": "http://www.ukd1.co.uk/",
-                "role": "Developer"
-            }
-        ],
-        "description": "A simple boxcar provider implementation for PHP.",
-        "homepage": "https://boxcar.io/",
-        "keywords": [
-            "boxcar",
-            "ios",
-            "notifications",
-            "push"
-        ]
-    },
-    {
         "name": "digitalstratum/fts_parser",
         "version": "dev-spotweb",
         "version_normalized": "dev-spotweb",
