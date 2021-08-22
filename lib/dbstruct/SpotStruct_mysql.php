@@ -444,7 +444,7 @@ class SpotStruct_mysql extends SpotStruct_abs
                 switch ($q['COLLATION_NAME']) {
                     case 'ascii_general_ci': $q['COLLATION_NAME'] = 'ascii'; break;
                     case 'ascii_bin': $q['COLLATION_NAME'] = 'ascii_bin'; break;
-                    case 'utf8_unicode_ci': 
+                    case 'utf8_unicode_ci':
                     case 'utf8mb3_unicode_ci':
                     case 'utf8_general_ci': $q['COLLATION_NAME'] = 'utf8'; break;
                     case 'utf8mb4_general_ci': $q['COLLATION_NAME'] = 'utf8mb4'; break;
