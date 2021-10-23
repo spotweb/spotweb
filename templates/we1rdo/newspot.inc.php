@@ -68,10 +68,10 @@ if (showResults($result)) {
 			<dd><input type="text" name="newspotform[website]" size="94" maxlength="255" value=""></dd>
 
 			<dt><label for="newspotform[nzbfile]"><?php echo _('NZB file'); ?></label></dt>
-			<dd><input name="newspotform[nzbfile]" size="82" type="file" /></dd>
+			<dd><input name="newspotform[nzbfile]" size="82" type="file" accept=".nzb" /></dd>
 
 			<dt><label for="newspotform[imagefile]"><?php echo _('Picture'); ?></label></dt>
-			<dd><input name="newspotform[imagefile]" size="82" type="file" /></dd>
+			<dd><input name="newspotform[imagefile]" size="82" type="file" accept="image/*" /></dd>
 		</div>
 		
 		<div class='clear'></div>
