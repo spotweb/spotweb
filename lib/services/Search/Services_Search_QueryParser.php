@@ -628,7 +628,7 @@ class Services_Search_QueryParser
                             'tablealias'                  => 'spots',
                             'jointype'                    => 'LEFT',
                             'joincondition'               => 'spots.messageid = s.messageid', ];
-                        $tmpFilterValue = ' (spotsposted.ouruserid = '.$this->_dbEng->safe((int) $currentSession['user']['userid']).') ';
+                        $tmpFilterValue = ' (spots.ouruserid = '.$this->_dbEng->safe((int) $currentSession['user']['userid']).') ';
                         $sortFields[] = ['field' => 'spots.stamp',
                             'direction'          => 'DESC',
                             'autoadded'          => true,
