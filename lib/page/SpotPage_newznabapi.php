@@ -231,8 +231,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 * Actually retrieve the information from imdb, based on the
                 * imdbid passed by the API
                 */
-				$svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
-				$svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
+                $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
+                $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
                 $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
 
                 if (!$imdbInfo->isValid()) {
@@ -583,7 +583,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $doc['fromname'] = $spot['poster'];
             $doc['completion'] = 100;
             $doc['description'] = json_encode($spot['description']);
-                
+
             $cat = '';
             if (!empty($spot['subcatz'])) {
                 $nabCat = explode('|', $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot['subcata']));
@@ -906,9 +906,9 @@ class SpotPage_newznabapi extends SpotPage_Abs
             ], ['name'		  => 'PC',
                 'cat'		   => '4000',
                 'subcata'	=> ['Windows' => '4020',
-                    'Mac'		=> '4030',
-                    'Mobile'	        => '4040',
-                    'Games'	         => '4050', ],
+                    'Mac'		             => '4030',
+                    'Mobile'	           => '4040',
+                    'Games'	            => '4050', ],
             ], ['name'		  => 'TV',
                 'cat'		   => '5000',
                 'subcata'	=> ['Foreign'	=> '5020',
