@@ -231,8 +231,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 * Actually retrieve the information from imdb, based on the
                 * imdbid passed by the API
                 */
-                $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
-                $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
+				$svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
+				$svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
                 $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
 
                 if (!$imdbInfo->isValid()) {
@@ -582,7 +582,9 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $doc['guid'] = $spot['messageid'];
             $doc['fromname'] = $spot['poster'];
             $doc['completion'] = 100;
-
+            $doc['description'] = json_encode($spot['description']);
+                
+            $cat = '';
             if (!empty($spot['subcatz'])) {
                 $nabCat = explode('|', $this->Cat2NewznabCat($spot['category'], $spot['subcatz'], $spot['subcata']));
                 if ($nabCat[0] != '' && is_numeric($nabCat[0])) {
@@ -590,13 +592,13 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 } // if
             } // if
 
-            $nabCat = explode('|', $this->Cat2NewznabCat($spot['category'], $spot['subcata']));
+            $nabCat = explode('|', $this->Cat2NewznabCat($spot['category'], $spot['subcata'], $spot['subcatz']));
             if ($nabCat[0] != '' && is_numeric($nabCat[0])) {
                 $doc['categoryID'] = $nabCat[0];
                 $cat .= implode(',', $nabCat);
             } // if
 
-            $nabCat = explode('|', $this->Cat2NewznabCat($spot['category'], $spot['subcatb']));
+            $nabCat = explode('|', $this->Cat2NewznabCat($spot['category'], $spot['subcatb'], $spot['subcatz']));
             if ($nabCat[0] != '' && is_numeric($nabCat[0])) {
                 $cat .= ','.$nabCat[0];
             } // if
@@ -764,6 +766,11 @@ class SpotPage_newznabapi extends SpotPage_Abs
         $moviesearch->setAttribute('supportedParams', 'q,imdbid');
         $searching->appendChild($moviesearch);
 
+        $pcsearch = $doc->createElement('pc-search');
+        $pcsearch->setAttribute('available', 'yes');
+        $pcsearch->setAttribute('supportedParams', 'q');
+        $searching->appendChild($pcsearch);
+
         $audiosearch = $doc->createElement('audio-search');
         $audiosearch->setAttribute('available', 'yes');
         $searching->appendChild($audiosearch);
@@ -898,7 +905,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
                     'Lossless'	      => '3040', ],
             ], ['name'		  => 'PC',
                 'cat'		   => '4000',
-                'subcata'	=> ['Mac'		=> '4030',
+                'subcata'	=> ['Windows' => '4020',
+                    'Mac'		=> '4030',
                     'Mobile'	        => '4040',
                     'Games'	         => '4050', ],
             ], ['name'		  => 'TV',
@@ -950,6 +958,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             case 3040: return 'cat1_a2,cat1_a4,cat1_a7,cat1_a8';
 
             case 4000: return 'cat3';
+            case 4020: return 'cat3_a0';
             case 4030: return 'cat3_a1';
             case 4040: return 'cat3_a4,cat3_a5,cat3_a6,cat3_a7';
             case 4050: return 'cat2_a';
