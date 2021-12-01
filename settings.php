@@ -139,7 +139,11 @@ if (!isset($_SERVER['HTTP_X_FORWARDED_URI'])) {
 }
 $ssloverride = (isset($settings['ssloverride']) ? $settings['ssloverride'] : false);
 $httpxssl = isset($_SERVER['HTTP_X_SSL']);
-if (isset($_SERVER['SERVER_PROTOCOL'])) {
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+    $nwsetting = $_SERVER['HTTP_X_FORWARDED_PROTO'].'://'.@$_SERVER['HTTP_HOST'].$loc;
+} elseif (isset($_SERVER['HTTP_X_FORWARDED_SSL'])) {
+    $nwsetting = ($_SERVER['HTTP_X_FORWARDED_SSL'] == 'on' ? 'https' : 'http').'://'.@$_SERVER['HTTP_HOST'].$loc;
+} elseif (isset($_SERVER['SERVER_PROTOCOL'])) {
     $nwsetting = (((isset($_SERVER['HTTPS']) and $_SERVER['HTTPS'] == 'on') or ($ssloverride == true) or ($httpxssl == true)) ? 'https' : 'http').'://'.@$_SERVER['HTTP_HOST'].$loc;
 } else {
     $nwsetting = 'http://mijnuniekeservernaam/spotweb/';
