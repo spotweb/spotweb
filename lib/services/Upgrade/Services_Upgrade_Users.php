@@ -297,7 +297,6 @@ class Services_Upgrade_Users
             $this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'port', '');
             $this->setSettingIfNot($user['prefs']['nzbhandling']['nzbvortex'], 'apikey', '');
 
-            $this->setSettingIfNot($user['prefs']['notifications']['boxcar'], 'email', '');
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'host', '');
             $this->setSettingIfNot($user['prefs']['notifications']['growl'], 'password', '');
             /* Notifo and NMA are discontinued. */
@@ -434,7 +433,6 @@ class Services_Upgrade_Users
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'email')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'twitter')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'prowl')");
-            $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_services.", 'boxcar')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, '.SpotSecurity::spotsec_send_notifications_services.", 'growl')");
 
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_types.')');

@@ -47,8 +47,6 @@ class Services_Upgrade_Settings
         $this->setIfNot('sendwelcomemail', true);
         $this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
         $this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // This secret can be shared
-        $this->setIfNot('boxcar_api_key', 'pOQM9O2AnEWL0RjSoHln');
-        $this->setIfNot('boxcar_api_secret', '7CwTFfX7KeAKfjM1DJjg5s9qcHm4cwmLkxQgW9fe'); // This secret can be shared
         $this->setIfNot('auditlevel', 0); // No auditing
         $this->setIfNot('system_languages', ['nl_NL' => 'Nederlands', 'en_US' => 'English']);
         $this->setIfNot('retention', 0);

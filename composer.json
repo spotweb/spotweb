@@ -9,7 +9,6 @@
     "digitalstratum/fts_parser": "dev-spotweb",
     "abraham/twitteroauth": "^0.2.0",
     "xenji/prowlphp": "^1.0.0",
-    "boxcar/boxcar": "dev-master",
     "ext-mbstring": "*",
     "php": ">=5.3.0",
     "monolog/monolog": "^1.23.0",

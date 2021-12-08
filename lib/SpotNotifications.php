@@ -55,10 +55,6 @@ class SpotNotifications
     public function register()
     {
         if ($this->_spotSec->allowed(SpotSecurity::spotsec_send_notifications_services, '')) {
-            // Boxcar requires additional settings
-            $this->_currentSession['user']['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
-            $this->_currentSession['user']['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
-
             $notifProviders = Notifications_Factory::getActiveServices();
             foreach ($notifProviders as $notifProvider) {
                 if ($this->_currentSession['user']['prefs']['notifications'][$notifProvider]['enabled']) {
@@ -307,10 +303,6 @@ class SpotNotifications
             // Twitter need extra settings
             $user['prefs']['notifications']['twitter']['consumer_key'] = $this->_settings->get('twitter_consumer_key');
             $user['prefs']['notifications']['twitter']['consumer_secret'] = $this->_settings->get('twitter_consumer_secret');
-
-            // Also Boxcar
-            $user['prefs']['notifications']['boxcar']['api_key'] = $this->_settings->get('boxcar_api_key');
-            $user['prefs']['notifications']['boxcar']['api_secret'] = $this->_settings->get('boxcar_api_secret');
 
             $newMessages = $notificationDao->getUnsentNotifications($user['userid']);
             foreach ($newMessages as $newMessage) {

@@ -810,12 +810,6 @@ msgstr "Poortnummer van NZBVortex"
 msgid "API-Key for NZBVortex?"
 msgstr "API-Key van NZBVortex"
 
-msgid "Use Boxcar?"
-msgstr "Boxcar gebruiken?"
-
-msgid "Boxcar e-mail address?"
-msgstr "Boxcar e-mail adres?"
-
 msgid "Send e-mail to"
 msgstr "E-mail versturen naar"
 

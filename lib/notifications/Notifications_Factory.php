@@ -7,7 +7,6 @@ class Notifications_Factory
         // Nieuwe handlers voegen we expliciet toe omdat we anders
         // niet weten wat we includen in combinate met __autoload()
         switch ($provider) {
-            case 'boxcar': $handler = new Notifications_Boxcar($appName, $dataArray); break;
             case 'email': $handler = new Notifications_Email($appName, $dataArray); break;
             case 'growl': $handler = new Notifications_Growl($appName, $dataArray); break;
             case 'prowl': $handler = new Notifications_Prowl($appName, $dataArray); break;
@@ -22,8 +21,7 @@ class Notifications_Factory
 
     public static function getActiveServices()
     {
-        return ['boxcar',
-            'email',
+        return ['email',
             'growl',
             'prowl',
             'twitter',

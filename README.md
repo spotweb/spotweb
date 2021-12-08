@@ -35,7 +35,7 @@ Spotweb is one of the most-featured Spotnet clients currently available, featuri
 * Both central as user-specific blacklist support built-in.
 * Spam reporting.
 * Easy layout customization by providing custom CSS.
-* Boxcar/Growl/Notify My Android/Notify/Prowl and Twitter integration. (*)
+* Growl/Notify My Android/Notify/Prowl and Twitter integration. (*)
 * Spot statistics on your system.
 * Sabnzbd and nzbget(*) integration.
 * Multi-language. (*)
