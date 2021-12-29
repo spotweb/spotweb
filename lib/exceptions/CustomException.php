@@ -1,49 +1,42 @@
 <?php
-
-// Copied from
-//	http://nl3.php.net/manual/en/language.exceptions.php#91159
-//
-interface IException
+/**
+* throw exceptions based on E_* error types
+*/
+set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line, array $err_context)
 {
-    /* Protected methods inherited from Exception class */
-    public function getMessage();                 // Exception message
-
-    public function getCode();                    // User-defined Exception code
-
-    public function getFile();                    // Source filename
-
-    public function getLine();                    // Source line
-
-    public function getTrace();                   // An array of the backtrace()
-
-    public function getTraceAsString();           // Formated string of trace
-
-    /* Overrideable methods inherited from Exception class */
-    public function __toString();                 // formated string for display
-
-    public function __construct($message = null, $code = 0);
-}
-
-abstract class CustomException extends Exception implements IException
-{
-    protected $message = 'Unknown exception';     // Exception message
-    private $string;                            // Unknown
-    protected $code = 0;                       // User-defined exception code
-    protected $file;                              // Source filename of exception
-    protected $line;                              // Source line of exception
-    //private   $trace;                             // Unknown
-
-    public function __construct($message = null, $code = 0)
+    // error was suppressed with the @-operator
+    if (0 === error_reporting()) { return false;}
+    switch($err_severity)
     {
-        if (!$message) {
-            throw new $this('Unknown '.get_class($this));
-        }
-        parent::__construct($message, $code);
+        case E_ERROR:               throw new Exception		            ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_WARNING:             throw new WarningException          ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_PARSE:               throw new ParseException            ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_NOTICE:              throw new NoticeException           ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_CORE_ERROR:          throw new CoreErrorException        ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_CORE_WARNING:        throw new CoreWarningException      ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_COMPILE_ERROR:       throw new CompileErrorException     ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_COMPILE_WARNING:     throw new CoreWarningException      ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_USER_ERROR:          throw new UserErrorException        ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_USER_WARNING:        throw new UserWarningException      ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_USER_NOTICE:         throw new UserNoticeException       ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_STRICT:              throw new StrictException           ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_RECOVERABLE_ERROR:   throw new RecoverableErrorException ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_DEPRECATED:          throw new DeprecatedException       ($err_msg, 0, $err_severity, $err_file, $err_line);
+        case E_USER_DEPRECATED:     throw new UserDeprecatedException   ($err_msg, 0, $err_severity, $err_file, $err_line);
     }
+});
 
-    public function __toString()
-    {
-        return get_class($this)." '{$this->message}' in {$this->file}({$this->line})\n"
-                                ."{$this->getTraceAsString()}";
-    }
-}
+class WarningException              extends Exception {}
+class ParseException                extends Exception {}
+class NoticeException               extends Exception {}
+class CoreErrorException            extends Exception {}
+class CoreWarningException          extends Exception {}
+class CompileErrorException         extends Exception {}
+class CompileWarningException       extends Exception {}
+class UserErrorException            extends Exception {}
+class UserWarningException          extends Exception {}
+class UserNoticeException           extends Exception {}
+class StrictException               extends Exception {}
+class RecoverableErrorException     extends Exception {}
+class DeprecatedException           extends Exception {}
+class UserDeprecatedException       extends Exception {}

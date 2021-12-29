@@ -1,5 +1,5 @@
 <?php
 
-    class NotImplementedException extends CustomException
+    class NotImplementedException extends Exception
     {
     }

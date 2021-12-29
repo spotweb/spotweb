@@ -1,5 +1,5 @@
 <?php
 
-    class SchemaNotUpgradedException extends CustomException
+    class SchemaNotUpgradedException extends Exception
     {
     }

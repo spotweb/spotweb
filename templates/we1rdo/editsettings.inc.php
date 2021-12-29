@@ -42,7 +42,7 @@ if ($result->isSubmitted()) {
     if ($retrieve_newer_than < 1254373200) {
         $retrieve_newer_than = 1254373200; // 2009-11-01
     } // if
-    echo "<script type='text/javascript'>var retrieveNewerThanDate = '".strftime('%d-%m-%Y', $retrieve_newer_than)."';</script>";
+    echo "<script type='text/javascript'>var retrieveNewerThanDate = '".date('%d-%m-%Y', $retrieve_newer_than)."';</script>";
 ?>
 </div>
 	<div id='toolbar'>
@@ -346,7 +346,7 @@ if ($result->isSubmitted()) {
 					<dt><label for="editsettingsform[highcount]"><?php echo _('Amount of comments to highlight spot'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[highcount]" value="<?php echo htmlspecialchars($this->_settings->get('highcount'), ENT_QUOTES); ?>"></dd>
 					
-					<dt><label for="editsettingsform[prepare_statistics]"><?php echo _('Prepare statistics during retrieve'); ?></label></dt>
+					<dt><label for="editsettingsform[prepare_statistics]"><?php echo _('Prepare statistics during retrieve (keep this disabled this on PHP 8.1)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[prepare_statistics]" <?php if ($this->_settings->get('prepare_statistics')) {
     echo 'checked="checked"';
 } ?>></dd>

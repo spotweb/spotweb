@@ -272,6 +272,7 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what)
     {
         // set the DEFAULT value
+		if (is_null($colDefault)) { $colDefault = ''; }
         if (strlen($colDefault) != 0) {
             $colDefault = 'DEFAULT '.$colDefault;
         } // if
@@ -454,6 +455,7 @@ class SpotStruct_mysql extends SpotStruct_abs
             } // if
 
             // a default value has to given, so make it compareable to what we define
+			if(is_null($q['COLUMN_DEFAULT'])) { $q['COLUMN_DEFAULT'] = ''; }
             if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {
                 $q['COLUMN_DEFAULT'] = "''";
             } // if

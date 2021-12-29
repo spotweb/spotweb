@@ -109,6 +109,7 @@ class Services_Actions_CacheNewSpotCount
             set_time_limit(960);
 
             // Calculate the filter hash
+			if(is_null($filter['valuelist'])) { $filter['valuelist'] = ''; }
             $filter['filterhash'] = sha1($filter['tree'].'|'.urldecode($filter['valuelist']));
             $filter['userid'] = -1;
 

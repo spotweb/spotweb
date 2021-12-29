@@ -251,6 +251,7 @@ class Dao_Base_UserFilter implements Dao_UserFilter
              * The filter values are stored URL encoded, we use
              * the &-sign to seperate individual filter values
              */
+			if(is_null($filter['valuelist'])) { $filter['valuelist'] = ''; }
             $filter['valuelist'] = explode('&', $filter['valuelist']);
 
             if ($filter['tparent'] == 0) {

@@ -1,5 +1,5 @@
 <?php
 
-    class OwnsettingsCreatedOutputException extends CustomException
+    class OwnsettingsCreatedOutputException extends Exception
     {
     }

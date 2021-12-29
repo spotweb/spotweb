@@ -65,7 +65,7 @@ class Services_Upgrade_Settings
         $this->setIfNot('retrieve_reports', true);
         $this->setIfNot('retrieve_increment', 5000);
         $this->setIfNot('spot_moderation', 'act');
-        $this->setIfNot('prepare_statistics', true);
+        $this->setIfNot('prepare_statistics', false);
         $this->setIfNot('external_blacklist', true);
         $this->setIfNot('blacklist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/blacklist.csv');
         $this->setIfNot('external_whitelist', true);

@@ -214,6 +214,8 @@ abstract class SpotStruct_abs
         } // if
 
         // check default value
+		if (is_null($q['COLUMN_DEFAULT'])) { $q['COLUMN_DEFAULT'] = ''; }
+		if (is_null($colDefault)) { $colDefault = ''; }
         if (strtolower($q['COLUMN_DEFAULT']) != strtolower($colDefault)) {
             return 'default';
         } // if
@@ -224,6 +226,7 @@ abstract class SpotStruct_abs
         } // if
 
         // Chcek character set setting
+		if (is_null($q['COLLATION_NAME'])) { $q['COLLATION_NAME'] = ''; }
         if ((strtolower($q['COLLATION_NAME']) != $collation) && ($q['COLLATION_NAME'] != null)) {
             // var_dump($q);
             // var_dump($collation);

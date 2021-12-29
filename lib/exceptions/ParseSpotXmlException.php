@@ -1,5 +1,5 @@
 <?php
 
-    class ParseSpotXmlException extends CustomException
+    class ParseSpotXmlException extends Exception
     {
     }
