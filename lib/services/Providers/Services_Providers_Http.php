@@ -413,11 +413,10 @@ class Services_Providers_Http
          */
         $content = $this->_cacheDao->getCachedHttp($url_md5);
         if ((!$content) || ((time() - (int) $content['stamp']) > $ttl)) {
-            if (!$content) {
-                $content['stamp'] = null;
-            }
-            $tmpData = $this->perform($url, $content['stamp']);
-
+            if (!$content) {				
+			$content = array("stamp" => null);											
+            }			
+            $tmpData = $this->perform($url, $content['stamp']);	
             $data = $tmpData['data'];
             $http_code = $tmpData['http_code'];
             $curl_info = $tmpData['curl_info'];

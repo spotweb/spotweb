@@ -1055,7 +1055,7 @@ class SpotTemplateHelper
         if (empty($stamp)) {
             return _('unknown');
         } elseif (substr($type, 0, 6) == 'force_') {
-            return strftime('%a, %d-%b-%Y (%H:%M)', $stamp);
+            return date('%a, %d-%b-%Y (%H:%M)', $stamp);
         } elseif ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
             return $this->time_ago($stamp);
         } else {
@@ -1065,7 +1065,7 @@ class SpotTemplateHelper
                 case 'lastupdate':
                 case 'lastvisit':
                 case 'userlist':
-                default: return strftime($this->_currentSession['user']['prefs']['date_formatting'], $stamp);
+                default: return date($this->_currentSession['user']['prefs']['date_formatting'], $stamp);
             } // switch
         } // else
     }

@@ -465,9 +465,8 @@ class Services_Search_QueryParser
 
         // Now we transform the new query (field:operator:value pair) to an exploded array for easier iteration
         foreach ($search['value'] as $value) {
-            if (!empty($value)) {
+            if (!empty($value) AND $value != 'NULL') {
                 $tmpFilter = explode(':', $value);
-
                 // Default to an '=' operator when none is given
                 if (count($tmpFilter) < 3) {
                     $tmpFilter = [$tmpFilter[0],
