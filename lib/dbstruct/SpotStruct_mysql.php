@@ -272,7 +272,9 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what)
     {
         // set the DEFAULT value
-		if (is_null($colDefault)) { $colDefault = 'NULL'; }
+        if (is_null($colDefault)) {
+            $colDefault = 'NULL';
+        }
         if (strlen($colDefault) != 0) {
             $colDefault = 'DEFAULT '.$colDefault;
         } // if

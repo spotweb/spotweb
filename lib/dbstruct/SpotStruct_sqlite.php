@@ -24,7 +24,7 @@ class SpotStruct_sqlite extends SpotStruct_abs
         $this->_dbcon->rawExec('ANALYZE usenetstate');
     }
 
-    // analyze  
+    // analyze
 
     public function resetdb()
     {
@@ -43,7 +43,7 @@ class SpotStruct_sqlite extends SpotStruct_abs
         $this->_dbcon->rawExec('DELETE FROM moderatedringbuffer');
         $this->_dbcon->rawExec('DELETE FROM usenetstate');
         $this->_dbcon->rawExec('PRAGMA FOREIGN_KEYS = ON');
-		$this->_dbcon->rawExec('VACUUM');
+        $this->_dbcon->rawExec('VACUUM');
     }
 
     // resetdb https://www.tutorialspoint.com/sqlite/sqlite_truncate_table.htm
@@ -51,7 +51,7 @@ class SpotStruct_sqlite extends SpotStruct_abs
     public function clearcache()
     {
         $this->_dbcon->rawExec('DELETE FROM cache');
-		$this->_dbcon->rawExec('VACUUM');
+        $this->_dbcon->rawExec('VACUUM');
     }
 
     // clearcache https://www.tutorialspoint.com/sqlite/sqlite_truncate_table.htm
