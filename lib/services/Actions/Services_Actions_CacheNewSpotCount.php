@@ -109,6 +109,7 @@ class Services_Actions_CacheNewSpotCount
             set_time_limit(960);
 
             // Calculate the filter hash
+			if (is_null($filter['valuelist'])) { $filter['valuelist'] = 'NULL'; }
             $filter['filterhash'] = sha1($filter['tree'].'|'.urldecode($filter['valuelist']));
             $filter['userid'] = -1;
 
@@ -133,7 +134,7 @@ class Services_Actions_CacheNewSpotCount
              * a format which can be used in this system
              */
             $strFilter = '&amp;search[tree]='.$filter['tree'];
-
+			if(is_null($filter['valuelist'])) { $filter['valuelist'] = 'NULL'; }
             $valueArray = explode('&', $filter['valuelist']);
             if (!empty($valueArray)) {
                 foreach ($valueArray as $value) {

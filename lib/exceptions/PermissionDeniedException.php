@@ -1,6 +1,6 @@
 <?php
 
-class PermissionDeniedException extends CustomException
+class PermissionDeniedException extends Exception
 {
     private $_permId = -1;
     private $_object = '';
