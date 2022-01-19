@@ -1,5 +1,5 @@
 <?php
 
-    class InvalidSettingsUpdateException extends CustomException
+    class InvalidSettingsUpdateException extends Exception
     {
     }

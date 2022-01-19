@@ -38,6 +38,14 @@ class SpotPage_login extends SpotPage_Abs
         // bring the form action into the local scope
         $formAction = $this->_loginForm['action'];
 
+        // Before using $this->_params['data']['performredirect'] check if it is set.
+        if (isset($this->_params['data']['performredirect'])) {
+            // Check redirect for chevrons, deny if found.
+            if (preg_match('/[<>]/i', $this->_params['data']['performredirect'])) {
+                $result->addError(_('Script is not allowed'));
+            }
+        }
+
         // Are we already submitting the form login?
         if (!empty($formAction)) {
             // make sure we can simply assume all fields are there

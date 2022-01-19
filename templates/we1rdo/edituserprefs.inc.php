@@ -125,12 +125,12 @@ if (!$dialogembedded) { ?>
 							<option <?php if ($edituserprefsform['date_formatting'] == 'human') {
     echo 'selected="selected"';
 } ?> value="human" selected><?php echo _('Human'); ?></option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%a, %d-%b-%Y (%H:%M)') {
+							<option <?php if ($edituserprefsform['date_formatting'] == 'D, j M Y, G:i:s') {
     echo 'selected="selected"';
-} ?> value="%a, %d-%b-%Y (%H:%M)"><?php echo strftime('%a, %d-%b-%Y (%H:%M)', time()); ?></option>
-							<option <?php if ($edituserprefsform['date_formatting'] == '%d-%m-%Y (%H:%M)') {
+} ?> value="D, j M Y, G:i:s"><?php echo date('D, j M Y, G:i:s', time()); ?></option>
+							<option <?php if ($edituserprefsform['date_formatting'] == 'G:i:s, D M j, Y') {
     echo 'selected="selected"';
-} ?> value="%d-%m-%Y (%H:%M)"><?php echo strftime('%d-%m-%Y (%H:%M)', time()); ?></option>
+} ?> value="G:i:s, D M j, Y"><?php echo date('G:i:s, D M j, Y', time()); ?></option>
 						</select>
 					</dd>
 					

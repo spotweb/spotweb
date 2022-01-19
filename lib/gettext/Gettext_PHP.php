@@ -32,12 +32,12 @@ class Gettext_PHP extends SpotGettext
     /*
      * First magic word in the MO header.
      */
-    const MAGIC1 = 0xde120495;
+    const MAGIC1 = 0xDE120495;
 
     /*
      * First magic word in the MO header.
      */
-    const MAGIC2 = 0x950412de;
+    const MAGIC2 = 0x950412DE;
 
     protected $dir;
     protected $domain;

@@ -1,5 +1,5 @@
 <?php
 
-    class MissingNntpConfigurationException extends CustomException
+    class MissingNntpConfigurationException extends Exception
     {
     }

@@ -130,6 +130,9 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount
                 'enablenotify'    => false, ];
 
             foreach ($filterList as $filter) {
+                if (is_null($filter['valuelist'])) {
+                    $filter['valuelist'] = 'NULL';
+                }
                 $filterHash = sha1($filter['tree'].'|'.urldecode($filter['valuelist']));
 
                 // Do we have a cache entry already for this filter?

@@ -283,10 +283,13 @@ class SpotStruct_pgsql extends SpotStruct_abs
     /* alters a column - does not check if the column doesn't adhere to the given definition */
     public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what)
     {
-        // set the DEFAULT value
-        if (strlen($colDefault) != 0) {
-            $colDefault = 'DEFAULT '.$colDefault;
-        } // if
+        // check if $colDefault is not null as strlen does not accept null as parameter.
+        if (!is_null($colDefault)) {
+            // set the DEFAULT value
+            if (strlen($colDefault) != 0) {
+                $colDefault = 'DEFAULT '.$colDefault;
+            } // if
+        }
 
         // Convert the column type to a type we use in PostgreSQL
         $colType = $this->swDtToNative($colType);
@@ -311,13 +314,15 @@ class SpotStruct_pgsql extends SpotStruct_abs
 
         // Alter the column type
         $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' ALTER COLUMN '.$colName.' TYPE '.$colType);
-
-        // Change the default value (if one set, else drop it)
-        if (strlen($colDefault) > 0) {
-            $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' ALTER COLUMN '.$colName.' SET '.$colDefault);
-        } else {
-            $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' ALTER COLUMN '.$colName.' DROP DEFAULT');
-        } // if
+        // Check if $colDefault is not null as strlen does not accept null as parameter.
+        if (!is_null($colDefault)) {
+            // Change the default value (if one set, else drop it)
+            if (strlen($colDefault) > 0) {
+                $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' ALTER COLUMN '.$colName.' SET '.$colDefault);
+            } else {
+                $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' ALTER COLUMN '.$colName.' DROP DEFAULT');
+            } // if
+        }
 
         // and changes the null/not-null constraint
         if (strlen($notNull) > 0) {
@@ -509,19 +514,22 @@ class SpotStruct_pgsql extends SpotStruct_abs
 
             $q['NOTNULL'] = ($q['IS_NULLABLE'] != 'YES');
 
-            // a default value has to given, so make it compareable to what we define
-            if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {
-                $q['COLUMN_DEFAULT'] = "''";
-            } // if
+            // check if $q['COLUMN_DEFAULT'] is not null as strlen and strpos do not accept null as parameter.
+            if (!is_null($q['COLUMN_DEFAULT'])) {
+                // a default value has to given, so make it compareable to what we define
+                if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {
+                    $q['COLUMN_DEFAULT'] = "''";
+                } // if
 
-            /*
-             * PostgreSQL per default explicitly typecasts the value, but
-             * we cannot do this, so we strip the default value of its typecast
-             */
-            if (strpos($q['COLUMN_DEFAULT'], ':') !== false) {
-                $elems = explode(':', $q['COLUMN_DEFAULT']);
+                /*
+                 * PostgreSQL per default explicitly typecasts the value, but
+                 * we cannot do this, so we strip the default value of its typecast
+                 */
+                if (strpos($q['COLUMN_DEFAULT'], ':') !== false) {
+                    $elems = explode(':', $q['COLUMN_DEFAULT']);
 
-                $q['COLUMN_DEFAULT'] = $elems[0];
+                    $q['COLUMN_DEFAULT'] = $elems[0];
+                } // if
             } // if
         } // if
 

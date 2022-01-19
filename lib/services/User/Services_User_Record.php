@@ -328,7 +328,7 @@ class Services_User_Record
         $result = new Dto_FormResult();
 
         // Define several arrays with valid settings
-        $validDateFormats = ['human', '%a, %d-%b-%Y (%H:%M)', '%d-%m-%Y (%H:%M)'];
+        $validDateFormats = ['human', 'D, j M Y, G:i:s', 'G:i:s, D M j, Y'];
         $validTemplates = array_keys($this->_settings->get('valid_templates'));
         $validDefaultSorts = ['', 'stamp'];
         $validLanguages = array_keys($this->_settings->get('system_languages'));

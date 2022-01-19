@@ -52,7 +52,7 @@ class Notifications_Twitter extends Notifications_abs
 
     // verifyPIN
 
-    public function sendMessage($type, $title, $body, $sourceUrl)
+    public function sendMessage($type, $title, $body, $sourceUrl, $smtp)
     {
         $this->twitterObj = new TwitterOAuth($this->dataArray['consumer_key'], $this->dataArray['consumer_secret'], $this->dataArray['access_token'], $this->dataArray['access_token_secret']);
 

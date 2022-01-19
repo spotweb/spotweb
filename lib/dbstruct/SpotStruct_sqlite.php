@@ -29,30 +29,32 @@ class SpotStruct_sqlite extends SpotStruct_abs
     public function resetdb()
     {
         $this->_dbcon->rawExec('PRAGMA FOREIGN_KEYS = OFF');
-        $this->_dbcon->rawExec('TRUNCATE TABLE spots');
-        $this->_dbcon->rawExec('TRUNCATE TABLE spotsposted');
-        $this->_dbcon->rawExec('TRUNCATE TABLE spotsfull');
-        $this->_dbcon->rawExec('TRUNCATE TABLE commentsxover');
-        $this->_dbcon->rawExec('TRUNCATE TABLE commentsfull');
-        $this->_dbcon->rawExec('TRUNCATE TABLE spotstatelist');
-        $this->_dbcon->rawExec('TRUNCATE TABLE spotteridblacklist');
-        $this->_dbcon->rawExec('TRUNCATE TABLE filtercounts');
-        $this->_dbcon->rawExec('TRUNCATE TABLE reportsposted');
-        $this->_dbcon->rawExec('TRUNCATE TABLE reportsxover');
-        $this->_dbcon->rawExec('TRUNCATE TABLE cache');
-        $this->_dbcon->rawExec('TRUNCATE TABLE moderatedringbuffer');
-        $this->_dbcon->rawExec('TRUNCATE TABLE usenetstate');
+        $this->_dbcon->rawExec('DELETE FROM spots');
+        $this->_dbcon->rawExec('DELETE FROM spotsposted');
+        $this->_dbcon->rawExec('DELETE FROM spotsfull');
+        $this->_dbcon->rawExec('DELETE FROM commentsxover');
+        $this->_dbcon->rawExec('DELETE FROM commentsfull');
+        $this->_dbcon->rawExec('DELETE FROM spotstatelist');
+        $this->_dbcon->rawExec('DELETE FROM spotteridblacklist');
+        $this->_dbcon->rawExec('DELETE FROM filtercounts');
+        $this->_dbcon->rawExec('DELETE FROM reportsposted');
+        $this->_dbcon->rawExec('DELETE FROM reportsxover');
+        $this->_dbcon->rawExec('DELETE FROM cache');
+        $this->_dbcon->rawExec('DELETE FROM moderatedringbuffer');
+        $this->_dbcon->rawExec('DELETE FROM usenetstate');
         $this->_dbcon->rawExec('PRAGMA FOREIGN_KEYS = ON');
+        $this->_dbcon->rawExec('VACUUM');
     }
 
-    // resetdb
+    // resetdb https://www.tutorialspoint.com/sqlite/sqlite_truncate_table.htm
 
     public function clearcache()
     {
-        $this->_dbcon->rawExec('TRUNCATE TABLE cache');
+        $this->_dbcon->rawExec('DELETE FROM cache');
+        $this->_dbcon->rawExec('VACUUM');
     }
 
-    // clearcache
+    // clearcache https://www.tutorialspoint.com/sqlite/sqlite_truncate_table.htm
 
     /*
      * Returns a database specific representation of a boolean value

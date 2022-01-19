@@ -1,5 +1,5 @@
 <?php
 
-    class RetrieverRunningException extends CustomException
+    class RetrieverRunningException extends Exception
     {
     }

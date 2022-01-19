@@ -24,7 +24,7 @@ class Notifications_Prowl extends Notifications_abs
 
     // register
 
-    public function sendMessage($type, $title, $body, $sourceUrl)
+    public function sendMessage($type, $title, $body, $sourceUrl, $smtp)
     {
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
             $oMsg = new \Prowl\Message();

@@ -398,7 +398,7 @@ class Services_Format_Parsing
 
             $spot['title'] = trim(implode('|', $tmp));
 
-            if ((strpos($spot['title'], chr(0xc2)) !== false) | (strpos($spot['title'], chr(0xc3)) !== false)) {
+            if ((strpos($spot['title'], chr(0xC2)) !== false) | (strpos($spot['title'], chr(0xC3)) !== false)) {
                 // This is an old format to parse, instantiate the legacy parsing
                 $legacyParser = new Services_Format_ParsingLegacy();
                 $spot['title'] = trim($legacyParser->oldEncodingParse($spot['title']));

@@ -1,6 +1,6 @@
 <?php
 
-class NntpException extends CustomException
+class NntpException extends Exception
 {
     private $_response = '';
 

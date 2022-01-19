@@ -16,13 +16,13 @@ class Services_MediaInformation_Tvmaze extends Services_MediaInformation_Abs
          */
         switch ($this->getSearchName()) {
             case 'tvmaze':
-                $url = 'http://api.tvmaze.com/shows/'.$this->getSearchid();
+                $url = 'https://api.tvmaze.com/shows/'.$this->getSearchid();
                 break;
             case 'tvrage':
-                $url = 'http://api.tvmaze.com/lookup/shows?tvrage='.$this->getSearchid();
+                $url = 'https://api.tvmaze.com/lookup/shows?tvrage='.$this->getSearchid();
                 break;
             case 'imdbid':
-                $url = 'http://api.tvmaze.com/lookup/shows?imdb='.'tt'.$this->getSearchid();
+                $url = 'https://api.tvmaze.com/lookup/shows?imdb='.'tt'.$this->getSearchid();
                 break;
             default:
                 return $mediaInfo;
