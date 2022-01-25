@@ -229,14 +229,8 @@ abstract class SpotStruct_abs
             return 'not null';
         } // if
 
-        // Chcek character set setting
-        if (is_null($q['COLLATION_NAME'])) {
-            $q['COLLATION_NAME'] = 'NULL';
-        }
-        if ((strtolower($q['COLLATION_NAME']) != $collation) && ($q['COLLATION_NAME'] != null)) {
-            // var_dump($q);
-            // var_dump($collation);
-            // die();
+        // check COLLATION_NAME
+        if (($q['COLLATION_NAME'] != null) && (strtolower($q['COLLATION_NAME']) != $collation)) {
             return 'charset';
         } // if
 
