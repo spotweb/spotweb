@@ -623,8 +623,7 @@ class Services_Search_QueryParser
                      // case 'whitelistedspotters'
                     case 'mypostedspots':
                         // Only filter on mypostedspots if userid is known (issue #728)
-                        if (isset($currentSession['user']['userid'])) 
-                        {
+                        if (isset($currentSession['user']['userid'])) {
                             $additionalFields[] = '1 AS mypostedspot';
                             $additionalJoins[] = ['tablename' => 'spotsposted',
                                 'tablealias'                  => 'spots',
@@ -635,9 +634,7 @@ class Services_Search_QueryParser
                                 'direction'          => 'DESC',
                                 'autoadded'          => true,
                                 'friendlyname'       => null, ];
-                        }
-                        else
-                        {
+                        } else {
                             $tmpFilterValue = '0';
                         }
                         break;
