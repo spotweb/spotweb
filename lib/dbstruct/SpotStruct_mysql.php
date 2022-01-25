@@ -94,13 +94,13 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function nativeDtToSw($colInfo)
     {
         switch (strtolower($colInfo)) {
-            case 'int(11)';
+            case 'int(11)':
             case 'int': $colInfo = 'INTEGER';
-            case 'int unsigned';
+            case 'int unsigned':
             case 'int(10) unsigned': $colInfo = 'INTEGER UNSIGNED';
-            case 'bigint';
+            case 'bigint':
             case 'bigint(20)': $colInfo = 'BIGINTEGER';
-            case 'bigint unsigned';
+            case 'bigint unsigned':
             case 'bigint(20) unsigned': $colInfo = 'BIGINTEGER UNSIGNED';
             case 'tinyint(1)': $colInfo = 'BOOLEAN';
             case 'mediumblob': $colInfo = 'MEDIUMBLOB';
@@ -428,13 +428,13 @@ class SpotStruct_mysql extends SpotStruct_abs
             $q = $q[0];
             $q['NOTNULL'] = ($q['IS_NULLABLE'] != 'YES');
 
-            /* 
+            /*
              * MySQL 8.0.19 and higher compat
-             * 
+             *
              */
-            $q['COLUMN_TYPE'] = preg_replace("/^int\(\d*\)/i", "int", $q['COLUMN_TYPE']);
-            $q['COLUMN_TYPE'] = preg_replace("/^bigint\(\d*\)/i", "bigint", $q['COLUMN_TYPE']);
-            
+            $q['COLUMN_TYPE'] = preg_replace("/^int\(\d*\)/i", 'int', $q['COLUMN_TYPE']);
+            $q['COLUMN_TYPE'] = preg_replace("/^bigint\(\d*\)/i", 'bigint', $q['COLUMN_TYPE']);
+
             /*
              * MySQL's boolean type secretly is a tinyint, but in Spotweb we
              * use an actual boolean type. We secretly convert all tinyint(1)'s
@@ -449,7 +449,6 @@ class SpotStruct_mysql extends SpotStruct_abs
                     } // if
                 } // if
             } // if
-
 
             /*
              * We do not properly distinguish between character sets and
