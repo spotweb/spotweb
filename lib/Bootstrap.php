@@ -4,7 +4,7 @@
  * Define several version constants
  * used throughput Spotweb
  */
-define('SPOTWEB_SETTINGS_VERSION', '0.33');
+define('SPOTWEB_SETTINGS_VERSION', '0.34');
 define('SPOTWEB_SECURITY_VERSION', '0.34');
 define('SPOTDB_SCHEMA_VERSION', '0.68');
 define('SPOTWEB_VERSION', '0.'.(SPOTDB_SCHEMA_VERSION * 100).'.'.(SPOTWEB_SETTINGS_VERSION * 100).'.'.(SPOTWEB_SECURITY_VERSION * 100));
@@ -175,14 +175,14 @@ class Bootstrap
          * updating
          */
         if (!$settings->schemaValid()) {
-            throw new SchemaNotUpgradedException();
+            throw new SchemaNotUpgradedException("Schema needs to be upgraded.");
         } // if
 
         /*
          * Does our global setting table need updating?
          */
         if (!$settings->settingsValid()) {
-            throw new SettingsNotUpgradedException();
+            throw new SettingsNotUpgradedException("Settings needs to be upgraded.");
         } // if
 
         /*
