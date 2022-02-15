@@ -21,7 +21,7 @@ class Services_MediaInformation_Tvrage extends Services_MediaInformation_Abs
         } // if
 
         // fetch remote content
-        $dom = new DomDocument();
+        $dom = new DOMDocument();
         $dom->preserveWhiteSpace = false;
         $dom->loadXML($tvrage);
         $showTitle = $dom->getElementsByTagName('showname');

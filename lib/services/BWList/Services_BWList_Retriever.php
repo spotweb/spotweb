@@ -5,6 +5,7 @@ class Services_BWList_Retriever
     protected $_blackWhiteListDao;
     protected $_cacheDao;
     protected $_svcPrvHttp;
+
     /*
      * Constructor
      */
@@ -32,15 +33,17 @@ class Services_BWList_Retriever
          */
         if ($http_code == 304) {
             return false;
-        };
+        }
         $xml = simplexml_load_string($items);
         if ($xml == false) {
-            echo "Failed loading XML: ";
-            foreach(libxml_get_errors() as $error) {
-                echo $error->message.PHP_EOL ;
-            };
+            echo 'Failed loading XML: ';
+            foreach (libxml_get_errors() as $error) {
+                echo $error->message.PHP_EOL;
+            }
+
             throw new CorruptBWListException();
-        };
+        }
+
         return $items;
     }
 
@@ -52,10 +55,10 @@ class Services_BWList_Retriever
     public function retrieveBlackList($listUrl)
     {
         $result = $this->retrieveExternalList($listUrl);
-        $a = array();
+        $a = [];
         if ($result !== false) {
             // Transform spotnet 1.9.x.x blacklist to list of spotterid's
-            $list = new SimpleXMLElement ($result);
+            $list = new SimpleXMLElement($result);
             foreach ($list as $key) {
                 $a[] = (string) $key[0];
             }
@@ -73,9 +76,9 @@ class Services_BWList_Retriever
     public function retrieveWhiteList($listUrl)
     {
         $result = $this->retrieveExternalList($listUrl);
-        $a = array();
+        $a = [];
         if ($result !== false) {
-            $list = new SimpleXMLElement ($result);
+            $list = new SimpleXMLElement($result);
             foreach ($list as $key) {
                 $a[] = (string) $key[0];
             }
