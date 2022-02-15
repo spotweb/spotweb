@@ -175,14 +175,14 @@ class Bootstrap
          * updating
          */
         if (!$settings->schemaValid()) {
-            throw new SchemaNotUpgradedException("Schema needs to be upgraded.");
+            throw new SchemaNotUpgradedException('Schema needs to be upgraded.');
         } // if
 
         /*
          * Does our global setting table need updating?
          */
         if (!$settings->settingsValid()) {
-            throw new SettingsNotUpgradedException("Settings needs to be upgraded.");
+            throw new SettingsNotUpgradedException('Settings needs to be upgraded.');
         } // if
 
         /*
