@@ -94,8 +94,8 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'Webmozart\\Assert\\' => 
         array (
@@ -959,7 +959,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'dbfts_mysql' => __DIR__ . '/../..' . '/lib/dbeng/dbfts_mysql.php',
         'dbfts_pgsql' => __DIR__ . '/../..' . '/lib/dbeng/dbfts_pgsql.php',
         'dbfts_sqlite' => __DIR__ . '/../..' . '/lib/dbeng/dbfts_sqlite.php',
-        'parse_model' => __DIR__ . '/..' . '/digitalstratum/fts_parser/parse_model.php',
+        'parse_model' => __DIR__ . '/..' . '/spotweb/fts_parser/parse_model.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

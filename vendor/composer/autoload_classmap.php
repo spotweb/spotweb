@@ -732,5 +732,5 @@ return array(
     'dbfts_mysql' => $baseDir . '/lib/dbeng/dbfts_mysql.php',
     'dbfts_pgsql' => $baseDir . '/lib/dbeng/dbfts_pgsql.php',
     'dbfts_sqlite' => $baseDir . '/lib/dbeng/dbfts_sqlite.php',
-    'parse_model' => $vendorDir . '/digitalstratum/fts_parser/parse_model.php',
+    'parse_model' => $vendorDir . '/spotweb/fts_parser/parse_model.php',
 );
