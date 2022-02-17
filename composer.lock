@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7536fdac684fd6b1deb2a33434d32dd",
+    "content-hash": "8943c81a394695a6e8ba758a0478af28",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -53,50 +53,6 @@
                 "twitter"
             ],
             "time": "2014-11-18T00:05:59+00:00"
-        },
-        {
-            "name": "digitalstratum/fts_parser",
-            "version": "dev-spotweb",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mbirth/fts_parser.git",
-                "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mbirth/fts_parser/zipball/b693bfb6f348a1875dd8edd512cce360dceb1138",
-                "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "parse_model.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Digital Stratum, Inc.",
-                    "homepage": "http://digitalstratum.com/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
-            "homepage": "http://digitalstratum.com/oss/fts_parser",
-            "keywords": [
-                "fts",
-                "fulltext",
-                "postgresql",
-                "tsearch2"
-            ],
-            "time": "2016-08-12T10:43:23+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1225,6 +1181,54 @@
             ],
             "description": "A polyfill for getallheaders.",
             "time": "2019-03-08T08:55:37+00:00"
+        },
+        {
+            "name": "spotweb/fts_parser",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mesa57/fts-parser.git",
+                "reference": "6cb1a6303552edfada41318ac0657015ba74872f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mesa57/fts-parser/zipball/6cb1a6303552edfada41318ac0657015ba74872f",
+                "reference": "6cb1a6303552edfada41318ac0657015ba74872f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "parse_model.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "mesa57",
+                    "homepage": "https://github.com/mesa57/fts_parser",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
+            "homepage": "https://github.com/mesa57/fts_parser",
+            "keywords": [
+                "fts",
+                "fulltext",
+                "postgresql",
+                "tsearch2"
+            ],
+            "support": {
+                "issues": "https://github.com/mesa57/fts-parser/issues",
+                "source": "https://github.com/mesa57/fts-parser/tree/1.0.0"
+            },
+            "time": "2022-02-17T14:55:01+00:00"
         },
         {
             "name": "spotweb/nntp",
@@ -3240,9 +3244,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "digitalstratum/fts_parser": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -1,14 +1,14 @@
 {
-    "name": "digitalstratum/fts_parser",
+    "name": "spotweb/fts_parser",
     "type": "library",
     "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
     "keywords": ["fts", "fulltext", "tsearch2", "postgresql"],
-    "homepage": "http://digitalstratum.com/oss/fts_parser",
+    "homepage": "https://github.com/mesa57/fts_parser",
     "license": "BSD-3-Clause",
     "authors": [
         {
-            "name": "Digital Stratum, Inc.",
-            "homepage": "http://digitalstratum.com/",
+            "name": "mesa57",
+            "homepage": "https://github.com/mesa57/fts_parser",
             "role": "Developer"
         }
     ],

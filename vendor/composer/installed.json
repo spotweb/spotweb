@@ -52,53 +52,6 @@
             "install-path": "../abraham/twitteroauth"
         },
         {
-            "name": "digitalstratum/fts_parser",
-            "version": "dev-spotweb",
-            "version_normalized": "dev-spotweb",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mbirth/fts_parser.git",
-                "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mbirth/fts_parser/zipball/b693bfb6f348a1875dd8edd512cce360dceb1138",
-                "reference": "b693bfb6f348a1875dd8edd512cce360dceb1138",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "time": "2016-08-12T10:43:23+00:00",
-            "type": "library",
-            "installation-source": "source",
-            "autoload": {
-                "classmap": [
-                    "parse_model.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Digital Stratum, Inc.",
-                    "homepage": "http://digitalstratum.com/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
-            "homepage": "http://digitalstratum.com/oss/fts_parser",
-            "keywords": [
-                "fts",
-                "fulltext",
-                "postgresql",
-                "tsearch2"
-            ],
-            "install-path": "../digitalstratum/fts_parser"
-        },
-        {
             "name": "doctrine/instantiator",
             "version": "1.3.0",
             "version_normalized": "1.3.0.0",
@@ -2574,6 +2527,57 @@
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
             "install-path": "../sebastian/version"
+        },
+        {
+            "name": "spotweb/fts_parser",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mesa57/fts-parser.git",
+                "reference": "6cb1a6303552edfada41318ac0657015ba74872f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mesa57/fts-parser/zipball/6cb1a6303552edfada41318ac0657015ba74872f",
+                "reference": "6cb1a6303552edfada41318ac0657015ba74872f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "time": "2022-02-17T14:55:01+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "classmap": [
+                    "parse_model.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "mesa57",
+                    "homepage": "https://github.com/mesa57/fts_parser",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Full Text Search Parser for TSearch2 and PostgreSQL",
+            "homepage": "https://github.com/mesa57/fts_parser",
+            "keywords": [
+                "fts",
+                "fulltext",
+                "postgresql",
+                "tsearch2"
+            ],
+            "support": {
+                "issues": "https://github.com/mesa57/fts-parser/issues",
+                "source": "https://github.com/mesa57/fts-parser/tree/1.0.0"
+            },
+            "install-path": "../spotweb/fts_parser"
         },
         {
             "name": "spotweb/nntp",
