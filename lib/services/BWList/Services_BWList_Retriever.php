@@ -33,21 +33,18 @@ class Services_BWList_Retriever
          */
         if ($http_code == 304) {
             return false;
-        } elseif (strpos($items, '>')) {
-            throw new CorruptBWListException();
-        } // else
+        }
+        $xml = simplexml_load_string($items);
+        if ($xml == false) {
+            echo 'Failed loading XML: ';
+            foreach (libxml_get_errors() as $error) {
+                echo $error->message.PHP_EOL;
+            }
 
-        /*
-         * We've come so far, the list might be valid
-         */
-        $expItems = explode(chr(10), $items);
-
-        // Perform a very small sanity check on the black/whitelist
-        if ((count($expItems) > 5) && (strlen($expItems[0]) < 200)) {
-            return $expItems;
-        } else {
             throw new CorruptBWListException();
-        } // else
+        }
+
+        return $items;
     }
 
     // retrieveExternalList
@@ -58,9 +55,14 @@ class Services_BWList_Retriever
     public function retrieveBlackList($listUrl)
     {
         $result = $this->retrieveExternalList($listUrl);
-
+        $a = [];
         if ($result !== false) {
-            $result = $this->_blackWhiteListDao->updateExternalList($result, 'black');
+            // Transform spotnet 1.9.x.x blacklist to list of spotterid's
+            $list = new SimpleXMLElement($result);
+            foreach ($list as $key) {
+                $a[] = (string) $key[0];
+            }
+            $result = $this->_blackWhiteListDao->updateExternalList($a, 'black');
         } // if
 
         return $result;
@@ -74,9 +76,13 @@ class Services_BWList_Retriever
     public function retrieveWhiteList($listUrl)
     {
         $result = $this->retrieveExternalList($listUrl);
-
+        $a = [];
         if ($result !== false) {
-            $result = $this->_blackWhiteListDao->updateExternalList($result, 'white');
+            $list = new SimpleXMLElement($result);
+            foreach ($list as $key) {
+                $a[] = (string) $key[0];
+            }
+            $result = $this->_blackWhiteListDao->updateExternalList($a, 'white');
         } // if
 
         return $result;

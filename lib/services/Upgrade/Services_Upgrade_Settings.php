@@ -38,7 +38,7 @@ class Services_Upgrade_Settings
         $this->remove('action');
         $this->remove('submitedit');
         //Assure usage of the newer black/whitelists when settingsversion is lower then 31.
-        if ($this->_settings->get('settingsversion') < 0.31) {
+        if ($this->_settings->get('settingsversion') < 0.34) {
             $this->remove('blacklist_url');
             $this->remove('whitelist_url');
         } // if
@@ -67,9 +67,9 @@ class Services_Upgrade_Settings
         $this->setIfNot('spot_moderation', 'act');
         $this->setIfNot('prepare_statistics', false);
         $this->setIfNot('external_blacklist', true);
-        $this->setIfNot('blacklist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/blacklist.csv');
+        $this->setIfNot('blacklist_url', 'http://bit.do/sp4black');
         $this->setIfNot('external_whitelist', true);
-        $this->setIfNot('whitelist_url', 'http://spotcloud.spotnet.wf/spotnet/lists.new/whitelist.csv');
+        $this->setIfNot('whitelist_url', 'http://bit.do/sp4white');
         $this->setIfNot('enable_timing', false);
         $this->setIfNot('cache_path', './cache');
         $this->setIfNot('enable_stacktrace', false);
