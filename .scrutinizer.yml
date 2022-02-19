@@ -5,7 +5,7 @@ build:
     dependencies:
         before:
         override:
-           - 'composer self-update --2'    
+           - 'sudo composer self-update --2'    
            - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
     nodes:
         php56:
