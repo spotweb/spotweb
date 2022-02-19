@@ -1,11 +1,6 @@
 Full Text Search Parser for TSearch2 and PostgreSQL
 ===================================================
 
-Homepage: http://digitalstratum.com/oss/fts_parser
-
-[Try out the parser](http://digitalstratum.com/oss/fts_parser_test)
-
-
 Latest News
 -----------
 

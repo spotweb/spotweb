@@ -288,7 +288,7 @@ catch (InvalidOwnSettingsSettingException $x) {
 catch (Exception $x) {
     echo PHP_EOL.PHP_EOL;
     echo 'SpotWeb v'.SPOTWEB_VERSION.' on PHP v'.PHP_VERSION.' crashed'.PHP_EOL.PHP_EOL;
-    echo 'Fatal error occured retrieving reports:'.PHP_EOL;
+    echo 'Fatal error occured during retrieve:'.PHP_EOL;
     echo '  '.$x->getMessage().PHP_EOL.PHP_EOL;
     echo PHP_EOL.PHP_EOL;
     echo $x->getTraceAsString();
