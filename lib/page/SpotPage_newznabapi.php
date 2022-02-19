@@ -1,4 +1,5 @@
 <?php
+use SebastianBergmann\CodeCoverage\Driver\Xdebug;
 
 class SpotPage_newznabapi extends SpotPage_Abs
 {
@@ -821,17 +822,16 @@ class SpotPage_newznabapi extends SpotPage_Abs
             switch ($cat[0]) {
                 case 'a': if ($hcat == 0 or $hcat == 1) {
                     $newznabcat = $this->spotAcat2nabcat();
-
-                    return @$newznabcat[$hcat][$znr][$nr];
+                    $r = @$newznabcat[$hcat][$znr][$nr];
+                    if ($r == null) $r = '';
+                    return $r;
                 } else {
                     $newznabcat = $this->spotAcat2nabcat();
-
-                    return @$newznabcat[$hcat][$nr];
+                    $r = @$newznabcat[$hcat][$znr][$nr];
+                    if ($r = null) $r = '';
+                    return $r;
                 }
-                              break;
-
-                case 'b': $newznabcat = $this->spotBcat2nabcat();
-
+               case 'b': $newznabcat = $this->spotBcat2nabcat();
                     return @$newznabcat[$nr]; break;
             } // switch
         } // if
@@ -1014,7 +1014,11 @@ class SpotPage_newznabapi extends SpotPage_Abs
                               8  => '5000|5040',
                               9  => '5000|5040',
                               10 => '5000|5030',
-                              11 => '7000|7020', ],
+                              11 => '7000|7020', 
+                              12 => '8000|8000',
+                              13 => '8000|8000',
+                              14 => '5000|5050',
+                              15 => '5000|5045',],
                     3 => // Z3 - Erotic
                           [0     => '6000|6030',
                               1  => '6000|6030',
