@@ -99,10 +99,10 @@ build:
                 override:
                     -	
                         command: 'php-scrutinizer-run'
-                    -
-                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
-                    -   
-                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+                    -   # https://github.com/squizlabs/PHP_CodeSniffer/issues/3548
+                        #command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   # https://github.com/squizlabs/PHP_CodeSniffer/issues/3548
+                        #command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
                         
 filter:
     excluded_paths:
