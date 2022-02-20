@@ -1,12 +1,10 @@
 build:
     tests:
         override:
-                - vendor/bin/phpunit
     dependencies:
         before:
-        override:
-           - 'sudo composer self-update --2'    
-           - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
+        override:   
+           - 'composer install --no-dev --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
     nodes:
         php56:
             environment:
@@ -20,8 +18,6 @@ build:
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
                         command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
-                    -
-                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
         php70:
             environment:
                 php:
@@ -33,9 +29,7 @@ build:
                     -
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
-                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
-                    -
-                        command: 'vendor/bin/phpunit --coverage-clover=coverage'                   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'                 
         php71:
             environment:
                 php:
@@ -47,9 +41,7 @@ build:
                     -
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
-                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
-                    -
-                        command: 'vendor/bin/phpunit --coverage-clover=coverage'                    
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'               
         php72:
             environment:
                 php: 
@@ -62,8 +54,6 @@ build:
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
                         command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
-                    -
-                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
         php73:
             environment:
                 php:
@@ -75,9 +65,7 @@ build:
                     -
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
-                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
-                    -
-                        command: 'vendor/bin/phpunit --coverage-clover=coverage'                    
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'                 
         php74:
             environment:
                 php:
@@ -90,8 +78,30 @@ build:
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
                         command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+        php8.0:
+            environment:
+                php:
+                    version: 8.0
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
                     -
-                        command: 'vendor/bin/phpunit --coverage-clover=coverage'
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
+        php8.1:
+            environment:
+                php:
+                    version: 8.1
+            tests:
+                override:
+                    -	
+                        command: 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
+                    -   
+                        command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
                         
 filter:
     excluded_paths:
