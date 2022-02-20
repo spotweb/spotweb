@@ -79,6 +79,7 @@ build:
                     -   
                         command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
         php8.0:
+            image: default-bionic
             environment:
                 php:
                     version: 8.0
