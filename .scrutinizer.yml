@@ -3,13 +3,8 @@ build:
         override:
     dependencies:
         before:
-<<<<<<< HEAD
-        override:
-           - 'composer install --no-interaction --no-dev --prefer-source --no-scripts --ignore-platform-reqs'  
-=======
         override:   
            - 'composer install --no-dev --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
->>>>>>> e63aa049c30248d3a434bb6f6fddcae678d29ad4
     nodes:
         php56:
             environment:
