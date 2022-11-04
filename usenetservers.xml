@@ -20,6 +20,19 @@
 				<post ssl='' port='119'>newnews.home.nl</post>
 			</plain>
 		</server>
+		
+		<server name='5eurousenet'>
+			<ssl>
+				<header ssl='yes' port='563'>reader.5eurousenet.com</header>
+				<nzb ssl='yes' port='563'>reader.5eurousenet.com</nzb>
+				<post ssl='yes' port='563'>reader.5eurousenet.com</post>
+			</ssl>
+			<plain>
+				<header ssl='' port='119'>reader.5eurousenet.com</header>
+				<nzb ssl='' port='119'>reader.5eurousenet.com</nzb>
+				<post ssl='' port='119'>reader.5eurousenet.com</post>
+			</plain>
+		</server>
 
 		<server name='Astraweb'>
 			<ssl>
