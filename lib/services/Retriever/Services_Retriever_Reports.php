@@ -23,7 +23,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base
     {
         switch ($cat) {
                     case 'start': echo 'Retrieving new reports from server '.$txt.'...'.PHP_EOL; break;
-                    case 'lastretrieve': echo strftime('Last retrieve at %c', $txt).PHP_EOL; break;
+                    case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL; break;
                     case 'done': echo 'Finished retrieving reports.'.PHP_EOL.PHP_EOL; break;
                     case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL; break;
                     case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL; break;

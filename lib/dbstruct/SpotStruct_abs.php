@@ -214,6 +214,12 @@ abstract class SpotStruct_abs
         } // if
 
         // check default value
+        if (is_null($q['COLUMN_DEFAULT'])) {
+            $q['COLUMN_DEFAULT'] = 'NULL';
+        }
+        if (is_null($colDefault)) {
+            $colDefault = 'NULL';
+        }
         if (strtolower($q['COLUMN_DEFAULT']) != strtolower($colDefault)) {
             return 'default';
         } // if
@@ -223,11 +229,8 @@ abstract class SpotStruct_abs
             return 'not null';
         } // if
 
-        // Chcek character set setting
-        if ((strtolower($q['COLLATION_NAME']) != $collation) && ($q['COLLATION_NAME'] != null)) {
-            // var_dump($q);
-            // var_dump($collation);
-            // die();
+        // check COLLATION_NAME
+        if (($q['COLLATION_NAME'] != null) && (strtolower($q['COLLATION_NAME']) != $collation)) {
             return 'charset';
         } // if
 

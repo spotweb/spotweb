@@ -74,10 +74,10 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function swDtToNative($colType)
     {
         switch (strtoupper($colType)) {
-            case 'INTEGER': $colType = 'int(11)'; break;
-            case 'INTEGER UNSIGNED': $colType = 'int(10) unsigned'; break;
-            case 'BIGINTEGER': $colType = 'bigint(20)'; break;
-            case 'BIGINTEGER UNSIGNED': $colType = 'bigint(20) unsigned'; break;
+            case 'INTEGER': $colType = 'int'; break;
+            case 'INTEGER UNSIGNED': $colType = 'int unsigned'; break;
+            case 'BIGINTEGER': $colType = 'bigint'; break;
+            case 'BIGINTEGER UNSIGNED': $colType = 'bigint unsigned'; break;
             case 'BOOLEAN': $colType = 'tinyint(1)'; break;
             case 'MEDIUMBLOB': $colType = 'mediumblob'; break;
         } // switch
@@ -94,12 +94,16 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function nativeDtToSw($colInfo)
     {
         switch (strtolower($colInfo)) {
-            case 'int(11)': $colInfo = 'INTEGER'; break;
-            case 'int(10) unsigned': $colInfo = 'INTEGER UNSIGNED'; break;
-            case 'bigint(20)': $colInfo = 'BIGINTEGER'; break;
-            case 'bigint(20) unsigned': $colInfo = 'BIGINTEGER UNSIGNED'; break;
-            case 'tinyint(1)': $colInfo = 'BOOLEAN'; break;
-            case 'mediumblob': $colInfo = 'MEDIUMBLOB'; break;
+            case 'int(11)':
+            case 'int': $colInfo = 'INTEGER';
+            case 'int unsigned':
+            case 'int(10) unsigned': $colInfo = 'INTEGER UNSIGNED';
+            case 'bigint':
+            case 'bigint(20)': $colInfo = 'BIGINTEGER';
+            case 'bigint unsigned':
+            case 'bigint(20) unsigned': $colInfo = 'BIGINTEGER UNSIGNED';
+            case 'tinyint(1)': $colInfo = 'BOOLEAN';
+            case 'mediumblob': $colInfo = 'MEDIUMBLOB';
         } // switch
 
         return $colInfo;
@@ -272,6 +276,9 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function modifyColumn($colName, $tablename, $colType, $colDefault, $notNull, $collation, $what)
     {
         // set the DEFAULT value
+        if (is_null($colDefault)) {
+            $colDefault = 'NULL';
+        }
         if (strlen($colDefault) != 0) {
             $colDefault = 'DEFAULT '.$colDefault;
         } // if
@@ -422,6 +429,13 @@ class SpotStruct_mysql extends SpotStruct_abs
             $q['NOTNULL'] = ($q['IS_NULLABLE'] != 'YES');
 
             /*
+             * MySQL 8.0.19 and higher compat
+             *
+             */
+            $q['COLUMN_TYPE'] = preg_replace("/^int\(\d*\)/i", 'int', $q['COLUMN_TYPE']);
+            $q['COLUMN_TYPE'] = preg_replace("/^bigint\(\d*\)/i", 'bigint', $q['COLUMN_TYPE']);
+
+            /*
              * MySQL's boolean type secretly is a tinyint, but in Spotweb we
              * use an actual boolean type. We secretly convert all tinyint(1)'s
              * to boolean types.
@@ -454,7 +468,7 @@ class SpotStruct_mysql extends SpotStruct_abs
             } // if
 
             // a default value has to given, so make it compareable to what we define
-            if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {
+            if ((is_string($q['COLUMN_DEFAULT']) && (strlen($q['COLUMN_DEFAULT']) == 0))) {
                 $q['COLUMN_DEFAULT'] = "''";
             } // if
             // MariaDb 10.4 returns null as string

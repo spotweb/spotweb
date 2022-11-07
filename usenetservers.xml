@@ -4,19 +4,7 @@
 		to support this, we need the ssl attribute on the individual elements as well
 	-->
 	<usenetservers>
-		<server name='4UX' buggy='true'>
-			<ssl>
-				<header ssl='yes' port='563'>news.4ux.nl</header>
-				<nzb ssl='yes' port='563'>news.4ux.nl</nzb>
-				<post ssl='yes' port='563'>news.4ux.nl</post>
-			</ssl>
-			<plain>
-				<header port='119'>news.4ux.nl</header>
-				<nzb port='119'>news.4ux.nl</nzb>
-				<post port='119'>news.4ux.nl</post>
-			</plain>
-		</server>
-
+	
 		<server name='@Home v1'>
 			<plain>
 				<header ssl='' port='119'>news.home.nl</header>
@@ -30,6 +18,19 @@
 				<header ssl='' port='119'>newnews.home.nl</header>
 				<nzb ssl='' port='119'>newnews.home.nl</nzb>
 				<post ssl='' port='119'>newnews.home.nl</post>
+			</plain>
+		</server>
+		
+		<server name='5eurousenet'>
+			<ssl>
+				<header ssl='yes' port='563'>reader.5eurousenet.com</header>
+				<nzb ssl='yes' port='563'>reader.5eurousenet.com</nzb>
+				<post ssl='yes' port='563'>reader.5eurousenet.com</post>
+			</ssl>
+			<plain>
+				<header ssl='' port='119'>reader.5eurousenet.com</header>
+				<nzb ssl='' port='119'>reader.5eurousenet.com</nzb>
+				<post ssl='' port='119'>reader.5eurousenet.com</post>
 			</plain>
 		</server>
 

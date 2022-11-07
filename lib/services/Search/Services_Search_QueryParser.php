@@ -465,9 +465,8 @@ class Services_Search_QueryParser
 
         // Now we transform the new query (field:operator:value pair) to an exploded array for easier iteration
         foreach ($search['value'] as $value) {
-            if (!empty($value)) {
+            if (!empty($value) and $value != 'NULL') {
                 $tmpFilter = explode(':', $value);
-
                 // Default to an '=' operator when none is given
                 if (count($tmpFilter) < 3) {
                     $tmpFilter = [$tmpFilter[0],
@@ -623,16 +622,21 @@ class Services_Search_QueryParser
                         break;
                      // case 'whitelistedspotters'
                     case 'mypostedspots':
-                        $additionalFields[] = '1 AS mypostedspot';
-                        $additionalJoins[] = ['tablename' => 'spotsposted',
-                            'tablealias'                  => 'spots',
-                            'jointype'                    => 'LEFT',
-                            'joincondition'               => 'spots.messageid = s.messageid', ];
-                        $tmpFilterValue = ' (spotsposted.ouruserid = '.$this->_dbEng->safe((int) $currentSession['user']['userid']).') ';
-                        $sortFields[] = ['field' => 'spots.stamp',
-                            'direction'          => 'DESC',
-                            'autoadded'          => true,
-                            'friendlyname'       => null, ];
+                        // Only filter on mypostedspots if userid is known (issue #728)
+                        if (isset($currentSession['user']['userid'])) {
+                            $additionalFields[] = '1 AS mypostedspot';
+                            $additionalJoins[] = ['tablename' => 'spotsposted',
+                                'tablealias'                  => 'spots',
+                                'jointype'                    => 'LEFT',
+                                'joincondition'               => 'spots.messageid = s.messageid', ];
+                            $tmpFilterValue = ' (spots.ouruserid = '.$this->_dbEng->safe((int) $currentSession['user']['userid']).') ';
+                            $sortFields[] = ['field' => 'spots.stamp',
+                                'direction'          => 'DESC',
+                                'autoadded'          => true,
+                                'friendlyname'       => null, ];
+                        } else {
+                            $tmpFilterValue = '0';
+                        }
                         break;
                      // case 'mypostedspots'
                     case 'downloaded':
