@@ -8,7 +8,6 @@ class TitleTest extends PHPUnit\Framework\TestCase
     /**
      * IMDb IDs for testing:
      * 0133093 = The Matrix (has everything)
-     * 1375666 = Inception (multiple genres)
      * 0087544 = Nausicaa (foreign, nonascii)
      * 0078788 = Apocalypse Now (Two cuts, multiple languages)
      * 0108052 = Schindler's List (multiple colours)
@@ -185,6 +184,12 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('Thelma & Louise', $imdb->title());
     }
 
+    public function testTitle_removes_escaped_quotes()
+    {
+        $imdb = $this->getImdb('0108052');
+        $this->assertEquals('Schindler\'s List', $imdb->title());
+    }
+
     public function testTitle_different_language()
     {
         $config = new \Imdb\Config();
@@ -240,10 +245,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(2008, $imdb->endyear());
     }
 
-    public function testYearspan_for_a_tv_show_that_havent_ended()
+    public function testYearspan_for_a_tv_show_that_hasnt_ended()
     {
-        $imdb = $this->getImdb("2442560");
-        $this->assertEquals(array('start' => 2013, 'end' => 0), $imdb->yearspan());
+        $imdb = $this->getImdb("4903514");
+        $this->assertEquals(array('start' => 2015, 'end' => 0), $imdb->yearspan());
     }
 
     public function testYearspan()
@@ -369,10 +374,11 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(null, $imdb->metacriticNumReviews());
     }
 
-//    public function testComment()
-//    {
-//        //@TODO
-//    }
+    public function testComment()
+    {
+        $imdb = $this->getImdb();
+        $this->assertNotEmpty($imdb->comment());
+    }
 
     // Taking different comments every time. Need to validate what it should look like.
 //    public function testComment_split()
@@ -382,16 +388,16 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function testMovie_recommendations()
     {
-        $imdb = $this->getImdb(450385); // Currently recommends  Sinister I (2012)  (The I is in a seperate span before the year)
+        $imdb = $this->getImdb();
         $recommendations = $imdb->movie_recommendations();
         $this->assertIsArray($recommendations);
         $this->assertCount(12, $recommendations);
 
         $matches = 0;
         foreach ($recommendations as $recommendation) {
-            if ($recommendation['title'] == 'Silent Hill') {
-                $this->assertTrue($recommendation['title'] == 'Silent Hill');
-                $this->assertTrue(floatval($recommendation['rating']) > 6.0);
+            if ($recommendation['title'] == 'The Matrix Reloaded') {
+                $this->assertTrue($recommendation['title'] == 'The Matrix Reloaded');
+                $this->assertTrue(floatval($recommendation['rating']) > 7.0);
                 $this->assertTrue($recommendation['img'] != "");
                 ++$matches;
             } else {
@@ -428,8 +434,6 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $keywords = $imdb->keywords();
         $this->assertTrue(in_array('corruption', $keywords));
         $this->assertTrue(in_array('drug trafficking', $keywords));
-        $this->assertTrue(in_array('drug war', $keywords));
-        $this->assertTrue(in_array('wiretapping', $keywords));
         $this->assertTrue(in_array('urban decay', $keywords));
     }
 
@@ -505,7 +509,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $genres = $imdb->genres();
         $this->assertTrue(in_array('Animation', $genres));
         $this->assertTrue(in_array('Sci-Fi', $genres));
-        $this->assertTrue(count($genres) == 4);
+        $this->assertTrue(count($genres) == 3);
     }
 
 //    public function testGenres_none()
@@ -680,7 +684,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testStoryline()
     {
         $imdb = $this->getImdb("0306414");
-        $this->assertSame(0, strpos($imdb->storyline(), "Set in Baltimore, this show centers around the city's inner-city drug scene. It starts as mid-level drug dealer"));
+        $this->assertSame(0, strpos($imdb->storyline(), "The streets of Baltimore as a microcosm of the US's war on drugs"));
     }
 
     public function testPhoto_returns_false_if_no_poster()
@@ -802,7 +806,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $sound = $imdb->sound();
         $this->assertIsArray($sound);
         $this->assertCount(1, $sound);
-        $this->assertEquals('Dolby Stereo', $sound[0]);
+        $this->assertEquals('Mono', $sound[0]);
     }
 
     public function testSound_none()
@@ -985,6 +989,26 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertCount(0, $firstCast['role_other']);
     }
 
+    public function testCast_short_nonascii()
+    {
+        $imdb = $this->getImdb('0087544');
+        $cast = $imdb->cast(true);
+
+        $sumi = $cast[0];
+        $this->assertEquals('0793585', $sumi['imdb']);
+        $this->assertEquals('Sumi Shimamoto', $sumi['name']);
+        $this->assertEquals('Nausicaä', $sumi['role']);
+        $this->assertTrue($sumi['credited']);
+        $this->assertCount(0, $sumi['role_other']);
+
+        $hisako = $cast[2];
+        $this->assertEquals('0477449', $hisako['imdb']);
+        $this->assertEquals('Hisako Kyôda', $hisako['name']);
+        $this->assertEquals('Oh-Baba', $hisako['role']);
+        $this->assertTrue($hisako['credited']);
+        $this->assertCount(0, $hisako['role_other']);
+    }
+
     public function testCast_short_cast_list_film_with_role_link()
     {
         $imdb = $this->getImdb();
@@ -1098,7 +1122,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals('0922035', $firstCast['imdb']);
         $this->assertEquals('Dominic West', $firstCast['name']);
-        $this->assertEquals("Det. James 'Jimmy' McNulty", $firstCast['role']);
+        $this->assertEquals("Detective James 'Jimmy' McNulty", $firstCast['role']);
         $this->assertEquals(60, $firstCast['role_episodes']);
         $this->assertEquals(2002, $firstCast['role_start_year']);
         $this->assertEquals(2008, $firstCast['role_end_year']);
@@ -1410,7 +1434,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
             "plot" => "Naruto returns to Konoha after a two-and-a-half-year training journey with Jiraiya and is reunited with Sakura.",
             "season" => 2009,
             "episode" => 1,
-            "image_url" => 'https://m.media-amazon.com/images/M/MV5BNWJiY2ZkYzUtMmZhMy00ZDAwLWE1MmQtMjkzZmJhZWI5Zjk3XkEyXkFqcGdeQXVyMjM0NTM5MTA@._V1_UX224_CR0,0,224,126_AL_.jpg',
+            "image_url" => 'https://m.media-amazon.com/images/M/MV5BYjE4YWE3ODYtNTE3MC00NzlhLWExZmEtZjU0MDk1ZThiOTA5XkEyXkFqcGdeQXVyNDk3NDEzMzk@._V1_UX224_CR0,0,224,126_AL_.jpg',
         ], $episode);
     }
 
@@ -1421,7 +1445,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $goofs = $imdb->goofs();
         $this->assertIsArray($goofs);
         $this->assertGreaterThan(140, count($goofs));
-        $this->assertLessThan(150, count($goofs));
+        $this->assertLessThan(170, count($goofs));
 
         $this->assertEquals('Audio/visual unsynchronised', $goofs[0]['type']);
         $this->assertEquals('When Neo meets Trinity for the first time in the nightclub she is close to him talking in his ear. Even though she pauses between sentences the shot from the back of Trinity shows that her jaw is still moving during the pauses.', $goofs[0]['content']);
@@ -1541,35 +1565,28 @@ class TitleTest extends PHPUnit\Framework\TestCase
             ), $conn["followedBy"][0]);
     }
 
-    public function testSoundtrack_nosoundtracks()
-    {
-        $imdb = $this->getImdb('7618100');
+    public function testSoundtrack_nosoundtracks() {
+        $imdb = $this->getImdb('1899250');
         $result = $imdb->soundtrack();
         $this->assertEmpty($result);
     }
 
-    // This function doesn't really work very well
-    public function testSoundtrack_matrix()
-    {
+    public function testSoundtrack_matrix() {
         $imdb = $this->getImdb();
         $result = $imdb->soundtrack();
         $this->assertnotEmpty($result);
         $this->assertEquals(12, count($result));
 
-        // fully check out the first result
-        // this might be a little tight, loosen this test if it fails incorrectly in the future
-        /* Dissolved Girl
-          Written by Robert del Naja, Grant Marshall (as Grantley Marshall), Mushroom Vowles (as Andrew Vowles),
-          Sara J., and Matt Schwartz
-          Performed by Massive Attack
-          Courtesy of Virgin Records LTD.
-          By Arrangement with Virgin Records America, Inc. */
-        $dg = $result[0];
-        //$this->assertEquals('Dissolved Girl', $dg['soundtrack']);
-        // should be 5 writer credits, 1 performer, 1 courtesy and 1 arrangement
-//        $this->assertEquals(8, count($dg['credits']), "Incorrect number of credits");
-//        $this->assertEquals('writer', $dg['credits'][0]['desc']);
-//        $this->assertEquals('<a href="http://'.$imdb->imdbsite.'/name/nm1128020/?ref_=ttsnd_snd_1">Robert del Naja</a>', $dg['credits'][0]['credit_to']);
+        $rid = $result[11];
+        $this->assertEquals('Rock is Dead', $rid['soundtrack']);
+        $this->assertEquals("Written by Marilyn Manson, Jeordie White, and Madonna Wayne Gacy
+Performed by Marilyn Manson
+Courtesy of Nothing/Interscope Records
+Under License from Universal Music Special Markets", $rid['credits']);
+        $this->assertEquals("Written by <a href=\"/name/nm0001504/\">Marilyn Manson</a>, <a href=\"/name/nm0708390/\">Jeordie White</a>, and <a href=\"/name/nm0300476/\">Madonna Wayne Gacy</a> <br />
+Performed by <a href=\"/name/nm0001504/\">Marilyn Manson</a> <br />
+Courtesy of Nothing/Interscope Records <br />
+Under License from Universal Music Special Markets <br />", $rid['credits_raw']);
     }
 
     public function testExtReviews()
@@ -1586,8 +1603,8 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $imdb = $this->getImdb(107290);
         $releaseInfo = $imdb->releaseInfo();
 
-        $this->assertGreaterThanOrEqual(150, count($releaseInfo));
-        $this->assertLessThanOrEqual(170, count($releaseInfo));
+        $this->assertGreaterThanOrEqual(165, count($releaseInfo));
+        $this->assertLessThanOrEqual(175, count($releaseInfo));
 
         $this->assertEquals(array(
             'country' => 'USA',
@@ -1654,18 +1671,20 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb();
         $specialCompany = $imdb->specialCompany();
-        $this->assertEquals('Amalgamated Pixels', $specialCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0012497?ref_=ttco_co_1', $specialCompany[0]['url']);
-        $this->assertEquals('(additional visual effects)', $specialCompany[0]['notes']);
+        $amalgamated = array_find_item($specialCompany, 'name', 'Amalgamated Pixels');
+        $this->assertEquals('Amalgamated Pixels', $amalgamated['name']);
+        $this->stringStartsWith('https://www.imdb.com/company/co0012497')->evaluate($amalgamated['url']);
+        $this->assertEquals('(additional visual effects)', $amalgamated['notes']);
     }
 
     public function testOtherCompany()
     {
         $imdb = $this->getImdb();
         $otherCompany = $imdb->otherCompany();
-        $this->assertEquals('Absolute Rentals', $otherCompany[0]['name']);
-        $this->assertEquals('https://www.imdb.com/company/co0235245?ref_=ttco_co_1', $otherCompany[0]['url']);
-        $this->assertEquals('(post-production rentals)', $otherCompany[0]['notes']);
+        $absoluteRentals = array_find_item($otherCompany, 'name', 'Absolute Rentals');
+        $this->assertEquals('Absolute Rentals', $absoluteRentals['name']);
+        $this->stringStartsWith('https://www.imdb.com/company/co0235245')->evaluate($absoluteRentals['url']);
+        $this->assertEquals('(post-production rentals)', $absoluteRentals['notes']);
     }
 
     public function testParentalGuide()
@@ -1674,9 +1693,9 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $parentalGuide = $imdb->parentalGuide();
         $profanity = $parentalGuide['Profanity'];
         $drugs = $parentalGuide['Drugs'];
-        $this->assertGreaterThanOrEqual(3, $profanity);
+        $this->assertGreaterThanOrEqual(2, count($profanity));
         $this->assertGreaterThan(5, $drugs);
-        $this->assertContains('Around 8 uses of Godd***n.', $profanity);
+        $this->assertContains('The songs in the end credits have some uses of the f bomb.', $profanity);
         $this->assertContains('The Oracle smokes a cigarette.', $drugs);
     }
 
@@ -1684,7 +1703,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     {
         $imdb = $this->getImdb(120737);
         $parentalGuide = $imdb->parentalGuide(TRUE);
-        $violence = $parentalGuide['Frightening'][0];
+        $violence = $parentalGuide['Frightening'][1];
         $this->assertSame(0, strpos($violence, 'Gandalf&#39;s "death" scene'));
     }
 

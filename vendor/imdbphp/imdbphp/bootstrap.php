@@ -10,6 +10,7 @@ require_once __DIR__ . '/src/Imdb/Request.php';
 require_once __DIR__ . '/src/Imdb/Pages.php';
 require_once __DIR__ . '/src/Imdb/MdbBase.php';
 require_once __DIR__ . '/src/Imdb/Charts.php';
+require_once __DIR__ . '/src/Imdb/Calendar.php';
 require_once __DIR__ . '/src/Imdb/Parsing.php';
 require_once __DIR__ . '/src/Imdb/Person.php';
 require_once __DIR__ . '/src/Imdb/PersonSearch.php';
