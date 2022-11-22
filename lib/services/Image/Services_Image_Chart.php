@@ -1,9 +1,8 @@
 <?php
 
-use CpChart\Data;
-use CpChart\Draw;
-use CpChart\Image;
 use CpChart\Chart\Pie;
+use CpChart\Data;
+use CpChart\Image;
 
 class Services_Image_Chart
 {
