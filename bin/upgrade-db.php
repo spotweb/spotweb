@@ -180,7 +180,7 @@ try {
     */
     if (SpotCommandline::get('clear-cache')) {
         $isRetrieverRunning = $dbConnection->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
-        if ( (isset($argv[2]) and $argv[2] == '-yes' ) or (isset($argv[3]) and $argv[3] == '-yes' ) ) {
+        if ((isset($argv[2]) and $argv[2] == '-yes') or (isset($argv[3]) and $argv[3] == '-yes')) {
             echo 'Clearing cache..'.PHP_EOL.PHP_EOL;
             echo 'Checking if retriever is running, if so wait for it to finish.'.PHP_EOL;
             if ($isRetrieverRunning > 0) {
@@ -262,7 +262,7 @@ try {
             delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
             echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
         } // if
-        if ( (isset($argv[2]) and $argv[2] == '-analyse' ) or (isset($argv[3]) and $argv[3] == '-analyse' ) ) {
+        if ((isset($argv[2]) and $argv[2] == '-analyse') or (isset($argv[3]) and $argv[3] == '-analyse')) {
             echo 'Performing basic analysis of database tables'.PHP_EOL;
             $svcUpgradeBase->analyze($settings);
             echo 'Basic database optimalisation done'.PHP_EOL;
