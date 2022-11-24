@@ -1,9 +1,8 @@
 <?php
 
-require __DIR__.'/../../../vendor/pchart/class/pData.class.php';
-require __DIR__.'/../../../vendor/pchart/class/pDraw.class.php';
-require __DIR__.'/../../../vendor/pchart/class/pImage.class.php';
-require __DIR__.'/../../../vendor/pchart/class/pPie.class.php';
+use CpChart\Chart\Pie;
+use CpChart\Data;
+use CpChart\Image;
 
 class Services_Image_Chart
 {
@@ -35,14 +34,14 @@ class Services_Image_Chart
          */
         $dataSet = array_values($prepData);
 
-        $imgData = new pData();
+        $imgData = new Data();
         if ($chartType == 'bar') {
             $imgData->addPoints($dataSet, 'data');
             $imgData->addPoints($legend, 'legend');
             $imgData->setAbscissa('legend');
             $imgData->setPalette('data', ['R'=>0, 'G'=>108, 'B'=>171, 'Alpha'=>100]);
 
-            $img = new pImage($width, $height, $imgData);
+            $img = new Image($width, $height, $imgData);
 
             $img->drawGradientArea(0, $titleHeight, $width, $height, DIRECTION_VERTICAL, ['StartR'=>200, 'StartG'=>200, 'StartB'=>200, 'EndR'=>18, 'EndG'=>52, 'EndB'=>86, 'Alpha'=>100]);
             $img->drawGradientArea(0, 0, $width, $titleHeight, DIRECTION_VERTICAL, ['StartR'=>18, 'StartG'=>52, 'StartB'=>86, 'EndR'=>50, 'EndG'=>50, 'EndB'=>50, 'Alpha'=>100]);
@@ -59,8 +58,8 @@ class Services_Image_Chart
             $imgData->addPoints($legend, 'legend');
             $imgData->setAbscissa('legend');
 
-            $img = new pImage($width, $height, $imgData, true);
-            $PieChart = new pPie($img, $imgData);
+            $img = new Image($width, $height, $imgData, true);
+            $PieChart = new Pie($img, $imgData);
 
             $img->drawGradientArea(0, $titleHeight, $width, $height, DIRECTION_VERTICAL, ['StartR'=>200, 'StartG'=>200, 'StartB'=>200, 'EndR'=>18, 'EndG'=>52, 'EndB'=>86, 'Alpha'=>100]);
             $img->drawGradientArea(0, 0, $width, $titleHeight, DIRECTION_VERTICAL, ['StartR'=>18, 'StartG'=>52, 'StartB'=>86, 'EndR'=>50, 'EndG'=>50, 'EndB'=>50, 'Alpha'=>100]);
