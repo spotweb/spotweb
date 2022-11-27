@@ -144,7 +144,7 @@ class Dao_Postgresql_Spot extends Dao_Base_Spot
     public function getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter, $sortList, $limit, $offset)
     {
         $sortList2 = str_replace('s.', 'x.', $sortList);
-        $sortList2 = str_replace('spost.', 'x.', $sortList2);
+        $sortList2 = str_replace('spotx.', 'x.', $sortList2);
         /*
          * Run the query with a limit always increased by one. this allows us to
          * check whether any more results are available

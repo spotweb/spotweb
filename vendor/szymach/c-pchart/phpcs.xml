@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<ruleset name="Custom Standard">
+
+    <rule ref="PSR2"/>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>*.db</exclude-pattern>
+    <exclude-pattern>*.color</exclude-pattern>
+    <exclude-pattern>*.ttf</exclude-pattern>
+
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="encoding" value="utf-8"/>
+    <arg name="report" value="full"/>
+    <arg name="report-width" value="120"/>
+    <arg name="colors"/>
+    <arg value="p"/>
+
+    <rule ref="PSR2.Methods.MethodDeclaration">
+        <exclude-pattern>tests/unit/*Test.php</exclude-pattern>
+        <exclude-pattern>tests/_support/Helper/Unit.php</exclude-pattern>
+    </rule>
+
+</ruleset>

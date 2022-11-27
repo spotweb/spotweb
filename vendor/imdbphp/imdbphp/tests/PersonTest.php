@@ -128,7 +128,9 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $result = $person->movies_soundtrack();
         $this->assertIsArray($result);
         $this->assertGreaterThanOrEqual(6, $result);
-        $poppyHill = current(array_filter($result, function ($item) { return $item['mid'] == '1798188'; }));
+        $poppyHill = current(array_filter($result, function ($item) {
+            return $item['mid'] == '1798188';
+        }));
         $this->assertEquals('1798188', $poppyHill['mid']);
         $this->assertEquals('From Up on Poppy Hill', $poppyHill['name']);
         $this->assertEquals('2011', $poppyHill['year']);
@@ -160,7 +162,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertCount(6, $result);
         $laLuna = array_find_item($result, 'mid', '1957945');
         $this->assertEquals('1957945', $laLuna['mid']);
-        $this->assertEquals('La Luna', $laLuna['name']);
+        $this->assertEquals('Boy on the Moon', $laLuna['name']);
         $this->assertEquals('2011', $laLuna['year']);
         $this->assertEquals('', $laLuna['chid']);
         $this->assertEquals('', $laLuna['chname']);
@@ -176,10 +178,8 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertLessThan(35, count($result));
 
         $matches = 0;
-        foreach($result as $movie)
-        {
-            if($movie['mid'] == 1095875)
-            {
+        foreach ($result as $movie) {
+            if ($movie['mid'] == 1095875) {
                 $this->assertEquals('Jônetsu tairiku', $movie['name']);
                 $this->assertEquals('2014', $movie['year']);
                 $this->assertEquals('', $movie['chid']);
@@ -224,7 +224,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(array(), $oscars['addons']);
 
         $troldspejlet = array_find_item($result, 'mid', '0318251');
-        $this->assertEquals('0318251',$troldspejlet['mid']);
+        $this->assertEquals('0318251', $troldspejlet['mid']);
         $this->assertEquals('Troldspejlet', $troldspejlet['name']);
         $this->assertEquals('2009', $troldspejlet['year']);
         $this->assertEquals('', $troldspejlet['chid']);
@@ -284,11 +284,110 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('1.64 m', $result['metric']);
     }
 
-    //@TODO Write proper tests for this method
-    public function test_spouse()
+    public function test_spouse_still_married()
     {
         $person = $this->getimdb_person();
-        $this->assertNotEmpty($person->spouse());
+        $result = $person->spouse();
+        $this->assertNotEmpty($result);
+        $this->assertCount(1, $result);
+        $first = $result[0];
+        $this->assertEquals(array(
+            'imdb' => '1088112',
+            'name' => 'Akemi Ôta',
+            'from' =>
+                array(
+                    'day' => '',
+                    'month' => 'October',
+                    'mon' => '10',
+                    'year' => '1965',
+                ),
+            'to' =>
+                array(
+                    'day' => '',
+                    'month' => '',
+                    'mon' => '',
+                    'year' => '',
+                ),
+            'comment' => '',
+            'children' => 2,
+        ), $first);
+    }
+
+    public function test_spouse_multiple_spouse()
+    {
+        $person = $this->getimdb_person('0000245');
+        $result = $person->spouse();
+        $this->assertNotEmpty($result);
+        $this->assertCount(3, $result);
+        $this->assertEquals(array(
+            'imdb' => '6699367',
+            'name' => 'Susan Schneider',
+            'from' =>
+                array(
+                    'day' => 22,
+                    'month' => 'October',
+                    'mon' => 10,
+                    'year' => 2011,
+                ),
+            'to' =>
+                array(
+                    'day' => 11,
+                    'month' => 'August',
+                    'mon' => 8,
+                    'year' => 2014,
+                ),
+            'comment' => 'his death',
+            'children' => 0,
+        ), $result[0]);
+
+        $this->assertEquals(array(
+            'imdb' => '0931265',
+            'name' => 'Marsha Garces Williams',
+            'from' =>
+                array(
+                    'day' => 30,
+                    'month' => 'April',
+                    'mon' => 4,
+                    'year' => 1989,
+                ),
+            'to' =>
+                array(
+                    'day' => '',
+                    'month' => '',
+                    'mon' => '',
+                    'year' => 2010,
+                ),
+            'comment' => 'divorced',
+            'children' => 2,
+        ), $result[1]);
+
+        $this->assertEquals(array(
+            'imdb' => '0892239',
+            'name' => 'Valerie Velardi',
+            'from' =>
+                array(
+                    'day' => 4,
+                    'month' => 'June',
+                    'mon' => 6,
+                    'year' => 1978,
+                ),
+            'to' =>
+                array(
+                    'day' => 6,
+                    'month' => 'December',
+                    'mon' => 12,
+                    'year' => 1988,
+                ),
+            'comment' => 'divorced',
+            'children' => 1,
+        ), $result[2]);
+    }
+
+    public function test_spouse_no_spouse()
+    {
+        $person = $this->getimdb_person('0005132');
+        $result = $person->spouse();
+        $this->assertCount(0, $result);
     }
 
     //@TODO Write proper tests for this method
@@ -383,17 +482,30 @@ class PersonTest extends PHPUnit\Framework\TestCase
             'inturl' => '',
             'name' => 'Comixene (DE)',
             'date' =>
-            array(
-                'day' => '',
-                'month' => 'September',
-                'mon' => '09',
-                'year' => '2005',
-                'full' => 'September 2005',
-            ),
+                array(
+                    'day' => '',
+                    'month' => 'September',
+                    'mon' => '09',
+                    'year' => '2005',
+                    'full' => 'September 2005',
+                ),
             'details' => 'Iss. 89',
             'auturl' => '',
             'author' => '',
-            ), $first);
+        ), $first);
+    }
+
+    public function test_real_id()
+    {
+        $person = $this->getimdb_person();
+        $this->assertEquals('0594503', $person->real_id());
+    }
+
+    public function test_real_id_after_redirect()
+    {
+        $personRedirect = $this->getimdb_person('8484559');
+        $redirect = $personRedirect->real_id();
+        $this->assertEquals('2092886', $redirect);
     }
 
     protected function getimdb_person($id = '0594503')

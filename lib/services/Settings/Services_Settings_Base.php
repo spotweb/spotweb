@@ -195,12 +195,12 @@ class Services_Settings_Base
     {
         // If we disable the external blacklist, clear all entries
         if ($settings['external_blacklist'] == false && $this->_settings->get('external_blacklist') == true) {
-            $this->_blackWhiteListDao->removeOldList($this->_settings->get('blacklist_url'), 'black');
+            $this->_blackWhiteListDao->removeOldList($this->_settings->get('blacklist_url'), 1);
         } // if
 
         // If we disable the external whitelist, clear all entries
         if ($settings['external_whitelist'] == false && $this->_settings->get('external_whitelist') == true) {
-            $this->_blackWhiteListDao->removeOldList($this->_settings->get('whitelist_url'), 'white');
+            $this->_blackWhiteListDao->removeOldList($this->_settings->get('whitelist_url'), 2);
         } // if
 
         // clear some stuff we don't need to store
