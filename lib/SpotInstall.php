@@ -170,6 +170,8 @@ class SpotInstall
                     $form['hdr'] = $form;
                     $form['nzb'] = $form;
                     $form['post'] = $form;
+                    $form['nzb']['port'] = '';
+                    $form['nzb']['enc'] = false;
                 } else {
                     foreach ($serverList->usenetservers->server as $provider) {
                         if (extension_loaded('openssl') && isset($provider->ssl)) {
@@ -580,7 +582,7 @@ class SpotInstall
      *
      * @return bool False, when the default error handler should take over and true when we handled it ourself.
      */
-    public static function ownWarning($number, $message, $file, $line, array $context)
+    public static function ownWarning($number, $message, $file, $line, array $context =[])
     {
         // don't show errors if they are being suppressed by silent (@) operator.
         if (error_reporting() === 0) {
