@@ -170,6 +170,8 @@ class SpotInstall
                     $form['hdr'] = $form;
                     $form['nzb'] = $form;
                     $form['post'] = $form;
+                    $form['nzb']['port'] = '';
+                    $form['nzb']['enc'] = false;
                 } else {
                     foreach ($serverList->usenetservers->server as $provider) {
                         if (extension_loaded('openssl') && isset($provider->ssl)) {
