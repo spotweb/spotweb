@@ -59,6 +59,7 @@ if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_
 $settings['sabnzbd']['categories'] = [
     0	=> ['default' 	=> 'movies',				// Default categorie when nothing else matches
         'a5'		       => 'books',
+        'a11'		       => 'books',
         'd2'		       => 'anime',
         'd11'		      => 'tv',
         'd29'		      => 'anime',

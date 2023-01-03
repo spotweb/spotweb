@@ -28,7 +28,7 @@ class Services_Image_Error
         $text = ($errcode < 900) ? _('ERROR').' '.$errcode : _('ERROR');
         $bbox = imagettfbbox($fontSize, $angle, $img['font'], $text);
         $txtwidth = abs($bbox[2]);
-        imagettftext($img['resource'], $fontSize, $angle, 256 - ($txtwidth / 2), 50, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
+        imagettftext($img['resource'], $fontSize, $angle, 256 - intval($txtwidth / 2), 50, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
         // error info
         switch ($errcode) {
@@ -48,7 +48,7 @@ class Services_Image_Error
         $fontSize = 20;
         $bbox = imagettfbbox($fontSize, $angle, $img['font'], $text);
         $txtwidth = abs($bbox[2]);
-        imagettftext($img['resource'], $fontSize, $angle, 256 - ($txtwidth / 2), 300, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
+        imagettftext($img['resource'], $fontSize, $angle, 256 - intval($txtwidth / 2), 300, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
         ob_start();
         imagejpeg($img['resource']);
