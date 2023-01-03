@@ -57,13 +57,13 @@ if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_
  * Currently these categories are system wide.
  */
 $settings['sabnzbd']['categories'] = [
-    0	=> ['default' 	=> 'movies',				// Default categorie when nothing else matches
-        'a5'		       => 'books',
+    0	=> ['default' 	 => 'movies',				// Default categorie when nothing else matches
+        'a5'		        => 'books',
         'a11'		       => 'books',
-        'd2'		       => 'anime',
-        'd11'		      => 'tv',
-        'd29'		      => 'anime',
-        'z3'		       => 'erotica', ],
+        'd2'		        => 'anime',
+        'd11'		       => 'tv',
+        'd29'		       => 'anime',
+        'z3'		        => 'erotica', ],
     1	=> ['default'	=> 'music'],
     2	=> ['default'	=> 'games'],
     3	=> ['default'	=> 'apps',
