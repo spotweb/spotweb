@@ -168,12 +168,8 @@ function attachInfiniteScroll() {
 // console.time("2nd-ready");
 	var pagenr = $('#nextPage').val();
 	$(window).scroll(function() {
-		const {
-			scrollTop,
-			scrollHeight,
-			clientHeight
-		} = document.documentElement;
-		const endOfPage = scrollTop + clientHeight >= scrollHeight - 5;
+		const e = document.documentElement;
+		const endOfPage = e.scrollTop + e.clientHeight >= e.scrollHeight - 5;
 
 		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
 
