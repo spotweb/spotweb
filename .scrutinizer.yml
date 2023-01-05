@@ -87,7 +87,7 @@ build:
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
                         command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
-       php8.2.0:
+        php8.2.0:
             environment:
                 php:
                     version: 8.2.0
@@ -99,7 +99,7 @@ build:
                         command: 'vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility'
                     -   
                         command: 'vendor/bin/phpcs --ignore=*/vendor/*,*/js/*,*\.inc* --standard=PHPCompatibility .'
-       php8.2.1:
+        php8.2.1:
             environment:
                 php:
                     version: 8.2.1
