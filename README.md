@@ -1,7 +1,7 @@
 # Spotweb
 Spotweb is a decentralized usenet community based on the [Spotnet](https://github.com/spotnet/spotnet/wiki) protocol.
 
-Spotweb requires an operational webserver with PHP5.6 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
+Spotweb requires an operational webserver with PHP7.2 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
 <table align="center"><tr><td align="center" width="9999">
  
 [![Travis-CI Status](https://travis-ci.org/spotweb/spotweb.svg?branch=develop)](https://travis-ci.org/spotweb/spotweb)

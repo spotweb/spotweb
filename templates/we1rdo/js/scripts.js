@@ -168,9 +168,12 @@ function attachInfiniteScroll() {
 // console.time("2nd-ready");
 	var pagenr = $('#nextPage').val();
 	$(window).scroll(function() {
+		const e = document.documentElement;
+		const endOfPage = e.scrollTop + e.clientHeight >= e.scrollHeight - 5;
+
 		var url = '?direction=next&data[spotsonly]=1&pagenr='+pagenr+$('#getURL').val()+' #spots';
 
-		if($(document).scrollTop() >= $(document).height() - $(window).height() && $(document).height() >= $(window).height() && pagenr > 0 && $("#overlay").is(':hidden')) {
+		if(endOfPage && $(document).height() >= $(window).height() && pagenr > 0 && $("#overlay").is(':hidden')) {
 			if(!($("div.spots").hasClass("full"))) {
 				var scrollLocation = $("div.container").scrollTop();
 				$("#overlay").show().addClass('loading');

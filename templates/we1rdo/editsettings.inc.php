@@ -28,12 +28,12 @@ if ($result->isSubmitted()) {
         $nntp_nzb['verifyname'] = true;
     }
 
-    $tmpArDiff = array_diff_assoc($nntp_hdr, $nntp_nzb);
+    $tmpArDiff = strcmp(serialize($nntp_hdr), serialize($nntp_nzb));
     if ((empty($tmpArDiff)) || (empty($nntp_hdr['host']))) {
         $nntp_hdr['isadummy'] = true;
     } // if
 
-    $tmpArDiff = array_diff_assoc($nntp_post, $nntp_nzb);
+    $tmpArDiff = strcmp(serialize($nntp_post), serialize($nntp_nzb));
     if ((empty($tmpArDiff)) || (empty($nntp_post['host']))) {
         $nntp_post['isadummy'] = true;
     } // if
