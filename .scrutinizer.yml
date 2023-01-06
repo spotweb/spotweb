@@ -4,7 +4,7 @@ build:
     dependencies:
         before:
         override:
-           - 'composer update --no-interaction'
+           - 'composer update squizlabs/php_codesniffer --no-dev --no-interaction'
            - 'composer install --no-dev --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
     nodes:
         php70:
