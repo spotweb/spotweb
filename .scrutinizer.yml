@@ -4,10 +4,6 @@ build:
     dependencies:
         before:
         override:
-           - 'composer update squizlabs/php_codesniffer --no-dev --no-interaction'
-           - 'composer update laminas/laminas-xml2json --no-dev --no-interaction'
-           - 'composer update php-coveralls/php-coveralls --no-dev --no-interaction'
-           - 'composer update phpunit/phpunit --no-dev --no-interaction'
            - 'composer install --no-dev --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
     nodes:
         php70:
