@@ -3,7 +3,8 @@ build:
         override:
     dependencies:
         before:
-        override:   
+        override:
+           - 'composer update --no-interaction'
            - 'composer install --no-dev --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'  
     nodes:
         php70:
