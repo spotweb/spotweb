@@ -6,8 +6,8 @@
 		<thead>
 			<tr class="ui-widget-header">
 				<th><?php echo _('Username'); ?></th> 
-				<th><?php echo _('Lastname'); ?></th>
 				<th><?php echo _('Firstname'); ?></th>
+				<th><?php echo _('Lastname'); ?></th>
 				<th><?php echo _('Mail'); ?></th>
 				<th><?php echo _('Last visit'); ?></th>
 				<th><?php echo _('Member of group'); ?></th>
