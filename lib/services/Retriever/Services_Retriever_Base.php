@@ -94,7 +94,7 @@ abstract class Services_Retriever_Base
     public function connect(array $groupList)
     {
         // if an retriever instance is already running, stop this one
-        if ((!$this->_force) && ($this->_usenetStateDao->isRetrieverRunning())) {
+        if ((!$this->_force) && $this->_usenetStateDao->isRetrieverRunning()) {
             throw new RetrieverRunningException();
         } // if
 
@@ -161,10 +161,10 @@ abstract class Services_Retriever_Base
             // Reset timelimit
             set_time_limit(120);
 
-            $curArtNr = max(($curArtNr - $decrement), $this->_msgdata['first'] - 1);
+            $curArtNr = max($curArtNr - $decrement, $this->_msgdata['first'] - 1);
 
             // get the list of headers (XHDR) from the usenet server
-            $hdrList = $this->_svcNntpText->getMessageIdList($curArtNr - 1, ($curArtNr + $decrement));
+            $hdrList = $this->_svcNntpText->getMessageIdList($curArtNr - 1, $curArtNr + $decrement);
             SpotDebug::msg(SpotDebug::TRACE, 'getMessageIdList returned='.serialize($hdrList));
 
             // Show what we are doing
@@ -186,7 +186,7 @@ abstract class Services_Retriever_Base
             } // for
         } // while
 
-            SpotDebug::msg(SpotDebug::DEBUG, 'getMessageIdList loop finished, found = '.$found);
+        SpotDebug::msg(SpotDebug::DEBUG, 'getMessageIdList loop finished, found = '.$found);
         SpotDebug::msg(SpotDebug::DEBUG, 'getMessageIdList loop finished, curArtNr = '.$curArtNr);
 
         return $curArtNr;
@@ -209,7 +209,7 @@ abstract class Services_Retriever_Base
             $curArticleNr = $this->_msgdata['first'];
         } // if
 
-        $this->displayStatus('groupmessagecount', ($this->_msgdata['last'] - $this->_msgdata['first']));
+        $this->displayStatus('groupmessagecount', $this->_msgdata['last'] - $this->_msgdata['first']);
         $this->displayStatus('firstmsg', $this->_msgdata['first']);
         $this->displayStatus('lastmsg', $this->_msgdata['last']);
         $this->displayStatus('curartnr', $curArticleNr);
@@ -221,7 +221,7 @@ abstract class Services_Retriever_Base
 
             // get the list of headers (XOVER)
             SpotTiming::start(__CLASS__.'::'.__FUNCTION__.':getOverview');
-            $hdrList = $this->_svcNntpText->getOverview($curArticleNr, ($curArticleNr + $increment));
+            $hdrList = $this->_svcNntpText->getOverview($curArticleNr, $curArticleNr + $increment);
             SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':getOverview');
 
             $saveCurArtNr = $curArticleNr;
@@ -249,11 +249,11 @@ abstract class Services_Retriever_Base
              * Make sure if we run with timing on, we do not fetch too many
              * spots as that would make us run out of memory
              */
-            if (($processed > 3000) && (SpotTiming::isEnabled())) {
+            if (($processed > 3000) && SpotTiming::isEnabled()) {
                 break;
             } // if
         } // while
-            SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':whileLoop');
+        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':whileLoop');
 
         // we are done updating, make sure that if the newsserver deleted
         // earlier retrieved messages, we remove them from our database
@@ -332,9 +332,9 @@ abstract class Services_Retriever_Base
             } // if
         } // if
 
-            /*
-             * and actually start looping till we retrieved all headers or articles
-             */
+        /*
+         * and actually start looping till we retrieved all headers or articles
+         */
         SpotTiming::start(__CLASS__.'::loopTillEnd()');
         $newProcessedCount = $this->loopTillEnd($curArtNr, $this->_settings->get('retrieve_increment'));
         SpotTiming::stop(__CLASS__.'::loopTillEnd()');

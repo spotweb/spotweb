@@ -11,7 +11,7 @@ class SpotTranslation
          * because if the gettext module fails to load, this function will not exist.
          * See GitHub issue #1696
          */
-        if (extension_loaded('gettext') && (function_exists('bind_textdomain_codeset'))) {
+        if (extension_loaded('gettext') && function_exists('bind_textdomain_codeset')) {
             putenv('LC_ALL='.$lang.'.UTF-8');
             setlocale(LC_ALL, $lang.'.UTF-8');
 

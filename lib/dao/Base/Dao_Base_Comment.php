@@ -177,7 +177,7 @@ class Dao_Base_Comment implements Dao_Comment
              */
             $comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
             $comment['user-key'] = serialize($comment['user-key']);
-            $comment['body'] = substr($comment['body'], 0, (1024 * 10));
+            $comment['body'] = substr($comment['body'], 0, 1024 * 10);
             $comment['verified'] = (int) $comment['verified'];
             $comment['stamp'] = (int) $comment['stamp'];
 

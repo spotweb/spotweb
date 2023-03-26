@@ -65,7 +65,7 @@ class Dao_Base_Spot implements Dao_Spot
                 echo '<script language = "javascript">';
                 echo 'window.location.href = "/?search[tree]=&search[unfiltered]=true"';
                 echo '</script>';
-                exit();
+                exit;
             } // if
         } // if
 

@@ -99,7 +99,6 @@ class Services_Posting_Editor
         $result->removeData('spot');
 
         if ($result->isSuccess()) {
-
             // We now merge the cleaned edit form into the original spot
             $spot = array_merge($fullSpot, $spot);
 

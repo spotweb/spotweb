@@ -92,7 +92,6 @@ class Services_Providers_Http
      */
     private function addPostFieldsToCurl($ch, $postFields, $files, $rawPostData)
     {
-
         /*
          * Files posted to another webserver, need to be in another format
          * than a plain post data to be posted.
@@ -317,10 +316,10 @@ class Services_Providers_Http
                     ($http_code == 301) ||
                     ($http_code == 302)
             ) &&
-                (
+
                     $manualRedirect
-                )
-               ) {
+
+            ) {
                 if (preg_match('/Location:(.*?)\n/', $response, $matches)) {
                     $redirUrl = trim(array_pop($matches));
 
@@ -443,13 +442,13 @@ class Services_Providers_Http
                          */
                         $this->_cacheDao->updateHttpCacheStamp($url_md5);
                         break;
-                     // 304 (resource not modified)
+                        // 304 (resource not modified)
 
                     default:
                         /*
                          * Store the retrieved information in the cache
                          */
-                        if (($storeWhenRedirected) || ($curl_info['redirect_count'] == 0)) {
+                        if ($storeWhenRedirected || ($curl_info['redirect_count'] == 0)) {
                             $this->_cacheDao->saveHttpCache($url_md5, $data);
                         } // if
                      // if

@@ -56,53 +56,53 @@ class SpotPage_catsjson extends SpotPage_Abs
 
         switch ($this->_params['rendertype']) {
             case 'subcatz':
-                    $scType = $this->_params['rendertype'][6];
+                $scType = $this->_params['rendertype'][6];
 
-                    foreach (SpotCategories::$_categories[$category]['z'] as $key => $value) {
-                        $returnArray[$key] = $value;
-                    } // foreach
+                foreach (SpotCategories::$_categories[$category]['z'] as $key => $value) {
+                    $returnArray[$key] = $value;
+                } // foreach
 
-                     break;
-             // case subcatz
+                break;
+                // case subcatz
 
             case 'subcata':
             case 'subcatb':
             case 'subcatc':
             case 'subcatd':
-                    $scType = $this->_params['rendertype'][6];
+                $scType = $this->_params['rendertype'][6];
 
-                    if (isset(SpotCategories::$_categories[$category][$scType])) {
-                        foreach (SpotCategories::$_categories[$category][$scType] as $key => $value) {
-                            if (in_array('z'.$genre, $value[1])) {
-                                $returnArray['cat'.$category.'_z'.$genre.'_'.$scType.$key] = $value[0];
-                            } // if
-                        } // foreach
-                    } // if
+                if (isset(SpotCategories::$_categories[$category][$scType])) {
+                    foreach (SpotCategories::$_categories[$category][$scType] as $key => $value) {
+                        if (in_array('z'.$genre, $value[1])) {
+                            $returnArray['cat'.$category.'_z'.$genre.'_'.$scType.$key] = $value[0];
+                        } // if
+                    } // foreach
+                } // if
 
-                    break;
-             // case subcata, subcatb, subcatc, subcatd
+                break;
+                // case subcata, subcatb, subcatc, subcatd
 
-            // Used to show all (including deprecated) categories. This is required when editing
-            // a spot since some spots still use deprecated categories which we don't want to lose.
-            // Depreicated categories will be marked as such.
+                // Used to show all (including deprecated) categories. This is required when editing
+                // a spot since some spots still use deprecated categories which we don't want to lose.
+                // Depreicated categories will be marked as such.
             case 'subcata_old':
             case 'subcatb_old':
             case 'subcatc_old':
             case 'subcatd_old':
-                    $scType = $this->_params['rendertype'][6];
+                $scType = $this->_params['rendertype'][6];
 
-                    if (isset(SpotCategories::$_categories[$category][$scType])) {
-                        foreach (SpotCategories::$_categories[$category][$scType] as $key => $value) {
-                            if (in_array('z'.$genre, $value[1])) {
-                                $returnArray['cat'.$category.'_z'.$genre.'_'.$scType.$key] = $value[0];
-                            } // if
-                            elseif (in_array('z'.$genre, $value[2])) {
-                                $returnArray['cat'.$category.'_z'.$genre.'_'.$scType.$key] = $value[0].' ('._('deprecated').')';
-                            } // elseif
-                        } // foreach
-                    } // if
+                if (isset(SpotCategories::$_categories[$category][$scType])) {
+                    foreach (SpotCategories::$_categories[$category][$scType] as $key => $value) {
+                        if (in_array('z'.$genre, $value[1])) {
+                            $returnArray['cat'.$category.'_z'.$genre.'_'.$scType.$key] = $value[0];
+                        } // if
+                        elseif (in_array('z'.$genre, $value[2])) {
+                            $returnArray['cat'.$category.'_z'.$genre.'_'.$scType.$key] = $value[0].' ('._('deprecated').')';
+                        } // elseif
+                    } // foreach
+                } // if
 
-                    break;
+                break;
                  // case subcata_old, subcatb_old, subcatc_old, subcatd_old
         } // switch
 
@@ -191,7 +191,6 @@ class SpotPage_catsjson extends SpotPage_Abs
                     $subcatDesc = [];
                     foreach (SpotCategories::$_subcat_descriptions[$hcat_key] as $sclist_key => $sclist_desc) {
                         if (($sclist_key !== 'z') && (($this->_params['subcatz'] == $type_key) || ($this->_params['subcatz'] == '*'))) {
-
                             // We inherit the strongnode from our parent
                             $isStrongNot = strpos($compressedCatList, ',~cat'.$hcat_key.'_z'.$type_key.',') !== false ? true : false;
                             if ($isStrongNot) {

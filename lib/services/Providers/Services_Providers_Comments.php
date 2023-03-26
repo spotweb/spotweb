@@ -90,7 +90,7 @@ class Services_Providers_Comments
                 /*
                  * Start retrieving...
                  */
-                while (($retrievedVerified < $totalCommentsNeeded) && (($lastHaveFullOffset) < count($fullComments))) {
+                while (($retrievedVerified < $totalCommentsNeeded) && ($lastHaveFullOffset < count($fullComments))) {
                     $newComments = [];
 
                     SpotTiming::start(__FUNCTION__.':nntp:readComments()');
