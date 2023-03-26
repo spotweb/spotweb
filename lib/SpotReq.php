@@ -44,7 +44,6 @@ class SpotReq
             $formSubmitted = (substr($key, 0, strlen('submit')) == 'submit');
             if ($formSubmitted) {
                 if ($form[$key]) {
-
                     /* pass the chosen action through if the xsrf check passes */
                     if ($this->isXsrfValid($formName)) {
                         $form['action'] = substr($key, strlen('submit'));
@@ -176,10 +175,10 @@ class SpotReq
             // and start escaping
             switch ($escapeType) {
                 case 'html': return htmlspecialchars($var);
-                               break;
+                    break;
 
                 case 'none': return $var;
-                               break;
+                    break;
 
                 default: exit('Unknown escape type: '.$escapeType);
             } // switch

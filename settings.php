@@ -119,7 +119,7 @@ if (!isset($settings['quicklinks'])) {
  * When the OpenSSL module is loaded, make sure the "openssl_cnf_path"
  * setting variable points to an readable cnf file.
  */
-if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded('openssl'))) {
+if ((!is_readable($settings['openssl_cnf_path'])) && extension_loaded('openssl')) {
     throw new InvalidOwnSettingsSettingException('openssl_cnf_path does not contain a readable OpenSSL configuration filepath');
 } // if
 

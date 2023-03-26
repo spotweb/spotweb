@@ -78,8 +78,8 @@ class Services_Translation_Microsoft
          * store the translation token into the cache
          */
         $this->_cacheDao->saveTranslaterTokenCache($this->_subscriptionKey, // unique token
-                                              time() + 7 * 60, // valid for 10 minutes so renew early
-                                              $translaterToken);
+            time() + 7 * 60, // valid for 10 minutes so renew early
+            $translaterToken);
 
         return $translaterToken;
     }

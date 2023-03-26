@@ -74,12 +74,18 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function swDtToNative($colType)
     {
         switch (strtoupper($colType)) {
-            case 'INTEGER': $colType = 'int'; break;
-            case 'INTEGER UNSIGNED': $colType = 'int unsigned'; break;
-            case 'BIGINTEGER': $colType = 'bigint'; break;
-            case 'BIGINTEGER UNSIGNED': $colType = 'bigint unsigned'; break;
-            case 'BOOLEAN': $colType = 'tinyint(1)'; break;
-            case 'MEDIUMBLOB': $colType = 'mediumblob'; break;
+            case 'INTEGER': $colType = 'int';
+            break;
+            case 'INTEGER UNSIGNED': $colType = 'int unsigned';
+            break;
+            case 'BIGINTEGER': $colType = 'bigint';
+            break;
+            case 'BIGINTEGER UNSIGNED': $colType = 'bigint unsigned';
+            break;
+            case 'BOOLEAN': $colType = 'tinyint(1)';
+            break;
+            case 'MEDIUMBLOB': $colType = 'mediumblob';
+            break;
         } // switch
 
         return $colType;
@@ -251,17 +257,23 @@ class SpotStruct_mysql extends SpotStruct_abs
 
             // change the collation to a MySQL type
             switch (strtolower($collation)) {
-                case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
-                case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci'; break;
-                case 'ascii': $colSetting = 'CHARACTER SET ascii'; break;
-                case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin'; break;
-                case '': $colSetting = ''; break;
+                case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+                break;
+                case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci';
+                break;
+                case 'ascii': $colSetting = 'CHARACTER SET ascii';
+                break;
+                case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin';
+                break;
+                case '': $colSetting = '';
+                break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
             // and define the 'NOT NULL' part
             switch ($notNull) {
-                case true: $nullStr = 'NOT NULL'; break;
+                case true: $nullStr = 'NOT NULL';
+                break;
                 default: $nullStr = '';
             } // switch
 
@@ -288,17 +300,23 @@ class SpotStruct_mysql extends SpotStruct_abs
 
         // change the collation to a MySQL type
         switch (strtolower($collation)) {
-            case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci'; break;
-            case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci'; break;
-            case 'ascii': $colSetting = 'CHARACTER SET ascii'; break;
-            case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin'; break;
-            case '': $colSetting = ''; break;
+            case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+            break;
+            case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci';
+            break;
+            case 'ascii': $colSetting = 'CHARACTER SET ascii';
+            break;
+            case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin';
+            break;
+            case '': $colSetting = '';
+            break;
             default: throw new Exception('Invalid collation setting');
         } // switch
 
         // and define the 'NOT NULL' part
         switch ($notNull) {
-            case true: $nullStr = 'NOT NULL'; break;
+            case true: $nullStr = 'NOT NULL';
+            break;
             default: $nullStr = '';
         } // switch
 
@@ -333,8 +351,10 @@ class SpotStruct_mysql extends SpotStruct_abs
     {
         if (!$this->tableExists($tablename)) {
             switch (strtolower($collation)) {
-                case 'utf8': $colSetting = 'CHARSET=utf8 COLLATE=utf8_unicode_ci'; break;
-                case 'ascii': $colSetting = 'CHARSET=ascii'; break;
+                case 'utf8': $colSetting = 'CHARSET=utf8 COLLATE=utf8_unicode_ci';
+                break;
+                case 'ascii': $colSetting = 'CHARSET=ascii';
+                break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
@@ -456,19 +476,23 @@ class SpotStruct_mysql extends SpotStruct_abs
              */
             if (is_string($q['COLLATION_NAME'])) {
                 switch ($q['COLLATION_NAME']) {
-                    case 'ascii_general_ci': $q['COLLATION_NAME'] = 'ascii'; break;
-                    case 'ascii_bin': $q['COLLATION_NAME'] = 'ascii_bin'; break;
+                    case 'ascii_general_ci': $q['COLLATION_NAME'] = 'ascii';
+                    break;
+                    case 'ascii_bin': $q['COLLATION_NAME'] = 'ascii_bin';
+                    break;
                     case 'utf8_unicode_ci':
                     case 'utf8mb3_unicode_ci':
-                    case 'utf8_general_ci': $q['COLLATION_NAME'] = 'utf8'; break;
-                    case 'utf8mb4_general_ci': $q['COLLATION_NAME'] = 'utf8mb4'; break;
+                    case 'utf8_general_ci': $q['COLLATION_NAME'] = 'utf8';
+                    break;
+                    case 'utf8mb4_general_ci': $q['COLLATION_NAME'] = 'utf8mb4';
+                    break;
 
                     default: throw new Exception('Invalid collation setting for varchar: '.$q['COLLATION_NAME']);
                 } // switch
             } // if
 
             // a default value has to given, so make it compareable to what we define
-            if ((is_string($q['COLUMN_DEFAULT']) && (strlen($q['COLUMN_DEFAULT']) == 0))) {
+            if (is_string($q['COLUMN_DEFAULT']) && (strlen($q['COLUMN_DEFAULT']) == 0)) {
                 $q['COLUMN_DEFAULT'] = "''";
             } // if
             // MariaDb 10.4 returns null as string

@@ -20,7 +20,7 @@ class Dto_MediaInformation
      */
     public function isValid()
     {
-        return ($this->_valid) && ($this->_title != null);
+        return $this->_valid && ($this->_title != null);
     }
 
     /**

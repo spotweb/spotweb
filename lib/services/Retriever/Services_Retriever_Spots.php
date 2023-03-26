@@ -142,31 +142,53 @@ class Services_Retriever_Spots extends Services_Retriever_Base
     public function displayStatus($cat, $txt)
     {
         switch ($cat) {
-                    case 'start': echo 'Retrieving new Spots from server '.$txt.'...'.PHP_EOL; break;
-                    case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL; break;
-                    case 'done': echo 'Finished retrieving spots.'.PHP_EOL.PHP_EOL; break;
-                    case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL; break;
-                    case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL; break;
-                    case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL; break;
-                    case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL; break;
-                    case 'progress': echo 'Retrieving '.$txt; break;
-                    case 'hdrparsed': echo ' (parsed: '.$txt.', '; break;
-                    case 'hdrindbcount': echo 'in DB: '.$txt.', '; break;
-                    case 'fullretrieved': echo 'full: '.$txt.', '; break;
-                    case 'verified': echo 'signed: '.$txt.', '; break;
-                    case 'invalidcount': echo 'invalid: '.$txt.', '; break;
-                    case 'modcount': echo 'mod: '.$txt.', '; break;
-                    case 'skipcount': echo 'rtntn.skip: '.$txt.', '; break;
-                    case 'loopcount': echo 'total: '.$txt.')'; break;
-                    case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL; break;
-                    case 'totalprocessed': echo 'Processed a total of '.$txt.' spots'.PHP_EOL; break;
-                    case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL; break;
-                    case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL; break;
-                    case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable the PHP OpenSSL extension whenever possible'.PHP_EOL; break;
-                    case '': echo PHP_EOL; break;
+            case 'start': echo 'Retrieving new Spots from server '.$txt.'...'.PHP_EOL;
+            break;
+            case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL;
+            break;
+            case 'done': echo 'Finished retrieving spots.'.PHP_EOL.PHP_EOL;
+            break;
+            case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL;
+            break;
+            case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL;
+            break;
+            case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL;
+            break;
+            case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL;
+            break;
+            case 'progress': echo 'Retrieving '.$txt;
+            break;
+            case 'hdrparsed': echo ' (parsed: '.$txt.', ';
+            break;
+            case 'hdrindbcount': echo 'in DB: '.$txt.', ';
+            break;
+            case 'fullretrieved': echo 'full: '.$txt.', ';
+            break;
+            case 'verified': echo 'signed: '.$txt.', ';
+            break;
+            case 'invalidcount': echo 'invalid: '.$txt.', ';
+            break;
+            case 'modcount': echo 'mod: '.$txt.', ';
+            break;
+            case 'skipcount': echo 'rtntn.skip: '.$txt.', ';
+            break;
+            case 'loopcount': echo 'total: '.$txt.')';
+            break;
+            case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL;
+            break;
+            case 'totalprocessed': echo 'Processed a total of '.$txt.' spots'.PHP_EOL;
+            break;
+            case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL;
+            break;
+            case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
+            break;
+            case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable the PHP OpenSSL extension whenever possible'.PHP_EOL;
+            break;
+            case '': echo PHP_EOL;
+            break;
 
-                    default: echo $cat.$txt;
-                } // switch
+            default: echo $cat.$txt;
+        } // switch
     }
 
     // displayStatus
@@ -198,7 +220,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
      */
     public function process($hdrList, $curArtNr, $increment, $timer)
     {
-        $this->displayStatus('progress', ($curArtNr).' till '.($increment));
+        $this->displayStatus('progress', $curArtNr.' till '.$increment);
 
         $signedCount = 0;
         $hdrsParsed = 0;
@@ -340,8 +362,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
                 $validCommands = ['delete', 'dispose', 'remove'];
 
                 if ($spot['keyid'] == 2) {
-
-                        // is this one of the defined valid commands?
+                    // is this one of the defined valid commands?
                     if (in_array(strtolower($commandAr[0]), $validCommands) !== false) {
                         //$moderationList[$commandAr[1]] = 1;
                         $moderationList[$commandAr[1]] = ['spotterid' => $spot['spotterid'], 'stamp' => $spot['stamp']];
@@ -401,9 +422,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base
              */
             if ($header_isInDb &&			// header must be in the db
                     !$fullspot_isInDb) {	 		// but the fullspot should not
-                    /*
-                     * Don't add older fullspots than specified for the retention stamp
-                     */
+                /*
+                 * Don't add older fullspots than specified for the retention stamp
+                 */
                 if (($retentionStamp > 0) && (strtotime($msgheader['Date']) < $retentionStamp)) {
                     SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-to-ParseHeader');
                     SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-getFullSpot');
@@ -473,7 +494,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
                 } // if retrievefull
             } // if fullspot is not in db yet
 
-                SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-getFullSpot');
+            SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-getFullSpot');
             SpotTiming::start(__CLASS__.'::'.__FUNCTION__.':forEach-getNzbOrImage');
 
             /*
@@ -539,7 +560,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
                             SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getNzb(), done. msgId= '.$msgId);
                         } // if
                     } // if
-                        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-getNzb');
+                    SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-getNzb');
                 } catch (ParseSpotXmlException $x) {
                     // swallow error
                 } catch (Exception $x) {
@@ -566,7 +587,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
                 } // catch
             } // if prefetch image and/or nzb
 
-                SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-getNzbOrImage');
+            SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-getNzbOrImage');
             SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':forEach-to-ParseHeader');
 
             /*
@@ -621,31 +642,31 @@ class Services_Retriever_Spots extends Services_Retriever_Base
          * because a spot can be added and moderated within the same iteration
          */
         switch ($this->_settings->get('spot_moderation')) {
-                case 'disable': break;
-                case 'markspot':
+            case 'disable': break;
+            case 'markspot':
 
-                    $moderationList = $this->removeInvalidDisposes($moderationList);
-                    $this->_commentDao->markCommentsModerated($moderationList);
-                    $this->_spotDao->markSpotsModerated($moderationList);
+                $moderationList = $this->removeInvalidDisposes($moderationList);
+                $this->_commentDao->markCommentsModerated($moderationList);
+                $this->_spotDao->markSpotsModerated($moderationList);
 
-                    break;
-                 // case 'markspot'
-                default:
-                    $moderationList = $this->removeInvalidDisposes($moderationList);
-                    $this->_spotDao->removeSpots($moderationList);
-                    $this->_commentDao->removeComments($moderationList);
-                    /*
-                     * If the spots actually get removed, we want to make
-                     * sure we write the deleted spots down. This prevents
-                     * us from retrieving and deleting them over and over again
-                     */
-                    $this->_modListDao->addToRingBuffer($moderationList);
+                break;
+                // case 'markspot'
+            default:
+                $moderationList = $this->removeInvalidDisposes($moderationList);
+                $this->_spotDao->removeSpots($moderationList);
+                $this->_commentDao->removeComments($moderationList);
+                /*
+                 * If the spots actually get removed, we want to make
+                 * sure we write the deleted spots down. This prevents
+                 * us from retrieving and deleting them over and over again
+                 */
+                $this->_modListDao->addToRingBuffer($moderationList);
 
-                    break;
+                break;
                  // default
-            } // switch
+        } // switch
 
-            // update the maximum article id
+        // update the maximum article id
         if (!empty($lastProcessedId) && ($lastProcessedArtNr > 0)) {
             $this->_usenetStateDao->setMaxArticleId(Dao_UsenetState::State_Spots, $lastProcessedArtNr, $lastProcessedId);
         } // if

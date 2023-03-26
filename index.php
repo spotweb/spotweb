@@ -91,83 +91,83 @@ try {
     SpotTiming::start('renderpage');
     switch ($page) {
         case 'render':
-                $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
-                $page = new SpotPage_render(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    $req->getDef('tplname', ''),
-                    ['search'       => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
-                        'data'      => $req->getDef('data', []),
-                        'messageid' => $req->getDef('messageid', ''),
-                        'pagenr'    => $req->getDef('pagenr', 0),
-                        'perpage'   => $req->getDef('perpage', 10),
-                        'sortby'    => $req->getDef('sortby', ''),
-                        'sortdir'   => $req->getDef('sortdir', ''), ]
-                );
+            $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+            $page = new SpotPage_render(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                $req->getDef('tplname', ''),
+                ['search'       => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
+                    'data'      => $req->getDef('data', []),
+                    'messageid' => $req->getDef('messageid', ''),
+                    'pagenr'    => $req->getDef('pagenr', 0),
+                    'perpage'   => $req->getDef('perpage', 10),
+                    'sortby'    => $req->getDef('sortby', ''),
+                    'sortdir'   => $req->getDef('sortdir', ''), ]
+            );
 
-                $page->render();
-                break;
-         // render
+            $page->render();
+            break;
+            // render
 
         case 'getspot':
-                if (strpos($_SERVER['HTTP_USER_AGENT'], 'SABnzbd+') === 0) {
-                    $page = new SpotPage_getnzb(
-                        $daoFactory,
-                        $settings,
-                        $currentSession,
-                        ['messageid'   => $req->getDef('messageid', ''),
-                            'action'   => $req->getDef('action', 'display'),
-                            'username' => $req->getDef('username', ''),
-                            'apikey'   => $req->getDef('apikey', ''), ]
-                    );
-                } else {
-                    $page = new SpotPage_getspot($daoFactory, $settings, $currentSession, ['messageid' => $req->getDef('messageid', '')]);
-                } // else
-                $page->render();
-                break;
-         // getspot
-
-        case 'getnzb':
-                 $page = new SpotPage_getnzb(
-                     $daoFactory,
-                     $settings,
-                     $currentSession,
-                     ['messageid'   => $req->getDef('messageid', ''),
-                         'action'   => $req->getDef('action', 'display'),
-                         'username' => $req->getDef('username', ''),
-                         'apikey'   => $req->getDef('apikey', ''), ]
-                 );
-                $page->render();
-                break;
-
-        case 'erasedls':
-                $page = new SpotPage_erasedls($daoFactory, $settings, $currentSession);
-                $page->render();
-                break;
-         // erasedls
-
-        case 'catsjson':
-                $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
-                $page = new SpotPage_catsjson(
+            if (strpos($_SERVER['HTTP_USER_AGENT'], 'SABnzbd+') === 0) {
+                $page = new SpotPage_getnzb(
                     $daoFactory,
                     $settings,
                     $currentSession,
-                    ['search'               => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
-                        'subcatz'           => $req->getDef('subcatz', '*'),
-                        'category'          => $req->getDef('category', '*'),
-                        'rendertype'        => $req->getDef('rendertype', 'tree'),
-                        'disallowstrongnot' => $req->getDef('disallowstrongnot', ''), ]
+                    ['messageid'   => $req->getDef('messageid', ''),
+                        'action'   => $req->getDef('action', 'display'),
+                        'username' => $req->getDef('username', ''),
+                        'apikey'   => $req->getDef('apikey', ''), ]
                 );
-                    $page->render();
-                    break;
-         // catsjson
+            } else {
+                $page = new SpotPage_getspot($daoFactory, $settings, $currentSession, ['messageid' => $req->getDef('messageid', '')]);
+            } // else
+            $page->render();
+            break;
+            // getspot
+
+        case 'getnzb':
+            $page = new SpotPage_getnzb(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['messageid'   => $req->getDef('messageid', ''),
+                    'action'   => $req->getDef('action', 'display'),
+                    'username' => $req->getDef('username', ''),
+                    'apikey'   => $req->getDef('apikey', ''), ]
+            );
+            $page->render();
+            break;
+
+        case 'erasedls':
+            $page = new SpotPage_erasedls($daoFactory, $settings, $currentSession);
+            $page->render();
+            break;
+            // erasedls
+
+        case 'catsjson':
+            $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+            $page = new SpotPage_catsjson(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['search'               => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
+                    'subcatz'           => $req->getDef('subcatz', '*'),
+                    'category'          => $req->getDef('category', '*'),
+                    'rendertype'        => $req->getDef('rendertype', 'tree'),
+                    'disallowstrongnot' => $req->getDef('disallowstrongnot', ''), ]
+            );
+            $page->render();
+            break;
+            // catsjson
 
         case 'markallasread':
-                $page = new SpotPage_markallasread($daoFactory, $settings, $currentSession);
-                $page->render();
-                break;
-         // markallasread
+            $page = new SpotPage_markallasread($daoFactory, $settings, $currentSession);
+            $page->render();
+            break;
+            // markallasread
 
         case 'getimage':
             $page = new SpotPage_getimage(
@@ -209,7 +209,7 @@ try {
             );
             $page->render();
             break;
-         // api
+            // api
 
         case 'rss':
             $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
@@ -226,95 +226,95 @@ try {
             );
             $page->render();
             break;
-         // rss
+            // rss
 
         case 'statics':
-                $page = new SpotPage_statics(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['type' => $req->getDef('type', '')]
-                );
-                $page->render();
-                break;
-         // statics
+            $page = new SpotPage_statics(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['type' => $req->getDef('type', '')]
+            );
+            $page->render();
+            break;
+            // statics
 
         case 'createuser':
-                $page = new SpotPage_createuser(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['createuserform' => $req->getForm('createuserform')]
-                );
-                $page->render();
-                break;
-         // createuser
+            $page = new SpotPage_createuser(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['createuserform' => $req->getForm('createuserform')]
+            );
+            $page->render();
+            break;
+            // createuser
 
         case 'editsettings':
-                $page = new SpotPage_editsettings(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['editsettingsform' => $req->getForm('editsettingsform')]
-                );
-                $page->render();
-                break;
-         // editsettings
+            $page = new SpotPage_editsettings(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['editsettingsform' => $req->getForm('editsettingsform')]
+            );
+            $page->render();
+            break;
+            // editsettings
 
         case 'edituserprefs':
-                $page = new SpotPage_edituserprefs(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['edituserprefsform' => $req->getForm('edituserprefsform'),
-                        'userid'         => $req->getDef('userid', ''),
-                        'data'           => $req->getDef('data', []),
-                        'dialogembedded' => $req->getDef('dialogembedded', 0), ]
-                );
-                $page->render();
-                break;
-         // edituserprefs
+            $page = new SpotPage_edituserprefs(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['edituserprefsform' => $req->getForm('edituserprefsform'),
+                    'userid'         => $req->getDef('userid', ''),
+                    'data'           => $req->getDef('data', []),
+                    'dialogembedded' => $req->getDef('dialogembedded', 0), ]
+            );
+            $page->render();
+            break;
+            // edituserprefs
 
         case 'editsecgroup':
-                $page = new SpotPage_editsecgroup(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['editsecgroupform' => $req->getForm('editsecgroupform'),
-                        'groupid'       => $req->getDef('groupid', 0), ]
-                );
-                $page->render();
-                break;
-         // editsecgroup
+            $page = new SpotPage_editsecgroup(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['editsecgroupform' => $req->getForm('editsecgroupform'),
+                    'groupid'       => $req->getDef('groupid', 0), ]
+            );
+            $page->render();
+            break;
+            // editsecgroup
 
         case 'editfilter':
-                $page = new SpotPage_editfilter(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['editfilterform'      => $req->getForm('editfilterform'),
-                        'orderfilterslist' => $req->getDef('orderfilterslist', []),
-                        'search'           => $req->getDef('search', []),
-                        'sorton'           => $req->getDef('sortby', ''),
-                        'sortorder'        => $req->getDef('sortdir', ''),
-                        'filterid'         => $req->getDef('filterid', 0),
-                        'data'             => $req->getDef('data', []), ]
-                );
-                $page->render();
-                break;
-         // editfilter
+            $page = new SpotPage_editfilter(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['editfilterform'      => $req->getForm('editfilterform'),
+                    'orderfilterslist' => $req->getDef('orderfilterslist', []),
+                    'search'           => $req->getDef('search', []),
+                    'sorton'           => $req->getDef('sortby', ''),
+                    'sortorder'        => $req->getDef('sortdir', ''),
+                    'filterid'         => $req->getDef('filterid', 0),
+                    'data'             => $req->getDef('data', []), ]
+            );
+            $page->render();
+            break;
+            // editfilter
 
         case 'edituser':
-                $page = new SpotPage_edituser(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['edituserform' => $req->getForm('edituserform'),
-                        'userid'    => $req->getDef('userid', ''), ]
-                );
-                $page->render();
-                break;
-         // edituser
+            $page = new SpotPage_edituser(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['edituserform' => $req->getForm('edituserform'),
+                    'userid'    => $req->getDef('userid', ''), ]
+            );
+            $page->render();
+            break;
+            // edituser
 
         case 'editspot':
             $page = new SpotPage_editspot(
@@ -326,71 +326,71 @@ try {
             );
             $page->render();
             break;
-         // editspot
+            // editspot
 
         case 'login':
-                $page = new SpotPage_login(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['loginform' => $req->getForm('loginform'),
-                        'data'   => $req->getDef('data', []), ]
-                );
-                $page->render();
-                break;
-         // login
+            $page = new SpotPage_login(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['loginform' => $req->getForm('loginform'),
+                    'data'   => $req->getDef('data', []), ]
+            );
+            $page->render();
+            break;
+            // login
 
         case 'postcomment':
-                $page = new SpotPage_postcomment(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['commentform'  => $req->getForm('postcommentform'),
-                        'inreplyto' => $req->getDef('inreplyto', ''), ]
-                );
-                $page->render();
-                break;
-         // postcomment
+            $page = new SpotPage_postcomment(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['commentform'  => $req->getForm('postcommentform'),
+                    'inreplyto' => $req->getDef('inreplyto', ''), ]
+            );
+            $page->render();
+            break;
+            // postcomment
 
         case 'postspot':
-                $page = new SpotPage_postspot(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['spotform' => $req->getForm('newspotform')]
-                );
-                $page->render();
-                break;
-         // postspot
+            $page = new SpotPage_postspot(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['spotform' => $req->getForm('newspotform')]
+            );
+            $page->render();
+            break;
+            // postspot
 
         case 'reportpost':
-                $page = new SpotPage_reportpost(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['reportform'   => $req->getForm('postreportform'),
-                        'inreplyto' => $req->getDef('inreplyto', ''), ]
-                );
-                $page->render();
-                break;
-         // reportpost
+            $page = new SpotPage_reportpost(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['reportform'   => $req->getForm('postreportform'),
+                    'inreplyto' => $req->getDef('inreplyto', ''), ]
+            );
+            $page->render();
+            break;
+            // reportpost
 
         case 'blacklistspotter':
-                $page = new SpotPage_blacklistspotter(
-                    $daoFactory,
-                    $settings,
-                    $currentSession,
-                    ['blform' => $req->getForm('blacklistspotterform')]
-                );
-                $page->render();
-                break;
-         // blacklistspotter
+            $page = new SpotPage_blacklistspotter(
+                $daoFactory,
+                $settings,
+                $currentSession,
+                ['blform' => $req->getForm('blacklistspotterform')]
+            );
+            $page->render();
+            break;
+            // blacklistspotter
 
         case 'logout':
-                $page = new SpotPage_logout($daoFactory, $settings, $currentSession);
-                $page->render();
-                break;
-         // logout
+            $page = new SpotPage_logout($daoFactory, $settings, $currentSession);
+            $page->render();
+            break;
+            // logout
 
         case 'nzbhandlerapi':
             $page = new SpotPage_nzbhandlerapi(
@@ -408,7 +408,7 @@ try {
             );
             $page->render();
             break;
-         // nzbhandlerapi
+            // nzbhandlerapi
 
         case 'twitteroauth':
             $page = new SpotPage_twitteroauth(
@@ -420,7 +420,7 @@ try {
             );
             $page->render();
             break;
-         // twitteroauth
+            // twitteroauth
 
         case 'statistics':
             $page = new SpotPage_statistics(
@@ -431,36 +431,36 @@ try {
             );
             $page->render();
             break;
-         // statistics
+            // statistics
 
         default:
-                SpotTiming::start('renderpage->case-default');
-                if ((empty($_SERVER['HTTP_X_PURPOSE']) ? '' : $_SERVER['HTTP_X_PURPOSE']) == 'preview') {
-                    $page = new SpotPage_getimage(
-                        $daoFactory,
-                        $settings,
-                        $currentSession,
-                        ['messageid' => $req->getDef('messageid', ''),
-                            'image'  => ['type' => 'speeddial'], ]
-                    );
-                } else {
-                    $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
-                    $page = new SpotPage_index(
-                        $daoFactory,
-                        $settings,
-                        $currentSession,
-                        ['search'       => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
-                            'pagenr'    => $req->getDef('pagenr', 0),
-                            'sortby'    => $req->getDef('sortby', ''),
-                            'sortdir'   => $req->getDef('sortdir', ''),
-                            'messageid' => $req->getDef('messageid', ''),
-                            'action'    => $req->getDef('action', ''),
-                            'data'	     => $req->getDef('data', []), ]
-                    );
-                } // if
-                SpotTiming::stop('renderpage->case-default');
-                $page->render();
-                break;
+            SpotTiming::start('renderpage->case-default');
+            if ((empty($_SERVER['HTTP_X_PURPOSE']) ? '' : $_SERVER['HTTP_X_PURPOSE']) == 'preview') {
+                $page = new SpotPage_getimage(
+                    $daoFactory,
+                    $settings,
+                    $currentSession,
+                    ['messageid' => $req->getDef('messageid', ''),
+                        'image'  => ['type' => 'speeddial'], ]
+                );
+            } else {
+                $svcUserFilters = new Services_User_Filters($daoFactory, $settings);
+                $page = new SpotPage_index(
+                    $daoFactory,
+                    $settings,
+                    $currentSession,
+                    ['search'       => $req->getDef('search', $svcUserFilters->getIndexFilter($currentSession['user']['userid'])),
+                        'pagenr'    => $req->getDef('pagenr', 0),
+                        'sortby'    => $req->getDef('sortby', ''),
+                        'sortdir'   => $req->getDef('sortdir', ''),
+                        'messageid' => $req->getDef('messageid', ''),
+                        'action'    => $req->getDef('action', ''),
+                        'data'	     => $req->getDef('data', []), ]
+                );
+            } // if
+            SpotTiming::stop('renderpage->case-default');
+            $page->render();
+            break;
          // default
     } // switch
     SpotTiming::stop('renderpage');
@@ -469,7 +469,7 @@ try {
     SpotTiming::stop('total');
 
     // enable or disable timer
-    if (($settings->get('enable_timing')) && (!in_array($req->getDef('page', ''), ['catsjson', 'statics', 'getnzb', 'getnzbmobile', 'markallasread']))) {
+    if ($settings->get('enable_timing') && (!in_array($req->getDef('page', ''), ['catsjson', 'statics', 'getnzb', 'getnzbmobile', 'markallasread']))) {
         SpotTiming::display();
     } // if
 } catch (PermissionDeniedException $x) {

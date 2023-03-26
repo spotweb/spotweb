@@ -157,15 +157,15 @@ class Services_Signing_Openssl extends Services_Signing_Base
         $encodedKeys = pack(
             'Ca*a*a*',
             RSA::ASN1_SEQUENCE, 		 // Sequence
-                    $this->_encodeLength(strlen($components['modulus']) + strlen($components['publicExponent'])),
+            $this->_encodeLength(strlen($components['modulus']) + strlen($components['publicExponent'])),
             $components['modulus'],
             $components['publicExponent']
         );
         $encodedKeys = pack(
             'Ca*Ca*',
             0x03, 		// 0x03 means BIT STRING
-                    $this->_encodeLength(strlen($encodedKeys) + 1), // add 1 voor de 0 unused bits
-                    0,
+            $this->_encodeLength(strlen($encodedKeys) + 1), // add 1 voor de 0 unused bits
+            0,
             $encodedKeys
         );
 
@@ -206,8 +206,8 @@ class Services_Signing_Openssl extends Services_Signing_Base
         $endResult = pack(
             'Ca*a*',
             RSA::ASN1_SEQUENCE, 		 // Sequence
-                    $this->_encodeLength(15 + strlen($encodedKeys)), // 15 == strlen($encryptionType)
-                    $encryptionType.$encodedKeys
+            $this->_encodeLength(15 + strlen($encodedKeys)), // 15 == strlen($encryptionType)
+            $encryptionType.$encodedKeys
         );
 
         return "-----BEGIN PUBLIC KEY-----\n".

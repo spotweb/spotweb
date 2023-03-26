@@ -51,13 +51,13 @@ class SpotPage_editfilter extends SpotPage_Abs
                     $result = $svcUserFilter->removeFilter($this->_currentSession['user']['userid'], $this->_filterId);
 
                     break;
-                 // case 'removefilter'
+                    // case 'removefilter'
 
                 case 'discardfilters':
                     $result = $svcUserFilter->resetFilterList($this->_currentSession['user']['userid']);
 
                     break;
-                 // case 'discardfilters'
+                    // case 'discardfilters'
 
                 case 'setfiltersasdefault':
                     $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_set_filters_as_default, '');
@@ -65,13 +65,13 @@ class SpotPage_editfilter extends SpotPage_Abs
                     $result = $svcUserFilter->setFiltersAsDefault($this->_currentSession['user']['userid']);
 
                     break;
-                 // case 'setfiltersasdefault'
+                    // case 'setfiltersasdefault'
 
                 case 'exportfilters':
                     $result = $svcUserFilter->filtersToXml($svcUserFilter->getPlainFilterList($this->_currentSession['user']['userid'], 'filter'));
 
                     break;
-                 // case 'exportfilters'
+                    // case 'exportfilters'
 
                 case 'importfilters':
                     $uploadHandler = new Services_Providers_FileUpload('editfilterform', 'filterimport');
@@ -109,7 +109,7 @@ class SpotPage_editfilter extends SpotPage_Abs
                     } // else
 
                     break;
-                 // case 'importfilters'
+                    // case 'importfilters'
 
                 case 'addfilter':
                     // Create a new filter record, we will always add the filter to the root with no children
@@ -125,7 +125,7 @@ class SpotPage_editfilter extends SpotPage_Abs
                     $result = $svcUserFilter->addFilter($this->_currentSession['user']['userid'], $filter);
 
                     break;
-                 // case 'addfilter'
+                    // case 'addfilter'
 
                 case 'reorder':
                     /*
@@ -134,7 +134,7 @@ class SpotPage_editfilter extends SpotPage_Abs
                      */
                     $result = $svcUserFilter->reorderFilters($this->_currentSession['user']['userid'], $this->_orderList);
                     break;
-                 // case 'reorder'
+                    // case 'reorder'
 
                 case 'changefilter':
                     // Retrieve the filter we want to edit
@@ -146,8 +146,7 @@ class SpotPage_editfilter extends SpotPage_Abs
                     );
 
                     break;
-                 // case 'changefilter'
-
+                    // case 'changefilter'
             } // switch
         } // if
 
