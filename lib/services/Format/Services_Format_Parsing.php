@@ -107,8 +107,8 @@ class Services_Format_Parsing
         $tpl_spot['website'] = (string) $xml->Website;
         $tpl_spot['description'] = (string) $xml->Description;
         $tpl_spot['filesize'] = (string) $xml->Size;
-        $tpl_spot['poster'] = (string) utf8_encode($xml->Poster);
-        $tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
+        $tpl_spot['poster'] = (string) mb_convert_encoding($xml->Poster, 'UTF-8', 'ISO-8859-1');
+        $tpl_spot['tag'] = (string) mb_convert_encoding($xml->Tag, 'UTF-8', 'ISO-8859-1');
         $tpl_spot['title'] = (string) $xml->Title;
 
         // Decode HTML special characters, title otherwise search will be broken, description as body in newsgroup
@@ -539,9 +539,9 @@ class Services_Format_Parsing
          * do this any earlier because it would break the RSA signature
          */
         if (($spot !== false) && ($spot['verified'])) {
-            $spot['title'] = utf8_encode($spot['title']);
-            $spot['poster'] = utf8_encode($spot['poster']);
-            $spot['tag'] = utf8_encode($spot['tag']);
+            $spot['title'] = mb_convert_encoding($spot['title'], 'UTF-8', 'ISO-8859-1');
+            $spot['poster'] = mb_convert_encoding($spot['poster'], 'UTF-8', 'ISO-8859-1');
+            $spot['tag'] = mb_convert_encoding($spot['tag'], 'UTF-8', 'ISO-8859-1');
 
             // If a spot is in the future, fix it
             if (time() < $spot['stamp']) {
