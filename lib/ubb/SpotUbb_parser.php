@@ -141,7 +141,7 @@ class SpotUbb_parser
     {
         $paramstr = '';
 
-        while (($this->hasnextch()) && ($this->peekch() != ']')) {
+        while ($this->hasnextch() && ($this->peekch() != ']')) {
             $ch = $this->nextch();
 
             $paramstr .= $ch;
@@ -150,7 +150,7 @@ class SpotUbb_parser
         /* we override the $namedparams because the old generator allowed
                    named parameters, while the first character indicated it didn't */
         if (!$namedparams) {
-            $namedparams = (strpos($paramstr, '='));
+            $namedparams = strpos($paramstr, '=');
         } // if
 
         /* if we were supposed to get named params, parse them into an array */
@@ -201,7 +201,7 @@ class SpotUbb_parser
 
             /* tag is getting parameters, be happy ... */
             if (($ch == ' ') || ($ch == '=')) {
-                $tmp['params'] = $this->fetchparams(($ch != '='));
+                $tmp['params'] = $this->fetchparams($ch != '=');
             } else {
                 $tmp['tagname'] .= $ch;
             } // else
@@ -258,7 +258,7 @@ class SpotUbb_parser
         while ($this->hasnextch()) {
             $ch = $this->nextch();
 
-            if (($this->endofubbtag()) && (!empty($nowtag))) {
+            if ($this->endofubbtag() && (!empty($nowtag))) {
                 /* Now make sure the current tag, has to be closed, else.. well.. */
                 if (($tagcfg !== null) && ($tagcfg['closetags'] === null)) {
                     // :echo 'Closing tag found for non-closing code' . "\r\n";
@@ -338,7 +338,7 @@ class SpotUbb_parser
 
                 /* Are we allowed to run this tag? */
                 if (($allowedchildren[0] === null) |
-                    (array_search($parseresult[$i]['tagname'], $allowedchildren))) {
+                    array_search($parseresult[$i]['tagname'], $allowedchildren)) {
                     $tagresult = TagHandler::process_tag(
                         $parseresult[$i]['tagname'],
                         $parseresult[$i]['params'],

@@ -170,6 +170,8 @@ class SpotInstall
                     $form['hdr'] = $form;
                     $form['nzb'] = $form;
                     $form['post'] = $form;
+                    $form['nzb']['port'] = '';
+                    $form['nzb']['enc'] = false;
                 } else {
                     foreach ($serverList->usenetservers->server as $provider) {
                         if (extension_loaded('openssl') && isset($provider->ssl)) {
@@ -473,30 +475,30 @@ class SpotInstall
     {
         $dbSettings = $_SESSION['spotsettings']['db'];
         switch ($_SESSION['spotsettings']['db']['engine']) {
-    case 'pdo_pgsql':
-        $settings = sprintf(
-            '<?php%1$s%1$s'
-            .'$dbsettings[\'engine\'] = \'%2$s\';%1$s'
-            .'$dbsettings[\'host\'] = \'%3$s\';%1$s'
-            .'$dbsettings[\'dbname\'] = \'%4$s\';%1$s'
-            .'$dbsettings[\'user\'] = \'%5$s\';%1$s'
-            .'$dbsettings[\'pass\'] = \'%6$s\';%1$s'
-            .'$dbsettings[\'port\'] = \'%7$s\';%1$s'
-            .'$dbsettings[\'schema\'] = \'%8$s\';%1$s',
-            PHP_EOL,
-            $engine,
-            $dbSettings['host'],
-            $dbSettings['dbname'],
-            $dbSettings['user'],
-            $dbSettings['pass'],
-            $dbSettings['port'],
-            $dbSettings['schema']
-        );
-            break;
-    case 'pdo_mysql':
-    case 'pdo_sqlite':
-            $settings = sprintf(
-                '<?php%1$s%1$s'
+            case 'pdo_pgsql':
+                $settings = sprintf(
+                    '<?php%1$s%1$s'
+                    .'$dbsettings[\'engine\'] = \'%2$s\';%1$s'
+                    .'$dbsettings[\'host\'] = \'%3$s\';%1$s'
+                    .'$dbsettings[\'dbname\'] = \'%4$s\';%1$s'
+                    .'$dbsettings[\'user\'] = \'%5$s\';%1$s'
+                    .'$dbsettings[\'pass\'] = \'%6$s\';%1$s'
+                    .'$dbsettings[\'port\'] = \'%7$s\';%1$s'
+                    .'$dbsettings[\'schema\'] = \'%8$s\';%1$s',
+                    PHP_EOL,
+                    $engine,
+                    $dbSettings['host'],
+                    $dbSettings['dbname'],
+                    $dbSettings['user'],
+                    $dbSettings['pass'],
+                    $dbSettings['port'],
+                    $dbSettings['schema']
+                );
+                break;
+            case 'pdo_mysql':
+            case 'pdo_sqlite':
+                $settings = sprintf(
+                    '<?php%1$s%1$s'
             .'$dbsettings[\'engine\'] = \'%2$s\';%1$s'
             .'$dbsettings[\'host\'] = \'%3$s\';%1$s'
             .'$dbsettings[\'dbname\'] = \'%4$s\';%1$s'
@@ -504,16 +506,16 @@ class SpotInstall
             .'$dbsettings[\'pass\'] = \'%6$s\';%1$s'
             .'$dbsettings[\'port\'] = \'%7$s\';%1$s'
             .'$dbsettings[\'schema\'] = \'\';',
-                PHP_EOL,
-                $engine,
-                $dbSettings['host'],
-                $dbSettings['dbname'],
-                $dbSettings['user'],
-                $dbSettings['pass'],
-                $dbSettings['port']
-            );
-            break;
-    }
+                    PHP_EOL,
+                    $engine,
+                    $dbSettings['host'],
+                    $dbSettings['dbname'],
+                    $dbSettings['user'],
+                    $dbSettings['pass'],
+                    $dbSettings['port']
+                );
+                break;
+        }
 
         if (is_writable(__DIR__.'/../')) {
             file_put_contents(
@@ -580,7 +582,7 @@ class SpotInstall
      *
      * @return bool False, when the default error handler should take over and true when we handled it ourself.
      */
-    public static function ownWarning($number, $message, $file, $line, array $context)
+    public static function ownWarning($number, $message, $file, $line, array $context = [])
     {
         // don't show errors if they are being suppressed by silent (@) operator.
         if (error_reporting() === 0) {

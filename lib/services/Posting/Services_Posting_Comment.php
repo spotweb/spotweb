@@ -106,7 +106,7 @@ class Services_Posting_Comment
                 $this->_nntp_post->postComment(
                     $user,
                     $this->_settings->get('privatekey'),  // Server private key
-                                               $this->_settings->get('comment_group'),
+                    $this->_settings->get('comment_group'),
                     $comment
                 );
 

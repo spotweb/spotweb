@@ -51,13 +51,6 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
 
         $this->assertIsArray($results);
 
-        /* @var $firstResult Title */
-        $firstResult = $results[0];
-        $this->assertInstanceOf('\Imdb\Title', $firstResult);
-        $this->assertEquals("0213338", $firstResult->imdbid());
-        $this->assertEquals("Cowboy Bebop", $firstResult->title());
-        $this->assertEquals(1998, $firstResult->year());
-
         $wrongMovieType = false;
         foreach ($results as $result) {
             if($result->movietype() !== TitleSearch::TV_SERIES) {

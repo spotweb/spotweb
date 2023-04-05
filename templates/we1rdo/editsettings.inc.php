@@ -28,12 +28,12 @@ if ($result->isSubmitted()) {
         $nntp_nzb['verifyname'] = true;
     }
 
-    $tmpArDiff = array_diff_assoc($nntp_hdr, $nntp_nzb);
+    $tmpArDiff = strcmp(serialize($nntp_hdr), serialize($nntp_nzb));
     if ((empty($tmpArDiff)) || (empty($nntp_hdr['host']))) {
         $nntp_hdr['isadummy'] = true;
     } // if
 
-    $tmpArDiff = array_diff_assoc($nntp_post, $nntp_nzb);
+    $tmpArDiff = strcmp(serialize($nntp_post), serialize($nntp_nzb));
     if ((empty($tmpArDiff)) || (empty($nntp_post['host']))) {
         $nntp_post['isadummy'] = true;
     } // if
@@ -346,7 +346,7 @@ if ($result->isSubmitted()) {
 					<dt><label for="editsettingsform[highcount]"><?php echo _('Amount of comments to highlight spot'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[highcount]" value="<?php echo htmlspecialchars($this->_settings->get('highcount'), ENT_QUOTES); ?>"></dd>
 					
-					<dt><label for="editsettingsform[prepare_statistics]"><?php echo _('Prepare statistics during retrieve (keep this disabled on PHP 8.1)'); ?></label></dt>
+					<dt><label for="editsettingsform[prepare_statistics]"><?php echo _('Prepare statistics during retrieve'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[prepare_statistics]" <?php if ($this->_settings->get('prepare_statistics')) {
     echo 'checked="checked"';
 } ?>></dd>

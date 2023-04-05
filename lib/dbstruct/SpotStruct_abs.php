@@ -19,11 +19,14 @@ abstract class SpotStruct_abs
         // Instantieeer een struct object
         switch ($dbEngine) {
             case 'mysql':
-            case 'pdo_mysql': return new SpotStruct_mysql($dbCon); break;
+            case 'pdo_mysql': return new SpotStruct_mysql($dbCon);
+            break;
 
-            case 'pdo_pgsql': return new SpotStruct_pgsql($dbCon); break;
+            case 'pdo_pgsql': return new SpotStruct_pgsql($dbCon);
+            break;
 
-            case 'pdo_sqlite': return new SpotStruct_sqlite($dbCon); break;
+            case 'pdo_sqlite': return new SpotStruct_sqlite($dbCon);
+            break;
 
             default: throw new Exception("Unknown database engine '".$dbEngine."'");
         } // switch
@@ -263,8 +266,10 @@ abstract class SpotStruct_abs
 
             if ($same) {
                 switch (strtolower($type)) {
-                    case 'fulltext': $same = (strtolower($q[$i]['index_type']) == 'fulltext'); break;
-                    case 'unique': $same = ($qUpper['NON_UNIQUE'] == 0); break;
+                    case 'fulltext': $same = (strtolower($q[$i]['index_type']) == 'fulltext');
+                    break;
+                    case 'unique': $same = ($qUpper['NON_UNIQUE'] == 0);
+                    break;
                     case '': $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($qUpper['NON_UNIQUE'] == 1);
                 } // switch
             } // if
@@ -335,7 +340,7 @@ abstract class SpotStruct_abs
         //#############################################################################################
         // Cleaning up data ###########################################################################
         //#############################################################################################
-        if (($this instanceof SpotStruct_mysql) && (false)) {
+        if (($this instanceof SpotStruct_mysql) && false) {
             echo 'Cleaning up old data...'.PHP_EOL;
             if ($this->tableExists('usersettings') && $this->tableExists('users')) {
                 $this->_dbcon->rawExec('DELETE usersettings FROM usersettings LEFT JOIN users ON usersettings.userid=users.id WHERE users.id IS NULL');
@@ -705,7 +710,7 @@ abstract class SpotStruct_abs
                 throw new SpotwebCannotBeUpgradedTooOldException('da6ba29071c49ae88823cccfefc39375b37e9bee');
             } // if
 
-            if (($schemaVer < 0.34) && ($this->tableExists('spottexts'))) {
+            if (($schemaVer < 0.34) && $this->tableExists('spottexts')) {
                 throw new SpotwebCannotBeUpgradedTooOldException('48bc94a63f94959f9fe6b2372b312e35a4d09997');
             } // if
 
@@ -713,7 +718,7 @@ abstract class SpotStruct_abs
                 throw new SpotwebCannotBeUpgradedTooOldException('4c874ec24a28d5ee81218271dc584a858f6916af');
             } // if
 
-            if (($schemaVer < 0.51) && ($this->tableExists('cachetmp'))) {
+            if (($schemaVer < 0.51) && $this->tableExists('cachetmp')) {
                 throw new SpotwebCannotBeUpgradedTooOldException('4c874ec24a28d5ee81218271dc584a858f6916af');
             } // if
         } // if

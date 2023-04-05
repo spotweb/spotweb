@@ -183,9 +183,9 @@
                 } // if
             } // if
 
-                return ['prepend' => '<img src="'.$contents.'">',
-                    'content'     => $origAppend,
-                    'append'      => '', ];
+            return ['prepend' => '<img src="'.$contents.'">',
+                'content'     => $origAppend,
+                'append'      => '', ];
         }
 
         // handle_img

@@ -54,7 +54,7 @@ class SpotPage_edituser extends SpotPage_Abs
                     } // removeUser
 
                     break;
-                 // case delete
+                    // case delete
 
                 case 'edit':
                     // Mangle the grouplisting we get from the form to an usable format for the system
@@ -75,14 +75,14 @@ class SpotPage_edituser extends SpotPage_Abs
                         $this->_spotSec->allowed(SpotSecurity::spotsec_edit_groupmembership, '')
                     );
                     break;
-                 // case 'edit'
+                    // case 'edit'
 
                 case 'removeallsessions':
                     $svcUserAuth = new Services_User_Authentication($this->_daoFactory, $this->_settings);
                     $result = $svcUserAuth->removeAllUserSessions($spotUser['userid']);
 
                     break;
-                 // case 'removeallsessions'
+                    // case 'removeallsessions'
 
                 case 'resetuserapi':
                     $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_consume_api, '');

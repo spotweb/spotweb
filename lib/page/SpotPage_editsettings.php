@@ -44,7 +44,7 @@ class SpotPage_editsettings extends SpotPage_Abs
                     } // if
 
                     break;
-                 // case 'edit'
+                    // case 'edit'
 
                 case 'cancel':
                     $result = new Dto_FormResult('success');

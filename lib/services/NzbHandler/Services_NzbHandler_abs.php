@@ -158,7 +158,7 @@ abstract class Services_NzbHandler_abs
                 $result['mimetype'] = 'application/x-zip-compressed';
                 $result['filename'] = 'SpotWeb_'.microtime(true).'.zip';
                 break;
-             // zip
+                // zip
 
             default:
                 $result['nzb'] = $this->mergeNzbList($nzblist);

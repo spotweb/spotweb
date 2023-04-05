@@ -134,7 +134,7 @@ class SpotSecurity
         $this->_failAudit = ($settings->get('auditlevel') == self::spot_secaudit_failure);
         $this->_allAudit = ($settings->get('auditlevel') == self::spot_secaudit_all);
 
-        if (($this->_failAudit) || ($this->_allAudit)) {
+        if ($this->_failAudit || $this->_allAudit) {
             $this->_spotAudit = new SpotAudit($auditDao, $settings, $user, $ipaddr);
         } // if
 
@@ -151,7 +151,7 @@ class SpotSecurity
          * We check for auditing in SpotSecurity to prevent the overhead
          * of a function call for each security check
          */
-        if (($this->_allAudit) || ((!$allowed) && ($this->_failAudit))) {
+        if ($this->_allAudit || ((!$allowed) && $this->_failAudit)) {
             $this->_spotAudit->audit($perm, $object, $allowed);
         } // if
 
@@ -178,7 +178,6 @@ class SpotSecurity
 
     public function getAllPermissions()
     {
-
         // Translated permissions
         $secHumanReadable = [];
         $secItemCount = count($this->_secHumanReadable);

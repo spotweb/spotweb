@@ -37,30 +37,22 @@ class Dao_Base_Spot implements Dao_Spot
             $notAllowedCommands = [
                 'DELETE',
                 'TRUNCATE',
-                'AS',
                 'DROP',
-                'USE',
                 'SELECT',
-                'SLEEP',
                 'UPDATE',
                 'ALTER',
                 'CREATE',
                 'RENAME',
                 'GRANT',
                 'REVOKE',
-                'BETWEEN',
                 'COMMIT',
                 'SAVEPOINT',
                 'EXISTS',
                 'GROUP',
                 'HAVING',
-                'INTO',
                 'INSERT',
                 'ORDER',
-                'BY',
                 'UNION',
-                'LEFT',
-                'RIGHT',
                 'FULL',
             ];
 
@@ -73,7 +65,7 @@ class Dao_Base_Spot implements Dao_Spot
                 echo '<script language = "javascript">';
                 echo 'window.location.href = "/?search[tree]=&search[unfiltered]=true"';
                 echo '</script>';
-                exit();
+                exit;
             } // if
         } // if
 
@@ -807,13 +799,13 @@ class Dao_Base_Spot implements Dao_Spot
     {
         if (!empty($limit)) {
             return $this->_conn->arrayQuery(
-                'SELECT category AS data, COUNT(category) AS amount FROM spots WHERE stamp > :stamp GROUP BY data',
+                'SELECT * FROM (SELECT category AS data, COUNT(category) AS amount FROM spots WHERE stamp > :stamp GROUP BY data) AS sub ORDER BY data',
                 [
                     ':stamp' => [strtotime('-1 '.$limit), PDO::PARAM_INT],
                 ]
             );
         } else {
-            return $this->_conn->arrayQuery('SELECT category AS data, COUNT(category) AS amount FROM spots GROUP BY data');
+            return $this->_conn->arrayQuery('SELECT * FROM (SELECT category AS data, COUNT(category) AS amount FROM spots GROUP BY data) AS sub ORDER BY data');
         } // else
     }
 

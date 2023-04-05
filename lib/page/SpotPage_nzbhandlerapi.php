@@ -51,7 +51,7 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs
                 case 'setspeedlimit':
                     $result = $this->_nzbHandler->setSpeedLimit($this->_params['limit']);
                     break;
-                // actions on a specific download
+                    // actions on a specific download
                 case 'movedown':
                     $result = $this->_nzbHandler->moveDown($this->_params['id']);
                     break;
@@ -85,7 +85,7 @@ class SpotPage_nzbhandlerapi extends SpotPage_Abs
                 case 'resume':
                     $result = $this->_nzbHandler->resume($this->_params['id']);
                     break;
-                // non download related actions
+                    // non download related actions
                 case 'getcategories':
                     $result = $this->_nzbHandler->getBuiltinCategories();
                     break;

@@ -229,7 +229,7 @@ class Services_Nntp_Engine
         try {
             $this->registerTryCommand();
 
-            return $this->_nntp->getHeaderField('Message-ID', ($first.'-'.$last));
+            return $this->_nntp->getHeaderField('Message-ID', $first.'-'.$last);
         } catch (Exception $x) {
             $this->registerError($x);
 

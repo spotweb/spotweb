@@ -670,7 +670,7 @@ class SpotTemplateHelper
      */
     public function makeSelfUrl($type)
     {
-        return $this->makeBaseUrl($type).htmlspecialchars((isset($_SERVER['QUERY_STRING']) ? '?'.$_SERVER['QUERY_STRING'] : ''));
+        return $this->makeBaseUrl($type).htmlspecialchars(isset($_SERVER['QUERY_STRING']) ? '?'.$_SERVER['QUERY_STRING'] : '');
     }
 
     // makeSelfUrl
@@ -682,7 +682,7 @@ class SpotTemplateHelper
         if ($size == 0) {
             return 'n/a';
         } else {
-            return round($size / pow(1024, ($i = floor(log($size, 1024)))), $i > 1 ? 2 : 0).$sizes[$i];
+            return round($size / pow(1024, $i = floor(log($size, 1024))), $i > 1 ? 2 : 0).$sizes[$i];
 
             // test (n.a.v. http://gathering.tweakers.net/forum/list_message/36208481#36208481) om altijd op
             // 3 getallen te eindigen, maar maakt het niet rustiger.

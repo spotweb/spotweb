@@ -112,7 +112,7 @@ try {
             case 'everything':
                 $spotDao->deleteSpotsRetention($settings->get('retention'));
                 $cacheDao->expireCache($settings->get('retention'));
-             // case everything
+                // case everything
 
             case 'fullonly':
                 $cacheDao->expireCache($settings->get('retention'));
@@ -258,7 +258,7 @@ try {
     if (!empty($notifyNewArray)) {
         foreach ($notifyNewArray as $userId => $newSpotInfo) {
             foreach ($newSpotInfo as $filterInfo) {
-                if (($filterInfo['newcount'] > 0) && ($filterInfo['enablenotify'])) {
+                if (($filterInfo['newcount'] > 0) && $filterInfo['enablenotify']) {
                     $spotsNotifications->sendNewSpotsForFilter($userId, $filterInfo['title'], $filterInfo['newcount']);
                 } // if
             } // foreach
@@ -294,5 +294,5 @@ catch (Exception $x) {
     echo $x->getTraceAsString();
     echo PHP_EOL.PHP_EOL;
     $retriever->quit();
-    exit();
+    exit;
 } // catch

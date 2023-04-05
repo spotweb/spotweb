@@ -70,7 +70,6 @@ class Services_Actions_EditUserPrefs
         } // if
 
         if ($result->isSuccess()) {
-
             // Test to see if a new avatar was provided
             if (!empty($avatarFileName)) {
                 $avatarResult = $this->_svcUserRecord->changeAvatar(

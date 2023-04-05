@@ -56,7 +56,7 @@ class Services_Format_Util
         /* Pad the input string to a multiple of 4 */
         $paddingLen = strlen($strInput) % 4;
         if ($paddingLen > 0) {
-            $strInput .= str_repeat('=', (4 - $paddingLen));
+            $strInput .= str_repeat('=', 4 - $paddingLen);
         } // if
 
         return str_replace(['-s', '-p'], ['/', '+'], $strInput);

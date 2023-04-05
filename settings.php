@@ -57,12 +57,13 @@ if (isset($cookie_domain) && count(explode('.', $cookie_domain)) > 2 && !filter_
  * Currently these categories are system wide.
  */
 $settings['sabnzbd']['categories'] = [
-    0	=> ['default' 	=> 'movies',				// Default categorie when nothing else matches
-        'a5'		       => 'books',
-        'd2'		       => 'anime',
-        'd11'		      => 'tv',
-        'd29'		      => 'anime',
-        'z3'		       => 'erotica', ],
+    0	=> ['default' 	 => 'movies',				// Default categorie when nothing else matches
+        'a5'		        => 'books',
+        'a11'		       => 'books',
+        'd2'		        => 'anime',
+        'd11'		       => 'tv',
+        'd29'		       => 'anime',
+        'z3'		        => 'erotica', ],
     1	=> ['default'	=> 'music'],
     2	=> ['default'	=> 'games'],
     3	=> ['default'	=> 'apps',
@@ -118,7 +119,7 @@ if (!isset($settings['quicklinks'])) {
  * When the OpenSSL module is loaded, make sure the "openssl_cnf_path"
  * setting variable points to an readable cnf file.
  */
-if ((!is_readable($settings['openssl_cnf_path'])) && (extension_loaded('openssl'))) {
+if ((!is_readable($settings['openssl_cnf_path'])) && extension_loaded('openssl')) {
     throw new InvalidOwnSettingsSettingException('openssl_cnf_path does not contain a readable OpenSSL configuration filepath');
 } // if
 

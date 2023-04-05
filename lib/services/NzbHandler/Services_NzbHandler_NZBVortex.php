@@ -428,7 +428,7 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         $result['queue']['mbremaining'] = 0;
 
         $secondsremaining = 0;
-        $result['queue']['secondsremaining'] = (int) ($secondsremaining);
+        $result['queue']['secondsremaining'] = (int) $secondsremaining;
 
         $downloads = [];
         $i = 0;

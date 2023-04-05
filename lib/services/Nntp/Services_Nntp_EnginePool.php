@@ -36,7 +36,8 @@ class Services_Nntp_EnginePool
          * Retrieve the NNTP header settings we can validate those
          */
         switch ($type) {
-            case 'hdr': self::$_instances[$type] = new Services_Nntp_Engine($settings_nntp_hdr); break;
+            case 'hdr': self::$_instances[$type] = new Services_Nntp_Engine($settings_nntp_hdr);
+            break;
             case 'bin':
 
                 $settings_nntp_bin = $settings->get('nntp_nzb');
@@ -51,7 +52,7 @@ class Services_Nntp_EnginePool
                 }
 
                 break;
-             // nzb
+                // nzb
 
             case 'post':
                 $settings_nntp_post = $settings->get('nntp_post');
@@ -66,7 +67,7 @@ class Services_Nntp_EnginePool
                 }
 
                 break;
-             // post
+                // post
 
             default: throw new Exception('Unknown NNTP type engine ('.$type.') for pool creation');
         } // switch

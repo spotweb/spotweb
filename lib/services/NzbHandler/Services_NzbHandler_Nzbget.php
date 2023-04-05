@@ -185,7 +185,7 @@ class Services_NzbHandler_Nzbget extends Services_NzbHandler_abs
             }
         }
 
-        $result['queue']['secondsremaining'] = (int) ($secondsremaining);
+        $result['queue']['secondsremaining'] = (int) $secondsremaining;
 
         $downloads = [];
         for ($i = 0; $i < count($listgroups); $i++) {

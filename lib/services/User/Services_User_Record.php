@@ -467,7 +467,7 @@ class Services_User_Record
         } // if
 
         /* Make sure a valid value for minimum_reportcount is entered */
-        if ((!is_numeric($prefs['minimum_reportcount'])) || ($prefs['minimum_reportcount']) > 10) {
+        if ((!is_numeric($prefs['minimum_reportcount'])) || $prefs['minimum_reportcount'] > 10) {
             $result->addError(_('Invalid value for minimum_reportcount'));
         } // if
 
@@ -521,7 +521,7 @@ class Services_User_Record
         } // if
 
         // Make sure a valid password is entered for existing users
-        if ((strlen($user['newpassword1']) > 0) && ($isEdit)) {
+        if ((strlen($user['newpassword1']) > 0) && $isEdit) {
             if (strlen($user['newpassword1']) < 5) {
                 $result->addError(_('Entered password is too short'));
             } // if
@@ -701,7 +701,6 @@ class Services_User_Record
         $secGroupList = $this->_userDao->getGroupList(null);
         foreach ($secGroupList as $secGroup) {
             if ($secGroup['name'] == $group['name']) {
-
                 /*
                  * If we are editing, allow ourselves to be a 'duplicate'
                  */
@@ -790,7 +789,6 @@ class Services_User_Record
         foreach ($groupPerms as $groupPerm) {
             if (($groupPerm['permissionid'] == $perm['permissionid']) &&
                 ($groupPerm['objectid'] == $perm['objectid'])) {
-
                 // Duplicate permission
                 $result->addError(_('Permission already exists in this group'));
             } // if

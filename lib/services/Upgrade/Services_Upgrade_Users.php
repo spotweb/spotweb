@@ -388,7 +388,7 @@ class Services_Upgrade_Users
         // DB connectie
         $dbCon = $this->_dbCon;
 
-        if (($forceReset) || ($this->_settings->get('securityversion') < 0.27)) {
+        if ($forceReset || ($this->_settings->get('securityversion') < 0.27)) {
             /* Truncate de  huidige permissies */
             $dbCon->rawExec('DELETE FROM grouppermissions');
 
@@ -467,14 +467,14 @@ class Services_Upgrade_Users
         //#######################################################################
         //# Security level 0.28
         //#######################################################################
-        if (($forceReset) || ($this->_settings->get('securityversion') < 0.28)) {
+        if ($forceReset || ($this->_settings->get('securityversion') < 0.28)) {
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_send_notifications_types.", 'newspots_for_filter')");
         } // if
 
         //#######################################################################
         //# Security level 0.29
         //#######################################################################
-        if (($forceReset) || ($this->_settings->get('securityversion') < 0.29)) {
+        if ($forceReset || ($this->_settings->get('securityversion') < 0.29)) {
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_select_template.", 'we1rdo')");
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_select_template.", 'mobile')");
         } // if
@@ -482,7 +482,7 @@ class Services_Upgrade_Users
         //#######################################################################
         //# Security level 0.30
         //#######################################################################
-        if (($forceReset) || ($this->_settings->get('securityversion') < 0.30)) {
+        if ($forceReset || ($this->_settings->get('securityversion') < 0.30)) {
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, '.SpotSecurity::spotsec_edit_spotdetail.')');
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, '.SpotSecurity::spotsec_view_spot_editor.')');
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid) VALUES(5, '.SpotSecurity::spotsec_show_spot_was_edited.')');
@@ -492,14 +492,14 @@ class Services_Upgrade_Users
         //#######################################################################
         //# Security level 0.32
         //#######################################################################
-        if (($forceReset) || ($this->_settings->get('securityversion') < 0.32)) {
+        if ($forceReset || ($this->_settings->get('securityversion') < 0.32)) {
             $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(4, '.SpotSecurity::spotsec_download_integration.", 'nzbvortex')");
         } // if
 
         //#######################################################################
         // Security level 0.33
         //#######################################################################
-        if (($forceReset) || ($this->_settings->get('securityversion') < 0.33)) {
+        if ($forceReset || ($this->_settings->get('securityversion') < 0.33)) {
             $dbCon->rawExec("DELETE FROM grouppermissions WHERE objectid = 'notifo';");
         }
     }
@@ -511,7 +511,7 @@ class Services_Upgrade_Users
      */
     public function updateUserFilters($forceReset)
     {
-        if (($this->_settings->get('securityversion') < 0.12) || ($forceReset)) {
+        if (($this->_settings->get('securityversion') < 0.12) || $forceReset) {
             // DB connection
             $dbCon = $this->_dbCon;
 

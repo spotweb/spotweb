@@ -57,7 +57,7 @@ class Dao_Base_Setting implements Dao_Setting
     public function updateSetting($name, $value)
     {
         // When necessary, serialize the data
-        if ((is_array($value) || is_object($value))) {
+        if (is_array($value) || is_object($value)) {
             $value = serialize($value);
             $serialized = true;
         } else {

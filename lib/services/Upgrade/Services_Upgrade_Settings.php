@@ -237,7 +237,7 @@ class Services_Upgrade_Settings
                 $this->_settings->set('nonauthenticated_userid', 1);
 
                 break;
-             // public
+                // public
 
             case 'shared':
                 // Shared sites might be indexable by a search engine
@@ -257,7 +257,7 @@ class Services_Upgrade_Settings
                 $this->_settings->set('nonauthenticated_userid', 1);
 
                 break;
-             // shared
+                // shared
 
             case 'single':
                 // Private/single owner sites should not be indexable by a search engine
@@ -275,7 +275,7 @@ class Services_Upgrade_Settings
                 $this->_settings->set('nonauthenticated_userid', $this->_settings->get('custom_admin_userid'));
 
                 break;
-             // single
+                // single
 
             default: throw new Exception("Unknown system type defined: '".$systemType."'");
         } // switch

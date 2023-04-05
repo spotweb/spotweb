@@ -28,27 +28,37 @@ class Services_Image_Error
         $text = ($errcode < 900) ? _('ERROR').' '.$errcode : _('ERROR');
         $bbox = imagettfbbox($fontSize, $angle, $img['font'], $text);
         $txtwidth = abs($bbox[2]);
-        imagettftext($img['resource'], $fontSize, $angle, 256 - ($txtwidth / 2), 50, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
+        imagettftext($img['resource'], $fontSize, $angle, 256 - intval($txtwidth / 2), 50, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
         // error info
         switch ($errcode) {
-            case 5: 	$text = _('Access denied'); break;
-            case 200:	$text = _('Remote host sent bad data'); break;
-            case 400:	$text = _('Bad request'); break;
-            case 403:	$text = _('Permission denied from remote host'); break;
-            case 404:	$text = _('File not found'); break;
-            case 430:	$text = _('Article not found'); break;
-            case 700:	$text = _('No response from remote host'); break;
-            case 900:	$text = _('XML parse error'); break;
-            case 901:	$text = _('No image provided'); break;
-            case 997:	$text = _('Unable to write to cachepath'); break;
+            case 5: 	$text = _('Access denied');
+            break;
+            case 200:	$text = _('Remote host sent bad data');
+            break;
+            case 400:	$text = _('Bad request');
+            break;
+            case 403:	$text = _('Permission denied from remote host');
+            break;
+            case 404:	$text = _('File not found');
+            break;
+            case 430:	$text = _('Article not found');
+            break;
+            case 700:	$text = _('No response from remote host');
+            break;
+            case 900:	$text = _('XML parse error');
+            break;
+            case 901:	$text = _('No image provided');
+            break;
+            case 997:	$text = _('Unable to write to cachepath');
+            break;
             default:	$text = _('Unknown error');
         } // switch
 
         $fontSize = 20;
         $bbox = imagettfbbox($fontSize, $angle, $img['font'], $text);
         $txtwidth = abs($bbox[2]);
-        imagettftext($img['resource'], $fontSize, $angle, 256 - ($txtwidth / 2), 300, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
+        imagettftext($img['resource'], $fontSize, $angle, 256 - intval($txtwidth / 2), 300, $this->_svcImageUtil->colorHex($img['resource'], $img['fontColor']), $img['font'], $text);
 
         ob_start();
         imagejpeg($img['resource']);

@@ -1,7 +1,7 @@
 # Spotweb
 Spotweb is a decentralized usenet community based on the [Spotnet](https://github.com/spotnet/spotnet/wiki) protocol.
 
-Spotweb requires an operational webserver with PHP5.6 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
+Spotweb requires an operational webserver with PHP7.2 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
 <table align="center"><tr><td align="center" width="9999">
  
 [![Travis-CI Status](https://travis-ci.org/spotweb/spotweb.svg?branch=develop)](https://travis-ci.org/spotweb/spotweb)
@@ -16,7 +16,7 @@ Spotweb requires an operational webserver with PHP5.6 installed, it uses either 
 [![Maintainability](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/maintainability)](https://codeclimate.com/github/spotweb/spotweb/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/test_coverage)](https://codeclimate.com/github/spotweb/spotweb/test_coverage)
 
-[![Tested on:](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20-brightgreen.svg?maxAge=2419200)](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20-brightgreen.svg?maxAge=2419200)
+[![Tested on:](https://img.shields.io/badge/tested%20on-PHP%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20-brightgreen.svg?maxAge=2419200)](https://img.shields.io/badge/tested%20on-PHP%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20-brightgreen.svg?maxAge=2419200)
 </td></tr></table>
 
 ## Features

@@ -154,7 +154,7 @@ class Services_Posting_Spot
             $this->_nntp_post->postFullSpot(
                 $user,
                 $this->_settings->get('privatekey'),  // Server private key
-                                           $hdr_newsgroup,
+                $hdr_newsgroup,
                 $spot
             );
             $spotDao->addPostedSpot($user['userid'], $spot, $spotXml);

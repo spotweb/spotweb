@@ -1,0 +1,21 @@
+---
+namespace: Test\CpChart
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+actor_suffix: Tester
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+coverage:
+    enabled: true
+    include:
+        - src/*
+settings:
+    be_strict_about_changes_to_global_state: true
+    convert_deprecations_to_exceptions: true
+    colors: true
+    error_level: E_ALL | E_STRICT | E_DEPRECATED
+    report_useless_tests: true

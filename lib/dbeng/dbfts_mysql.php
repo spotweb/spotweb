@@ -255,7 +255,7 @@ class dbfts_mysql extends dbfts_abs
                 } else {
                     $searchMode = 'both-'.$searchMode;
                 } // else
-            } elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || ($hasSearchOpAsTerm)) {
+            } elseif ((($hasTooShortWords || $hasStopWords) && (!$hasLongEnoughWords && !$hasNoStopWords)) || $hasSearchOpAsTerm) {
                 $searchMode = 'normal';
             } // else
 

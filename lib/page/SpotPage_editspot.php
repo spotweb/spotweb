@@ -65,7 +65,7 @@ class SpotPage_editspot extends SpotPage_Abs
                     $svcSpotEditor->deleteSpot($this->_messageId);
 
                     break;
-                 // case 'delete'
+                    // case 'delete'
 
                 case 'edit':
                     // create a fullspot xml from the data entered by the user and the original fullspot

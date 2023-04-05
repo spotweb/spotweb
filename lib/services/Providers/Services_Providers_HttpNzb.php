@@ -293,17 +293,14 @@ class Services_Providers_HttpNzb
 
         // Fetch table rows from the result page.
         foreach ($dom->getElementsByTagName('tr') as $tr) {
-
             // Only continue parsing if the search query is found in the tr.
             if (strpos($tr->nodeValue, $matches[1]) !== false) {
-
                 // Get all input fields.
                 $fields = $tr->getElementsByTagName('input');
 
                 // Check type, we need the checkbox :)
                 foreach ($fields as $input) {
                     if ($input->getAttribute('type') == 'checkbox') {
-
                         // walk up the DOM tree and check if the next element has the string in the name.
                         // this way we only have the download rows left.
                         if (
@@ -311,7 +308,6 @@ class Services_Providers_HttpNzb
                             $input->parentNode->nextSibling
                             && strpos($input->parentNode->nextSibling->nodeValue, $matches[1]) !== false
                         ) {
-
                             // Push name to array. This name is needed to fetch the download.
                             $ids[] = $input->getAttribute('name');
                         }
@@ -415,7 +411,6 @@ class Services_Providers_HttpNzb
 
         // Fetch a tags from the result page.
         foreach ($dom->getElementsByTagName('a') as $a) {
-
             // Search for the direct nzb download link :)
             if (trim(strtolower($a->nodeValue)) == 'download') {
                 $url = $a->getAttribute('href');

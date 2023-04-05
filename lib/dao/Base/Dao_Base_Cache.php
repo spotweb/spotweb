@@ -111,12 +111,18 @@ class Dao_Base_Cache implements Dao_Cache
         $filePath = $this->_cachePath.DIRECTORY_SEPARATOR;
 
         switch ($cacheType) {
-            case Dao_Cache::SpotImage: $filePath .= 'image'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::SpotNzb: $filePath .= 'nzb'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Statistics: $filePath .= 'stats'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Web: $filePath .= 'web'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslaterToken: $filePath .= 'translatertoken'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslatedComments: $filePath .= 'translatedcomments'.DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::SpotImage: $filePath .= 'image'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::SpotNzb: $filePath .= 'nzb'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::Statistics: $filePath .= 'stats'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::Web: $filePath .= 'web'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::TranslaterToken: $filePath .= 'translatertoken'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::TranslatedComments: $filePath .= 'translatedcomments'.DIRECTORY_SEPARATOR;
+            break;
 
             default: throw new NotImplementedException('Undefined Cachetype: '.$cacheType);
         } // switch
@@ -138,19 +144,28 @@ class Dao_Base_Cache implements Dao_Cache
          */
         if ($cacheType == Dao_Cache::SpotImage) {
             switch ($metadata['imagetype']) {
-                case IMAGETYPE_GIF: $filePath .= '.gif'; break;
-                case IMAGETYPE_JPEG: $filePath .= '.jpg'; break;
-                case IMAGETYPE_PNG: $filePath .= '.png'; break;
+                case IMAGETYPE_GIF: $filePath .= '.gif';
+                break;
+                case IMAGETYPE_JPEG: $filePath .= '.jpg';
+                break;
+                case IMAGETYPE_PNG: $filePath .= '.png';
+                break;
 
-                default: $filePath .= '.image.'.$metadata['imagetype']; break;
+                default: $filePath .= '.image.'.$metadata['imagetype'];
+                break;
             } // switch
         } else {
             switch ($cacheType) {
-                case Dao_Cache::SpotNzb: $filePath .= '.nzb'; break;
-                case Dao_Cache::Statistics: $filePath .= '.stats'; break;
-                case Dao_Cache::Web: $filePath .= '.http'; break;
-                case Dao_Cache::TranslaterToken: $filePath .= '.token'; break;
-                case Dao_Cache::TranslatedComments: $filePath .= '.translatedcomments'; break;
+                case Dao_Cache::SpotNzb: $filePath .= '.nzb';
+                break;
+                case Dao_Cache::Statistics: $filePath .= '.stats';
+                break;
+                case Dao_Cache::Web: $filePath .= '.http';
+                break;
+                case Dao_Cache::TranslaterToken: $filePath .= '.token';
+                break;
+                case Dao_Cache::TranslatedComments: $filePath .= '.translatedcomments';
+                break;
 
                 default: throw new NotImplementedException('Undefined Cachetype: '.$cacheType);
             } // switch
@@ -169,12 +184,18 @@ class Dao_Base_Cache implements Dao_Cache
         $filePath = $this->_cachePath.DIRECTORY_SEPARATOR;
 
         switch ($cacheType) {
-            case Dao_Cache::SpotImage: $filePath .= 'image'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::SpotNzb: $filePath .= 'nzb'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Statistics: $filePath .= 'stats'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::Web: $filePath .= 'web'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslaterToken: $filePath .= 'translatertoken'.DIRECTORY_SEPARATOR; break;
-            case Dao_Cache::TranslatedComments: $filePath .= 'translatedcomments'.DIRECTORY_SEPARATOR; break;
+            case Dao_Cache::SpotImage: $filePath .= 'image'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::SpotNzb: $filePath .= 'nzb'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::Statistics: $filePath .= 'stats'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::Web: $filePath .= 'web'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::TranslaterToken: $filePath .= 'translatertoken'.DIRECTORY_SEPARATOR;
+            break;
+            case Dao_Cache::TranslatedComments: $filePath .= 'translatedcomments'.DIRECTORY_SEPARATOR;
+            break;
 
             default: throw new NotImplementedException('Undefined Cachetype: '.$cacheType);
         } // switch
@@ -194,19 +215,28 @@ class Dao_Base_Cache implements Dao_Cache
          */
         if ($cacheType == Dao_Cache::SpotImage) {
             switch ($metadata['imagetype']) {
-                case IMAGETYPE_GIF: $filePath .= '.gif'; break;
-                case IMAGETYPE_JPEG: $filePath .= '.jpg'; break;
-                case IMAGETYPE_PNG: $filePath .= '.png'; break;
+                case IMAGETYPE_GIF: $filePath .= '.gif';
+                break;
+                case IMAGETYPE_JPEG: $filePath .= '.jpg';
+                break;
+                case IMAGETYPE_PNG: $filePath .= '.png';
+                break;
 
-                default: $filePath .= '.image.'.$metadata['imagetype']; break;
+                default: $filePath .= '.image.'.$metadata['imagetype'];
+                break;
             } // switch
         } else {
             switch ($cacheType) {
-                case Dao_Cache::SpotNzb: $filePath .= '.nzb'; break;
-                case Dao_Cache::Statistics: $filePath .= '.stats'; break;
-                case Dao_Cache::Web: $filePath .= '.http'; break;
-                case Dao_Cache::TranslaterToken: $filePath .= '.token'; break;
-                case Dao_Cache::TranslatedComments: $filePath .= '.translatedcomments'; break;
+                case Dao_Cache::SpotNzb: $filePath .= '.nzb';
+                break;
+                case Dao_Cache::Statistics: $filePath .= '.stats';
+                break;
+                case Dao_Cache::Web: $filePath .= '.http';
+                break;
+                case Dao_Cache::TranslaterToken: $filePath .= '.token';
+                break;
+                case Dao_Cache::TranslatedComments: $filePath .= '.translatedcomments';
+                break;
 
                 default: throw new NotImplementedException('Undefined Cachetype: '.$cacheType);
             } // switch

@@ -2,6 +2,31 @@
 History for IMDBPHP
 ====================
 
+v7.3.1 (08.10.2022)
+-------------------
+* Remove PHP 7.3 from tests
+! Fix `Calendar::upcomingReleases()`
+! Fix `PersonSearch::results()`
+! Fix `Title::storyline()`
+! Fix `Title::tagline()`
+! Fix `Title::parentalGuide()`
+! Fix `TitleSearch::search()`
+! Fix `Title::populateEpisodeSeasonEpisode()`
+! Fix `Title::keywords()` #278 @duck7000 and @tboothman
+* Simplify `Title::soundtrack()` to just return raw data rather than badly trying to parse it
+! Fix `Person::spouse()` #275 @duck7000
+! Fix `Title::died()`
+
+v7.3.0 (03.03.2022)
+-------------------
++ `Person::real_id()` gives the imdb ID of a person after following any redirects from the ID requested. Thanks @duck7000
++ New class `Calendar` with method `upcomingReleases($country)` that lets you see the upcoming releases for a country as seen on https://www.imdb.com/calendar?region=gb. Thanks @duck7000
+! Fix character encoding in methods that use xpath. (Affected `Title::cast()` names and role names, maybe more) #262 #253
+! Decode html single quotes in `Title::title()` #264
+! Fix `Title::comment()`. #258 #270
+! Fix title redirects not being followed (Sometimes imdb pages are redirected to one with a different ID)
+! Fix `Title::movie_recommendations()`. Thanks @duck7000  #268
+
 v7.2.0 (15.07.2021)
 -------------------
 + Added $ratings parameter to `Title::mpaa()` to get all ratings instead of just the last one. @PoLaKoSz #204

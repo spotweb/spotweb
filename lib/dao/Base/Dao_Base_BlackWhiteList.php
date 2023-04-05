@@ -137,7 +137,7 @@ class Dao_Base_BlackWhiteList implements Dao_BlackWhiteList
                     ]
                 );
                 $this->_conn->modify(
-                    'UPDATE spotteridblacklist SET doubled = (idtype = 1) WHERE spotterid = :spotterid AND ouruserid != -1 ',
+                    'UPDATE spotteridblacklist SET doubled = (idtype = :idtype) WHERE spotterid = :spotterid AND ouruserid != -1 ',
                     [
                         ':spotterid' => [$updl, PDO::PARAM_STR],
                         ':idtype'    => [$idtype, PDO::PARAM_INT],

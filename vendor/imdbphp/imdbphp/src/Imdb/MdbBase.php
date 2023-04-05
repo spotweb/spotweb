@@ -21,7 +21,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 class MdbBase extends Config
 {
-    public $version = '7.2.0';
+    public $version = '7.3.1';
 
     protected $months = array(
       "January" => "01",
@@ -179,6 +179,26 @@ class MdbBase extends Config
     protected function getPage($context = null)
     {
         return $this->pages->get($this->buildUrl($context));
+    }
+
+    /**
+     * @param string $page
+     * @return \DomXPath
+     */
+    protected function getXpathPage($page)
+    {
+        if (!empty($this->xpathPage[$page])) {
+            return $this->xpathPage[$page];
+        }
+        $source = $this->getPage($page);
+        libxml_use_internal_errors(true);
+        /* Creates a new DomDocument object */
+        $dom = new \DomDocument;
+        /* Load the HTML */
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' .$source);
+        /* Create a new XPath object */
+        $this->xpathPage[$page] = new \DomXPath($dom);
+        return $this->xpathPage[$page];
     }
 
     /**

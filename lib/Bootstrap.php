@@ -117,28 +117,28 @@ class Bootstrap
         switch ($dbsettings['engine']) {
             case 'mysql':
             case 'pdo_mysql':
-            if (!isset($dbsettings['port'])) {
-                $dbsettings['port'] = '3306';
-            }
-            if (!isset($dbsettings['schema'])) {
-                $dbsettings['schema'] = '';
-            }
-                                  break;
+                if (!isset($dbsettings['port'])) {
+                    $dbsettings['port'] = '3306';
+                }
+                if (!isset($dbsettings['schema'])) {
+                    $dbsettings['schema'] = '';
+                }
+                break;
             case 'pdo_pgsql':
-            if (!isset($dbsettings['port'])) {
-                $dbsettings['port'] = '5432';
-            }
-            if (!isset($dbsettings['schema'])) {
-                $dbsettings['schema'] = 'public';
-            }
-                                  break;
+                if (!isset($dbsettings['port'])) {
+                    $dbsettings['port'] = '5432';
+                }
+                if (!isset($dbsettings['schema'])) {
+                    $dbsettings['schema'] = 'public';
+                }
+                break;
             default:
-            if (!isset($dbsettings['port'])) {
-                $dbsettings['port'] = '';
-            }
-            if (!isset($dbsettings['schema'])) {
-                $dbsettings['schema'] = '';
-            }
+                if (!isset($dbsettings['port'])) {
+                    $dbsettings['port'] = '';
+                }
+                if (!isset($dbsettings['schema'])) {
+                    $dbsettings['schema'] = '';
+                }
         }
         $this->_dbSettings = $dbsettings;
         $this->_dbSettings['pass'] = '**overwritten**';
@@ -195,7 +195,7 @@ class Bootstrap
          * We try to check if any output has been submitted, and if so, we refuse
          * to continue to prevent all sorts of confusing bug reports
          */
-        if ((headers_sent()) || ((int) ob_get_length() > 0)) {
+        if (headers_sent() || ((int) ob_get_length() > 0)) {
             throw new OwnsettingsCreatedOutputException();
         } // if
     }

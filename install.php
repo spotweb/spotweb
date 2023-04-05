@@ -52,7 +52,7 @@ if ((isset($dbsettings)) && (isset($_GET['page']))) {
         'fatalerror.inc.php',
         ['x' => new Exception("Spotweb has already been setup. If you want to run this wizard again, please remove the file 'dbsettings.inc.php'")]
     );
-    exit();
+    exit;
 }
 
 /**
