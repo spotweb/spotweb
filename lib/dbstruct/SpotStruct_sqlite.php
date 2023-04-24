@@ -78,17 +78,17 @@ class SpotStruct_sqlite extends SpotStruct_abs
     {
         switch (strtoupper($colType)) {
             case 'INTEGER': $colType = 'INTEGER';
-            break;
+                break;
             case 'INTEGER UNSIGNED': $colType = 'INTEGER';
-            break;
+                break;
             case 'BIGINTEGER': $colType = 'BIGINT';
-            break;
+                break;
             case 'BIGINTEGER UNSIGNED': $colType = 'BIGINT';
-            break;
+                break;
             case 'BOOLEAN': $colType = 'BOOLEAN';
-            break;
+                break;
             case 'MEDIUMBLOB': $colType = 'BLOB';
-            break;
+                break;
         } // switch
 
         return $colType;
@@ -104,7 +104,7 @@ class SpotStruct_sqlite extends SpotStruct_abs
     {
         switch (strtolower($colInfo)) {
             case 'blob': $colInfo = 'MEDIUMBLOB';
-            break;
+                break;
         } // switch
 
         return $colInfo;
@@ -224,9 +224,9 @@ class SpotStruct_sqlite extends SpotStruct_abs
 
             switch (strtolower($idxType)) {
                 case '': $this->_dbcon->rawExec('CREATE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).');');
-                break;
+                    break;
                 case 'unique': $this->_dbcon->rawExec('CREATE UNIQUE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).');');
-                break;
+                    break;
             } // switch
         } // if
     }
@@ -269,7 +269,7 @@ class SpotStruct_sqlite extends SpotStruct_abs
             // and define the 'NOT NULL' part
             switch ($notNull) {
                 case true: $nullStr = 'NOT NULL';
-                break;
+                    break;
                 default: $nullStr = '';
             } // switch
 

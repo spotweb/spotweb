@@ -155,11 +155,11 @@ class Services_User_Authentication
          */
         switch ($userSession['session']['devicetype']) {
             case 'mobile': $userSession['active_tpl'] = $userSession['user']['prefs']['mobile_template'];
-            break;
+                break;
             case 'tablet': $userSession['active_tpl'] = $userSession['user']['prefs']['tablet_template'];
-            break;
+                break;
             default: $userSession['active_tpl'] = $userSession['user']['prefs']['normal_template'];
-            break;
+                break;
         } // switch
 
         /*

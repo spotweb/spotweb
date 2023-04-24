@@ -74,17 +74,17 @@ class SpotStruct_pgsql extends SpotStruct_abs
     {
         switch (strtoupper($colType)) {
             case 'INTEGER': $colType = 'integer';
-            break;
+                break;
             case 'INTEGER UNSIGNED': $colType = 'bigint';
-            break;
+                break;
             case 'BIGINTEGER': $colType = 'bigint';
-            break;
+                break;
             case 'BIGINTEGER UNSIGNED': $colType = 'bigint';
-            break;
+                break;
             case 'BOOLEAN': $colType = 'boolean';
-            break;
+                break;
             case 'MEDIUMBLOB': $colType = 'bytea';
-            break;
+                break;
         } // switch
 
         return $colType;
@@ -100,13 +100,13 @@ class SpotStruct_pgsql extends SpotStruct_abs
     {
         switch (strtolower($colInfo)) {
             case 'integer': $colInfo = 'INTEGER';
-            break;
+                break;
             case 'bigint': $colInfo = 'BIGINTEGER';
-            break;
+                break;
             case 'boolean': $colInfo = 'BOOLEAN';
-            break;
+                break;
             case 'bytea': $colInfo = 'MEDIUMBLOB';
-            break;
+                break;
         } // switch
 
         return $colInfo;
@@ -274,14 +274,14 @@ class SpotStruct_pgsql extends SpotStruct_abs
                 case 'ascii':
                 case 'ascii_bin':
                 case '': $colSetting = '';
-                break;
+                    break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
             // and define the 'NOT NULL' part
             switch ($notNull) {
                 case true: $nullStr = 'NOT NULL';
-                break;
+                    break;
                 default: $nullStr = '';
             } // switch
 
@@ -315,14 +315,14 @@ class SpotStruct_pgsql extends SpotStruct_abs
             case 'ascii':
             case 'ascii_bin':
             case '': $colSetting = '';
-            break;
+                break;
             default: throw new Exception('Invalid collation setting');
         } // switch
 
         // and define the 'NOT NULL' part
         switch ($notNull) {
             case true: $nullStr = 'NOT NULL';
-            break;
+                break;
             default: $nullStr = '';
         } // switch
 
@@ -385,7 +385,7 @@ class SpotStruct_pgsql extends SpotStruct_abs
                 case 'utf8':
                 case 'ascii':
                 case '': $colSetting = '';
-                break;
+                    break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 

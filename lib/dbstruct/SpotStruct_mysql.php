@@ -75,17 +75,17 @@ class SpotStruct_mysql extends SpotStruct_abs
     {
         switch (strtoupper($colType)) {
             case 'INTEGER': $colType = 'int';
-            break;
+                break;
             case 'INTEGER UNSIGNED': $colType = 'int unsigned';
-            break;
+                break;
             case 'BIGINTEGER': $colType = 'bigint';
-            break;
+                break;
             case 'BIGINTEGER UNSIGNED': $colType = 'bigint unsigned';
-            break;
+                break;
             case 'BOOLEAN': $colType = 'tinyint(1)';
-            break;
+                break;
             case 'MEDIUMBLOB': $colType = 'mediumblob';
-            break;
+                break;
         } // switch
 
         return $colType;
@@ -258,22 +258,22 @@ class SpotStruct_mysql extends SpotStruct_abs
             // change the collation to a MySQL type
             switch (strtolower($collation)) {
                 case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-                break;
+                    break;
                 case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci';
-                break;
+                    break;
                 case 'ascii': $colSetting = 'CHARACTER SET ascii';
-                break;
+                    break;
                 case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin';
-                break;
+                    break;
                 case '': $colSetting = '';
-                break;
+                    break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
             // and define the 'NOT NULL' part
             switch ($notNull) {
                 case true: $nullStr = 'NOT NULL';
-                break;
+                    break;
                 default: $nullStr = '';
             } // switch
 
@@ -301,22 +301,22 @@ class SpotStruct_mysql extends SpotStruct_abs
         // change the collation to a MySQL type
         switch (strtolower($collation)) {
             case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-            break;
+                break;
             case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci';
-            break;
+                break;
             case 'ascii': $colSetting = 'CHARACTER SET ascii';
-            break;
+                break;
             case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin';
-            break;
+                break;
             case '': $colSetting = '';
-            break;
+                break;
             default: throw new Exception('Invalid collation setting');
         } // switch
 
         // and define the 'NOT NULL' part
         switch ($notNull) {
             case true: $nullStr = 'NOT NULL';
-            break;
+                break;
             default: $nullStr = '';
         } // switch
 
@@ -352,9 +352,9 @@ class SpotStruct_mysql extends SpotStruct_abs
         if (!$this->tableExists($tablename)) {
             switch (strtolower($collation)) {
                 case 'utf8': $colSetting = 'CHARSET=utf8 COLLATE=utf8_unicode_ci';
-                break;
+                    break;
                 case 'ascii': $colSetting = 'CHARSET=ascii';
-                break;
+                    break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
@@ -477,15 +477,15 @@ class SpotStruct_mysql extends SpotStruct_abs
             if (is_string($q['COLLATION_NAME'])) {
                 switch ($q['COLLATION_NAME']) {
                     case 'ascii_general_ci': $q['COLLATION_NAME'] = 'ascii';
-                    break;
+                        break;
                     case 'ascii_bin': $q['COLLATION_NAME'] = 'ascii_bin';
-                    break;
+                        break;
                     case 'utf8_unicode_ci':
                     case 'utf8mb3_unicode_ci':
                     case 'utf8_general_ci': $q['COLLATION_NAME'] = 'utf8';
-                    break;
+                        break;
                     case 'utf8mb4_general_ci': $q['COLLATION_NAME'] = 'utf8mb4';
-                    break;
+                        break;
 
                     default: throw new Exception('Invalid collation setting for varchar: '.$q['COLLATION_NAME']);
                 } // switch

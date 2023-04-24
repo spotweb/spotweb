@@ -62,13 +62,13 @@ class Services_Providers_Statistics
 
         switch ($statType) {
             case 'spotsperhour': $data = $this->createStatsPerHour($dateLimit);
-            break;
+                break;
             case 'spotsperweekday': $data = $this->createStatsPerWeekday($dateLimit);
-            break;
+                break;
             case 'spotspermonth': $data = $this->createStatsPerMonth($dateLimit);
-            break;
+                break;
             case 'spotspercategory': $data = $this->createStatsPerCategory($dateLimit);
-            break;
+                break;
         } // switch
 
         $data['ttl'] = (24 * 60 * 60);
@@ -232,13 +232,13 @@ class Services_Providers_Statistics
         if (($rs === false) || ((int) $rs['stamp'] < $this->_nntpUpdate)) {
             switch ($statType) {
                 case 'spotsperhour': $data = $this->_spotDao->getSpotCountPerHour($dateLimit);
-                break;
+                    break;
                 case 'spotsperweekday': $data = $this->_spotDao->getSpotCountPerWeekday($dateLimit);
-                break;
+                    break;
                 case 'spotspermonth': $data = $this->_spotDao->getSpotCountPerMonth($dateLimit);
-                break;
+                    break;
                 case 'spotspercategory': $data = $this->_spotDao->getSpotCountPerCategory($dateLimit);
-                break;
+                    break;
             } // switch
 
             /*

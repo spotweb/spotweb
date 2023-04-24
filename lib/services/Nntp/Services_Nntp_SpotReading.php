@@ -30,19 +30,19 @@ class Services_Nntp_SpotReading
 
             switch (strtolower($keys[0])) {
                 case 'from': $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))));
-                break;
+                    break;
                 case 'date': $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: ')));
-                break;
+                    break;
                 case 'x-xml': $tmpAr['fullxml'] .= substr($hdr, 7);
-                break;
+                    break;
                 case 'x-user-signature': $tmpAr['user-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 18));
-                break;
+                    break;
                 case 'x-xml-signature': $tmpAr['xml-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 17));
-                break;
+                    break;
                 case 'x-newsreader': $tmpAr['newsreader'] = substr($hdr, 14);
-                break;
+                    break;
                 case 'x-user-avatar': $tmpAr['user-avatar'] .= substr($hdr, 15);
-                break;
+                    break;
                 case 'x-user-key':
                     $xml = simplexml_load_string(substr($hdr, 12));
                     if ($xml !== false) {
