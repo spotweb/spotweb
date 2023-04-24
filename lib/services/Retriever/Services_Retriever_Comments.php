@@ -29,35 +29,35 @@ class Services_Retriever_Comments extends Services_Retriever_Base
     {
         switch ($cat) {
             case 'start': echo 'Retrieving new comments from server '.$txt.'...'.PHP_EOL;
-            break;
+                break;
             case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL;
-            break;
+                break;
             case 'done': echo 'Finished retrieving comments.'.PHP_EOL.PHP_EOL;
-            break;
+                break;
             case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'progress': echo 'Retrieving '.$txt;
-            break;
+                break;
             case 'loopcount': echo ', found '.$txt.' comments';
-            break;
+                break;
             case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL;
-            break;
+                break;
             case 'totalprocessed': echo 'Processed a total of '.$txt.' comments'.PHP_EOL;
-            break;
+                break;
             case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL;
-            break;
+                break;
             case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
-            break;
+                break;
             case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible';
-            break;
+                break;
             case '': echo PHP_EOL;
-            break;
+                break;
 
             default: echo $cat.$txt;
         } // switch

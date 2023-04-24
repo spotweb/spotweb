@@ -79,22 +79,22 @@ abstract class SpotPage_Abs
     {
         switch ($type) {
             case 'xml': header('Content-Type: text/xml; charset=utf-8');
-            break;
+                break;
             case 'rss': header('Content-Type: application/rss+xml; charset=utf-8');
-            break;
+                break;
             case 'json': header('Content-Type: application/json; charset=utf-8');
-            break;
+                break;
             case 'css': header('Content-Type: text/css; charset=utf-8');
-            break;
+                break;
             case 'js': header('Content-Type: application/javascript; charset=utf-8');
-            break;
+                break;
             case 'ico': header('Content-Type: image/x-icon');
-            break;
+                break;
             case 'nzb': header('Content-Type: application/x-nzb');
-            break;
+                break;
 
             default: header('Content-Type: text/html; charset=utf-8');
-            break;
+                break;
         } // switch
     }
 

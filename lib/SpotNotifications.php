@@ -83,9 +83,9 @@ class SpotNotifications
 
         switch ($action) {
             case 'remove': $notification = $this->_notificationTemplate->template('watchlist_removed', ['spot' => $spot]);
-            break;
+                break;
             case 'add': $notification = $this->_notificationTemplate->template('watchlist_added', ['spot' => $spot]);
-            break;
+                break;
         } // switch
         $this->newSingleMessage($this->_currentSession, self::notifytype_watchlist_handled, 'Single', $notification);
     }
@@ -102,16 +102,16 @@ class SpotNotifications
     {
         switch ($action) {
             case 'save': $notification = $this->_notificationTemplate->template('nzb_save', ['spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling']]);
-            break;
+                break;
             case 'runcommand': $notification = $this->_notificationTemplate->template('nzb_runcommand', ['spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling']]);
-            break;
+                break;
             case 'push-sabnzbd':
             case 'client-sabnzbd': $notification = $this->_notificationTemplate->template('nzb_sabnzbd', ['spot' => $spot]);
-            break;
+                break;
             case 'nzbget': $notification = $this->_notificationTemplate->template('nzb_nzbget', ['spot' => $spot]);
-            break;
+                break;
             case 'nzbvortex': $notification = $this->_notificationTemplate->template('nzb_nzbvortex', ['spot' => $spot]);
-            break;
+                break;
             default: return;
         } // switch
 

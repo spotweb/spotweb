@@ -114,7 +114,7 @@ class SpotPage_rss extends SpotPage_Abs
                 $enclosure->setAttribute('length', $spot['filesize']);
                 switch ($nzbhandling['prepare_action']) {
                     case 'zip': $enclosure->setAttribute('type', 'application/zip');
-                    break;
+                        break;
                     default: $enclosure->setAttribute('type', 'application/x-nzb');
                 } // switch
                 $item->appendChild($enclosure);

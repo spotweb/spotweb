@@ -33,25 +33,25 @@ class Services_Image_Error
         // error info
         switch ($errcode) {
             case 5: 	$text = _('Access denied');
-            break;
+                break;
             case 200:	$text = _('Remote host sent bad data');
-            break;
+                break;
             case 400:	$text = _('Bad request');
-            break;
+                break;
             case 403:	$text = _('Permission denied from remote host');
-            break;
+                break;
             case 404:	$text = _('File not found');
-            break;
+                break;
             case 430:	$text = _('Article not found');
-            break;
+                break;
             case 700:	$text = _('No response from remote host');
-            break;
+                break;
             case 900:	$text = _('XML parse error');
-            break;
+                break;
             case 901:	$text = _('No image provided');
-            break;
+                break;
             case 997:	$text = _('Unable to write to cachepath');
-            break;
+                break;
             default:	$text = _('Unknown error');
         } // switch
 

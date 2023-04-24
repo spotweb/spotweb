@@ -29,7 +29,7 @@ class Notifications_Twitter extends Notifications_abs
 
         switch ($this->twitterObj->http_code) {
             case 200: $registerURL = $this->twitterObj->getAuthorizeURL($request_token);
-            break;
+                break;
             default: $registerURL = '';
         } // switch
 
