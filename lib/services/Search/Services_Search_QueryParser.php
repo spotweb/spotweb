@@ -88,15 +88,15 @@ class Services_Search_QueryParser
                 if (strlen($dynaList[$i]) == 9) {
                     $typeSelected = substr($dynaList[$i], 5, 2);
                     $subCatSelected = substr($dynaList[$i], 8);
-                // Was only as category selected (cat1)
+                    // Was only as category selected (cat1)
                 } elseif (strlen($dynaList[$i]) == 4) {
                     $typeSelected = '*';
                     $subCatSelected = '*';
-                // Was a category and type selected (cat1_z0)
+                    // Was a category and type selected (cat1_z0)
                 } elseif ((strlen($dynaList[$i]) == 7) && ($dynaList[$i][5] === 'z')) {
                     $typeSelected = substr($dynaList[$i], 5, 2);
                     $subCatSelected = '*';
-                // Was a category and subcateory specified, old stype? (cat1_a3)
+                    // Was a category and subcateory specified, old stype? (cat1_a3)
                 } elseif (((strlen($dynaList[$i]) == 7) || (strlen($dynaList[$i]) == 8)) && ($dynaList[$i][5] !== 'z')) {
                     // Convert the old style to explicit categories (cat1_z0_a3, cat1_z1_a3, cat1_z2_a3, ... )
                     foreach (SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
@@ -105,7 +105,7 @@ class Services_Search_QueryParser
 
                     $typeSelected = '';
                     $subCatSelected = '';
-                // was a subcategory specified? (cat1_a)
+                    // was a subcategory specified? (cat1_a)
                 } elseif (strlen($dynaList[$i]) == 6) {
                     $typeSelected = '*';
                     $subCatSelected = substr($dynaList[$i], 5, 1);
