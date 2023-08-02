@@ -77,11 +77,11 @@ class Services_User_Authentication
         setcookie(
             'spotsession',
             $userSession['session']['sessionid'].'.'.$userSession['user']['userid'],
-            (time() + (max(1, (int) $this->_settings->get('cookie_expires')) * 60 * 60 * 24)),
+            time() + (max(1, (int) $this->_settings->get('cookie_expires')) * 60 * 60 * 24),
             '', // path: The default value is the current directory that the cookie is being set in.
-                  $this->_settings->get('cookie_host'),
+            $this->_settings->get('cookie_host'),
             false,	// Indicates if the cookie should only be transmitted over a secure HTTPS connection from the client.
-                  true
+            true
         );	// Only available to the HTTP protocol. This means that the cookie won't be accessible by scripting languages, such as JavaScript.
     }
 
@@ -154,9 +154,12 @@ class Services_User_Authentication
          * Determine the users' template name
          */
         switch ($userSession['session']['devicetype']) {
-            case 'mobile': $userSession['active_tpl'] = $userSession['user']['prefs']['mobile_template']; break;
-            case 'tablet': $userSession['active_tpl'] = $userSession['user']['prefs']['tablet_template']; break;
-            default: $userSession['active_tpl'] = $userSession['user']['prefs']['normal_template']; break;
+            case 'mobile': $userSession['active_tpl'] = $userSession['user']['prefs']['mobile_template'];
+                break;
+            case 'tablet': $userSession['active_tpl'] = $userSession['user']['prefs']['tablet_template'];
+                break;
+            default: $userSession['active_tpl'] = $userSession['user']['prefs']['normal_template'];
+                break;
         } // switch
 
         /*

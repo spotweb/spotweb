@@ -22,24 +22,39 @@ class Services_Retriever_Reports extends Services_Retriever_Base
     public function displayStatus($cat, $txt)
     {
         switch ($cat) {
-                    case 'start': echo 'Retrieving new reports from server '.$txt.'...'.PHP_EOL; break;
-                    case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL; break;
-                    case 'done': echo 'Finished retrieving reports.'.PHP_EOL.PHP_EOL; break;
-                    case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL; break;
-                    case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL; break;
-                    case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL; break;
-                    case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL; break;
-                    case 'progress': echo 'Retrieving '.$txt; break;
-                    case 'loopcount': echo ', found '.$txt.' reports'; break;
-                    case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL; break;
-                    case 'totalprocessed': echo 'Processed a total of '.$txt.' reports'.PHP_EOL; break;
-                    case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL; break;
-                    case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL; break;
-                    case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible'; break;
-                    case '': echo PHP_EOL; break;
+            case 'start': echo 'Retrieving new reports from server '.$txt.'...'.PHP_EOL;
+                break;
+            case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL;
+                break;
+            case 'done': echo 'Finished retrieving reports.'.PHP_EOL.PHP_EOL;
+                break;
+            case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL;
+                break;
+            case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL;
+                break;
+            case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL;
+                break;
+            case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL;
+                break;
+            case 'progress': echo 'Retrieving '.$txt;
+                break;
+            case 'loopcount': echo ', found '.$txt.' reports';
+                break;
+            case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL;
+                break;
+            case 'totalprocessed': echo 'Processed a total of '.$txt.' reports'.PHP_EOL;
+                break;
+            case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL;
+                break;
+            case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
+                break;
+            case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible';
+                break;
+            case '': echo PHP_EOL;
+                break;
 
-                    default: echo $cat.$txt;
-                } // switch
+            default: echo $cat.$txt;
+        } // switch
     }
 
     // displayStatus
@@ -69,7 +84,7 @@ class Services_Retriever_Reports extends Services_Retriever_Base
      */
     public function process($hdrList, $curArtNr, $increment, $timer)
     {
-        $this->displayStatus('progress', ($curArtNr).' till '.($increment));
+        $this->displayStatus('progress', $curArtNr.' till '.$increment);
 
         $lastProcessedId = '';
         $lastProcessedArtNr = 0;
@@ -125,11 +140,11 @@ class Services_Retriever_Reports extends Services_Retriever_Base
             } // if
         } // foreach
 
-            if (count($hdrList) > 0) {
-                $this->displayStatus('loopcount', count($hdrList));
-            } else {
-                $this->displayStatus('loopcount', 0);
-            } // else
+        if (count($hdrList) > 0) {
+            $this->displayStatus('loopcount', count($hdrList));
+        } else {
+            $this->displayStatus('loopcount', 0);
+        } // else
         $this->displayStatus('timer', round(microtime(true) - $timer, 2));
 
         // update the last retrieved article

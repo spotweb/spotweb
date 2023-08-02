@@ -45,7 +45,7 @@ class Services_Format_ParsingLegacy
                             } // if
 
                             break;
-                         // case '='
+                            // case '='
 
                         case '?':
                             if ($inputStr[$startIndex + 1] == '=') {
@@ -60,11 +60,11 @@ class Services_Format_ParsingLegacy
                     $startIndex++;
                 } // while
                 break;
-             // case 'q'
+                // case 'q'
 
             case 'b':
 
-                $builder .= base64_decode(substr($inputStr, $startIndex, ((strlen($inputStr) - $startIndex) - 2)));
+                $builder .= base64_decode(substr($inputStr, $startIndex, (strlen($inputStr) - $startIndex) - 2));
                 break;
              // case 'b'
         } // switch
@@ -88,31 +88,31 @@ class Services_Format_ParsingLegacy
             switch ($ch) {
                 case '=':
 
-                        if (($num != (strlen($inputStr) - 1)) && ($inputStr[$num + 1] == '?')) {
-                            $encodedWord = true;
-                        } // if
-                        break;
-                 // case '='
+                    if (($num != (strlen($inputStr) - 1)) && ($inputStr[$num + 1] == '?')) {
+                        $encodedWord = true;
+                    } // if
+                    break;
+                    // case '='
 
                 case '?':
 
-                        $ch2 = ' ';
+                    $ch2 = ' ';
 
-                        if ($num != (strlen($inputStr) - 1)) {
-                            $ch2 = $inputStr[$num + 1];
-                        } // if
+                    if ($num != (strlen($inputStr) - 1)) {
+                        $ch2 = $inputStr[$num + 1];
+                    } // if
 
-                        if ($ch2 != '=') {
-                            break;
-                        } // if
-
-                        $encodedWord = false;
-                        $builder .= $ch.$ch2;
-                        $builder2 .= $this->parseEncodedWord($builder);
-                        $builder = '';
-                        $num += 2;
-                        $bliep = true;
+                    if ($ch2 != '=') {
                         break;
+                    } // if
+
+                    $encodedWord = false;
+                    $builder .= $ch.$ch2;
+                    $builder2 .= $this->parseEncodedWord($builder);
+                    $builder = '';
+                    $num += 2;
+                    $bliep = true;
+                    break;
                  // case '?'
             } // switch
 

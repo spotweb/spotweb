@@ -107,8 +107,8 @@ class Services_Format_Parsing
         $tpl_spot['website'] = (string) $xml->Website;
         $tpl_spot['description'] = (string) $xml->Description;
         $tpl_spot['filesize'] = (string) $xml->Size;
-        $tpl_spot['poster'] = (string) utf8_encode($xml->Poster);
-        $tpl_spot['tag'] = (string) utf8_encode($xml->Tag);
+        $tpl_spot['poster'] = (string) mb_convert_encoding($xml->Poster, 'UTF-8', 'ISO-8859-1');
+        $tpl_spot['tag'] = (string) mb_convert_encoding($xml->Tag, 'UTF-8', 'ISO-8859-1');
         $tpl_spot['title'] = (string) $xml->Title;
 
         // Decode HTML special characters, title otherwise search will be broken, description as body in newsgroup
@@ -295,7 +295,7 @@ class Services_Format_Parsing
          * Extract the fixed fields from the header
          */
         $spot['poster'] = substr($from, 0, $fromInfoPos - 1);
-        $spot['category'] = (int) (substr($fields[0], 0, 1)) - 1.0;
+        $spot['category'] = (int) substr($fields[0], 0, 1) - 1.0;
         $spot['keyid'] = (int) substr($fields[0], 1, 1);
         $spot['filesize'] = $fields[1];
         $spot['subcata'] = '';
@@ -406,7 +406,7 @@ class Services_Format_Parsing
         } // if recentKey
 
         // Title and poster fields are mandatory, we require it to validate the signature
-        if (((strlen($spot['title']) == 0) || (strlen($spot['poster']) == 0))) {
+        if ((strlen($spot['title']) == 0) || (strlen($spot['poster']) == 0)) {
             return $spot;
         } // if
 
@@ -462,7 +462,7 @@ class Services_Format_Parsing
                      */
                     if (isset($rsaKeys[$spot['keyid']])) {
                         if ($spot['keyid'] == 2 && $spot['filesize'] = 999 && strlen($spot['selfsignedpubkey']) > 50
-                            ) {
+                        ) {
                             /* Check personal dispose message */
                             $signature = $this->_util->spotUnprepareBase64($spot['headersign']);
                             $userSignedHash = sha1('<'.$spot['messageid'].'>', false);
@@ -479,7 +479,7 @@ class Services_Format_Parsing
                     } // if
 
                     break;
-                 // SPOTSIGN_V1
+                    // SPOTSIGN_V1
 
                 case 2:
                     // the signature this header is signed with
@@ -492,22 +492,22 @@ class Services_Format_Parsing
                      * Create a fake RSA keyarray so we can validate it using our standard
                      * infrastructure
                      */
-                     if ($spot['verified']) {
-                         $userRsaKey = [7 => ['modulo' => $spot['selfsignedpubkey'],
-                             'exponent'                => 'AQAB', ]];
+                    if ($spot['verified']) {
+                        $userRsaKey = [7 => ['modulo' => $spot['selfsignedpubkey'],
+                            'exponent'                => 'AQAB', ]];
 
-                         /*
-                          * We cannot use this as a full measure to check the spot's validness yet,
-                          * because at least one Spotnet client feeds us invalid data for now
-                          */
-                         if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
-                             /*
-                              * The users' public key (modulo) is posted in the header, lets
-                              * try this.
-                              */
-                             $spot['spotterid'] = $this->_util->calculateSpotterId($spot['selfsignedpubkey']);
-                         } // if
-                     } // if
+                        /*
+                         * We cannot use this as a full measure to check the spot's validness yet,
+                         * because at least one Spotnet client feeds us invalid data for now
+                         */
+                        if ($this->_spotSigning->verifySpotHeader($spot, $signature, $userRsaKey)) {
+                            /*
+                             * The users' public key (modulo) is posted in the header, lets
+                             * try this.
+                             */
+                            $spot['spotterid'] = $this->_util->calculateSpotterId($spot['selfsignedpubkey']);
+                        } // if
+                    } // if
 
                     break;
                  // SPOTSIGN_V2
@@ -520,7 +520,7 @@ class Services_Format_Parsing
              *
              * Try to extract this information.
              */
-            if (($spot['verified']) && (!empty($spot['user-signature'])) && (!empty($spot['selfsignedpubkey']))) {
+            if ($spot['verified'] && (!empty($spot['user-signature'])) && (!empty($spot['selfsignedpubkey']))) {
                 /*
                  * Extract the public key
                  */
@@ -538,10 +538,10 @@ class Services_Format_Parsing
          * We convert the title and other fields to UTF8, we cannot
          * do this any earlier because it would break the RSA signature
          */
-        if (($spot !== false) && ($spot['verified'])) {
-            $spot['title'] = utf8_encode($spot['title']);
-            $spot['poster'] = utf8_encode($spot['poster']);
-            $spot['tag'] = utf8_encode($spot['tag']);
+        if (($spot !== false) && $spot['verified']) {
+            $spot['title'] = mb_convert_encoding($spot['title'], 'UTF-8', 'ISO-8859-1');
+            $spot['poster'] = mb_convert_encoding($spot['poster'], 'UTF-8', 'ISO-8859-1');
+            $spot['tag'] = mb_convert_encoding($spot['tag'], 'UTF-8', 'ISO-8859-1');
 
             // If a spot is in the future, fix it
             if (time() < $spot['stamp']) {

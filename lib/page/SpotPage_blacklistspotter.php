@@ -56,7 +56,7 @@ class SpotPage_blacklistspotter extends SpotPage_Abs
                     ));
 
                     break;
-                 // case addspotterid
+                    // case addspotterid
 
                 case 'removespotterid':
                     $result->mergeResult($svcUserRecord->removeSpotterFromList(

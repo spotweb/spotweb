@@ -28,24 +28,39 @@ class Services_Retriever_Comments extends Services_Retriever_Base
     public function displayStatus($cat, $txt)
     {
         switch ($cat) {
-                    case 'start': echo 'Retrieving new comments from server '.$txt.'...'.PHP_EOL; break;
-                    case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL; break;
-                    case 'done': echo 'Finished retrieving comments.'.PHP_EOL.PHP_EOL; break;
-                    case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL; break;
-                    case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL; break;
-                    case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL; break;
-                    case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL; break;
-                    case 'progress': echo 'Retrieving '.$txt; break;
-                    case 'loopcount': echo ', found '.$txt.' comments'; break;
-                    case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL; break;
-                    case 'totalprocessed': echo 'Processed a total of '.$txt.' comments'.PHP_EOL; break;
-                    case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL; break;
-                    case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL; break;
-                    case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible'; break;
-                    case '': echo PHP_EOL; break;
+            case 'start': echo 'Retrieving new comments from server '.$txt.'...'.PHP_EOL;
+                break;
+            case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL;
+                break;
+            case 'done': echo 'Finished retrieving comments.'.PHP_EOL.PHP_EOL;
+                break;
+            case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL;
+                break;
+            case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL;
+                break;
+            case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL;
+                break;
+            case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL;
+                break;
+            case 'progress': echo 'Retrieving '.$txt;
+                break;
+            case 'loopcount': echo ', found '.$txt.' comments';
+                break;
+            case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL;
+                break;
+            case 'totalprocessed': echo 'Processed a total of '.$txt.' comments'.PHP_EOL;
+                break;
+            case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL;
+                break;
+            case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
+                break;
+            case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible';
+                break;
+            case '': echo PHP_EOL;
+                break;
 
-                    default: echo $cat.$txt;
-                } // switch
+            default: echo $cat.$txt;
+        } // switch
     }
 
     // displayStatus
@@ -75,7 +90,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base
      */
     public function process($hdrList, $curArtNr, $increment, $timer)
     {
-        $this->displayStatus('progress', ($curArtNr).' till '.($increment));
+        $this->displayStatus('progress', $curArtNr.' till '.$increment);
 
         $lastProcessedId = '';
         $lastProcessedArtNr = 0;
@@ -225,11 +240,11 @@ class Services_Retriever_Comments extends Services_Retriever_Base
              * We cannot collapse this code with the header fetching code because we want to
              * be able to add the full body to a system after all the headers are retrieved
              */
-            if (($header_isInDb) &&			// header should be in the db
+            if ($header_isInDb &&			// header should be in the db
                     (!$fullcomment_isInDb)) {		// but if we already have the full comment, skip
-                    /*
-                     * Don't add older fullcomments than specified for the retention stamp
-                     */
+                /*
+                 * Don't add older fullcomments than specified for the retention stamp
+                 */
                 if (($retentionStamp > 0) && (strtotime($msgheader['Date']) < $retentionStamp)) {
                     continue;
                 } // if
@@ -275,7 +290,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                 } // if retrievefull
             } // if fullcomment is not in db yet
 
-                SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-stop');
+            SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-stop');
         } // foreach
         SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: done');
 

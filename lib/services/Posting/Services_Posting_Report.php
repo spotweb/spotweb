@@ -97,7 +97,7 @@ class Services_Posting_Report
             $this->_nntp_post->reportSpotAsSpam(
                 $user,
                 $this->_settings->get('privatekey'),  // Server private key
-                                           $this->_settings->get('report_group'),
+                $this->_settings->get('report_group'),
                 $report
             );
             $spotReportDao->addPostedReport($user['userid'], $dbReport);

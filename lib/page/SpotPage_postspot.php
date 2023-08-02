@@ -83,7 +83,7 @@ class SpotPage_postspot extends SpotPage_Abs
             } // if
         } // if
 
-        if (($formAction == 'post') && ($result->isSuccess())) {
+        if (($formAction == 'post') && $result->isSuccess()) {
             // Initialize notificatiesystem
             $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
 

@@ -16,7 +16,7 @@ Spotweb requires an operational webserver with PHP7.2 installed, it uses either 
 [![Maintainability](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/maintainability)](https://codeclimate.com/github/spotweb/spotweb/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/test_coverage)](https://codeclimate.com/github/spotweb/spotweb/test_coverage)
 
-[![Tested on:](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20-brightgreen.svg?maxAge=2419200)](https://img.shields.io/badge/tested%20on-PHP%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20-brightgreen.svg?maxAge=2419200)
+[![Tested on:](https://img.shields.io/badge/tested%20on-PHP%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20-brightgreen.svg?maxAge=2419200)](https://img.shields.io/badge/tested%20on-PHP%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20-brightgreen.svg?maxAge=2419200)
 </td></tr></table>
 
 ## Features

@@ -76,17 +76,17 @@ class SpotPage_index extends SpotPage_Abs
             switch ($this->_action) {
                 case 'remove': $svcSpotStateListDao->removeFromWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
 
-                                  $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
-                                  $spotsNotifications->sendWatchlistHandled($this->_action, $this->_params['messageid']);
+                    $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
+                    $spotsNotifications->sendWatchlistHandled($this->_action, $this->_params['messageid']);
 
-                                  break;
+                    break;
 
                 case 'add': $svcSpotStateListDao->addToWatchList($this->_params['messageid'], $this->_currentSession['user']['userid']);
 
-                                  $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
-                                  $spotsNotifications->sendWatchlistHandled($this->_action, $this->_params['messageid']);
+                    $spotsNotifications = new SpotNotifications($this->_daoFactory, $this->_settings, $this->_currentSession);
+                    $spotsNotifications->sendWatchlistHandled($this->_action, $this->_params['messageid']);
 
-                                  break;
+                    break;
                 default:;
             } // switch
         } // if

@@ -65,7 +65,7 @@ abstract class SpotPage_Abs
         } else {
             // send an expire header claiming this content is at least valid for 10 years
             header('Cache-Control: public');
-            header('Expires: '.gmdate('D, d M Y H:i:s', (time() + (86400 * 3650))).' GMT');
+            header('Expires: '.gmdate('D, d M Y H:i:s', time() + (86400 * 3650)).' GMT');
             header('Pragma: ');
         } // if
     }
@@ -78,15 +78,23 @@ abstract class SpotPage_Abs
     public function sendContentTypeHeader($type)
     {
         switch ($type) {
-            case 'xml': header('Content-Type: text/xml; charset=utf-8'); break;
-            case 'rss': header('Content-Type: application/rss+xml; charset=utf-8'); break;
-            case 'json': header('Content-Type: application/json; charset=utf-8'); break;
-            case 'css': header('Content-Type: text/css; charset=utf-8'); break;
-            case 'js': header('Content-Type: application/javascript; charset=utf-8'); break;
-            case 'ico': header('Content-Type: image/x-icon'); break;
-            case 'nzb': header('Content-Type: application/x-nzb'); break;
+            case 'xml': header('Content-Type: text/xml; charset=utf-8');
+                break;
+            case 'rss': header('Content-Type: application/rss+xml; charset=utf-8');
+                break;
+            case 'json': header('Content-Type: application/json; charset=utf-8');
+                break;
+            case 'css': header('Content-Type: text/css; charset=utf-8');
+                break;
+            case 'js': header('Content-Type: application/javascript; charset=utf-8');
+                break;
+            case 'ico': header('Content-Type: image/x-icon');
+                break;
+            case 'nzb': header('Content-Type: application/x-nzb');
+                break;
 
-            default: header('Content-Type: text/html; charset=utf-8'); break;
+            default: header('Content-Type: text/html; charset=utf-8');
+                break;
         } // switch
     }
 

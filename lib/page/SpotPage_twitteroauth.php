@@ -82,18 +82,30 @@ class SpotPage_twitteroauth extends SpotPage_Abs
     {
         // http://dev.twitter.com/pages/responses_errors
         switch ($errcode) {
-            case 200: $errtext = 'OK'; break;
-            case 304: $errtext = 'Not Modified'; break;
-            case 400: $errtext = 'Bad Request'; break;
-            case 401: $errtext = 'Unauthorized'; break;
-            case 403: $errtext = 'Forbidden'; break;
-            case 404: $errtext = 'Not Found'; break;
-            case 406: $errtext = 'Not Acceptable'; break;
-            case 420: $errtext = 'Enhance Your Calm'; break;
-            case 500: $errtext = 'Internal Server Error'; break;
-            case 502: $errtext = 'Bad Gateway'; break;
-            case 503: $errtext = 'Service Unavailable'; break;
-            default: $errtext = 'Unknown error'; break;
+            case 200: $errtext = 'OK';
+                break;
+            case 304: $errtext = 'Not Modified';
+                break;
+            case 400: $errtext = 'Bad Request';
+                break;
+            case 401: $errtext = 'Unauthorized';
+                break;
+            case 403: $errtext = 'Forbidden';
+                break;
+            case 404: $errtext = 'Not Found';
+                break;
+            case 406: $errtext = 'Not Acceptable';
+                break;
+            case 420: $errtext = 'Enhance Your Calm';
+                break;
+            case 500: $errtext = 'Internal Server Error';
+                break;
+            case 502: $errtext = 'Bad Gateway';
+                break;
+            case 503: $errtext = 'Service Unavailable';
+                break;
+            default: $errtext = 'Unknown error';
+                break;
         } // switch
 
         return $errtext;

@@ -49,18 +49,22 @@ class SpotPage_newznabapi extends SpotPage_Abs
          * Main switch statement, determines what actually has to be done
          */
         switch ($this->_params['t']) {
-            case '': $this->showApiError(200); break;
+            case '': $this->showApiError(200);
+                break;
             case 'search':
             case 's':
             case 'tvsearch':
             case 't':
             case 'music':
             case 'movie':
-            case 'm': $this->search($outputtype); break;
+            case 'm': $this->search($outputtype);
+                break;
             case 'd':
-            case 'details': $this->spotDetails($outputtype); break;
+            case 'details': $this->spotDetails($outputtype);
+                break;
             case 'g':
-            case 'get': $this->getNzb(); break;
+            case 'get': $this->getNzb();
+                break;
             default: $this->showApiError(202);
         } // switch
     }
@@ -314,14 +318,14 @@ class SpotPage_newznabapi extends SpotPage_Abs
          * system as well when no value is explicitly provided
          */
         if ((!empty($this->_params['limit'])) &&
-            (is_numeric($this->_params['limit'])) &&
+            is_numeric($this->_params['limit']) &&
             ($this->_params['limit'] <= 500)) {
             $limit = $this->_params['limit'];
         } else {
             $limit = $this->_currentSession['user']['prefs']['perpage'];
         } // else
 
-        if ((!empty($this->_params['offset'])) && (is_numeric($this->_params['offset']))) {
+        if ((!empty($this->_params['offset'])) && is_numeric($this->_params['offset'])) {
             $pageNr = $this->_params['offset'];
         } else {
             $pageNr = 0;
@@ -356,7 +360,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $parsedSearch
         );
 
-        $this->showResults($spotsTmp, ($pageNr * $limit), $outputtype);
+        $this->showResults($spotsTmp, $pageNr * $limit, $outputtype);
     }
 
     // search
@@ -463,7 +467,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 $enclosure->setAttribute('url', html_entity_decode($nzbUrl));
                 $enclosure->setAttribute('length', $spot['filesize']);
                 switch ($nzbhandling['prepare_action']) {
-                    case 'zip': $enclosure->setAttribute('type', 'application/zip'); break;
+                    case 'zip': $enclosure->setAttribute('type', 'application/zip');
+                        break;
                     default: $enclosure->setAttribute('type', 'application/x-nzb');
                 } // switch
                 $item->appendChild($enclosure);
@@ -660,7 +665,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $enclosure->setAttribute('url', html_entity_decode($nzbUrl));
             $enclosure->setAttribute('length', $spot['filesize']);
             switch ($nzbhandling['prepare_action']) {
-                case 'zip': $enclosure->setAttribute('type', 'application/zip'); break;
+                case 'zip': $enclosure->setAttribute('type', 'application/zip');
+                    break;
                 default: $enclosure->setAttribute('type', 'application/x-nzb');
             } // switch
             $item->appendChild($enclosure);
@@ -820,26 +826,27 @@ class SpotPage_newznabapi extends SpotPage_Abs
         if (!empty($cat[0])) {
             switch ($cat[0]) {
                 case 'a':
-                  if ($hcat == 0 or $hcat == 1) {
-                      $newznabcat = $this->spotAcat2nabcat();
-                      $r = @$newznabcat[$hcat][$znr][$nr];
-                      if ($r == null) {
-                          $r = '';
-                      }
+                    if ($hcat == 0 or $hcat == 1) {
+                        $newznabcat = $this->spotAcat2nabcat();
+                        $r = @$newznabcat[$hcat][$znr][$nr];
+                        if ($r == null) {
+                            $r = '';
+                        }
 
-                      return $r;
-                  } else {
-                      $newznabcat = $this->spotAcat2nabcat();
-                      $r = @$newznabcat[$hcat][$znr][$nr];
-                      if ($r = null) {
-                          $r = '';
-                      }
+                        return $r;
+                    } else {
+                        $newznabcat = $this->spotAcat2nabcat();
+                        $r = @$newznabcat[$hcat][$znr][$nr];
+                        if ($r = null) {
+                            $r = '';
+                        }
 
-                      return $r;
-                  }
-               case 'b': $newznabcat = $this->spotBcat2nabcat();
+                        return $r;
+                    }
+                case 'b': $newznabcat = $this->spotBcat2nabcat();
 
-                    return @$newznabcat[$nr]; break;
+                    return @$newznabcat[$nr];
+                    break;
             } // switch
         } // if
 
@@ -851,27 +858,45 @@ class SpotPage_newznabapi extends SpotPage_Abs
     public function showApiError($errcode = 42)
     {
         switch ($errcode) {
-            case 100: $errtext = 'Incorrect user credentials'; break;
-            case 101: $errtext = 'Account suspended'; break;
-            case 102: $errtext = 'Insufficient priviledges/not authorized'; break;
-            case 103: $errtext = 'Registration denied'; break;
-            case 104: $errtext = 'Registrations are closed'; break;
-            case 105: $errtext = 'Invalid registration (Email Address Taken)'; break;
-            case 106: $errtext = 'Invalid registration (Email Address Bad Format)'; break;
-            case 107: $errtext = 'Registration Failed (Data error)'; break;
+            case 100: $errtext = 'Incorrect user credentials';
+                break;
+            case 101: $errtext = 'Account suspended';
+                break;
+            case 102: $errtext = 'Insufficient priviledges/not authorized';
+                break;
+            case 103: $errtext = 'Registration denied';
+                break;
+            case 104: $errtext = 'Registrations are closed';
+                break;
+            case 105: $errtext = 'Invalid registration (Email Address Taken)';
+                break;
+            case 106: $errtext = 'Invalid registration (Email Address Bad Format)';
+                break;
+            case 107: $errtext = 'Registration Failed (Data error)';
+                break;
 
-            case 200: $errtext = 'Missing parameter'; break;
-            case 201: $errtext = 'Incorrect parameter'; break;
-            case 202: $errtext = 'No such function'; break;
-            case 203: $errtext = 'Function not available'; break;
+            case 200: $errtext = 'Missing parameter';
+                break;
+            case 201: $errtext = 'Incorrect parameter';
+                break;
+            case 202: $errtext = 'No such function';
+                break;
+            case 203: $errtext = 'Function not available';
+                break;
 
-            case 300: $errtext = 'On TVSearch no q, tvmaze or rid parameter present'; break;
-            case 301: $errtext = 'IMDB information returned is invalid'; break;
-            case 302: $errtext = 'Error in fetching spot information'; break;
+            case 300: $errtext = 'On TVSearch no q, tvmaze or rid parameter present';
+                break;
+            case 301: $errtext = 'IMDB information returned is invalid';
+                break;
+            case 302: $errtext = 'Error in fetching spot information';
+                break;
 
-            case 500: $errtext = 'Request limit reached'; break;
-            case 501: $errtext = 'Download limit reached'; break;
-            default: $errtext = 'Unknown error'; break;
+            case 500: $errtext = 'Request limit reached';
+                break;
+            case 501: $errtext = 'Download limit reached';
+                break;
+            default: $errtext = 'Unknown error';
+                break;
         } // switch
 
         $doc = new DOMDocument('1.0', 'utf-8');

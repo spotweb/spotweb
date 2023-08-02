@@ -82,8 +82,10 @@ class SpotNotifications
         $spot = $spotDao->getSpotHeader($messageid);
 
         switch ($action) {
-            case 'remove': $notification = $this->_notificationTemplate->template('watchlist_removed', ['spot' => $spot]); break;
-            case 'add': $notification = $this->_notificationTemplate->template('watchlist_added', ['spot' => $spot]); break;
+            case 'remove': $notification = $this->_notificationTemplate->template('watchlist_removed', ['spot' => $spot]);
+                break;
+            case 'add': $notification = $this->_notificationTemplate->template('watchlist_added', ['spot' => $spot]);
+                break;
         } // switch
         $this->newSingleMessage($this->_currentSession, self::notifytype_watchlist_handled, 'Single', $notification);
     }
@@ -99,12 +101,17 @@ class SpotNotifications
     public function sendNzbHandled($action, $spot)
     {
         switch ($action) {
-            case 'save': $notification = $this->_notificationTemplate->template('nzb_save', ['spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling']]); break;
-            case 'runcommand': $notification = $this->_notificationTemplate->template('nzb_runcommand', ['spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling']]); break;
+            case 'save': $notification = $this->_notificationTemplate->template('nzb_save', ['spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling']]);
+                break;
+            case 'runcommand': $notification = $this->_notificationTemplate->template('nzb_runcommand', ['spot' => $spot, 'nzbhandling' => $this->_currentSession['user']['prefs']['nzbhandling']]);
+                break;
             case 'push-sabnzbd':
-            case 'client-sabnzbd': $notification = $this->_notificationTemplate->template('nzb_sabnzbd', ['spot' => $spot]); break;
-            case 'nzbget': $notification = $this->_notificationTemplate->template('nzb_nzbget', ['spot' => $spot]); break;
-            case 'nzbvortex': $notification = $this->_notificationTemplate->template('nzb_nzbvortex', ['spot' => $spot]); break;
+            case 'client-sabnzbd': $notification = $this->_notificationTemplate->template('nzb_sabnzbd', ['spot' => $spot]);
+                break;
+            case 'nzbget': $notification = $this->_notificationTemplate->template('nzb_nzbget', ['spot' => $spot]);
+                break;
+            case 'nzbvortex': $notification = $this->_notificationTemplate->template('nzb_nzbvortex', ['spot' => $spot]);
+                break;
             default: return;
         } // switch
 

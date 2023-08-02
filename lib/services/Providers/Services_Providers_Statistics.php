@@ -61,10 +61,14 @@ class Services_Providers_Statistics
         } // if
 
         switch ($statType) {
-            case 'spotsperhour': $data = $this->createStatsPerHour($dateLimit); break;
-            case 'spotsperweekday': $data = $this->createStatsPerWeekday($dateLimit); break;
-            case 'spotspermonth': $data = $this->createStatsPerMonth($dateLimit); break;
-            case 'spotspercategory': $data = $this->createStatsPerCategory($dateLimit); break;
+            case 'spotsperhour': $data = $this->createStatsPerHour($dateLimit);
+                break;
+            case 'spotsperweekday': $data = $this->createStatsPerWeekday($dateLimit);
+                break;
+            case 'spotspermonth': $data = $this->createStatsPerMonth($dateLimit);
+                break;
+            case 'spotspercategory': $data = $this->createStatsPerCategory($dateLimit);
+                break;
         } // switch
 
         $data['ttl'] = (24 * 60 * 60);
@@ -227,10 +231,14 @@ class Services_Providers_Statistics
          */
         if (($rs === false) || ((int) $rs['stamp'] < $this->_nntpUpdate)) {
             switch ($statType) {
-                case 'spotsperhour': $data = $this->_spotDao->getSpotCountPerHour($dateLimit); break;
-                case 'spotsperweekday': $data = $this->_spotDao->getSpotCountPerWeekday($dateLimit); break;
-                case 'spotspermonth': $data = $this->_spotDao->getSpotCountPerMonth($dateLimit); break;
-                case 'spotspercategory': $data = $this->_spotDao->getSpotCountPerCategory($dateLimit); break;
+                case 'spotsperhour': $data = $this->_spotDao->getSpotCountPerHour($dateLimit);
+                    break;
+                case 'spotsperweekday': $data = $this->_spotDao->getSpotCountPerWeekday($dateLimit);
+                    break;
+                case 'spotspermonth': $data = $this->_spotDao->getSpotCountPerMonth($dateLimit);
+                    break;
+                case 'spotspercategory': $data = $this->_spotDao->getSpotCountPerCategory($dateLimit);
+                    break;
             } // switch
 
             /*

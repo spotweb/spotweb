@@ -123,7 +123,7 @@ class Services_Posting_Validator
         } // if
 
         // Make sure the subcategories are in the proper format
-        if ((is_array($spot['subcata'])) || (is_array($spot['subcatz'])) || (!is_array($spot['subcatb'])) || (!is_array($spot['subcatc'])) || (!is_array($spot['subcatd']))) {
+        if (is_array($spot['subcata']) || is_array($spot['subcatz']) || (!is_array($spot['subcatb'])) || (!is_array($spot['subcatc'])) || (!is_array($spot['subcatd']))) {
             $result->addError(_('Invalid subcategories given'));
         } // if
 
@@ -173,7 +173,7 @@ class Services_Posting_Validator
 
                 // Explicitly add the 'z'-category - we derive it from the full categorynames we already have
                 $zcatStr = substr($subcats[1], 0, 1).str_pad(substr($subcats[1], 1), 2, '0', STR_PAD_LEFT);
-                if ((is_numeric(substr($subcats[1], 1))) && (array_search($zcatStr, $spot['subcatlist']) === false)) {
+                if (is_numeric(substr($subcats[1], 1)) && (array_search($zcatStr, $spot['subcatlist']) === false)) {
                     $spot['subcatlist'][] = $zcatStr;
                 } // if
             } // else

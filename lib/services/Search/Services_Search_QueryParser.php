@@ -88,15 +88,15 @@ class Services_Search_QueryParser
                 if (strlen($dynaList[$i]) == 9) {
                     $typeSelected = substr($dynaList[$i], 5, 2);
                     $subCatSelected = substr($dynaList[$i], 8);
-                // Was only as category selected (cat1)
+                    // Was only as category selected (cat1)
                 } elseif (strlen($dynaList[$i]) == 4) {
                     $typeSelected = '*';
                     $subCatSelected = '*';
-                // Was a category and type selected (cat1_z0)
+                    // Was a category and type selected (cat1_z0)
                 } elseif ((strlen($dynaList[$i]) == 7) && ($dynaList[$i][5] === 'z')) {
                     $typeSelected = substr($dynaList[$i], 5, 2);
                     $subCatSelected = '*';
-                // Was a category and subcateory specified, old stype? (cat1_a3)
+                    // Was a category and subcateory specified, old stype? (cat1_a3)
                 } elseif (((strlen($dynaList[$i]) == 7) || (strlen($dynaList[$i]) == 8)) && ($dynaList[$i][5] !== 'z')) {
                     // Convert the old style to explicit categories (cat1_z0_a3, cat1_z1_a3, cat1_z2_a3, ... )
                     foreach (SpotCategories::$_categories[$hCat]['z'] as $typeKey => $typeValue) {
@@ -105,7 +105,7 @@ class Services_Search_QueryParser
 
                     $typeSelected = '';
                     $subCatSelected = '';
-                // was a subcategory specified? (cat1_a)
+                    // was a subcategory specified? (cat1_a)
                 } elseif (strlen($dynaList[$i]) == 6) {
                     $typeSelected = '*';
                     $subCatSelected = substr($dynaList[$i], 5, 1);
@@ -124,7 +124,6 @@ class Services_Search_QueryParser
                  */
                 $tmpStr = '';
                 foreach (SpotCategories::$_categories[$hCat] as $subCat => $subcatValues) {
-
                     /*
                      * There are four possible cases:
                      *
@@ -204,7 +203,7 @@ class Services_Search_QueryParser
                 // 0 element is headcategory
                 // 1st element is type
                 // 2ndelement is category
-                $val = explode('_', (substr($val, 3).'_'));
+                $val = explode('_', substr($val, 3).'_');
 
                 $catVal = $val[0];
                 $typeVal = $val[1];
@@ -217,7 +216,7 @@ class Services_Search_QueryParser
             } elseif (substr($val, 0, 3) == 'sub') {
                 // 0 element is headcategory
                 // 1st element is type
-                $val = explode('_', (substr($val, 3).'_'));
+                $val = explode('_', substr($val, 3).'_');
 
                 $catVal = $val[0];
                 $typeVal = $val[1];
@@ -287,7 +286,7 @@ class Services_Search_QueryParser
              * Each category we have, we try to procss all subcategories
              * and convert it to a filter
              */
-            if ((is_array($cat)) && (!empty($cat))) {
+            if (is_array($cat) && (!empty($cat))) {
                 foreach ($cat as $type => $typeValues) {
                     $catid = (int) $catid;
                     $tmpStr = '((s.category = '.(int) $catid.')';
@@ -611,16 +610,16 @@ class Services_Search_QueryParser
                  */
                 switch ($tmpFilterFieldname) {
                     case 'new':
-                            $tmpFilterValue = ' ((s.stamp > '.$this->_dbEng->safe((int) $currentSession['user']['lastread']).')';
-                            $tmpFilterValue .= ' AND (l.seen IS NULL))';
+                        $tmpFilterValue = ' ((s.stamp > '.$this->_dbEng->safe((int) $currentSession['user']['lastread']).')';
+                        $tmpFilterValue .= ' AND (l.seen IS NULL))';
 
-                            break;
-                     // case 'new'
+                        break;
+                        // case 'new'
                     case 'whitelistedspotters':
                         $tmpFilterValue = ' (wl.spotterid IS NOT NULL)';
 
                         break;
-                     // case 'whitelistedspotters'
+                        // case 'whitelistedspotters'
                     case 'mypostedspots':
                         // Only filter on mypostedspots if userid is known (issue #728)
                         if (isset($currentSession['user']['userid'])) {
@@ -638,7 +637,7 @@ class Services_Search_QueryParser
                             $tmpFilterValue = '0';
                         }
                         break;
-                     // case 'mypostedspots'
+                        // case 'mypostedspots'
                     case 'downloaded':
                         $tmpFilterValue = ' (l.download IS NOT NULL)';
                         $sortFields[] = ['field' => 'downloadstamp',
@@ -646,7 +645,7 @@ class Services_Search_QueryParser
                             'autoadded'          => true,
                             'friendlyname'       => null, ];
                         break;
-                     // case 'downloaded'
+                        // case 'downloaded'
                     case 'watch':
                         $additionalFields[] = '1 AS mywatchedspot';
                         $tmpFilterValue = ' (l.watch IS NOT NULL)';
@@ -655,7 +654,7 @@ class Services_Search_QueryParser
                             'autoadded'          => true,
                             'friendlyname'       => null, ];
                         break;
-                     // case 'watch'
+                        // case 'watch'
                     case 'seen':
                         $additionalFields[] = '1 AS myseenspot';
                         $tmpFilterValue = ' (l.seen IS NOT NULL)';
@@ -992,7 +991,7 @@ class Services_Search_QueryParser
          * When asked to forget all category filters (and only search for a word/typefilter)
          * we simply reset the filter by overwriting $search with $indexfilter
          */
-        if ((isset($search['unfiltered'])) && (($search['unfiltered'] === 'true'))) {
+        if ((isset($search['unfiltered'])) && ($search['unfiltered'] === 'true')) {
             $search = array_merge($search, $indexFilter);
             $isUnfiltered = true;
         } // if

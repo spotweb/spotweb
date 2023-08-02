@@ -73,12 +73,18 @@ class SpotStruct_pgsql extends SpotStruct_abs
     public function swDtToNative($colType)
     {
         switch (strtoupper($colType)) {
-            case 'INTEGER': $colType = 'integer'; break;
-            case 'INTEGER UNSIGNED': $colType = 'bigint'; break;
-            case 'BIGINTEGER': $colType = 'bigint'; break;
-            case 'BIGINTEGER UNSIGNED': $colType = 'bigint'; break;
-            case 'BOOLEAN': $colType = 'boolean'; break;
-            case 'MEDIUMBLOB': $colType = 'bytea'; break;
+            case 'INTEGER': $colType = 'integer';
+                break;
+            case 'INTEGER UNSIGNED': $colType = 'bigint';
+                break;
+            case 'BIGINTEGER': $colType = 'bigint';
+                break;
+            case 'BIGINTEGER UNSIGNED': $colType = 'bigint';
+                break;
+            case 'BOOLEAN': $colType = 'boolean';
+                break;
+            case 'MEDIUMBLOB': $colType = 'bytea';
+                break;
         } // switch
 
         return $colType;
@@ -93,10 +99,14 @@ class SpotStruct_pgsql extends SpotStruct_abs
     public function nativeDtToSw($colInfo)
     {
         switch (strtolower($colInfo)) {
-            case 'integer': $colInfo = 'INTEGER'; break;
-            case 'bigint': $colInfo = 'BIGINTEGER'; break;
-            case 'boolean': $colInfo = 'BOOLEAN'; break;
-            case 'bytea': $colInfo = 'MEDIUMBLOB'; break;
+            case 'integer': $colInfo = 'INTEGER';
+                break;
+            case 'bigint': $colInfo = 'BIGINTEGER';
+                break;
+            case 'boolean': $colInfo = 'BOOLEAN';
+                break;
+            case 'bytea': $colInfo = 'MEDIUMBLOB';
+                break;
         } // switch
 
         return $colInfo;
@@ -209,12 +219,12 @@ class SpotStruct_pgsql extends SpotStruct_abs
                 case 'UNIQUE':
                     $this->_dbcon->rawExec('CREATE UNIQUE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).')');
                     break;
-                 // case
+                    // case
 
                 case 'FULLTEXT':
                     $this->_dbcon->rawExec('CREATE INDEX '.$idxname.' ON '.$tablename." USING gin(to_tsvector('english', regexp_replace(".implode(',', $colList).",'(.)\\.(.)','\\1 \\2','g') ))");
                     break;
-                 // case
+                    // case
 
                 default:
                     $this->_dbcon->rawExec('CREATE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).')');
@@ -263,13 +273,15 @@ class SpotStruct_pgsql extends SpotStruct_abs
                 case 'utf8':
                 case 'ascii':
                 case 'ascii_bin':
-                case '': $colSetting = ''; break;
+                case '': $colSetting = '';
+                    break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
             // and define the 'NOT NULL' part
             switch ($notNull) {
-                case true: $nullStr = 'NOT NULL'; break;
+                case true: $nullStr = 'NOT NULL';
+                    break;
                 default: $nullStr = '';
             } // switch
 
@@ -302,13 +314,15 @@ class SpotStruct_pgsql extends SpotStruct_abs
             case 'utf8':
             case 'ascii':
             case 'ascii_bin':
-            case '': $colSetting = ''; break;
+            case '': $colSetting = '';
+                break;
             default: throw new Exception('Invalid collation setting');
         } // switch
 
         // and define the 'NOT NULL' part
         switch ($notNull) {
-            case true: $nullStr = 'NOT NULL'; break;
+            case true: $nullStr = 'NOT NULL';
+                break;
             default: $nullStr = '';
         } // switch
 
@@ -370,7 +384,8 @@ class SpotStruct_pgsql extends SpotStruct_abs
             switch (strtolower($collation)) {
                 case 'utf8':
                 case 'ascii':
-                case '': $colSetting = ''; break;
+                case '': $colSetting = '';
+                    break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
@@ -517,7 +532,7 @@ class SpotStruct_pgsql extends SpotStruct_abs
             // check if $q['COLUMN_DEFAULT'] is not null as strlen and strpos do not accept null as parameter.
             if (!is_null($q['COLUMN_DEFAULT'])) {
                 // a default value has to given, so make it compareable to what we define
-                if ((strlen($q['COLUMN_DEFAULT']) == 0) && (is_string($q['COLUMN_DEFAULT']))) {
+                if ((strlen($q['COLUMN_DEFAULT']) == 0) && is_string($q['COLUMN_DEFAULT'])) {
                     $q['COLUMN_DEFAULT'] = "''";
                 } // if
 

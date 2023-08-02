@@ -46,12 +46,12 @@ class SpotPage_editsecgroup extends SpotPage_Abs
                 case 'removegroup':
                     $result = $svcUserRecord->removeSecGroup($this->_groupId);
                     break;
-                 // case 'removegroup'
+                    // case 'removegroup'
 
                 case 'addperm':
                     $result = $svcUserRecord->addPermToSecGroup($this->_groupId, $this->_editSecGroupForm);
                     break;
-                 // case 'addperm'
+                    // case 'addperm'
 
                 case 'removeperm':
                     $result = $svcUserRecord->removePermFromSecGroup(
@@ -59,7 +59,7 @@ class SpotPage_editsecgroup extends SpotPage_Abs
                         $this->_editSecGroupForm
                     );
                     break;
-                 // case 'removeparm'
+                    // case 'removeparm'
 
                 case 'setallow':
                 case 'setdeny':
@@ -70,12 +70,12 @@ class SpotPage_editsecgroup extends SpotPage_Abs
                         $this->_editSecGroupForm
                     );
                     break;
-                 // case 'setallow' / 'setdeny'
+                    // case 'setallow' / 'setdeny'
 
                 case 'addgroup':
                     $result = $svcUserRecord->addSecGroup($this->_editSecGroupForm['name']);
                     break;
-                 // 'addgroup'
+                    // 'addgroup'
 
                 case 'changename':
                     $result = $svcUserRecord->setSecGroup($this->_groupId, $this->_editSecGroupForm['name']);

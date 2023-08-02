@@ -37,30 +37,22 @@ class Dao_Base_Spot implements Dao_Spot
             $notAllowedCommands = [
                 'DELETE',
                 'TRUNCATE',
-                'AS',
                 'DROP',
-                'USE',
                 'SELECT',
-                'SLEEP',
                 'UPDATE',
                 'ALTER',
                 'CREATE',
                 'RENAME',
                 'GRANT',
                 'REVOKE',
-                'BETWEEN',
                 'COMMIT',
                 'SAVEPOINT',
                 'EXISTS',
                 'GROUP',
                 'HAVING',
-                'INTO',
                 'INSERT',
                 'ORDER',
-                'BY',
                 'UNION',
-                'LEFT',
-                'RIGHT',
                 'FULL',
             ];
 
@@ -73,7 +65,7 @@ class Dao_Base_Spot implements Dao_Spot
                 echo '<script language = "javascript">';
                 echo 'window.location.href = "/?search[tree]=&search[unfiltered]=true"';
                 echo '</script>';
-                exit();
+                exit;
             } // if
         } // if
 

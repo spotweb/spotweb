@@ -144,7 +144,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper
                     'templates/we1rdo/js/jquery.tipTip.minified.js',
                 ];
                 break;
-             // case js
+                // case js
 
             case 'css':
                 return ['js/dynatree/skin-vista/ui.dynatree.css',
@@ -154,7 +154,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper
                     'templates/we1rdo/css/tipTip.css',
                 ];
                 break;
-             // case css
+                // case css
 
             case 'ico':
                 return ['images/favicon.ico'];

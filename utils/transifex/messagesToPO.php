@@ -24,15 +24,15 @@ $opts = getopt('ho', ['h', 'help']);
 
 foreach (array_keys($opts) as $opt) {
     switch ($opt) {
-  case 'o':
-    echo "Input file is using old format header, we will double check...\n";
-    $oldFormat = true;
-    break;
+        case 'o':
+            echo "Input file is using old format header, we will double check...\n";
+            $oldFormat = true;
+            break;
 
-  case 'h':
-  case 'help':
-    usage();
-}
+        case 'h':
+        case 'help':
+            usage();
+    }
 }
 
 // create a proper gettext po header
@@ -64,9 +64,9 @@ $path = dirname(__FILE__);
 $outputFile = $path.'/messages_template.po';
 
 $currentPOFile = $path.'/../../locales/nl_NL/LC_MESSAGES/messages.po';    // does this work on Windows?
-                                                                            // it does with the dirname(__FILE__)
-                                                                            // you can't use a relative path like
-                                                                            // "../../locales/nl_NL/LC_MESSAGES/messages.po"
+// it does with the dirname(__FILE__)
+// you can't use a relative path like
+// "../../locales/nl_NL/LC_MESSAGES/messages.po"
 
 echo "Input file is $currentPOFile\n";
 echo "Output File is $outputFile\n";
@@ -82,7 +82,6 @@ if (!$handle = fopen($outputFile, 'w+b')) {
 if (!$lines = file($currentPOFile)) {
     exit("Cannot open $currentPOFile");
 } else {
-
     // double check that we are really using an old format file
     if ($oldFormat == true) {
         $oldFormat = checkFileIsNotNewFormat($lines);
@@ -124,7 +123,6 @@ if (!$lines = file($currentPOFile)) {
  */
 function parseAndWriteLine($line, $handle, $outputFile)
 {
-
     // if the line starts with (#|"|msgid_plural |msgid )
     // then we just write the line to the output file verbatim
     $pattern = '/^(#|"|msgid_plural |msgid )/';
@@ -205,7 +203,6 @@ function checkFileIsNotNewFormat($lines)
     $isNew = false;
 
     foreach ($lines as $line) {
-
         // this header is only in the new format mo file
         if (strpos($line, 'Project-Id-Version') == true) {
             echo "Input file is in fact using the new format header\n";

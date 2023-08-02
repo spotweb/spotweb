@@ -488,15 +488,15 @@ class SpotCategories
 
             if ($hcat == 0) {
                 // 'Erotiek'
-                if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89|', ($subCatVal.'|')) !== false) {
+                if (stripos('d23|d24|d25|d26|d72|d73|d74|d75|d76|d77|d78|d79|d80|d81|d82|d83|d84|d85|d86|d87|d88|d89|', $subCatVal.'|') !== false) {
                     $subcatz = 'z3|';
-                } elseif (stripos('b4|d11|', ($subCatVal.'|')) !== false) {
+                } elseif (stripos('b4|d11|', $subCatVal.'|') !== false) {
                     // Series
                     $subcatz = 'z1|';
-                } elseif (stripos('a5|a11|', ($subCatVal.'|')) !== false) {
+                } elseif (stripos('a5|a11|', $subCatVal.'|') !== false) {
                     // Boeken
                     $subcatz = 'z2|';
-                } elseif (stripos('a12|a13|', ($subCatVal.'|')) !== false) {
+                } elseif (stripos('a12|a13|', $subCatVal.'|') !== false) {
                     // Plaatjes
                     $subcatz = 'z4|';
                 } elseif (empty($subcatz)) {

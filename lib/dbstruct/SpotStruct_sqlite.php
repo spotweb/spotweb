@@ -77,12 +77,18 @@ class SpotStruct_sqlite extends SpotStruct_abs
     public function swDtToNative($colType)
     {
         switch (strtoupper($colType)) {
-            case 'INTEGER': $colType = 'INTEGER'; break;
-            case 'INTEGER UNSIGNED': $colType = 'INTEGER'; break;
-            case 'BIGINTEGER': $colType = 'BIGINT'; break;
-            case 'BIGINTEGER UNSIGNED': $colType = 'BIGINT'; break;
-            case 'BOOLEAN': $colType = 'BOOLEAN'; break;
-            case 'MEDIUMBLOB': $colType = 'BLOB'; break;
+            case 'INTEGER': $colType = 'INTEGER';
+                break;
+            case 'INTEGER UNSIGNED': $colType = 'INTEGER';
+                break;
+            case 'BIGINTEGER': $colType = 'BIGINT';
+                break;
+            case 'BIGINTEGER UNSIGNED': $colType = 'BIGINT';
+                break;
+            case 'BOOLEAN': $colType = 'BOOLEAN';
+                break;
+            case 'MEDIUMBLOB': $colType = 'BLOB';
+                break;
         } // switch
 
         return $colType;
@@ -97,7 +103,8 @@ class SpotStruct_sqlite extends SpotStruct_abs
     public function nativeDtToSw($colInfo)
     {
         switch (strtolower($colInfo)) {
-            case 'blob': $colInfo = 'MEDIUMBLOB'; break;
+            case 'blob': $colInfo = 'MEDIUMBLOB';
+                break;
         } // switch
 
         return $colInfo;
@@ -216,8 +223,10 @@ class SpotStruct_sqlite extends SpotStruct_abs
             $this->_dbcon->rawExec('PRAGMA synchronous = OFF;');
 
             switch (strtolower($idxType)) {
-                case '': $this->_dbcon->rawExec('CREATE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).');'); break;
-                case 'unique': $this->_dbcon->rawExec('CREATE UNIQUE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).');'); break;
+                case '': $this->_dbcon->rawExec('CREATE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).');');
+                    break;
+                case 'unique': $this->_dbcon->rawExec('CREATE UNIQUE INDEX '.$idxname.' ON '.$tablename.'('.implode(',', $colList).');');
+                    break;
             } // switch
         } // if
     }
@@ -259,7 +268,8 @@ class SpotStruct_sqlite extends SpotStruct_abs
 
             // and define the 'NOT NULL' part
             switch ($notNull) {
-                case true: $nullStr = 'NOT NULL'; break;
+                case true: $nullStr = 'NOT NULL';
+                    break;
                 default: $nullStr = '';
             } // switch
 

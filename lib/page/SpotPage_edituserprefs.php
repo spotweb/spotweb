@@ -78,7 +78,7 @@ class SpotPage_edituserprefs extends SpotPage_Abs
                         $avatarFileName
                     );
                     break;
-                 // case 'edit'
+                    // case 'edit'
 
                 case 'cancel':
                     $result->setResult('success');
