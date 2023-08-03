@@ -19,14 +19,11 @@ use Psr\Log\NullLogger;
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Repository\JobsRepository
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class JobsRepositoryTest extends ProjectTestCase
+final class JobsRepositoryTest extends ProjectTestCase
 {
-    protected function setUp()
-    {
-        $this->setUpDir(realpath(__DIR__ . '/../../..'));
-    }
-
     // persist()
 
     /**
@@ -169,6 +166,11 @@ class JobsRepositoryTest extends ProjectTestCase
         self::assertFalse($object->persist());
     }
 
+    protected function legacySetUp()
+    {
+        $this->setUpDir(realpath(__DIR__ . '/../../..'));
+    }
+
     /**
      * @return Jobs
      */
@@ -297,7 +299,8 @@ class JobsRepositoryTest extends ProjectTestCase
             ->will(function () {
                 return $this;
             })
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -309,7 +312,8 @@ class JobsRepositoryTest extends ProjectTestCase
         $api
             ->collectCloverXml()
             ->willThrow($exception)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -321,7 +325,8 @@ class JobsRepositoryTest extends ProjectTestCase
         $api
             ->getJsonFile()
             ->willReturn($jsonFile)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -331,7 +336,8 @@ class JobsRepositoryTest extends ProjectTestCase
     {
         $api
             ->getJsonFile()
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
     }
 
     /**
@@ -344,7 +350,8 @@ class JobsRepositoryTest extends ProjectTestCase
             ->will(function () {
                 return $this;
             })
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -354,7 +361,8 @@ class JobsRepositoryTest extends ProjectTestCase
     {
         $api
             ->collectGitInfo()
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
     }
 
     /**
@@ -367,7 +375,8 @@ class JobsRepositoryTest extends ProjectTestCase
             ->will(function () {
                 return $this;
             })
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -377,7 +386,8 @@ class JobsRepositoryTest extends ProjectTestCase
     {
         $api
             ->collectEnvVars()
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
     }
 
     /**
@@ -390,7 +400,8 @@ class JobsRepositoryTest extends ProjectTestCase
             ->will(function () {
                 return $this;
             })
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -400,7 +411,8 @@ class JobsRepositoryTest extends ProjectTestCase
     {
         $api
             ->dumpJsonFile()
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
     }
 
     /**
@@ -415,10 +427,11 @@ class JobsRepositoryTest extends ProjectTestCase
             $api
                 ->send()
                 ->willReturn($response)
-                ->shouldBeCalled();
+                ->shouldBeCalled()
+            ;
         } else {
             if ($statusCode === null) {
-                $exception = \GuzzleHttp\Exception\ConnectException::create($request);
+                $exception = new \GuzzleHttp\Exception\ConnectException('Connection refused', $request);
             } elseif ($statusCode === 422) {
                 $exception = \GuzzleHttp\Exception\ClientException::create($request, $response);
             } else {
@@ -428,7 +441,8 @@ class JobsRepositoryTest extends ProjectTestCase
             $api
                 ->send()
                 ->willThrow($exception)
-                ->shouldBeCalled();
+                ->shouldBeCalled()
+            ;
         }
     }
 
@@ -439,6 +453,7 @@ class JobsRepositoryTest extends ProjectTestCase
     {
         $api
             ->send()
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
     }
 }

@@ -5,15 +5,17 @@ namespace PhpCoveralls\Tests\Bundle\CoverallsBundle\Entity\Git;
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Commit;
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Git;
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Remote;
-use PHPUnit\Framework\TestCase;
+use PhpCoveralls\Tests\ProjectTestCase;
 
 /**
- * @covers \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Git
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Entity\Coveralls
+ * @covers \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Git
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class GitTest extends TestCase
+final class GitTest extends ProjectTestCase
 {
     /**
      * @var string
@@ -35,15 +37,6 @@ class GitTest extends TestCase
      */
     private $object;
 
-    protected function setUp()
-    {
-        $this->branchName = 'branch_name';
-        $this->commit = $this->createCommit();
-        $this->remote = $this->createRemote();
-
-        $this->object = new Git($this->branchName, $this->commit, [$this->remote]);
-    }
-
     // getBranch()
 
     /**
@@ -51,7 +44,7 @@ class GitTest extends TestCase
      */
     public function shouldHaveBranchNameOnConstruction()
     {
-        $this->assertSame($this->branchName, $this->object->getBranch());
+        self::assertSame($this->branchName, $this->object->getBranch());
     }
 
     // getHead()
@@ -61,7 +54,7 @@ class GitTest extends TestCase
      */
     public function shouldHaveHeadCommitOnConstruction()
     {
-        $this->assertSame($this->commit, $this->object->getHead());
+        self::assertSame($this->commit, $this->object->getHead());
     }
 
     // getRemotes()
@@ -71,7 +64,7 @@ class GitTest extends TestCase
      */
     public function shouldHaveRemotesOnConstruction()
     {
-        $this->assertSame([$this->remote], $this->object->getRemotes());
+        self::assertSame([$this->remote], $this->object->getRemotes());
     }
 
     // toArray()
@@ -87,8 +80,17 @@ class GitTest extends TestCase
             'remotes' => [$this->remote->toArray()],
         ];
 
-        $this->assertSame($expected, $this->object->toArray());
-        $this->assertSame(json_encode($expected), (string) $this->object);
+        self::assertSame($expected, $this->object->toArray());
+        self::assertSame(json_encode($expected), (string) $this->object);
+    }
+
+    protected function legacySetUp()
+    {
+        $this->branchName = 'branch_name';
+        $this->commit = $this->createCommit();
+        $this->remote = $this->createRemote();
+
+        $this->object = new Git($this->branchName, $this->commit, [$this->remote]);
     }
 
     /**
@@ -103,7 +105,8 @@ class GitTest extends TestCase
 
         return $remote
             ->setName($name)
-            ->setUrl($url);
+            ->setUrl($url)
+        ;
     }
 
     /**
@@ -126,6 +129,7 @@ class GitTest extends TestCase
             ->setAuthorEmail($authorEmail)
             ->setCommitterName($committerName)
             ->setCommitterEmail($committerEmail)
-            ->setMessage($message);
+            ->setMessage($message)
+        ;
     }
 }

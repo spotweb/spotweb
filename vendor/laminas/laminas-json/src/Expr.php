@@ -1,12 +1,8 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-json for the canonical source repository
- * @copyright https://github.com/laminas/laminas-json/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-json/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Json;
+
+use Stringable;
 
 /**
  * Encode a string to a native JavaScript expression.
@@ -39,7 +35,7 @@ namespace Laminas\Json;
  * }
  * </code>
  */
-class Expr
+class Expr implements Stringable
 {
     /**
      * Storage for javascript expression.
@@ -61,7 +57,7 @@ class Expr
      *
      * @return string holded javascript expression.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->expression;
     }

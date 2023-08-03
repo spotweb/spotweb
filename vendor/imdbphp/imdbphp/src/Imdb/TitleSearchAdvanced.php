@@ -23,7 +23,6 @@ namespace Imdb;
  */
 class TitleSearchAdvanced extends MdbBase
 {
-
     // Title types
     const MOVIE = 'feature';
     const TV_SERIES = 'tv_series';
@@ -158,9 +157,11 @@ class TitleSearchAdvanced extends MdbBase
             }
         }
         if ($xp->query(".//span[contains(@class, 'genre')]", $resultSection)->length) {
-            $genre = strpos($xp->query(".//span[contains(@class, 'genre')]", $resultSection)->item(0)->nodeValue,
-              'Short');
-            if ($genre === 0 OR $genre >= 1) {
+            $genre = strpos(
+                $xp->query(".//span[contains(@class, 'genre')]", $resultSection)->item(0)->nodeValue,
+                'Short'
+            );
+            if ($genre === 0 || $genre >= 1) {
                 return Title::SHORT;
             }
         }
@@ -283,5 +284,4 @@ class TitleSearchAdvanced extends MdbBase
         }
         return $ret;
     }
-
 }

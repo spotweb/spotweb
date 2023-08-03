@@ -142,8 +142,10 @@ class InlineControlStructureSniff implements Sniff
             return;
         }
 
-        if ($tokens[$nextNonEmpty]['code'] === T_COLON) {
-            // Alternative control structure.
+        if ($tokens[$nextNonEmpty]['code'] === T_OPEN_CURLY_BRACKET
+            || $tokens[$nextNonEmpty]['code'] === T_COLON
+        ) {
+            // T_CLOSE_CURLY_BRACKET missing, or alternative control structure with
             // T_END... missing. Either live coding, parse error or end
             // tag in short open tags and scan run with short_open_tag=Off.
             // Bow out completely as any further detection will be unreliable
@@ -208,7 +210,10 @@ class InlineControlStructureSniff implements Sniff
             if (isset($tokens[$end]['scope_opener']) === true) {
                 $type = $tokens[$end]['code'];
                 $end  = $tokens[$end]['scope_closer'];
-                if ($type === T_DO || $type === T_IF || $type === T_ELSEIF || $type === T_TRY) {
+                if ($type === T_DO
+                    || $type === T_IF || $type === T_ELSEIF
+                    || $type === T_TRY || $type === T_CATCH || $type === T_FINALLY
+                ) {
                     $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($end + 1), null, true);
                     if ($next === false) {
                         break;
@@ -225,14 +230,19 @@ class InlineControlStructureSniff implements Sniff
                         continue;
                     }
 
+                    // Account for TRY... CATCH/FINALLY statements.
+                    if (($type === T_TRY
+                        || $type === T_CATCH
+                        || $type === T_FINALLY)
+                        && ($nextType === T_CATCH
+                        || $nextType === T_FINALLY)
+                    ) {
+                        continue;
+                    }
+
                     // Account for DO... WHILE conditions.
                     if ($type === T_DO && $nextType === T_WHILE) {
                         $end = $phpcsFile->findNext(T_SEMICOLON, ($next + 1));
-                    }
-
-                    // Account for TRY... CATCH statements.
-                    if ($type === T_TRY && $nextType === T_CATCH) {
-                        $end = $tokens[$next]['scope_closer'];
                     }
                 } else if ($type === T_CLOSURE) {
                     // There should be a semicolon after the closing brace.

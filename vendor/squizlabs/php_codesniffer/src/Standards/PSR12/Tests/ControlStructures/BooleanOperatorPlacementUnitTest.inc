@@ -108,3 +108,24 @@ if (
 ) {
     // elseif body
 }
+
+if (
+    ($value == 1 ||
+        $value == 2)
+    &&
+    ($value == 3 ||
+        $value == 4)
+) {
+    return 5;
+}
+
+// Reset to default.
+// phpcs:set PSR12.ControlStructures.BooleanOperatorPlacement allowOnly
+
+match (
+    $expr1
+    && $expr2 &&
+    $expr3
+) {
+    // structure body
+};

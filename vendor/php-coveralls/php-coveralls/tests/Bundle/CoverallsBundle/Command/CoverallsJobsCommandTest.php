@@ -11,22 +11,11 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Command\CoverallsJobsCommand
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class CoverallsJobsCommandTest extends ProjectTestCase
+final class CoverallsJobsCommandTest extends ProjectTestCase
 {
-    protected function setUp()
-    {
-        $this->setUpDir(realpath(__DIR__ . '/../../..'));
-    }
-
-    protected function tearDown()
-    {
-        $this->rmFile($this->cloverXmlPath);
-        $this->rmFile($this->jsonPath);
-        $this->rmDir($this->logsDir);
-        $this->rmDir($this->buildDir);
-    }
-
     /**
      * @test
      */
@@ -45,6 +34,7 @@ class CoverallsJobsCommandTest extends ProjectTestCase
         $commandTester = new CommandTester($command);
 
         $_SERVER['TRAVIS'] = true;
+        $_SERVER['TRAVIS_BUILD_NUMBER'] = '12345';
         $_SERVER['TRAVIS_JOB_ID'] = 'command_test';
 
         $actual = $commandTester->execute(
@@ -56,7 +46,7 @@ class CoverallsJobsCommandTest extends ProjectTestCase
             ]
         );
 
-        $this->assertSame(0, $actual);
+        self::assertSame(0, $actual);
 
         // It should succeed too with a correct coverage_clover option.
         $actual = $commandTester->execute(
@@ -69,15 +59,16 @@ class CoverallsJobsCommandTest extends ProjectTestCase
             ]
         );
 
-        $this->assertSame(0, $actual);
+        self::assertSame(0, $actual);
     }
 
     /**
      * @test
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     public function shouldExecuteCoverallsJobsCommandWithWrongRootDir()
     {
+        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+
         $this->makeProjectDir(null, $this->logsDir);
         $this->dumpCloverXml();
 
@@ -102,7 +93,7 @@ class CoverallsJobsCommandTest extends ProjectTestCase
             ]
         );
 
-        $this->assertSame(0, $actual);
+        self::assertSame(0, $actual);
     }
 
     /**
@@ -136,15 +127,16 @@ class CoverallsJobsCommandTest extends ProjectTestCase
             ]
         );
 
-        $this->assertSame(0, $actual);
+        self::assertSame(0, $actual);
     }
 
     /**
      * @test
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     public function shouldExecuteCoverallsJobsCommandThrowInvalidConfigurationException()
     {
+        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+
         $this->makeProjectDir(null, $this->logsDir);
         $this->dumpCloverXml();
 
@@ -169,6 +161,52 @@ class CoverallsJobsCommandTest extends ProjectTestCase
                 '--coverage_clover' => 'nonexistent.xml',
             ]
         );
+    }
+
+    /**
+     * @test
+     */
+    public function shouldExecuteCoverallsJobsCommandWithInsecureOption()
+    {
+        $this->makeProjectDir(null, $this->logsDir);
+        $this->dumpCloverXml();
+
+        $command = new CoverallsJobsCommand();
+        $command->setRootDir($this->rootDir);
+
+        $app = new Application();
+        $app->add($command);
+
+        $command = $app->find('coveralls:v1:jobs');
+        $commandTester = new CommandTester($command);
+
+        $_SERVER['TRAVIS'] = true;
+        $_SERVER['TRAVIS_JOB_ID'] = 'command_test';
+
+        $actual = $commandTester->execute(
+            [
+                'command' => $command->getName(),
+                '--dry-run' => true,
+                '--config' => 'coveralls.yml',
+                '--env' => 'test',
+                '--insecure' => true,
+            ]
+        );
+
+        self::assertSame(0, $actual);
+    }
+
+    protected function legacySetUp()
+    {
+        $this->setUpDir(realpath(__DIR__ . '/../../..'));
+    }
+
+    protected function legacyTearDown()
+    {
+        $this->rmFile($this->cloverXmlPath);
+        $this->rmFile($this->jsonPath);
+        $this->rmDir($this->logsDir);
+        $this->rmDir($this->buildDir);
     }
 
     /**

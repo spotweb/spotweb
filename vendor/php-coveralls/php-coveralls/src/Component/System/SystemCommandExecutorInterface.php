@@ -14,9 +14,9 @@ interface SystemCommandExecutorInterface
      *
      * @param string $command
      *
-     * @throws \RuntimeException
-     *
      * @return array
+     *
+     * @throws \RuntimeException
      */
     public function execute($command);
 }

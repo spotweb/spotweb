@@ -71,8 +71,22 @@ class FileHeaderSniff implements Sniff
         } while ($openTag !== false);
 
         if ($openTag === false) {
-            // We never found a proper file header
-            // so use the first one as the header.
+            // We never found a proper file header.
+            // If the file has multiple PHP open tags, we know
+            // that it must be a mix of PHP and HTML (or similar)
+            // so the header rules do not apply.
+            if (count($possibleHeaders) > 1) {
+                return $phpcsFile->numTokens;
+            }
+
+            // There is only one possible header.
+            // If it is the first content in the file, it technically
+            // serves as the file header, and the open tag needs to
+            // have a newline after it. Otherwise, ignore it.
+            if ($stackPtr > 0) {
+                return $phpcsFile->numTokens;
+            }
+
             $openTag = $stackPtr;
         } else if (count($possibleHeaders) > 1) {
             // There are other PHP blocks before the file header.
@@ -152,8 +166,25 @@ class FileHeaderSniff implements Sniff
                 }
 
                 // Make sure this is not a code-level docblock.
-                $end      = $tokens[$next]['comment_closer'];
-                $docToken = $phpcsFile->findNext(Tokens::$emptyTokens, ($end + 1), null, true);
+                $end = $tokens[$next]['comment_closer'];
+                for ($docToken = ($end + 1); $docToken < $phpcsFile->numTokens; $docToken++) {
+                    if (isset(Tokens::$emptyTokens[$tokens[$docToken]['code']]) === true) {
+                        continue;
+                    }
+
+                    if ($tokens[$docToken]['code'] === T_ATTRIBUTE
+                        && isset($tokens[$docToken]['attribute_closer']) === true
+                    ) {
+                        $docToken = $tokens[$docToken]['attribute_closer'];
+                        continue;
+                    }
+
+                    break;
+                }
+
+                if ($docToken === $phpcsFile->numTokens) {
+                    $docToken--;
+                }
 
                 if (isset($commentOpeners[$tokens[$docToken]['code']]) === false
                     && isset(Tokens::$methodPrefixes[$tokens[$docToken]['code']]) === false
@@ -183,6 +214,13 @@ class FileHeaderSniff implements Sniff
                 break;
             case T_DECLARE:
             case T_NAMESPACE:
+                if (isset($tokens[$next]['scope_opener']) === true) {
+                    // If this statement is using bracketed syntax, it doesn't
+                    // apply to the entire files and so is not part of header.
+                    // The header has now ended and the main code block begins.
+                    break(2);
+                }
+
                 $end = $phpcsFile->findEndOfStatement($next);
 
                 $headerLines[] = [
@@ -266,8 +304,7 @@ class FileHeaderSniff implements Sniff
                     $fix   = $phpcsFile->addFixableError($error, $line['end'], 'SpacingAfterBlock');
                     if ($fix === true) {
                         if ($tokens[$next]['line'] === $tokens[$line['end']]['line']) {
-                            $phpcsFile->fixer->addNewlineBefore($next);
-                            $phpcsFile->fixer->addNewlineBefore($next);
+                            $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar.$phpcsFile->eolChar);
                         } else if ($tokens[$next]['line'] === ($tokens[$line['end']]['line'] + 1)) {
                             $phpcsFile->fixer->addNewline($line['end']);
                         } else {

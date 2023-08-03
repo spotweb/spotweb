@@ -27,6 +27,7 @@ class ClassCommentSniff extends FileCommentSniff
             T_CLASS,
             T_INTERFACE,
             T_TRAIT,
+            T_ENUM,
         ];
 
     }//end register()
@@ -47,10 +48,24 @@ class ClassCommentSniff extends FileCommentSniff
         $type      = strtolower($tokens[$stackPtr]['content']);
         $errorData = [$type];
 
-        $find   = Tokens::$methodPrefixes;
-        $find[] = T_WHITESPACE;
+        $find = Tokens::$methodPrefixes;
+        $find[T_WHITESPACE] = T_WHITESPACE;
 
-        $commentEnd = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
+        for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
+            if (isset($find[$tokens[$commentEnd]['code']]) === true) {
+                continue;
+            }
+
+            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+                && isset($tokens[$commentEnd]['attribute_opener']) === true
+            ) {
+                $commentEnd = $tokens[$commentEnd]['attribute_opener'];
+                continue;
+            }
+
+            break;
+        }
+
         if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {

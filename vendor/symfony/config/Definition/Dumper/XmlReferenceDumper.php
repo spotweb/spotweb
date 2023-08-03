@@ -12,25 +12,36 @@
 namespace Symfony\Component\Config\Definition\Dumper;
 
 use Symfony\Component\Config\Definition\ArrayNode;
+use Symfony\Component\Config\Definition\BaseNode;
+use Symfony\Component\Config\Definition\BooleanNode;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\EnumNode;
+use Symfony\Component\Config\Definition\FloatNode;
+use Symfony\Component\Config\Definition\IntegerNode;
 use Symfony\Component\Config\Definition\NodeInterface;
 use Symfony\Component\Config\Definition\PrototypedArrayNode;
+use Symfony\Component\Config\Definition\ScalarNode;
 
 /**
- * Dumps a XML reference configuration for the given configuration/node instance.
+ * Dumps an XML reference configuration for the given configuration/node instance.
  *
  * @author Wouter J <waldio.webdesign@gmail.com>
  */
 class XmlReferenceDumper
 {
-    private $reference;
+    private ?string $reference = null;
 
+    /**
+     * @return string
+     */
     public function dump(ConfigurationInterface $configuration, string $namespace = null)
     {
         return $this->dumpNode($configuration->getConfigTreeBuilder()->buildTree(), $namespace);
     }
 
+    /**
+     * @return string
+     */
     public function dumpNode(NodeInterface $node, string $namespace = null)
     {
         $this->reference = '';
@@ -41,19 +52,17 @@ class XmlReferenceDumper
         return $ref;
     }
 
-    private function writeNode(NodeInterface $node, int $depth = 0, bool $root = false, string $namespace = null)
+    private function writeNode(NodeInterface $node, int $depth = 0, bool $root = false, string $namespace = null): void
     {
         $rootName = ($root ? 'config' : $node->getName());
         $rootNamespace = ($namespace ?: ($root ? 'http://example.org/schema/dic/'.$node->getName() : null));
 
         // xml remapping
         if ($node->getParent()) {
-            $remapping = array_filter($node->getParent()->getXmlRemappings(), function ($mapping) use ($rootName) {
-                return $rootName === $mapping[1];
-            });
+            $remapping = array_filter($node->getParent()->getXmlRemappings(), fn (array $mapping) => $rootName === $mapping[1]);
 
             if (\count($remapping)) {
-                list($singular) = current($remapping);
+                [$singular] = current($remapping);
                 $rootName = $singular;
             }
         }
@@ -99,77 +108,67 @@ class XmlReferenceDumper
                     if ($prototype->hasDefaultValue()) {
                         $prototypeValue = $prototype->getDefaultValue();
                     } else {
-                        switch (\get_class($prototype)) {
-                            case 'Symfony\Component\Config\Definition\ScalarNode':
-                                $prototypeValue = 'scalar value';
-                                break;
-
-                            case 'Symfony\Component\Config\Definition\FloatNode':
-                            case 'Symfony\Component\Config\Definition\IntegerNode':
-                                $prototypeValue = 'numeric value';
-                                break;
-
-                            case 'Symfony\Component\Config\Definition\BooleanNode':
-                                $prototypeValue = 'true|false';
-                                break;
-
-                            case 'Symfony\Component\Config\Definition\EnumNode':
-                                $prototypeValue = implode('|', array_map('json_encode', $prototype->getValues()));
-                                break;
-
-                            default:
-                                $prototypeValue = 'value';
-                        }
+                        $prototypeValue = match ($prototype::class) {
+                            ScalarNode::class => 'scalar value',
+                            FloatNode::class,
+                            IntegerNode::class => 'numeric value',
+                            BooleanNode::class => 'true|false',
+                            EnumNode::class => $prototype->getPermissibleValues('|'),
+                            default => 'value',
+                        };
                     }
                 }
             }
 
             // get attributes and elements
             foreach ($children as $child) {
-                if (!$child instanceof ArrayNode) {
-                    // get attributes
-
-                    // metadata
-                    $name = str_replace('_', '-', $child->getName());
-                    $value = '%%%%not_defined%%%%'; // use a string which isn't used in the normal world
-
-                    // comments
-                    $comments = [];
-                    if ($info = $child->getInfo()) {
-                        $comments[] = $info;
-                    }
-
-                    if ($example = $child->getExample()) {
-                        $comments[] = 'Example: '.$example;
-                    }
-
-                    if ($child->isRequired()) {
-                        $comments[] = 'Required';
-                    }
-
-                    if ($child->isDeprecated()) {
-                        $comments[] = sprintf('Deprecated (%s)', $child->getDeprecationMessage($child->getName(), $node->getPath()));
-                    }
-
-                    if ($child instanceof EnumNode) {
-                        $comments[] = 'One of '.implode('; ', array_map('json_encode', $child->getValues()));
-                    }
-
-                    if (\count($comments)) {
-                        $rootAttributeComments[$name] = implode(";\n", $comments);
-                    }
-
-                    // default values
-                    if ($child->hasDefaultValue()) {
-                        $value = $child->getDefaultValue();
-                    }
-
-                    // append attribute
-                    $rootAttributes[$name] = $value;
-                } else {
+                if ($child instanceof ArrayNode) {
                     // get elements
                     $rootChildren[] = $child;
+
+                    continue;
                 }
+
+                // get attributes
+
+                // metadata
+                $name = str_replace('_', '-', $child->getName());
+                $value = '%%%%not_defined%%%%'; // use a string which isn't used in the normal world
+
+                // comments
+                $comments = [];
+                if ($child instanceof BaseNode && $info = $child->getInfo()) {
+                    $comments[] = $info;
+                }
+
+                if ($child instanceof BaseNode && $example = $child->getExample()) {
+                    $comments[] = 'Example: '.(\is_array($example) ? implode(', ', $example) : $example);
+                }
+
+                if ($child->isRequired()) {
+                    $comments[] = 'Required';
+                }
+
+                if ($child instanceof BaseNode && $child->isDeprecated()) {
+                    $deprecation = $child->getDeprecation($child->getName(), $node->getPath());
+                    $comments[] = sprintf('Deprecated (%s)', ($deprecation['package'] || $deprecation['version'] ? "Since {$deprecation['package']} {$deprecation['version']}: " : '').$deprecation['message']);
+                }
+
+                if ($child instanceof EnumNode) {
+                    $comments[] = 'One of '.$child->getPermissibleValues('; ');
+                }
+
+                if (\count($comments)) {
+                    $rootAttributeComments[$name] = implode(";\n", $comments);
+                }
+
+                // default values
+                if ($child->hasDefaultValue()) {
+                    $value = $child->getDefaultValue();
+                }
+
+                // append attribute
+                $rootAttributes[$name] = $value;
             }
         }
 
@@ -188,7 +187,7 @@ class XmlReferenceDumper
                 $commentDepth = $depth + 4 + \strlen($attrName) + 2;
                 $commentLines = explode("\n", $comment);
                 $multiline = (\count($commentLines) > 1);
-                $comment = implode(PHP_EOL.str_repeat(' ', $commentDepth), $commentLines);
+                $comment = implode(\PHP_EOL.str_repeat(' ', $commentDepth), $commentLines);
 
                 if ($multiline) {
                     $this->writeLine('<!--', $depth);
@@ -254,20 +253,18 @@ class XmlReferenceDumper
     /**
      * Outputs a single config reference line.
      */
-    private function writeLine(string $text, int $indent = 0)
+    private function writeLine(string $text, int $indent = 0): void
     {
         $indent = \strlen($text) + $indent;
         $format = '%'.$indent.'s';
 
-        $this->reference .= sprintf($format, $text).PHP_EOL;
+        $this->reference .= sprintf($format, $text).\PHP_EOL;
     }
 
     /**
      * Renders the string conversion of the value.
-     *
-     * @param mixed $value
      */
-    private function writeValue($value): string
+    private function writeValue(mixed $value): string
     {
         if ('%%%%not_defined%%%%' === $value) {
             return '';

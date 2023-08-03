@@ -1,8 +1,8 @@
 {
     "name": "symfony/console",
     "type": "library",
-    "description": "Symfony Console Component",
-    "keywords": [],
+    "description": "Eases the creation of beautiful and testable command line interfaces",
+    "keywords": ["console", "cli", "command-line", "terminal"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
@@ -16,34 +16,30 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
+        "php": ">=8.1",
+        "symfony/deprecation-contracts": "^2.5|^3",
         "symfony/polyfill-mbstring": "~1.0",
-        "symfony/polyfill-php73": "^1.8",
-        "symfony/service-contracts": "^1.1|^2"
+        "symfony/service-contracts": "^2.5|^3",
+        "symfony/string": "^5.4|^6.0"
     },
     "require-dev": {
-        "symfony/config": "^4.4|^5.0",
-        "symfony/event-dispatcher": "^4.4|^5.0",
-        "symfony/dependency-injection": "^4.4|^5.0",
-        "symfony/lock": "^4.4|^5.0",
-        "symfony/process": "^4.4|^5.0",
-        "symfony/var-dumper": "^4.4|^5.0",
-        "psr/log": "~1.0"
+        "symfony/config": "^5.4|^6.0",
+        "symfony/event-dispatcher": "^5.4|^6.0",
+        "symfony/dependency-injection": "^5.4|^6.0",
+        "symfony/lock": "^5.4|^6.0",
+        "symfony/process": "^5.4|^6.0",
+        "symfony/var-dumper": "^5.4|^6.0",
+        "psr/log": "^1|^2|^3"
     },
     "provide": {
-        "psr/log-implementation": "1.0"
-    },
-    "suggest": {
-        "symfony/event-dispatcher": "",
-        "symfony/lock": "",
-        "symfony/process": "",
-        "psr/log": "For using the console logger"
+        "psr/log-implementation": "1.0|2.0|3.0"
     },
     "conflict": {
-        "symfony/dependency-injection": "<4.4",
-        "symfony/event-dispatcher": "<4.4",
-        "symfony/lock": "<4.4",
-        "symfony/process": "<4.4"
+        "symfony/dependency-injection": "<5.4",
+        "symfony/dotenv": "<5.4",
+        "symfony/event-dispatcher": "<5.4",
+        "symfony/lock": "<5.4",
+        "symfony/process": "<5.4"
     },
     "autoload": {
         "psr-4": { "Symfony\\Component\\Console\\": "" },
@@ -51,10 +47,5 @@
             "/Tests/"
         ]
     },
-    "minimum-stability": "dev",
-    "extra": {
-        "branch-alias": {
-            "dev-master": "5.0-dev"
-        }
-    }
+    "minimum-stability": "dev"
 }

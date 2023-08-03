@@ -29,15 +29,18 @@ abstract class FileLoader extends Loader
 
     protected $locator;
 
-    private $currentDir;
+    private ?string $currentDir = null;
 
-    public function __construct(FileLocatorInterface $locator)
+    public function __construct(FileLocatorInterface $locator, string $env = null)
     {
         $this->locator = $locator;
+        parent::__construct($env);
     }
 
     /**
      * Sets the current directory.
+     *
+     * @return void
      */
     public function setCurrentDir(string $dir)
     {
@@ -46,10 +49,8 @@ abstract class FileLoader extends Loader
 
     /**
      * Returns the file locator used by this loader.
-     *
-     * @return FileLocatorInterface
      */
-    public function getLocator()
+    public function getLocator(): FileLocatorInterface
     {
         return $this->locator;
     }
@@ -69,28 +70,28 @@ abstract class FileLoader extends Loader
      * @throws FileLoaderImportCircularReferenceException
      * @throws FileLocatorFileNotFoundException
      */
-    public function import($resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null, $exclude = null)
+    public function import(mixed $resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null, string|array $exclude = null)
     {
-        if (\is_string($resource) && \strlen($resource) !== $i = strcspn($resource, '*?{[')) {
+        if (\is_string($resource) && \strlen($resource) !== ($i = strcspn($resource, '*?{[')) && !str_contains($resource, "\n")) {
             $excluded = [];
             foreach ((array) $exclude as $pattern) {
                 foreach ($this->glob($pattern, true, $_, false, true) as $path => $info) {
-                    // normalize Windows slashes
-                    $excluded[str_replace('\\', '/', $path)] = true;
+                    // normalize Windows slashes and remove trailing slashes
+                    $excluded[rtrim(str_replace('\\', '/', $path), '/')] = true;
                 }
             }
 
             $ret = [];
-            $isSubpath = 0 !== $i && false !== strpos(substr($resource, 0, $i), '/');
+            $isSubpath = 0 !== $i && str_contains(substr($resource, 0, $i), '/');
             foreach ($this->glob($resource, false, $_, $ignoreErrors || !$isSubpath, false, $excluded) as $path => $info) {
-                if (null !== $res = $this->doImport($path, $type, $ignoreErrors, $sourceResource)) {
+                if (null !== $res = $this->doImport($path, 'glob' === $type ? null : $type, $ignoreErrors, $sourceResource)) {
                     $ret[] = $res;
                 }
                 $isSubpath = true;
             }
 
             if ($isSubpath) {
-                return isset($ret[1]) ? $ret : (isset($ret[0]) ? $ret[0] : null);
+                return isset($ret[1]) ? $ret : ($ret[0] ?? null);
             }
         }
 
@@ -100,12 +101,12 @@ abstract class FileLoader extends Loader
     /**
      * @internal
      */
-    protected function glob(string $pattern, bool $recursive, &$resource = null, bool $ignoreErrors = false, bool $forExclusion = false, array $excluded = [])
+    protected function glob(string $pattern, bool $recursive, array|GlobResource &$resource = null, bool $ignoreErrors = false, bool $forExclusion = false, array $excluded = []): iterable
     {
         if (\strlen($pattern) === $i = strcspn($pattern, '*?{[')) {
             $prefix = $pattern;
             $pattern = '';
-        } elseif (0 === $i || false === strpos(substr($pattern, 0, $i), '/')) {
+        } elseif (0 === $i || !str_contains(substr($pattern, 0, $i), '/')) {
             $prefix = '.';
             $pattern = '/'.$pattern;
         } else {
@@ -132,12 +133,20 @@ abstract class FileLoader extends Loader
         yield from $resource;
     }
 
-    private function doImport($resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null)
+    private function doImport(mixed $resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null): mixed
     {
         try {
             $loader = $this->resolve($resource, $type);
 
-            if ($loader instanceof self && null !== $this->currentDir) {
+            if ($loader instanceof DirectoryAwareLoaderInterface) {
+                $loader = $loader->forDirectory($this->currentDir);
+            }
+
+            if (!$loader instanceof self) {
+                return $loader->load($resource, $type);
+            }
+
+            if (null !== $this->currentDir) {
                 $resource = $loader->getLocator()->locate($resource, $this->currentDir, false);
             }
 
@@ -170,7 +179,7 @@ abstract class FileLoader extends Loader
                     throw $e;
                 }
 
-                throw new LoaderLoadException($resource, $sourceResource, null, $e, $type);
+                throw new LoaderLoadException($resource, $sourceResource, 0, $e, $type);
             }
         }
 

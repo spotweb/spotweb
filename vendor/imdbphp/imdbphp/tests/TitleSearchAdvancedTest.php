@@ -47,7 +47,9 @@ class TitleSearchAdvancedTest extends PHPUnit\Framework\TestCase
         $this->assertIsArray($list);
         $this->assertCount(50, $list);
 
-        $trash = current(array_filter($list, function ($item) { return $item['episode_imdbid'] == '0579540'; }));
+        $trash = current(array_filter($list, function ($item) {
+            return $item['episode_imdbid'] == '0579540';
+        }));
 
         $this->assertIsArray($trash);
         $this->assertEquals('0303461', $trash['imdbid']);
@@ -58,7 +60,9 @@ class TitleSearchAdvancedTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('Trash', $trash['episode_title']);
         $this->assertEquals(2003, $trash['episode_year']);
 
-        $theMessage = current(array_filter($list, function ($item) { return $item['episode_imdbid'] == '0579538'; }));
+        $theMessage = current(array_filter($list, function ($item) {
+            return $item['episode_imdbid'] == '0579538';
+        }));
 
         $this->assertIsArray($theMessage);
         $this->assertEquals('0303461', $theMessage['imdbid']);

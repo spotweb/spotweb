@@ -16,19 +16,26 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
-        "psr/container": "^1.0"
+        "php": ">=8.1",
+        "psr/container": "^2.0"
     },
-    "suggest": {
-        "symfony/service-implementation": ""
+    "conflict": {
+        "ext-psr": "<1.1|>=2"
     },
     "autoload": {
-        "psr-4": { "Symfony\\Contracts\\Service\\": "" }
+        "psr-4": { "Symfony\\Contracts\\Service\\": "" },
+        "exclude-from-classmap": [
+            "/Test/"
+        ]
     },
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-main": "3.4-dev"
+        },
+        "thanks": {
+            "name": "symfony/contracts",
+            "url": "https://github.com/symfony/contracts"
         }
     }
 }

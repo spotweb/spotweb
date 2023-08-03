@@ -52,6 +52,9 @@ class FunctionCallArgumentSpacingUnitTest extends AbstractSniffUnitTest
             132 => 2,
             133 => 2,
             134 => 1,
+            154 => 2,
+            155 => 1,
+            162 => 2,
         ];
 
     }//end getErrorList()

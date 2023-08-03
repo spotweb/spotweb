@@ -41,7 +41,7 @@ class RequirementsNotSatisfiedException extends \RuntimeException
     {
         $message = $this->message . "\n";
 
-        if (is_array($this->readEnv)) {
+        if (\is_array($this->readEnv)) {
             foreach ($this->readEnv as $envVarName => $value) {
                 $message .= $this->format($envVarName, $value);
             }
@@ -53,12 +53,13 @@ Set environment variables properly like the following.
 For Travis users:
 
   - TRAVIS
+  - TRAVIS_BUILD_NUMBER
   - TRAVIS_JOB_ID
 
 For CircleCI users:
 
   - CIRCLECI
-  - CIRCLE_BUILD_NUM
+  - CIRCLE_WORKFLOW_ID
   - COVERALLS_REPO_TOKEN
 
 For Jenkins users:
@@ -71,6 +72,13 @@ For AppVeyor users:
 
   - APPVEYOR
   - APPVEYOR_BUILD_NUMBER
+
+For Github Actions users:
+  - GITHUB_REF
+  - GITHUB_ACTIONS
+  - GITHUB_RUN_ID
+  - GITHUB_EVENT_NAME
+  - COVERALLS_REPO_TOKEN
 
 From local environment:
 
@@ -112,9 +120,9 @@ EOL;
      */
     protected function format($key, $value)
     {
-        if (in_array($key, self::$secretEnvVars, true)
-            && is_string($value)
-            && strlen($value) > 0) {
+        if (\in_array($key, self::$secretEnvVars, true)
+            && \is_string($value)
+            && $value !== '') {
             $value = '********(HIDDEN)';
         }
 

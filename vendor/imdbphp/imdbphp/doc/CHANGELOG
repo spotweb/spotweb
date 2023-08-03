@@ -2,6 +2,35 @@
 History for IMDBPHP
 ====================
 
+v7.4.2 (07.01.2023)
+-------------------
+! Remove visibility from const to support < PHP 7.1
+
+v7.4.1 (07.01.2023)
+-------------------
+! Fix demo as `Title::soundtrack` where simplified in v7.3.1
+! Fix `Person::photo_localurl` in PHP 8.2
+! Fix `Title::photo_localurl` in PHP 8.2
+
+v7.4.0 (07.01.2023)
+-------------------
++ Added PER Coding Style using PHP-CS-Fixer to maintain consistent coding styles
++ Added .editorconfig to maintain consistent coding styles
+* Move the PHPStan configuration to neon and raise the level to 1
+* Format project according to coding style
+* Don't use zip for PersonTest
+! Fix `Title::cast` in PHP 8.1
+! Fix `Person::photo`
+! Fix `TitleTest::testEpisodes_returns_unknown_season_episodes`
+! Fix `Title::aspect_ratio`
+! Fix `TitleTest::testRuntimes_two_runtimes_one_annotation`
+! Fix `Person::real_id`
+! Fix `TitleTest::testAlsoknow`
+! Fix `Person::filmograf` #286 @duck7000
+* Change `Title::parentalGuide()` to also html entity decode single quotes
+! Fix `Calendar::upcomingReleases`
+! Fix `Title::tagline` in PHP 5.6 #284 @paxter
+
 v7.3.1 (08.10.2022)
 -------------------
 * Remove PHP 7.3 from tests

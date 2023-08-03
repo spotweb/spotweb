@@ -1,6 +1,6 @@
 <?php
 
-use \Imdb\Parsing;
+use Imdb\Parsing;
 
 class ParsingTest extends PHPUnit\Framework\TestCase
 {
