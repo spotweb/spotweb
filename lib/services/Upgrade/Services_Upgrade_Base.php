@@ -5,6 +5,7 @@ class Services_Upgrade_Base
     private $_daoFactory;
     private $_dbStruct;
     private $_settings;
+
     public function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, $dbEngine)
     {
         $this->_daoFactory = $daoFactory;
@@ -22,12 +23,12 @@ class Services_Upgrade_Base
         $svcUpgradeSettings = new Services_Upgrade_Settings($this->_daoFactory, $this->_settings);
         /*
          * Mass upgrade all users date format for settings lower then 0.35
-         * 
+         *
          */
         if ($this->_settings->get('settingsversion') < 0.35) {
-            echo 'Doing mass upgrade of user settings : date_formatting to "short"' . PHP_EOL;
+            echo 'Doing mass upgrade of user settings : date_formatting to "short"'.PHP_EOL;
             $this->massChangeUserPreferences('date_formatting', 'short');
-        };
+        }
 
         $svcUpgradeSettings->update();
     }

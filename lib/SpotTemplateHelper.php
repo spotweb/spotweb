@@ -3,6 +3,7 @@
 // Utility class voor template functies, kan eventueel
 // door custom templates extended worden
 use function PHP81_BC\strftime;
+
 class SpotTemplateHelper
 {
     protected $_settings;
@@ -1062,21 +1063,19 @@ class SpotTemplateHelper
         return strftime('%a %e %b %Y %X', $date, $this->_currentSession['user']['prefs']['user_language']);
     }
 
-
     public function formatDate($stamp, $type)
     {
-
         if (empty($stamp)) {
             return _('unknown');
         } elseif (substr($type, 0, 6) == 'force_') {
             return strftime('%d/%m/%Y (%H:%M:%S)', $stamp);
         } else {
-                switch ($this->_currentSession['user']['prefs']['date_formatting']) {
-                    case 'human': {return $this->time_ago($stamp);}
-                    case 'short': {return $this->short_date($stamp);}
-                    case 'long':  {return $this->long_date($stamp);}
-                    default: {return 'df format err';}
-                } // switch date format
+            switch ($this->_currentSession['user']['prefs']['date_formatting']) {
+                case 'human': return $this->time_ago($stamp);
+                case 'short': return $this->short_date($stamp);
+                case 'long':  return $this->long_date($stamp);
+                default: return 'df format err';
+            } // switch date format
         } // else
     }
 
