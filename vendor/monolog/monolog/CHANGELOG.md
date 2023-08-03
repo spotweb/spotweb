@@ -1,3 +1,31 @@
+### 1.27.1 (2022-06-09)
+
+  * Fixed MandrillHandler support for SwiftMailer 6 (#1676)
+  * Fixed StreamHandler chunk size (backport from #1552)
+
+### 1.27.0 (2022-03-13)
+
+  * Added $maxDepth / setMaxDepth to NormalizerFormatter / JsonFormatter to configure the maximum depth if the default of 9 does not work for you (#1633)
+
+### 1.26.1 (2021-05-28)
+
+  * Fixed PHP 8.1 deprecation warning
+
+### 1.26.0 (2020-12-14)
+
+  * Added $dateFormat and $removeUsedContextFields arguments to PsrLogMessageProcessor (backport from 2.x)
+
+### 1.25.5 (2020-07-23)
+
+  * Fixed array access on null in RavenHandler
+  * Fixed unique_id in WebProcessor not being disableable
+
+### 1.25.4 (2020-05-22)
+
+  * Fixed GitProcessor type error when there is no git repo present
+  * Fixed normalization of SoapFault objects containing deeply nested objects as "detail"
+  * Fixed support for relative paths in RotatingFileHandler
+
 ### 1.25.3 (2019-12-20)
 
   * Fixed formatting of resources in JsonFormatter

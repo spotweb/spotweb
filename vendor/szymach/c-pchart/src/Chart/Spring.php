@@ -74,6 +74,21 @@ class Spring
      */
     public $AutoComputeFreeZone = false;
 
+    /**
+     * @var int|float
+     */
+    private $MagneticForceA;
+
+    /**
+     * @var int|float
+     */
+    private $MagneticForceR;
+
+    /**
+     * @var int|float
+     */
+    private $RingSize;
+
     public function __construct()
     {
         /* Set nodes defaults */

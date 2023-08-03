@@ -1,10 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+if (\file_exists(__DIR__ . '/../vendor/autoload.php')) {
     // Called from local git clone.
     require __DIR__ . '/../vendor/autoload.php';
-} elseif (file_exists(__DIR__ . '/../../../autoload.php')) {
+} elseif (\file_exists(__DIR__ . '/../../../autoload.php')) {
     // Called from your project's vendor dir.
     require __DIR__ . '/../../../autoload.php';
 } else {
@@ -15,8 +15,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     );
 }
 
-use PhpCoveralls\Bundle\CoverallsBundle\Console\Application;
+use PhpCoveralls\Bundle\CoverallsBundle\Console\ApplicationFactory;
 
-$rootDir = getcwd();
-$app = new Application($rootDir, 'PHP client library for Coveralls API', '@package_version@');
+$app = ApplicationFactory::create(\getcwd());
 $app->run();

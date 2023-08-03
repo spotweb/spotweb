@@ -3,15 +3,17 @@
 namespace PhpCoveralls\Tests\Component\Log;
 
 use PhpCoveralls\Component\Log\ConsoleLogger;
-use PHPUnit\Framework\TestCase;
+use PhpCoveralls\Tests\ProjectTestCase;
 use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * @covers \PhpCoveralls\Component\Log\ConsoleLogger
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class ConsoleLoggerTest extends TestCase
+final class ConsoleLoggerTest extends ProjectTestCase
 {
     /**
      * @test
@@ -36,7 +38,8 @@ class ConsoleLoggerTest extends TestCase
         $mock = $this->prophesize(StreamOutput::class);
         $mock
             ->writeln($message)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
 
         return $mock->reveal();
     }

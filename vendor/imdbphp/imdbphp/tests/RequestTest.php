@@ -1,6 +1,6 @@
 <?php
 
-use \Imdb\Request;
+use Imdb\Request;
 
 class RequestTest extends PHPUnit\Framework\TestCase
 {

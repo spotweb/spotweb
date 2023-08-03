@@ -11,11 +11,12 @@
 namespace SebastianBergmann\ObjectEnumerator;
 
 use SebastianBergmann\ObjectEnumerator\Fixtures\ExceptionThrower;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers SebastianBergmann\ObjectEnumerator\Enumerator
  */
-class EnumeratorTest extends \PHPUnit_Framework_TestCase
+class EnumeratorTest extends TestCase
 {
     /**
      * @var Enumerator
@@ -124,14 +125,14 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
 
     public function testExceptionIsRaisedForInvalidArgument()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->enumerator->enumerate(null);
     }
 
     public function testExceptionIsRaisedForInvalidArgument2()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->enumerator->enumerate([], '');
     }

@@ -34,3 +34,6 @@ jobs:
 
     - name: PHPStan
       run: composer phpstan
+
+    - name: PHP-CS-Fixer
+      run: composer cs:no-cache

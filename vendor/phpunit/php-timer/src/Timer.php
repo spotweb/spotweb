@@ -1,68 +1,67 @@
-<?php
+<?php declare(strict_types=1);
 /*
- * This file is part of the PHP_Timer package.
+ * This file is part of phpunit/php-timer.
  *
  * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace SebastianBergmann\Timer;
 
-/**
- * Utility class for timing.
- */
-class PHP_Timer
+final class Timer
 {
     /**
-     * @var array
+     * @var int[]
      */
-    private static $times = array(
-      'hour'   => 3600000,
-      'minute' => 60000,
-      'second' => 1000
-    );
+    private static $sizes = [
+        'GB' => 1073741824,
+        'MB' => 1048576,
+        'KB' => 1024,
+    ];
 
     /**
-     * @var array
+     * @var int[]
      */
-    private static $startTimes = array();
+    private static $times = [
+        'hour'   => 3600000,
+        'minute' => 60000,
+        'second' => 1000,
+    ];
 
     /**
-     * @var float
+     * @var float[]
      */
-    public static $requestTime;
+    private static $startTimes = [];
 
-    /**
-     * Starts the timer.
-     */
-    public static function start()
+    public static function start(): void
     {
-        array_push(self::$startTimes, microtime(true));
+        self::$startTimes[] = \microtime(true);
     }
 
-    /**
-     * Stops the timer and returns the elapsed time.
-     *
-     * @return float
-     */
-    public static function stop()
+    public static function stop(): float
     {
-        return microtime(true) - array_pop(self::$startTimes);
+        return \microtime(true) - \array_pop(self::$startTimes);
     }
 
-    /**
-     * Formats the elapsed time as a string.
-     *
-     * @param  float  $time
-     * @return string
-     */
-    public static function secondsToTimeString($time)
+    public static function bytesToString(float $bytes): string
     {
-        $ms = round($time * 1000);
+        foreach (self::$sizes as $unit => $value) {
+            if ($bytes >= $value) {
+                return \sprintf('%.2f %s', $bytes >= 1024 ? $bytes / $value : $bytes, $unit);
+            }
+        }
+
+        return $bytes . ' byte' . ((int) $bytes !== 1 ? 's' : '');
+    }
+
+    public static function secondsToTimeString(float $time): string
+    {
+        $ms = \round($time * 1000);
 
         foreach (self::$times as $unit => $value) {
             if ($ms >= $value) {
-                $time = floor($ms / $value * 100.0) / 100.0;
+                $time = \floor($ms / $value * 100.0) / 100.0;
 
                 return $time . ' ' . ($time == 1 ? $unit : $unit . 's');
             }
@@ -72,34 +71,30 @@ class PHP_Timer
     }
 
     /**
-     * Formats the elapsed time since the start of the request as a string.
-     *
-     * @return string
+     * @throws RuntimeException
      */
-    public static function timeSinceStartOfRequest()
+    public static function timeSinceStartOfRequest(): string
     {
-        return self::secondsToTimeString(microtime(true) - self::$requestTime);
+        if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+            $startOfRequest = $_SERVER['REQUEST_TIME_FLOAT'];
+        } elseif (isset($_SERVER['REQUEST_TIME'])) {
+            $startOfRequest = $_SERVER['REQUEST_TIME'];
+        } else {
+            throw new RuntimeException('Cannot determine time at which the request started');
+        }
+
+        return self::secondsToTimeString(\microtime(true) - $startOfRequest);
     }
 
     /**
-     * Returns the resources (time, memory) of the request as a string.
-     *
-     * @return string
+     * @throws RuntimeException
      */
-    public static function resourceUsage()
+    public static function resourceUsage(): string
     {
-        return sprintf(
-            'Time: %s, Memory: %4.2fMB',
+        return \sprintf(
+            'Time: %s, Memory: %s',
             self::timeSinceStartOfRequest(),
-            memory_get_peak_usage(true) / 1048576
+            self::bytesToString(\memory_get_peak_usage(true))
         );
     }
-}
-
-if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-    PHP_Timer::$requestTime = $_SERVER['REQUEST_TIME_FLOAT'];
-} elseif (isset($_SERVER['REQUEST_TIME'])) {
-    PHP_Timer::$requestTime = $_SERVER['REQUEST_TIME'];
-} else {
-    PHP_Timer::$requestTime = microtime(true);
 }

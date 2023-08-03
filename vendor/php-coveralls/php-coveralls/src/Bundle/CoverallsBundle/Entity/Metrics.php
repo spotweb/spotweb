@@ -45,7 +45,7 @@ class Metrics
                 return $line !== null;
             }
         );
-        $this->statements = count($statementsArray);
+        $this->statements = \count($statementsArray);
 
         // covered statements
         // gt 0
@@ -55,15 +55,13 @@ class Metrics
                 return $line > 0;
             }
         );
-        $this->coveredStatements = count($coveredArray);
+        $this->coveredStatements = \count($coveredArray);
     }
 
     // API
 
     /**
      * Merge other metrics.
-     *
-     * @param Metrics $that
      */
     public function merge(self $that)
     {

@@ -394,6 +394,18 @@ HERE
       ,
        );
 
+array(
+ lorem(
+     1
+ ), 2,
+);
+
+array(
+ 1 => lorem(
+     1
+ ), 2 => 2,
+);
+
 $foo = array(
         'тип'  => 'авто',
         'цвет' => 'синий',
@@ -423,6 +435,52 @@ $array = array(
           2 => fn ($x) => yield 'a' => $x,
           3 => '3',
          );
+
+$foo = array(
+        $this->fn => 'value',
+        $foo->fn => 'value',
+       );
+
+array($a, $b,
+$c);
+
+array('a' => $a, 'b' => $b,
+'c' => $c);
+
+array(
+ static function() {
+     return null;
+ },
+ (array) array(),
+ (bool) array(),
+ (double) array(),
+ (int) array(),
+ (object) array(),
+ (string) array(),
+ (unset) array(),
+);
+
+array(
+ 'foo',
+ 'bar'
+ // This is a non-fixable error.
+ ,
+);
+
+yield array(
+    static fn () : string => '',
+);
+
+yield array(
+       static fn () : string => '',
+      );
+
+$foo = [
+        'foo' => match ($anything) {
+            'foo' => 'bar',
+            default => null,
+        },
+       ];
 
 // Intentional syntax error.
 $a = array(

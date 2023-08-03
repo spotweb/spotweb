@@ -20,13 +20,12 @@ class Configurator
     /**
      * Load configuration.
      *
-     * @param string         $coverallsYmlPath Path to .coveralls.yml.
-     * @param string         $rootDir          path to project root directory
-     * @param InputInterface $input|null       Input arguments
-     *
-     * @throws \Symfony\Component\Yaml\Exception\ParseException If the YAML is not valid
+     * @param string $coverallsYmlPath Path to .coveralls.yml.
+     * @param string $rootDir          path to project root directory
      *
      * @return \PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration
+     *
+     * @throws \Symfony\Component\Yaml\Exception\ParseException If the YAML is not valid
      */
     public function load($coverallsYmlPath, $rootDir, InputInterface $input = null)
     {
@@ -43,9 +42,9 @@ class Configurator
      *
      * @param string $coverallsYmlPath Path to .coveralls.yml.
      *
-     * @throws \Symfony\Component\Yaml\Exception\ParseException If the YAML is not valid
-     *
      * @return array
+     *
+     * @throws \Symfony\Component\Yaml\Exception\ParseException If the YAML is not valid
      */
     protected function parse($coverallsYmlPath)
     {
@@ -80,9 +79,8 @@ class Configurator
     /**
      * Create coveralls configuration.
      *
-     * @param array          $options    processed configuration
-     * @param string         $rootDir    path to project root directory
-     * @param InputInterface $input|null Input arguments
+     * @param array  $options processed configuration
+     * @param string $rootDir path to project root directory
      *
      * @return \PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration
      */
@@ -94,32 +92,19 @@ class Configurator
         $repoToken = $options['repo_token'];
         $repoSecretToken = $options['repo_secret_token'];
 
-        // handle coverage clover
-        $coverage_clover = $options['coverage_clover'];
-        if ($input !== null && $input->hasOption('coverage_clover')) {
-            $option = $input->getOption('coverage_clover');
-            if (!empty($option)) {
-                $coverage_clover = $option;
-            }
-        }
-
-        // handle output json path
-        $json_path = $options['json_path'];
-        if ($input !== null && $input->hasOption('json_path')) {
-            $option = $input->getOption('json_path');
-            if (!empty($option)) {
-                $json_path = $option;
-            }
-        }
+        $coverage_clover = $this->getPotentiallyOverriddenOptionValue('coverage_clover', $options, $input);
+        $json_path = $this->getPotentiallyOverriddenOptionValue('json_path', $options, $input);
+        $entry_point = $this->getPotentiallyOverriddenOptionValue('entry_point', $options, $input);
 
         return $configuration
-            ->setEntrypoint($options['entry_point'])
+            ->setEntrypoint($entry_point)
             ->setRepoToken($repoToken !== null ? $repoToken : $repoSecretToken)
             ->setServiceName($options['service_name'])
             ->setRootDir($rootDir)
             ->setCloverXmlPaths($this->ensureCloverXmlPaths($coverage_clover, $rootDir, $file))
             ->setJsonPath($this->ensureJsonPath($json_path, $rootDir, $file))
-            ->setExcludeNoStatements($options['exclude_no_stmt']);
+            ->setExcludeNoStatements($options['exclude_no_stmt'])
+        ;
     }
 
     /**
@@ -129,13 +114,13 @@ class Configurator
      * @param string $rootDir path to project root directory
      * @param Path   $file    path object
      *
-     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     *
      * @return string[] valid Absolute paths of coverage_clover
+     *
+     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     protected function ensureCloverXmlPaths($option, $rootDir, Path $file)
     {
-        if (is_array($option)) {
+        if (\is_array($option)) {
             return $this->getGlobPathsFromArrayOption($option, $rootDir, $file);
         }
 
@@ -147,9 +132,9 @@ class Configurator
      *
      * @param string $path absolute path
      *
-     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     *
      * @return string[] absolute paths
+     *
+     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     protected function getGlobPaths($path)
     {
@@ -162,8 +147,8 @@ class Configurator
         }
 
         // validate
-        if (count($paths) === 0) {
-            throw new InvalidConfigurationException("coverage_clover XML file is not readable: ${path}");
+        if (\count($paths) === 0) {
+            throw new InvalidConfigurationException("coverage_clover XML file is not readable: {$path}");
         }
 
         return $paths;
@@ -176,13 +161,13 @@ class Configurator
      * @param string $rootDir path to project root directory
      * @param Path   $file    path object
      *
-     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     *
      * @return string[] absolute paths
+     *
+     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     protected function getGlobPathsFromStringOption($option, $rootDir, Path $file)
     {
-        if (!is_string($option)) {
+        if (!\is_string($option)) {
             throw new InvalidConfigurationException('coverage_clover XML file option must be a string');
         }
 
@@ -199,9 +184,9 @@ class Configurator
      * @param string $rootDir path to project root directory
      * @param Path   $file    path object
      *
-     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     *
      * @return string[] absolute paths
+     *
+     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     protected function getGlobPathsFromArrayOption(array $options, $rootDir, Path $file)
     {
@@ -221,9 +206,9 @@ class Configurator
      * @param string $rootDir path to project root directory
      * @param Path   $file    path object
      *
-     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     *
      * @return string valid json_path
+     *
+     * @throws \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     protected function ensureJsonPath($option, $rootDir, Path $file)
     {
@@ -234,16 +219,37 @@ class Configurator
         $realFilePath = $file->getRealPath($realpath, $rootDir);
 
         if ($realFilePath !== false && !$file->isRealFileWritable($realFilePath)) {
-            throw new InvalidConfigurationException("json_path is not writable: ${realFilePath}");
+            throw new InvalidConfigurationException("json_path is not writable: {$realFilePath}");
         }
 
         // validate parent dir
         $realDir = $file->getRealDir($realpath, $rootDir);
 
         if (!$file->isRealDirWritable($realDir)) {
-            throw new InvalidConfigurationException("json_path is not writable: ${realFilePath}");
+            throw new InvalidConfigurationException("json_path is not writable: {$realFilePath}");
         }
 
         return $realpath;
+    }
+
+    /**
+     * Get option from YAML config, potentially overridden via input params.
+     *
+     * @param string $optionName option name
+     * @param array  $options    processed configuration
+     *
+     * @return \PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration
+     */
+    private function getPotentiallyOverriddenOptionValue($optionName, array $options, InputInterface $input = null)
+    {
+        $value = $options[$optionName];
+        if ($input !== null && $input->hasOption($optionName)) {
+            $inputOverride = $input->getOption($optionName);
+            if (!empty($inputOverride)) {
+                $value = $inputOverride;
+            }
+        }
+
+        return $value;
     }
 }

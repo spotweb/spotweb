@@ -23,6 +23,7 @@ abstract class Services_Retriever_Base
 
     protected $_textServer;
     protected $_binServer;
+    protected $_daoFactory;
 
     private $_msgdata;
 

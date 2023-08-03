@@ -292,7 +292,7 @@
 					<a class="filter <?php if (parse_url($tplHelper->makeSelfUrl('full'), PHP_URL_QUERY) == parse_url($tplHelper->makeBaseUrl('full').$quicklink[2], PHP_URL_QUERY)) {
                       echo ' selected';
                   } ?>" href="<?php echo $quicklink[2]; ?>">
-					<span class='spoticon spoticon-<?php echo str_replace('images/icons/', '', str_replace('.png', '', $quicklink[1])); ?>'>&nbsp;</span><?php echo $quicklink[0];
+					<span class='spoticon spoticon-<?php echo str_replace('images/icons/', '', str_replace('.png', '', $quicklink[1])); ?>'>&nbsp;</span><?php echo gettext($quicklink[0]);
                   if ($newCount > 0) {
                       echo "<span class='newspots'>".$newCount.'</span>';
                   } ?></a>

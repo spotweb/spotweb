@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests the backfilling of numeric seperators to PHP < 7.4.
+ * Tests the backfilling of numeric separators to PHP < 7.4.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2019 Squiz Pty Ltd (ABN 77 084 670 600)
@@ -16,7 +16,7 @@ class BackfillNumericSeparatorTest extends AbstractMethodUnitTest
 
 
     /**
-     * Test that numbers using numeric seperators are tokenized correctly.
+     * Test that numbers using numeric separators are tokenized correctly.
      *
      * @param array $testData The data required for the specific test case.
      *
@@ -134,6 +134,20 @@ class BackfillNumericSeparatorTest extends AbstractMethodUnitTest
             ],
             [
                 [
+                    'marker' => '/* testExplicitOctal */',
+                    'type'   => 'T_LNUMBER',
+                    'value'  => '0o137_041',
+                ],
+            ],
+            [
+                [
+                    'marker' => '/* testExplicitOctalCapitalised */',
+                    'type'   => 'T_LNUMBER',
+                    'value'  => '0O137_041',
+                ],
+            ],
+            [
+                [
                     'marker' => '/* testIntMoreThanMax */',
                     'type'   => $testIntMoreThanMaxType,
                     'value'  => '10_223_372_036_854_775_807',
@@ -145,7 +159,7 @@ class BackfillNumericSeparatorTest extends AbstractMethodUnitTest
 
 
     /**
-     * Test that numbers using numeric seperators which are considered parse errors and/or
+     * Test that numbers using numeric separators which are considered parse errors and/or
      * which aren't relevant to the backfill, do not incorrectly trigger the backfill anyway.
      *
      * @param string $testMarker     The comment which prefaces the target token in the test file.
@@ -319,6 +333,32 @@ class BackfillNumericSeparatorTest extends AbstractMethodUnitTest
                     [
                         'code'    => T_DNUMBER,
                         'content' => '.88',
+                    ],
+                ],
+            ],
+            [
+                '/* testInvalid11 */',
+                [
+                    [
+                        'code'    => T_LNUMBER,
+                        'content' => '0',
+                    ],
+                    [
+                        'code'    => T_STRING,
+                        'content' => 'o_137',
+                    ],
+                ],
+            ],
+            [
+                '/* testInvalid12 */',
+                [
+                    [
+                        'code'    => T_LNUMBER,
+                        'content' => '0',
+                    ],
+                    [
+                        'code'    => T_STRING,
+                        'content' => 'O_41',
                     ],
                 ],
             ],

@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/src/Psr/Log/LoggerInterface.php';
 require_once __DIR__ . '/src/Psr/SimpleCache/CacheInterface.php';
 require_once __DIR__ . '/src/Imdb/Exception.php';

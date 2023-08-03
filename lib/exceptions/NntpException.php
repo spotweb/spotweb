@@ -3,6 +3,8 @@
 class NntpException extends Exception
 {
     private $_response = '';
+    private $_detail;
+    private $_code;
 
     public function __construct($detail = null, $code = 0, $response = '')
     {

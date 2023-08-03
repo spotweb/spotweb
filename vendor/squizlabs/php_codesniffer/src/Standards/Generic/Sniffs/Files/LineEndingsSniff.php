@@ -41,7 +41,10 @@ class LineEndingsSniff implements Sniff
      */
     public function register()
     {
-        return [T_OPEN_TAG];
+        return [
+            T_OPEN_TAG,
+            T_OPEN_TAG_WITH_ECHO,
+        ];
 
     }//end register()
 
@@ -110,23 +113,27 @@ class LineEndingsSniff implements Sniff
             }
 
             for ($i = 0; $i < $phpcsFile->numTokens; $i++) {
-                if (isset($tokens[($i + 1)]) === false
-                    || $tokens[($i + 1)]['line'] > $tokens[$i]['line']
+                if (isset($tokens[($i + 1)]) === true
+                    && $tokens[($i + 1)]['line'] <= $tokens[$i]['line']
                 ) {
-                    // Token is the last on a line.
-                    if (isset($tokens[$i]['orig_content']) === true) {
-                        $tokenContent = $tokens[$i]['orig_content'];
-                    } else {
-                        $tokenContent = $tokens[$i]['content'];
-                    }
+                    continue;
+                }
 
-                    if ($tokenContent === '') {
-                        // Special case for JS/CSS close tag.
-                        continue;
-                    }
+                // Token is the last on a line.
+                if (isset($tokens[$i]['orig_content']) === true) {
+                    $tokenContent = $tokens[$i]['orig_content'];
+                } else {
+                    $tokenContent = $tokens[$i]['content'];
+                }
 
-                    $newContent  = rtrim($tokenContent, "\r\n");
-                    $newContent .= $eolChar;
+                if ($tokenContent === '') {
+                    // Special case for JS/CSS close tag.
+                    continue;
+                }
+
+                $newContent  = rtrim($tokenContent, "\r\n");
+                $newContent .= $eolChar;
+                if ($tokenContent !== $newContent) {
                     $phpcsFile->fixer->replaceToken($i, $newContent);
                 }
             }//end for

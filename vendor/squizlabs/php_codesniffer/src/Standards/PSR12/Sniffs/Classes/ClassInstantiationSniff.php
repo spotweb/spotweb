@@ -44,14 +44,16 @@ class ClassInstantiationSniff implements Sniff
 
         // Find the class name.
         $allowed = [
-            T_STRING          => T_STRING,
-            T_NS_SEPARATOR    => T_NS_SEPARATOR,
-            T_SELF            => T_SELF,
-            T_STATIC          => T_STATIC,
-            T_VARIABLE        => T_VARIABLE,
-            T_DOLLAR          => T_DOLLAR,
-            T_OBJECT_OPERATOR => T_OBJECT_OPERATOR,
-            T_DOUBLE_COLON    => T_DOUBLE_COLON,
+            T_STRING                   => T_STRING,
+            T_NS_SEPARATOR             => T_NS_SEPARATOR,
+            T_SELF                     => T_SELF,
+            T_STATIC                   => T_STATIC,
+            T_PARENT                   => T_PARENT,
+            T_VARIABLE                 => T_VARIABLE,
+            T_DOLLAR                   => T_DOLLAR,
+            T_OBJECT_OPERATOR          => T_OBJECT_OPERATOR,
+            T_NULLSAFE_OBJECT_OPERATOR => T_NULLSAFE_OBJECT_OPERATOR,
+            T_DOUBLE_COLON             => T_DOUBLE_COLON,
         ];
 
         $allowed += Tokens::$emptyTokens;
@@ -59,6 +61,14 @@ class ClassInstantiationSniff implements Sniff
         $classNameEnd = null;
         for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
             if (isset($allowed[$tokens[$i]['code']]) === true) {
+                continue;
+            }
+
+            // Skip over potential attributes for anonymous classes.
+            if ($tokens[$i]['code'] === T_ATTRIBUTE
+                && isset($tokens[$i]['attribute_closer']) === true
+            ) {
+                $i = $tokens[$i]['attribute_closer'];
                 continue;
             }
 
@@ -71,7 +81,7 @@ class ClassInstantiationSniff implements Sniff
 
             $classNameEnd = $i;
             break;
-        }
+        }//end for
 
         if ($classNameEnd === null) {
             return;
@@ -84,6 +94,11 @@ class ClassInstantiationSniff implements Sniff
 
         if ($tokens[$classNameEnd]['code'] === T_OPEN_PARENTHESIS) {
             // Using parenthesis.
+            return;
+        }
+
+        if ($classNameEnd === $stackPtr) {
+            // Failed to find the class name.
             return;
         }
 

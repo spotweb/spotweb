@@ -77,36 +77,31 @@ class OperatorSpacingSniff implements Sniff
 
         // Returning/printing a negative value; eg. (return -1).
         $this->nonOperandTokens += [
-            T_RETURN => T_RETURN,
-            T_ECHO   => T_ECHO,
-            T_PRINT  => T_PRINT,
-            T_YIELD  => T_YIELD,
+            T_RETURN      => T_RETURN,
+            T_ECHO        => T_ECHO,
+            T_EXIT        => T_EXIT,
+            T_PRINT       => T_PRINT,
+            T_YIELD       => T_YIELD,
+            T_FN_ARROW    => T_FN_ARROW,
+            T_MATCH_ARROW => T_MATCH_ARROW,
         ];
 
         // Trying to use a negative value; eg. myFunction($var, -2).
         $this->nonOperandTokens += [
-            T_COMMA               => T_COMMA,
-            T_OPEN_PARENTHESIS    => T_OPEN_PARENTHESIS,
-            T_OPEN_SQUARE_BRACKET => T_OPEN_SQUARE_BRACKET,
-            T_OPEN_SHORT_ARRAY    => T_OPEN_SHORT_ARRAY,
-            T_DOUBLE_ARROW        => T_DOUBLE_ARROW,
-            T_COLON               => T_COLON,
-            T_INLINE_THEN         => T_INLINE_THEN,
-            T_INLINE_ELSE         => T_INLINE_ELSE,
             T_CASE                => T_CASE,
+            T_COLON               => T_COLON,
+            T_COMMA               => T_COMMA,
+            T_INLINE_ELSE         => T_INLINE_ELSE,
+            T_INLINE_THEN         => T_INLINE_THEN,
             T_OPEN_CURLY_BRACKET  => T_OPEN_CURLY_BRACKET,
+            T_OPEN_PARENTHESIS    => T_OPEN_PARENTHESIS,
+            T_OPEN_SHORT_ARRAY    => T_OPEN_SHORT_ARRAY,
+            T_OPEN_SQUARE_BRACKET => T_OPEN_SQUARE_BRACKET,
+            T_STRING_CONCAT       => T_STRING_CONCAT,
         ];
 
         // Casting a negative value; eg. (array) -$a.
-        $this->nonOperandTokens += [
-            T_ARRAY_CAST  => T_ARRAY_CAST,
-            T_BOOL_CAST   => T_BOOL_CAST,
-            T_DOUBLE_CAST => T_DOUBLE_CAST,
-            T_INT_CAST    => T_INT_CAST,
-            T_OBJECT_CAST => T_OBJECT_CAST,
-            T_STRING_CAST => T_STRING_CAST,
-            T_UNSET_CAST  => T_UNSET_CAST,
-        ];
+        $this->nonOperandTokens += Tokens::$castTokens;
 
         /*
             These are the tokens the sniff is looking for.
@@ -344,6 +339,7 @@ class OperatorSpacingSniff implements Sniff
                     $function = $tokens[$bracket]['parenthesis_owner'];
                     if ($tokens[$function]['code'] === T_FUNCTION
                         || $tokens[$function]['code'] === T_CLOSURE
+                        || $tokens[$function]['code'] === T_FN
                         || $tokens[$function]['code'] === T_DECLARE
                     ) {
                         return false;

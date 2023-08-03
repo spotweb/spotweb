@@ -1,4 +1,5 @@
 <?php
+
 #############################################################################
 # PHP MovieAPI                                          (c) Itzchak Rehberg #
 # written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
@@ -21,32 +22,32 @@ use Psr\SimpleCache\CacheInterface;
  */
 class MdbBase extends Config
 {
-    public $version = '7.3.1';
+    public $version = '7.4.2';
 
     protected $months = array(
-      "January" => "01",
-      "Jan" => "01",
-      "February" => "02",
-      "Feb" => "02",
-      "March" => "03",
-      "Mar" => "03",
-      "April" => "04",
-      "Apr" => "04",
-      "May" => "05",
-      "June" => "06",
-      "Jun" => "06",
-      "July" => "07",
-      "Jul" => "07",
-      "August" => "08",
-      "Aug" => "08",
-      "September" => "09",
-      "Sep" => "09",
-      "October" => "10",
-      "Oct" => "10",
-      "November" => "11",
-      "Nov" => "11",
-      "December" => "12",
-      "Dec" => "12"
+        "January" => "01",
+        "Jan" => "01",
+        "February" => "02",
+        "Feb" => "02",
+        "March" => "03",
+        "Mar" => "03",
+        "April" => "04",
+        "Apr" => "04",
+        "May" => "05",
+        "June" => "06",
+        "Jun" => "06",
+        "July" => "07",
+        "Jul" => "07",
+        "August" => "08",
+        "Aug" => "08",
+        "September" => "09",
+        "Sep" => "09",
+        "October" => "10",
+        "Oct" => "10",
+        "November" => "11",
+        "Nov" => "11",
+        "December" => "12",
+        "Dec" => "12"
     );
 
     /**
@@ -193,7 +194,7 @@ class MdbBase extends Config
         $source = $this->getPage($page);
         libxml_use_internal_errors(true);
         /* Creates a new DomDocument object */
-        $dom = new \DomDocument;
+        $dom = new \DomDocument();
         /* Load the HTML */
         $dom->loadHTML('<?xml encoding="utf-8" ?>' .$source);
         /* Create a new XPath object */
@@ -210,5 +211,4 @@ class MdbBase extends Config
     {
         return '';
     }
-
 }
