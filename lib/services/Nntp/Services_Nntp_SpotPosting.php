@@ -234,8 +234,8 @@ class Services_Nntp_SpotPosting
      * putting a whitespace character at the end of the line, because
      * some usenet servers discard that.
      *
-     * @param        $data
-     * @param        $maxLen
+     * @param $data
+     * @param $maxLen
      * @param string $end
      *
      * @return string

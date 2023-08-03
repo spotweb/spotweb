@@ -91,6 +91,10 @@ global $_testInstall_Ok;
         <td><?php SpotInstall::showResult(extension_loaded('gettext'), false); ?></td>
     </tr>
     <tr>
+        <td colspan="2"> intl</td>
+        <td><?php SpotInstall::showResult(extension_loaded('intl'), true,'','Module needed for localisation dates'); ?></td>
+    </tr>
+    <tr>
         <td colspan="2"> mbstring</td>
         <td><?php SpotInstall::showResult(extension_loaded('mbstring'), true); ?></td>
     </tr>

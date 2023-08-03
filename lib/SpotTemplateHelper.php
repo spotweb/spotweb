@@ -2,6 +2,7 @@
 
 // Utility class voor template functies, kan eventueel
 // door custom templates extended worden
+use function PHP81_BC\strftime;
 class SpotTemplateHelper
 {
     protected $_settings;
@@ -12,6 +13,7 @@ class SpotTemplateHelper
     protected $_spotSec;
     protected $_svcCacheNewSpotCount = null;
     protected $_treeFilterCache = null;
+    protected $_nzbHandler;
 
     public function __construct(Services_Settings_Container $settings, $currentSession, Dao_Factory $daoFactory, $params)
     {
@@ -1050,23 +1052,31 @@ class SpotTemplateHelper
 
     // time_ago()
 
+    public function short_date($date)
+    {
+        return strftime('%d/%m/%Y, %H:%M', $date);
+    }
+
+    public function long_date($date)
+    {
+        return strftime('%a %e %b %Y %X', $date, $this->_currentSession['user']['prefs']['user_language']);
+    }
+
+
     public function formatDate($stamp, $type)
     {
+
         if (empty($stamp)) {
             return _('unknown');
         } elseif (substr($type, 0, 6) == 'force_') {
-            return date('%a, %d-%b-%Y (%H:%M)', $stamp);
-        } elseif ($this->_currentSession['user']['prefs']['date_formatting'] == 'human') {
-            return $this->time_ago($stamp);
+            return strftime('%d/%m/%Y (%H:%M:%S)', $stamp);
         } else {
-            switch ($type) {
-                case 'comment':
-                case 'spotlist':
-                case 'lastupdate':
-                case 'lastvisit':
-                case 'userlist':
-                default: return date($this->_currentSession['user']['prefs']['date_formatting'], $stamp);
-            } // switch
+                switch ($this->_currentSession['user']['prefs']['date_formatting']) {
+                    case 'human': {return $this->time_ago($stamp);}
+                    case 'short': {return $this->short_date($stamp);}
+                    case 'long':  {return $this->long_date($stamp);}
+                    default: {return 'df format err';}
+                } // switch date format
         } // else
     }
 

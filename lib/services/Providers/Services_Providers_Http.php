@@ -78,8 +78,8 @@ class Services_Providers_Http
      * Add files to a POST request with our custom boundary, this way we can
      * send the content-type without having to resort to temporary files.
      *
-     * @param $ch          resource Handle to cURL resource object
-     * @param $postFields  array|null fields to post
+     * @param $ch resource Handle to cURL resource object
+     * @param $postFields array|null fields to post
      * @param $files
      * @param $rawPostData array|null raw post data we will be sending
      *
@@ -186,9 +186,9 @@ class Services_Providers_Http
     /**
      * Retrieves an uncached GET from the web.
      *
-     * @param     $url         string to retrieve
-     * @param     $lastModTime int Last modification time, can be null
-     * @param int $redirTries  Amount of tries already passed to follow a redirect
+     * @param $url string to retrieve
+     * @param $lastModTime int Last modification time, can be null
+     * @param int $redirTries Amount of tries already passed to follow a redirect
      *
      * @return mixed array with first element the HTTP code, and second with the data (if any)
      */

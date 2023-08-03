@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+use PHP_CodeSniffer\Standards\Squiz\Sniffs\Strings\EchoedStringsSniff;
 error_reporting(2147483647);
 
 function delete_files($target)
@@ -76,6 +77,8 @@ try {
      */
     if (SpotCommandline::get('mass-userprefchange')) {
         $prefToChange = explode('=', SpotCommandline::get('mass-userprefchange'));
+        var_dump($prefToChange);
+        echo "count($prefToChange)=", count($prefToChange),PHP_EOL;
         if (count($prefToChange) != 2) {
             throw new Exception('Please specify new preference as follows: perpage=10 or count_newspots=off');
         } // if
@@ -214,7 +217,7 @@ try {
             echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
             delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
             echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
-            // if
+        // if
         } else {
             echo "No argument passed, type --clear-cache -yes to bypass this.\n";
             echo "\033[31m The cache in DB and files on-disk will be cleared, are you sure? \033[0m \n".PHP_EOL;

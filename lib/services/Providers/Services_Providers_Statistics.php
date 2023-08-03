@@ -5,7 +5,7 @@ class Services_Providers_Statistics
     private $_oldestSpotAge = null;
     private $_nntpUpdate;
     private $_spotDao;
-
+    private $_cacheDao;
     private $_svcImageChart;
     private $_svcImageError;
 
