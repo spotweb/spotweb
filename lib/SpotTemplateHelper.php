@@ -3,6 +3,7 @@
 // Utility class voor template functies, kan eventueel
 // door custom templates extended worden
 use function PHP81_BC\strftime;
+
 class SpotTemplateHelper
 {
     protected $_settings;
@@ -1062,15 +1063,14 @@ class SpotTemplateHelper
         if ($GLOBALS['_intl']) {
             $ret = strftime('%a %e %b %Y %X', '@'.(string) $date, $this->_currentSession['user']['prefs']['user_language']);
         } else {
-            $ret = "PHP_INTL";
+            $ret = 'PHP_INTL';
         }
+
         return $ret;
     }
 
-
     public function formatDate($stamp, $type)
     {
-
         if (empty($stamp)) {
             return _('unknown');
         } elseif (substr($type, 0, 6) == 'force_') {
@@ -1086,7 +1086,7 @@ class SpotTemplateHelper
     }
 
     // formatDate
-    public function longformatAllowed() 
+    public function longformatAllowed()
     {
         return $GLOBALS['_intl'];
     }
