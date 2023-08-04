@@ -22,11 +22,11 @@ use Symfony\Contracts\Service\ServiceSubscriberInterface;
  */
 class ReflectionClassResource implements SelfCheckingResourceInterface
 {
-    private array $files = [];
-    private string $className;
-    private \ReflectionClass $classReflector;
-    private array $excludedVendors = [];
-    private string $hash;
+    private $files = [];
+    private $className;
+    private $classReflector;
+    private $excludedVendors = [];
+    private $hash;
 
     public function __construct(\ReflectionClass $classReflector, array $excludedVendors = [])
     {
@@ -35,9 +35,12 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
         $this->excludedVendors = $excludedVendors;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isFresh(int $timestamp): bool
     {
-        if (!isset($this->hash)) {
+        if (null === $this->hash) {
             $this->hash = $this->computeHash();
             $this->loadFiles($this->classReflector);
         }
@@ -65,7 +68,7 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
      */
     public function __sleep(): array
     {
-        if (!isset($this->hash)) {
+        if (null === $this->hash) {
             $this->hash = $this->computeHash();
             $this->loadFiles($this->classReflector);
         }
@@ -73,7 +76,7 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
         return ['files', 'className', 'hash'];
     }
 
-    private function loadFiles(\ReflectionClass $class): void
+    private function loadFiles(\ReflectionClass $class)
     {
         foreach ($class->getInterfaces() as $v) {
             $this->loadFiles($v);
@@ -99,13 +102,15 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
 
     private function computeHash(): string
     {
-        try {
-            $this->classReflector ??= new \ReflectionClass($this->className);
-        } catch (\ReflectionException) {
-            // the class does not exist anymore
-            return false;
+        if (null === $this->classReflector) {
+            try {
+                $this->classReflector = new \ReflectionClass($this->className);
+            } catch (\ReflectionException $e) {
+                // the class does not exist anymore
+                return false;
+            }
         }
-        $hash = hash_init('xxh128');
+        $hash = hash_init('md5');
 
         foreach ($this->generateSignature($this->classReflector) as $info) {
             hash_update($hash, $info);
@@ -116,12 +121,14 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
 
     private function generateSignature(\ReflectionClass $class): iterable
     {
-        $attributes = [];
-        foreach ($class->getAttributes() as $a) {
-            $attributes[] = [$a->getName(), (string) $a];
+        if (\PHP_VERSION_ID >= 80000) {
+            $attributes = [];
+            foreach ($class->getAttributes() as $a) {
+                $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
+            }
+            yield print_r($attributes, true);
+            $attributes = [];
         }
-        yield print_r($attributes, true);
-        $attributes = [];
 
         yield $class->getDocComment();
         yield (int) $class->isFinal();
@@ -139,11 +146,13 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
             $defaults = $class->getDefaultProperties();
 
             foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED) as $p) {
-                foreach ($p->getAttributes() as $a) {
-                    $attributes[] = [$a->getName(), (string) $a];
+                if (\PHP_VERSION_ID >= 80000) {
+                    foreach ($p->getAttributes() as $a) {
+                        $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
+                    }
+                    yield print_r($attributes, true);
+                    $attributes = [];
                 }
-                yield print_r($attributes, true);
-                $attributes = [];
 
                 yield $p->getDocComment();
                 yield $p->isDefault() ? '<default>' : '';
@@ -154,20 +163,27 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
             }
         }
 
-        foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED) as $m) {
-            foreach ($m->getAttributes() as $a) {
-                $attributes[] = [$a->getName(), (string) $a];
-            }
-            yield print_r($attributes, true);
-            $attributes = [];
+        $defined = \Closure::bind(static function ($c) { return \defined($c); }, null, $class->name);
 
-            $defaults = [];
-            foreach ($m->getParameters() as $p) {
-                foreach ($p->getAttributes() as $a) {
-                    $attributes[] = [$a->getName(), (string) $a];
+        foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED) as $m) {
+            if (\PHP_VERSION_ID >= 80000) {
+                foreach ($m->getAttributes() as $a) {
+                    $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
                 }
                 yield print_r($attributes, true);
                 $attributes = [];
+            }
+
+            $defaults = [];
+            $parametersWithUndefinedConstants = [];
+            foreach ($m->getParameters() as $p) {
+                if (\PHP_VERSION_ID >= 80000) {
+                    foreach ($p->getAttributes() as $a) {
+                        $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
+                    }
+                    yield print_r($attributes, true);
+                    $attributes = [];
+                }
 
                 if (!$p->isDefaultValueAvailable()) {
                     $defaults[$p->name] = null;
@@ -175,10 +191,55 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
                     continue;
                 }
 
-                $defaults[$p->name] = (string) $p;
+                if (\PHP_VERSION_ID >= 80100) {
+                    $defaults[$p->name] = (string) $p;
+
+                    continue;
+                }
+
+                if (!$p->isDefaultValueConstant() || $defined($p->getDefaultValueConstantName())) {
+                    $defaults[$p->name] = $p->getDefaultValue();
+
+                    continue;
+                }
+
+                $defaults[$p->name] = $p->getDefaultValueConstantName();
+                $parametersWithUndefinedConstants[$p->name] = true;
             }
 
-            yield preg_replace('/^  @@.*/m', '', $m);
+            if (!$parametersWithUndefinedConstants) {
+                yield preg_replace('/^  @@.*/m', '', $m);
+            } else {
+                $t = $m->getReturnType();
+                $stack = [
+                    $m->getDocComment(),
+                    $m->getName(),
+                    $m->isAbstract(),
+                    $m->isFinal(),
+                    $m->isStatic(),
+                    $m->isPublic(),
+                    $m->isPrivate(),
+                    $m->isProtected(),
+                    $m->returnsReference(),
+                    $t instanceof \ReflectionNamedType ? ((string) $t->allowsNull()).$t->getName() : (string) $t,
+                ];
+
+                foreach ($m->getParameters() as $p) {
+                    if (!isset($parametersWithUndefinedConstants[$p->name])) {
+                        $stack[] = (string) $p;
+                    } else {
+                        $t = $p->getType();
+                        $stack[] = $p->isOptional();
+                        $stack[] = $t instanceof \ReflectionNamedType ? ((string) $t->allowsNull()).$t->getName() : (string) $t;
+                        $stack[] = $p->isPassedByReference();
+                        $stack[] = $p->isVariadic();
+                        $stack[] = $p->getName();
+                    }
+                }
+
+                yield implode(',', $stack);
+            }
+
             yield print_r($defaults, true);
         }
 

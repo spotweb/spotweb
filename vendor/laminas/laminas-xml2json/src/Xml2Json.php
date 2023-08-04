@@ -1,18 +1,16 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * @see       https://github.com/laminas/laminas-xml2json for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-xml2json/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-xml2json/blob/master/LICENSE.md New BSD License
+ */
 
 namespace Laminas\Xml2Json;
 
 use Laminas\Json\Json;
 use Laminas\Xml\Security as XmlSecurity;
 use SimpleXMLElement;
-
-use function array_key_exists;
-use function preg_match;
-use function sprintf;
-use function strval;
-use function trim;
 
 /**
  * Class for translating XML to JSON.
@@ -46,12 +44,12 @@ class Xml2Json
      * possible.
      *
      * @param string $xmlStringContents XML String to be converted.
-     * @param bool   $ignoreXmlAttributes Include or exclude XML attributes in
-     *         the conversion process.
+     * @param  bool $ignoreXmlAttributes Include or exclude XML attributes in
+     *     the conversion process.
      * @return string JSON formatted string on success.
      * @throws Exception\RuntimeException If the input not a XML formatted string.
      */
-    public static function fromXml(string $xmlStringContents, $ignoreXmlAttributes = true): string
+    public static function fromXml($xmlStringContents, $ignoreXmlAttributes = true)
     {
         // Load the XML formatted string into a Simple XML Element object.
         $simpleXmlElementObject = XmlSecurity::scan($xmlStringContents);
@@ -75,21 +73,20 @@ class Xml2Json
      * the pattern, and, if so, we return a new Laminas\Json\Expr instead of a
      * text node.
      *
-     * @param SimpleXMLElement|string $simpleXmlElementObject
+     * @param SimpleXMLElement $simpleXmlElementObject
      * @return Expr|string
      */
     protected static function getXmlValue($simpleXmlElementObject)
     {
-        $value     = strval($simpleXmlElementObject);
         $pattern   = '/^[\s]*new Laminas[_\\]Json[_\\]Expr[\s]*\([\s]*[\"\']{1}(.*)[\"\']{1}[\s]*\)[\s]*$/';
         $matchings = [];
-        $match     = preg_match($pattern, $value, $matchings);
+        $match     = preg_match($pattern, $simpleXmlElementObject, $matchings);
 
         if ($match) {
             return new Expr($matchings[1]);
         }
 
-        return trim($value);
+        return (trim(strval($simpleXmlElementObject)));
     }
 
     /**
@@ -108,15 +105,15 @@ class Xml2Json
      * calling a recursive function in this class; once all XML elements are
      * stored to a PHP array, it is returned to the caller.
      *
+     * @param SimpleXMLElement $simpleXmlElementObject
+     * @param bool $ignoreXmlAttributes
      * @param int $recursionDepth
-     * @throws Exception\RecursionException If the XML tree is deeper than the
+     * @return array
+     * @throws Exception\RecursionException if the XML tree is deeper than the
      *     allowed limit.
      */
-    protected static function processXml(
-        SimpleXMLElement $simpleXmlElementObject,
-        bool $ignoreXmlAttributes,
-        $recursionDepth = 0
-    ): array {
+    protected static function processXml($simpleXmlElementObject, $ignoreXmlAttributes, $recursionDepth = 0)
+    {
         // Keep an eye on how deeply we are involved in recursion.
         if ($recursionDepth > static::$maxRecursionDepthAllowed) {
             // XML tree is too deep. Exit now by throwing an exception.

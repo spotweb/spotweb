@@ -29,7 +29,7 @@ abstract class FileLoader extends Loader
 
     protected $locator;
 
-    private ?string $currentDir = null;
+    private $currentDir;
 
     public function __construct(FileLocatorInterface $locator, string $env = null)
     {
@@ -39,8 +39,6 @@ abstract class FileLoader extends Loader
 
     /**
      * Sets the current directory.
-     *
-     * @return void
      */
     public function setCurrentDir(string $dir)
     {
@@ -49,8 +47,10 @@ abstract class FileLoader extends Loader
 
     /**
      * Returns the file locator used by this loader.
+     *
+     * @return FileLocatorInterface
      */
-    public function getLocator(): FileLocatorInterface
+    public function getLocator()
     {
         return $this->locator;
     }
@@ -70,7 +70,7 @@ abstract class FileLoader extends Loader
      * @throws FileLoaderImportCircularReferenceException
      * @throws FileLocatorFileNotFoundException
      */
-    public function import(mixed $resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null, string|array $exclude = null)
+    public function import($resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null, $exclude = null)
     {
         if (\is_string($resource) && \strlen($resource) !== ($i = strcspn($resource, '*?{[')) && !str_contains($resource, "\n")) {
             $excluded = [];
@@ -101,7 +101,7 @@ abstract class FileLoader extends Loader
     /**
      * @internal
      */
-    protected function glob(string $pattern, bool $recursive, array|GlobResource &$resource = null, bool $ignoreErrors = false, bool $forExclusion = false, array $excluded = []): iterable
+    protected function glob(string $pattern, bool $recursive, &$resource = null, bool $ignoreErrors = false, bool $forExclusion = false, array $excluded = [])
     {
         if (\strlen($pattern) === $i = strcspn($pattern, '*?{[')) {
             $prefix = $pattern;
@@ -133,20 +133,12 @@ abstract class FileLoader extends Loader
         yield from $resource;
     }
 
-    private function doImport(mixed $resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null): mixed
+    private function doImport($resource, string $type = null, bool $ignoreErrors = false, string $sourceResource = null)
     {
         try {
             $loader = $this->resolve($resource, $type);
 
-            if ($loader instanceof DirectoryAwareLoaderInterface) {
-                $loader = $loader->forDirectory($this->currentDir);
-            }
-
-            if (!$loader instanceof self) {
-                return $loader->load($resource, $type);
-            }
-
-            if (null !== $this->currentDir) {
+            if ($loader instanceof self && null !== $this->currentDir) {
                 $resource = $loader->getLocator()->locate($resource, $this->currentDir, false);
             }
 

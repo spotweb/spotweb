@@ -27,21 +27,24 @@ class VariableNode extends BaseNode implements PrototypeNodeInterface
     protected $defaultValue;
     protected $allowEmptyValue = true;
 
-    /**
-     * @return void
-     */
-    public function setDefaultValue(mixed $value)
+    public function setDefaultValue($value)
     {
         $this->defaultValueSet = true;
         $this->defaultValue = $value;
     }
 
-    public function hasDefaultValue(): bool
+    /**
+     * {@inheritdoc}
+     */
+    public function hasDefaultValue()
     {
         return $this->defaultValueSet;
     }
 
-    public function getDefaultValue(): mixed
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefaultValue()
     {
         $v = $this->defaultValue;
 
@@ -52,8 +55,6 @@ class VariableNode extends BaseNode implements PrototypeNodeInterface
      * Sets if this node is allowed to have an empty value.
      *
      * @param bool $boolean True if this entity will accept empty values
-     *
-     * @return void
      */
     public function setAllowEmptyValue(bool $boolean)
     {
@@ -61,7 +62,7 @@ class VariableNode extends BaseNode implements PrototypeNodeInterface
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
     public function setName(string $name)
     {
@@ -69,13 +70,16 @@ class VariableNode extends BaseNode implements PrototypeNodeInterface
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
-    protected function validateType(mixed $value)
+    protected function validateType($value)
     {
     }
 
-    protected function finalizeValue(mixed $value): mixed
+    /**
+     * {@inheritdoc}
+     */
+    protected function finalizeValue($value)
     {
         // deny environment variables only when using custom validators
         // this avoids ever passing an empty value to final validation closures
@@ -102,12 +106,18 @@ class VariableNode extends BaseNode implements PrototypeNodeInterface
         return $value;
     }
 
-    protected function normalizeValue(mixed $value): mixed
+    /**
+     * {@inheritdoc}
+     */
+    protected function normalizeValue($value)
     {
         return $value;
     }
 
-    protected function mergeValues(mixed $leftSide, mixed $rightSide): mixed
+    /**
+     * {@inheritdoc}
+     */
+    protected function mergeValues($leftSide, $rightSide)
     {
         return $rightSide;
     }
@@ -119,9 +129,13 @@ class VariableNode extends BaseNode implements PrototypeNodeInterface
      * method may be overridden by subtypes to better match their understanding
      * of empty data.
      *
+     * @param mixed $value
+     *
+     * @return bool
+     *
      * @see finalizeValue()
      */
-    protected function isValueEmpty(mixed $value): bool
+    protected function isValueEmpty($value)
     {
         return empty($value);
     }

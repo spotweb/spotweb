@@ -119,12 +119,12 @@ if (!$dialogembedded) { ?>
 					</dd>
 
 
-					<dt><label for="edituserprefsform[date_formatting]"><?php echo _('Formatting of dates'); ?></label></dt>
+					<dt><label for="edituserprefsform[date_formatting]"><?php echo _('Formatting of dates. To use long php_intl should be installed'); ?></label></dt>
 					<dd>
 						<select name="edituserprefsform[date_formatting]">
 							<option <?php if ($edituserprefsform['date_formatting'] == 'human') {echo 'selected="selected"';} ?> value="human" selected><?php echo _('Human'); ?></option>
 							<option <?php if ($edituserprefsform['date_formatting'] == 'short') {echo 'selected="selected"';} ?> value="short"><?php echo _('Short'); ?></option>
-							<option <?php if ($edituserprefsform['date_formatting'] == 'long') {echo 'selected="selected"';} ?> value="long"><?php echo _('Long'); ?></option>
+							<option <?php if (!$tplHelper->longformatAllowed()) {echo "disabled ";} if ($edituserprefsform['date_formatting'] == 'long') {echo 'selected="selected"';}  ?> value="long"><?php echo _('Long'); ?></option>
 						</select>
 					</dd>
 					

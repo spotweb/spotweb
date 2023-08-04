@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @see       https://github.com/laminas/laminas-xml for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-xml/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-xml/blob/master/LICENSE.md New BSD License
+ */
+
 namespace Laminas\Xml;
 
 use DOMDocument;
@@ -49,9 +55,7 @@ class Security
         }
 
         if (! self::isPhpFpm()) {
-            if (\PHP_VERSION_ID < 80000) {
-                $loadEntities = libxml_disable_entity_loader(true);
-            }
+            $loadEntities = libxml_disable_entity_loader(true);
             $useInternalXmlErrors = libxml_use_internal_errors(true);
         }
 
@@ -71,9 +75,7 @@ class Security
         if (! $result) {
             // Entity load to previous setting
             if (! self::isPhpFpm()) {
-                if (\PHP_VERSION_ID < 80000) {
-                    libxml_disable_entity_loader($loadEntities);
-                }
+                libxml_disable_entity_loader($loadEntities);
                 libxml_use_internal_errors($useInternalXmlErrors);
             }
             return false;
@@ -92,9 +94,7 @@ class Security
 
         // Entity load to previous setting
         if (! self::isPhpFpm()) {
-            if (\PHP_VERSION_ID < 80000) {
-                libxml_disable_entity_loader($loadEntities);
-            }
+            libxml_disable_entity_loader($loadEntities);
             libxml_use_internal_errors($useInternalXmlErrors);
         }
 
