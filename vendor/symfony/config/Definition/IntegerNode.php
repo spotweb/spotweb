@@ -21,9 +21,9 @@ use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 class IntegerNode extends NumericNode
 {
     /**
-     * @return void
+     * {@inheritdoc}
      */
-    protected function validateType(mixed $value)
+    protected function validateType($value)
     {
         if (!\is_int($value)) {
             $ex = new InvalidTypeException(sprintf('Invalid type for path "%s". Expected "int", but got "%s".', $this->getPath(), get_debug_type($value)));
@@ -36,6 +36,9 @@ class IntegerNode extends NumericNode
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getValidPlaceholderTypes(): array
     {
         return ['int'];

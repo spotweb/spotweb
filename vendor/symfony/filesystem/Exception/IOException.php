@@ -20,7 +20,7 @@ namespace Symfony\Component\Filesystem\Exception;
  */
 class IOException extends \RuntimeException implements IOExceptionInterface
 {
-    private ?string $path;
+    private $path;
 
     public function __construct(string $message, int $code = 0, \Throwable $previous = null, string $path = null)
     {
@@ -29,7 +29,10 @@ class IOException extends \RuntimeException implements IOExceptionInterface
         parent::__construct($message, $code, $previous);
     }
 
-    public function getPath(): ?string
+    /**
+     * {@inheritdoc}
+     */
+    public function getPath()
     {
         return $this->path;
     }
