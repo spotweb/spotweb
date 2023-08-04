@@ -42,6 +42,7 @@ class Bootstrap
         $daoFactory = $this->getDaoFactory();
         $settings = $this->getSettings($daoFactory, true);
         $spotReq = $this->getSpotReq($settings);
+        $GLOBALS['_intl'] = extension_loaded('intl');
 
         /*
          * Set the cache path

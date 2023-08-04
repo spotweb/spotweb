@@ -708,8 +708,8 @@ msgstr "Relevantie"
 msgid "Latest first"
 msgstr "Nieuwste eerst"
 
-msgid "Formatting of dates"
-msgstr "Opmaak van datums"
+msgid "Formatting of dates. To use long php_intl should be installed"
+msgstr "Opmaak van datums. Om lang te gebruiken moet php_intl zijn geinstalleerd"
 
 msgid "Human"
 msgstr "Menselijk"

@@ -3,7 +3,6 @@
 // Utility class voor template functies, kan eventueel
 // door custom templates extended worden
 use function PHP81_BC\strftime;
-
 class SpotTemplateHelper
 {
     protected $_settings;
@@ -1055,20 +1054,27 @@ class SpotTemplateHelper
 
     public function short_date($date)
     {
-        return strftime('%d/%m/%Y, %H:%M', $date);
+        return strftime('%d/%m/%Y, %H:%M', '@'.(string) $date);
     }
 
     public function long_date($date)
     {
-        return strftime('%a %e %b %Y %X', $date, $this->_currentSession['user']['prefs']['user_language']);
+        if ($GLOBALS['_intl']) {
+            $ret = strftime('%a %e %b %Y %X', '@'.(string) $date, $this->_currentSession['user']['prefs']['user_language']);
+        } else {
+            $ret = "PHP_INTL";
+        }
+        return $ret;
     }
+
 
     public function formatDate($stamp, $type)
     {
+
         if (empty($stamp)) {
             return _('unknown');
         } elseif (substr($type, 0, 6) == 'force_') {
-            return strftime('%d/%m/%Y (%H:%M:%S)', $stamp);
+            return strftime('%d/%m/%Y (%H:%M:%S)', '@'.(string) $stamp);
         } else {
             switch ($this->_currentSession['user']['prefs']['date_formatting']) {
                 case 'human': return $this->time_ago($stamp);
@@ -1080,6 +1086,10 @@ class SpotTemplateHelper
     }
 
     // formatDate
+    public function longformatAllowed() 
+    {
+        return $GLOBALS['_intl'];
+    }
 
     public function isModerated($spot)
     {
