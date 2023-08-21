@@ -34,7 +34,7 @@ abstract class Descriptor implements DescriptorInterface
     /**
      * {@inheritdoc}
      */
-    public function describe(OutputInterface $output, $object, array $options = [])
+    public function describe(OutputInterface $output, object $object, array $options = [])
     {
         $this->output = $output;
 
@@ -55,7 +55,7 @@ abstract class Descriptor implements DescriptorInterface
                 $this->describeApplication($object, $options);
                 break;
             default:
-                throw new InvalidArgumentException(sprintf('Object of type "%s" is not describable.', \get_class($object)));
+                throw new InvalidArgumentException(sprintf('Object of type "%s" is not describable.', get_debug_type($object)));
         }
     }
 
@@ -69,36 +69,26 @@ abstract class Descriptor implements DescriptorInterface
 
     /**
      * Describes an InputArgument instance.
-     *
-     * @return string|mixed
      */
     abstract protected function describeInputArgument(InputArgument $argument, array $options = []);
 
     /**
      * Describes an InputOption instance.
-     *
-     * @return string|mixed
      */
     abstract protected function describeInputOption(InputOption $option, array $options = []);
 
     /**
      * Describes an InputDefinition instance.
-     *
-     * @return string|mixed
      */
     abstract protected function describeInputDefinition(InputDefinition $definition, array $options = []);
 
     /**
      * Describes a Command instance.
-     *
-     * @return string|mixed
      */
     abstract protected function describeCommand(Command $command, array $options = []);
 
     /**
      * Describes an Application instance.
-     *
-     * @return string|mixed
      */
     abstract protected function describeApplication(Application $application, array $options = []);
 }

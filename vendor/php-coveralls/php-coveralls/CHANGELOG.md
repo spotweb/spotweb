@@ -1,6 +1,109 @@
 CHANGELOG
 =========
 
+## 2.6.0
+
+### Miscellaneous
+
+* Add windows-os to github action (#335)
+* DX: Update PHP CS Fixer to ^3.13.2 (#355)
+* DX: update dev-tools, especially PHP CS Fixer (#366)
+* Fix PHP 8.1 compatibility (#361)
+* GH Actions/CI: run the test suite against PHP 8.1, 8.2 and 8.3 (#363)
+* README: fix broken badge and mention GH Actions (#362)
+* Replace Travis CI with the GitHub action badge (#364)
+* Upgrade PHAR generation to Box 4.x (#351)
+
+## 2.5.3
+
+### Miscellaneous
+
+- GH Actions: various updates (#346)
+- MetricsTest: fix tests failing on imprecise floats (#344)
+- PHP 8.1 | Fix "passing null to non-nullable" deprecations (tests only) (#345)
+- PHP 8.2 | Fix deprecated embedded variables in text strings (#343)
+- Fix minor typo in GitHub Action step's name (#349)
+
+## 2.5.2
+
+### Bug fix
+
+- [#330](https://github.com/php-coveralls/php-coveralls/pull/330) Changed `CIRCLE_BUILD_NUM` to `CIRCLE_WORKFLOW_ID`
+- [#328](https://github.com/php-coveralls/php-coveralls/pull/328)
+Added compatibility with Symfony 6
+
+### Miscellaneous
+
+- [#325](https://github.com/php-coveralls/php-coveralls/pull/325) CI: Migrate to GitHub Actions
+
+## 2.5.1
+
+### Bug fix
+
+- [#324](https://github.com/php-coveralls/php-coveralls/pull/324) Fix PHP 5.5 compatibility
+
+## 2.5.0
+
+### Miscellaneous
+
+- [#322](https://github.com/php-coveralls/php-coveralls/pull/322) Allow for Symfony:^6
+- [#321](https://github.com/php-coveralls/php-coveralls/pull/321) Disallow `psr/log` v3
+- [#319](https://github.com/php-coveralls/php-coveralls/pull/319) Added fallback to show where is problem with non-UTF8 char
+- [#317](https://github.com/php-coveralls/php-coveralls/pull/317) Allow `psr/log` v2 and v3
+- [#316](https://github.com/php-coveralls/php-coveralls/pull/316) Update README with Travis CI configuration detail
+- [#311](https://github.com/php-coveralls/php-coveralls/pull/311) Update version in master to latest release
+
+## 2.4.3
+
+### Bug fix
+
+- [#308](https://github.com/php-coveralls/php-coveralls/pull/308) Add file missing for PHP 8
+
+### Miscellaneous
+
+- [#303](https://github.com/php-coveralls/php-coveralls/pull/303) Update README.md
+
+## 2.4.2
+
+### Bug fix
+
+- [#302](https://github.com/php-coveralls/php-coveralls/pull/302) Add COVERALLS_REPO_TOKEN to error message when run on Github Action
+- [#299](https://github.com/php-coveralls/php-coveralls/pull/299) Correct spelling error in Github
+
+## 2.4.1
+
+### Bug fix
+
+- [#298](https://github.com/php-coveralls/php-coveralls/pull/298) Fix support of branch name with hyphen and "(no branch)"
+
+## 2.4.0
+
+### Enhancement
+
+- [#296](https://github.com/php-coveralls/php-coveralls/pull/296) Add Github Actions and COVERALLS_FLAG_NAME support
+- [#295](https://github.com/php-coveralls/php-coveralls/pull/295) Add support for PHP 8 + PHPUnit 9
+- [#289](https://github.com/php-coveralls/php-coveralls/pull/289) Add insecure option
+
+### Miscellaneous
+
+- [#297](https://github.com/php-coveralls/php-coveralls/pull/297) DX: .gitignore cache PHPUnit
+
+## 2.3.0
+
+### Enhancement
+
+- [#290](https://github.com/php-coveralls/php-coveralls/pull/290) Allow to specify endpoint in arguments
+- [#288](https://github.com/php-coveralls/php-coveralls/pull/288) Add Guzzle 7 support
+- [#279](https://github.com/php-coveralls/php-coveralls/pull/279) Added COVERALLS_PARALLEL support and Configured CI_BUILD_NUMBER for Travis CI
+
+### Miscellaneous
+
+- [#294](https://github.com/php-coveralls/php-coveralls/pull/294) DX: Allow PHPUnit 7
+- [#292](https://github.com/php-coveralls/php-coveralls/pull/292) CI: reduce amount of jobs
+- [#291](https://github.com/php-coveralls/php-coveralls/pull/291) DX: Configurator - reduce cyclomatic complexity
+- [#286](https://github.com/php-coveralls/php-coveralls/pull/286) Fix incorrect version in README
+- [#283](https://github.com/php-coveralls/php-coveralls/pull/283) Update .travis.yml to include PHP 7.4
+
 ## 2.2.0
 
 ### Enhancement

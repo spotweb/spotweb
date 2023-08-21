@@ -2,7 +2,7 @@
 
 namespace PhpCoveralls\Tests;
 
-use PHPUnit\Framework\TestCase;
+use LegacyPHPUnit\TestCase;
 
 abstract class ProjectTestCase extends TestCase
 {
@@ -56,6 +56,29 @@ abstract class ProjectTestCase extends TestCase
      */
     protected $jsonPath;
 
+    public function __call($method, $args)
+    {
+        switch ($method) {
+            case 'assertStringContainsString':
+                \call_user_func_array([$this, 'assertContains'], $args);
+
+                break;
+
+            case 'assertIsArray':
+                \call_user_func_array([$this, 'assertInternalType'], array_merge(['array'], $args));
+
+                break;
+
+            case 'expectException':
+                \call_user_func_array([$this, 'setExpectedException'], $args);
+
+                break;
+
+            default:
+                trigger_error("Call to undefined method ::$method", E_USER_ERROR);
+        }
+    }
+
     /**
      * @param string $projectDir
      */
@@ -96,7 +119,7 @@ abstract class ProjectTestCase extends TestCase
         }
 
         if ($cloverXmlPaths !== null) {
-            if (is_array($cloverXmlPaths)) {
+            if (\is_array($cloverXmlPaths)) {
                 foreach ($cloverXmlPaths as $cloverXmlPath) {
                     touch($cloverXmlPath);
                 }
@@ -122,7 +145,7 @@ abstract class ProjectTestCase extends TestCase
     {
         if (is_file($file)) {
             // we try to unlock file, for that, we might need different permissions:
-            chmod(dirname($file), 0777); // on unix
+            chmod(\dirname($file), 0777); // on unix
             chmod($file, 0777); // on Windows
             unlink($file);
         }
@@ -146,33 +169,44 @@ abstract class ProjectTestCase extends TestCase
      */
     protected function normalizePath($path)
     {
-        return strtr(DIRECTORY_SEPARATOR, '/', $path);
+        return strtr(\DIRECTORY_SEPARATOR, '/', $path);
     }
 
     /**
-     * @param string $expected
-     * @param string $input
-     * @param string $msg
+     * @param string      $expected
+     * @param string      $input
+     * @param null|string $msg
      */
     protected function assertSamePath($expected, $input, $msg = null)
     {
-        $this->assertSame(
-            $this->normalizePath($expected),
-            $this->normalizePath($input),
-            $msg
-        );
+        if ($msg !== null) {
+            self::assertSame(
+                $this->normalizePath($expected),
+                $this->normalizePath($input),
+                $msg
+            );
+        } else {
+            self::assertSame(
+                $this->normalizePath($expected),
+                $this->normalizePath($input)
+            );
+        }
     }
 
     /**
-     * @param string[] $expected
-     * @param string[] $input
-     * @param string   $msg
+     * @param string[]    $expected
+     * @param string[]    $input
+     * @param null|string $msg
      */
     protected function assertSamePaths(array $expected, array $input, $msg = null)
     {
         $expected = array_map(function ($path) { return $this->normalizePath($path); }, $expected);
         $input = array_map(function ($path) { return $this->normalizePath($path); }, $input);
 
-        $this->assertSame($expected, $input, $msg);
+        if ($msg !== null) {
+            self::assertSame($expected, $input, $msg);
+        } else {
+            self::assertSame($expected, $input);
+        }
     }
 }

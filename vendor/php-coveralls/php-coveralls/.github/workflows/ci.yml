@@ -1,0 +1,204 @@
+name: CI
+
+on:
+    - pull_request
+    - push
+
+jobs:
+    tests:
+        name: "${{matrix.os}} | PHP${{matrix.php}} Symfony@${{matrix.symfony || '*'}} ${{ matrix.composer-flags}}"
+        runs-on: ${{matrix.os}}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    -   php: '5.5'
+                        os: ubuntu-latest
+                        composer-flags: '--prefer-lowest'
+                        coverage: 'xdebug'
+                    -   php: '5.5'
+                        os: ubuntu-latest
+                        symfony: '^3.0'
+                    -   php: '5.5'
+                        os: windows-latest
+                        coverage: 'xdebug'
+                    -   php: '5.6'
+                        os: ubuntu-latest
+                    -   php: '7.0'
+                        os: ubuntu-latest
+                    -   php: '7.1'
+                        os: ubuntu-latest
+                        symfony: '^4.0'
+                    -   php: '7.2'
+                        os: ubuntu-latest
+                        symfony: '^5.0'
+                    -   php: '7.3'
+                        os: ubuntu-latest
+                    -   php: '7.4'
+                        os: ubuntu-latest
+                    -   php: '8.0'
+                        os: ubuntu-latest
+                        symfony: '^6.0'
+                    -   php: '8.1'
+                        os: ubuntu-latest
+                        symfony: '^6.0'
+                    -   php: '8.2'
+                        os: ubuntu-latest
+                        symfony: '^6.0'
+                        coverage: 'pcov'
+                    -   php: '8.2'
+                        os: ubuntu-latest
+                        symfony: '^6.0'
+                        coverage: 'xdebug'
+                    -   php: '8.2'
+                        os: windows-latest
+                        symfony: '^6.0'
+                        coverage: 'pcov'
+                    -   php: '8.3'
+                        os: ubuntu-latest
+                        symfony: '^6.0'
+
+        continue-on-error: ${{ matrix.php == '8.3' }}
+
+        steps:
+            -   name: Checkout source
+                uses: actions/checkout@v3
+
+            -   name: Get symfony flex version
+                uses: actions/github-script@v3.1
+                id: flex-version
+                with:
+                    script: 'return "${{ matrix.php }}" == "7.0" ? "~1.6.0" : "^1.11"'
+                    result-encoding: string
+
+            -   name: PHP setup
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    ini-values: zend.assertions=1, error_reporting=-1, display_errors=On, log_errors_max_len=0
+                    coverage: ${{ matrix.coverage || 'none' }}
+
+            -   name: Downgrade composer for old Symfony Flex
+                if: steps.flex-version.outputs.result == '~1.6.0'
+                run: composer self-update --1
+
+            -   name: "Disallow Symfony Flex to run as a Composer plugin (global)"
+                if: startsWith(matrix.php, '5') == false && steps.flex-version.outputs.result != '~1.6.0'
+                run: composer -g config allow-plugins.symfony/flex false
+
+            -   name: "Install Symfony Flex"
+                if: startsWith(matrix.php, '5') == false
+                run: composer global require -o --no-interaction symfony/flex:${{ steps.flex-version.outputs.result }} --no-plugins
+
+            -   name: Require Symfony version
+                if: matrix.symfony
+                run: composer config extra.symfony.require ${{ matrix.symfony }}
+
+            -   name: Update composer dependencies
+                if: matrix.php != '8.3'
+                run: composer update -o --no-interaction --no-progress ${{ matrix.composer-flags }}
+
+            -   name: "Update composer dependencies (PHP 8.2, ignore platform)"
+                if: matrix.php == '8.3'
+                run: composer update -o --no-interaction --no-progress ${{ matrix.composer-flags }} --ignore-platform-req=php+
+
+            -   name: Run test suite
+                run: php vendor/bin/phpunit -v
+
+            -   name: Upload coverage results to Coveralls
+                if: matrix.coverage
+                env:
+                    COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    COVERALLS_PARALLEL: true
+                    COVERALLS_FLAG_NAME: "${{matrix.os}} | PHP${{matrix.php}} Symfony@${{matrix.symfony || '*'}}"
+                run: php bin/php-coveralls -v --exclude-no-stmt
+
+    coveralls-finish:
+        needs: tests
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Notify Coveralls when build is finished
+                run: |
+                    curl -k https://coveralls.io/webhook?repo_token=${{ secrets.GITHUB_TOKEN }} \
+                        -d "repo_name=$GITHUB_REPOSITORY&payload[build_num]=$GITHUB_RUN_ID&payload[status]=done"
+
+    build-phar:
+        needs: tests
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.1
+                    extensions: phar, openssl, sodium
+                    coverage: none
+                    ini-values: phar.readonly=Off, error_reporting=-1, display_errors=On, zend.assertions=1
+                    # Autoload files generated with Composer 2.3+ are not compatible with PHP < 7.0.
+                    tools: composer:2.2
+
+            -   name: Set Composer platform
+                run: composer config platform.php 5.5.0
+
+            -   name: Install Composer dependencies
+                uses: ramsey/composer-install@v2
+                with:
+                    composer-options: "--no-dev --optimize-autoloader"
+
+            # Note: do NOT turn on the requirement checker in the box config as it is no longer
+            # compatible with PHP < 7.2.
+            -   name: Install Box
+                run: wget https://github.com/humbug/box/releases/latest/download/box.phar -O box.phar && chmod 0755 box.phar
+
+            -   name: Validate configuration
+                run: php box.phar validate -i box.json
+
+            -   name: Building binary...
+                run: php box.phar compile -v --config=box.json
+
+            -   name: Show info about the build phar
+                run: php box.phar info -l ./build/artifacts/php-coveralls.phar
+
+            -   name: Upload the Phar artifact
+                uses: actions/upload-artifact@v3
+                with:
+                    name: php-coveralls-phar
+                    path: ./build/artifacts/php-coveralls.phar
+                    retention-days: 30
+
+    test-phar:
+        needs: build-phar
+        name: "Test Phar PHP ${{ matrix.php }}"
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    -   php: '5.5'
+                    -   php: '7.2'
+                    -   php: '8.0'
+                    -   php: '8.3'
+
+        continue-on-error: ${{ matrix.php == '8.3' }}
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Download the Phar artifact
+                uses: actions/download-artifact@v3
+                with:
+                    name: php-coveralls-phar
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    ini-values: error_reporting=-1, display_errors=On, zend.assertions=1
+                    coverage: none
+
+            -   name: Test the Phar is functional
+                run: php php-coveralls.phar --version

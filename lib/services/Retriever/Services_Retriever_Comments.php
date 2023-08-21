@@ -2,6 +2,8 @@
 
 class Services_Retriever_Comments extends Services_Retriever_Base
 {
+    protected $_spotDao;
+    protected $_commentDao;
     private $_svcNntpTextReading;
     private $_retrieveFull;
 

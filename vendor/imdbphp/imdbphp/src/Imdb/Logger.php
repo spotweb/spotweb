@@ -10,7 +10,6 @@ use Psr\Log\LoggerInterface;
  */
 class Logger implements LoggerInterface
 {
-
     protected $enabled;
 
     public function __construct($enabled = true)
@@ -152,5 +151,4 @@ class Logger implements LoggerInterface
             echo "<b><font color='$colour'>[$level] $message</font></b><br>\n";
         }
     }
-
 }

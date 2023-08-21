@@ -1,11 +1,11 @@
 <?php
-require_once 'BankAccount.php';
+use PHPUnit\Framework\TestCase;
 
-class BankAccountTest extends PHPUnit_Framework_TestCase
+class BankAccountTest extends TestCase
 {
     protected $ba;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->ba = new BankAccount;
     }

@@ -36,17 +36,11 @@ class FileExistenceResource implements SelfCheckingResourceInterface
         $this->exists = file_exists($resource);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __toString(): string
     {
         return $this->resource;
     }
 
-    /**
-     * @return string The file path to the resource
-     */
     public function getResource(): string
     {
         return $this->resource;

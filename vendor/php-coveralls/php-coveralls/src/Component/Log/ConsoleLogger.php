@@ -21,8 +21,6 @@ class ConsoleLogger extends AbstractLogger
 
     /**
      * Constructor.
-     *
-     * @param OutputInterface $output
      */
     public function __construct(OutputInterface $output)
     {
@@ -30,12 +28,15 @@ class ConsoleLogger extends AbstractLogger
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @see \Psr\Log\LoggerInterface::log()
+     *
+     * @param mixed $level
+     * @param mixed $message
      */
     public function log($level, $message, array $context = [])
     {
+        unset($level, $context);
+
         $this->output->writeln($message);
     }
 }

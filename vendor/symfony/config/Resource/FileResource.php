@@ -41,16 +41,13 @@ class FileResource implements SelfCheckingResourceInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __toString(): string
     {
         return $this->resource;
     }
 
     /**
-     * @return string The canonicalized, absolute path to the resource
+     * Returns the canonicalized, absolute path to the resource.
      */
     public function getResource(): string
     {

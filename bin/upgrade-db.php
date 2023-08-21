@@ -76,6 +76,8 @@ try {
      */
     if (SpotCommandline::get('mass-userprefchange')) {
         $prefToChange = explode('=', SpotCommandline::get('mass-userprefchange'));
+        var_dump($prefToChange);
+        echo "count($prefToChange)=", count($prefToChange),PHP_EOL;
         if (count($prefToChange) != 2) {
             throw new Exception('Please specify new preference as follows: perpage=10 or count_newspots=off');
         } // if

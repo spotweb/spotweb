@@ -20,7 +20,6 @@ namespace Imdb;
  */
 class Config
 {
-
     /**
      * Set the language Imdb will use for titles, and some other localised data (e.g. tv episode air dates)
      * Any valid language code can be used here (e.g. en-US, de, pt-BR).
@@ -193,5 +192,4 @@ class Config
             }
         }
     }
-
 }

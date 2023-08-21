@@ -30,10 +30,11 @@ class Question
     private $default;
     private $normalizer;
     private $trimmable = true;
+    private $multiline = false;
 
     /**
-     * @param string $question The question to ask to the user
-     * @param mixed  $default  The default answer to return if the user enters nothing
+     * @param string                     $question The question to ask to the user
+     * @param string|bool|int|float|null $default  The default answer to return if the user enters nothing
      */
     public function __construct(string $question, $default = null)
     {
@@ -54,11 +55,31 @@ class Question
     /**
      * Returns the default answer.
      *
-     * @return mixed
+     * @return string|bool|int|float|null
      */
     public function getDefault()
     {
         return $this->default;
+    }
+
+    /**
+     * Returns whether the user response accepts newline characters.
+     */
+    public function isMultiline(): bool
+    {
+        return $this->multiline;
+    }
+
+    /**
+     * Sets whether the user response should accept newline characters.
+     *
+     * @return $this
+     */
+    public function setMultiline(bool $multiline): self
+    {
+        $this->multiline = $multiline;
+
+        return $this;
     }
 
     /**
@@ -74,25 +95,23 @@ class Question
     /**
      * Sets whether the user response must be hidden or not.
      *
-     * @param bool $hidden
-     *
      * @return $this
      *
      * @throws LogicException In case the autocompleter is also used
      */
-    public function setHidden($hidden)
+    public function setHidden(bool $hidden)
     {
         if ($this->autocompleterCallback) {
             throw new LogicException('A hidden question cannot use the autocompleter.');
         }
 
-        $this->hidden = (bool) $hidden;
+        $this->hidden = $hidden;
 
         return $this;
     }
 
     /**
-     * In case the response can not be hidden, whether to fallback on non-hidden question or not.
+     * In case the response cannot be hidden, whether to fallback on non-hidden question or not.
      *
      * @return bool
      */
@@ -102,15 +121,13 @@ class Question
     }
 
     /**
-     * Sets whether to fallback on non-hidden question if the response can not be hidden.
-     *
-     * @param bool $fallback
+     * Sets whether to fallback on non-hidden question if the response cannot be hidden.
      *
      * @return $this
      */
-    public function setHiddenFallback($fallback)
+    public function setHiddenFallback(bool $fallback)
     {
-        $this->hiddenFallback = (bool) $fallback;
+        $this->hiddenFallback = $fallback;
 
         return $this;
     }

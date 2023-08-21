@@ -47,7 +47,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><b>Original title:</b></td>
           <td><?= $movie->orig_title() ?></td>
         </tr>
-        
+
         <?php
         # AKAs
         $aka = $movie->alsoknow();
@@ -76,13 +76,13 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php # Movie Type ?>
         <tr>
           <td class="mw-120"><b>Type:</b></td>
           <td><?php echo $movie->movietype() ?></td>
         </tr>
-        
+
         <?php
         # Keywords
         $keywords = $movie->keywords();
@@ -93,7 +93,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo implode(', ',$keywords) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Seasons
         if ( $movie->seasons() != 0 ) {
@@ -103,7 +103,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $movie->seasons() ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Episode Details
         $ser = $movie->get_episode_details();
@@ -114,13 +114,13 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $ser['seriestitle'].' | Season '.$ser['season'].', Episode '.$ser['episode'].", Airdate ".$ser['airdate'] ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php # Year ?>
         <tr>
           <td><b>Year:</b></td>
           <td><?php echo $movie->year() ?></td>
         </tr>
-        
+
         <?php
         # Runtime
         $runtime = $movie->runtime();
@@ -131,7 +131,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $runtime; ?> minutes</td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # MPAA
         $mpaa = $movie->mpaa();
@@ -168,7 +168,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           }
         }
         ?>
-        
+
         <?php
         # Ratings
         $ratv = $movie->rating();
@@ -179,7 +179,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $ratv; ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Votes
         $ratv = $movie->votes();
@@ -190,7 +190,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $ratv; ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Languages
         $languages = $movie->languages();
@@ -201,7 +201,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo implode(', ',$languages) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Country
         $country = $movie->country();
@@ -212,7 +212,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo implode(', ',$country) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Genre
         $genre = $movie->genre();
@@ -223,7 +223,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $genre ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # All Genres
         $gen = $movie->genres();
@@ -234,7 +234,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo implode(', ',$gen) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Colors
         $col = $movie->colors();
@@ -245,7 +245,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo implode(', ',$col) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Sound
         $sound = $movie->sound ();
@@ -256,7 +256,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo implode(', ',$sound) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Tagline
         $tagline = $movie->tagline();
@@ -267,7 +267,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $tagline ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         #==[ Staff ]==
         # director(s)
@@ -292,7 +292,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Story
         $write = $movie->writing();
@@ -316,7 +316,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Producer
         $produce = $movie->producer();
@@ -340,7 +340,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Music
         $compose = $movie->composer();
@@ -364,7 +364,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Cast
         $cast = $movie->cast();
@@ -388,7 +388,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Plot outline
         $plotoutline = $movie->plotoutline();
@@ -399,7 +399,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $plotoutline ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Plot
         $plot = $movie->plot();
@@ -414,7 +414,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </ul></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Taglines
         $taglines = $movie->taglines();
@@ -429,7 +429,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </ul></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Episodes
         if ( $movie->is_serial() || $movie->seasons() ) {
@@ -448,7 +448,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Locations
         $locs = $movie->locations();
@@ -459,7 +459,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo implode(', ',$locs) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Selected User Comment
         $comment = $movie->comment();
@@ -470,7 +470,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo $comment ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Quotes
         $quotes = $movie->quotes();
@@ -481,7 +481,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td><?php echo preg_replace("/https\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7,8})\/(\?ref_=tt_trv_qu)?/","person.php?mid=\\1",$quotes[0]) ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Trailer
         $trailers = $movie->trailers(TRUE);
@@ -501,7 +501,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Crazy Credits
         $crazy = $movie->crazy_credits();
@@ -513,7 +513,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           <td>We know about <?php echo $cc ?> <i>Crazy Credits</i>. One of them reads:<br><?php echo $crazy[0] ?></td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Goofs
         $goofs = $movie->goofs();
@@ -528,7 +528,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Trivia
         $trivia = $movie->trivia();
@@ -557,7 +557,7 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
           </td>
         </tr>
         <?php } ?>
-        
+
         <?php
         # Soundtracks
         $soundtracks = $movie->soundtrack();
@@ -571,17 +571,14 @@ if (isset ($_GET["mid"]) && preg_match('/^[0-9]+$/',$_GET["mid"])) {
             <table>
               <tr>
                 <th class="mw-200">Soundtrack</th>
-                <th class="mw-200">Credit 1</th>
-                <th class="mw-200">Credit 2</th>
+                <th class="mw-200">Credits</th>
               </tr>
-              <?php foreach ( $soundtracks as $soundtrack) { 
-                $credit1 = isset($soundtrack["credits"][0]) ? preg_replace("/https\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7,8})\//","person.php?mid=\\1",$soundtrack["credits"][0]['credit_to'])." (".$soundtrack["credits"][0]['desc'].")" : '';
-                $credit2 = isset($soundtrack["credits"][1]) ? preg_replace("/https\:\/\/".str_replace(".","\.",$movie->imdbsite)."\/name\/nm(\d{7,8})\//","person.php?mid=\\1",$soundtrack["credits"][1]['credit_to'])." (".$soundtrack["credits"][1]['desc'].")" : '';
+              <?php foreach ( $soundtracks as $soundtrack) {
+                $credits = isset($soundtrack["credits_raw"]) ? preg_replace("/\/name\/nm(\d{7,8})\//","person.php?mid=\\1",$soundtrack["credits_raw"]) : '';
               ?>
                 <tr>
                   <td><?php echo $soundtrack["soundtrack"] ?></td>
-                  <td><?php echo $credit1 ?></td>
-                  <td><?php echo $credit2 ?></td>
+                  <td><?php echo $credits ?></td>
                 </tr>
               <?php } ?>
             </table>

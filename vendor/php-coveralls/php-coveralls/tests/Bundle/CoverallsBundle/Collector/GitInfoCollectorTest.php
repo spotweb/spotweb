@@ -7,22 +7,24 @@ use PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Commit;
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Git;
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Remote;
 use PhpCoveralls\Component\System\Git\GitCommand;
-use PHPUnit\Framework\TestCase;
+use PhpCoveralls\Tests\ProjectTestCase;
 
 /**
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Collector\GitInfoCollector
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class GitInfoCollectorTest extends TestCase
+final class GitInfoCollectorTest extends ProjectTestCase
 {
     /**
      * @var array
      */
     private $getBranchesValue = [
         '  master',
-        '* branch1',
-        '  branch2',
+        '* branch-1',
+        '  branch-2',
     ];
 
     /**
@@ -55,7 +57,7 @@ class GitInfoCollectorTest extends TestCase
         $command = new GitCommand();
         $object = new GitInfoCollector($command);
 
-        $this->assertSame($command, $object->getCommand());
+        self::assertSame($command, $object->getCommand());
     }
 
     // collect()
@@ -70,15 +72,53 @@ class GitInfoCollectorTest extends TestCase
 
         $git = $object->collect();
 
-        $this->assertInstanceOf(Git::class, $git);
+        self::assertInstanceOf(Git::class, $git);
         $this->assertGit($git);
+        self::assertSame('branch-1', $git->getBranch());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCollectDetachedRef()
+    {
+        $gitCommand = $this->createGitCommandStubWith(
+            ['* (HEAD detached at pull/1/merge)'],
+            $this->getHeadCommitValue,
+            $this->getRemotesValue
+        );
+        $object = new GitInfoCollector($gitCommand);
+
+        $git = $object->collect();
+
+        self::assertInstanceOf(Git::class, $git);
+        $this->assertGit($git);
+        self::assertSame('pull/1/merge', $git->getBranch());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCollectNoBranch()
+    {
+        $gitCommand = $this->createGitCommandStubWith(
+            ['* (no branch)'],
+            $this->getHeadCommitValue,
+            $this->getRemotesValue
+        );
+        $object = new GitInfoCollector($gitCommand);
+
+        $git = $object->collect();
+
+        self::assertInstanceOf(Git::class, $git);
+        $this->assertGit($git);
+        self::assertSame('(no branch)', $git->getBranch());
     }
 
     // collectBranch() exception
 
     /**
      * @test
-     * @expectedException \RuntimeException
      */
     public function throwRuntimeExceptionIfCurrentBranchNotFound()
     {
@@ -89,6 +129,7 @@ class GitInfoCollectorTest extends TestCase
 
         $object = new GitInfoCollector($gitCommand);
 
+        $this->expectException(\RuntimeException::class);
         $object->collect();
     }
 
@@ -96,7 +137,6 @@ class GitInfoCollectorTest extends TestCase
 
     /**
      * @test
-     * @expectedException \RuntimeException
      */
     public function throwRuntimeExceptionIfHeadCommitIsInvalid()
     {
@@ -105,6 +145,7 @@ class GitInfoCollectorTest extends TestCase
 
         $object = new GitInfoCollector($gitCommand);
 
+        $this->expectException(\RuntimeException::class);
         $object->collect();
     }
 
@@ -112,7 +153,6 @@ class GitInfoCollectorTest extends TestCase
 
     /**
      * @test
-     * @expectedException \RuntimeException
      */
     public function throwRuntimeExceptionIfRemoteIsInvalid()
     {
@@ -121,13 +161,14 @@ class GitInfoCollectorTest extends TestCase
 
         $object = new GitInfoCollector($gitCommand);
 
+        $this->expectException(\RuntimeException::class);
         $object->collect();
     }
 
     /**
-     * @param $getBranchesValue
-     * @param $getHeadCommitValue
-     * @param $getRemotesValue
+     * @param mixed $getBranchesValue
+     * @param mixed $getHeadCommitValue
+     * @param mixed $getRemotesValue
      *
      * @return object
      */
@@ -177,14 +218,15 @@ class GitInfoCollectorTest extends TestCase
 
     /**
      * @param GitCommand $stub
-     * @param $getBranchesValue
+     * @param mixed      $getBranchesValue
      */
     protected function setUpGitCommandStubWithGetBranchesOnce($stub, $getBranchesValue)
     {
         $stub
             ->getBranches()
             ->willReturn($getBranchesValue)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -196,7 +238,8 @@ class GitInfoCollectorTest extends TestCase
         $stub
             ->getHeadCommit()
             ->willReturn($getHeadCommitValue)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -206,7 +249,8 @@ class GitInfoCollectorTest extends TestCase
     {
         $stub
             ->getHeadCommit()
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
     }
 
     /**
@@ -218,7 +262,8 @@ class GitInfoCollectorTest extends TestCase
         $stub
             ->getRemotes()
             ->willReturn($getRemotesValue)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
     }
 
     /**
@@ -228,38 +273,37 @@ class GitInfoCollectorTest extends TestCase
     {
         $stub
             ->getRemotes()
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
     }
 
     protected function assertGit(Git $git)
     {
-        $this->assertSame('branch1', $git->getBranch());
-
         $commit = $git->getHead();
 
-        $this->assertInstanceOf(Commit::class, $commit);
+        self::assertInstanceOf(Commit::class, $commit);
         $this->assertCommit($commit);
 
         $remotes = $git->getRemotes();
-        $this->assertCount(1, $remotes);
+        self::assertCount(1, $remotes);
 
-        $this->assertInstanceOf(Remote::class, $remotes[0]);
+        self::assertInstanceOf(Remote::class, $remotes[0]);
         $this->assertRemote($remotes[0]);
     }
 
     protected function assertCommit(Commit $commit)
     {
-        $this->assertSame('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', $commit->getId());
-        $this->assertSame('Author Name', $commit->getAuthorName());
-        $this->assertSame('author@satooshi.jp', $commit->getAuthorEmail());
-        $this->assertSame('Committer Name', $commit->getCommitterName());
-        $this->assertSame('committer@satooshi.jp', $commit->getCommitterEmail());
-        $this->assertSame('commit message', $commit->getMessage());
+        self::assertSame('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', $commit->getId());
+        self::assertSame('Author Name', $commit->getAuthorName());
+        self::assertSame('author@satooshi.jp', $commit->getAuthorEmail());
+        self::assertSame('Committer Name', $commit->getCommitterName());
+        self::assertSame('committer@satooshi.jp', $commit->getCommitterEmail());
+        self::assertSame('commit message', $commit->getMessage());
     }
 
     protected function assertRemote(Remote $remote)
     {
-        $this->assertSame('origin', $remote->getName());
-        $this->assertSame('git@github.com:php-coveralls/php-coveralls.git', $remote->getUrl());
+        self::assertSame('origin', $remote->getName());
+        self::assertSame('git@github.com:php-coveralls/php-coveralls.git', $remote->getUrl());
     }
 }

@@ -74,7 +74,14 @@ define('T_OPEN_USE_GROUP', 'PHPCS_T_OPEN_USE_GROUP');
 define('T_CLOSE_USE_GROUP', 'PHPCS_T_CLOSE_USE_GROUP');
 define('T_ZSR', 'PHPCS_T_ZSR');
 define('T_ZSR_EQUAL', 'PHPCS_T_ZSR_EQUAL');
-define('T_FN_ARROW', 'T_FN_ARROW');
+define('T_FN_ARROW', 'PHPCS_T_FN_ARROW');
+define('T_TYPE_UNION', 'PHPCS_T_TYPE_UNION');
+define('T_PARAM_NAME', 'PHPCS_T_PARAM_NAME');
+define('T_MATCH_ARROW', 'PHPCS_T_MATCH_ARROW');
+define('T_MATCH_DEFAULT', 'PHPCS_T_MATCH_DEFAULT');
+define('T_ATTRIBUTE_END', 'PHPCS_T_ATTRIBUTE_END');
+define('T_ENUM_CASE', 'PHPCS_T_ENUM_CASE');
+define('T_TYPE_INTERSECTION', 'PHPCS_T_TYPE_INTERSECTION');
 
 // Some PHP 5.5 tokens, replicated for lower versions.
 if (defined('T_FINALLY') === false) {
@@ -124,6 +131,48 @@ if (defined('T_FN') === false) {
     define('T_FN', 'PHPCS_T_FN');
 }
 
+// Some PHP 8.0 tokens, replicated for lower versions.
+if (defined('T_NULLSAFE_OBJECT_OPERATOR') === false) {
+    define('T_NULLSAFE_OBJECT_OPERATOR', 'PHPCS_T_NULLSAFE_OBJECT_OPERATOR');
+}
+
+if (defined('T_NAME_QUALIFIED') === false) {
+    define('T_NAME_QUALIFIED', 'PHPCS_T_NAME_QUALIFIED');
+}
+
+if (defined('T_NAME_FULLY_QUALIFIED') === false) {
+    define('T_NAME_FULLY_QUALIFIED', 'PHPCS_T_NAME_FULLY_QUALIFIED');
+}
+
+if (defined('T_NAME_RELATIVE') === false) {
+    define('T_NAME_RELATIVE', 'PHPCS_T_NAME_RELATIVE');
+}
+
+if (defined('T_MATCH') === false) {
+    define('T_MATCH', 'PHPCS_T_MATCH');
+}
+
+if (defined('T_ATTRIBUTE') === false) {
+    define('T_ATTRIBUTE', 'PHPCS_T_ATTRIBUTE');
+}
+
+// Some PHP 8.1 tokens, replicated for lower versions.
+if (defined('T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG') === false) {
+    define('T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG', 'PHPCS_T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG');
+}
+
+if (defined('T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG') === false) {
+    define('T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG', 'PHPCS_T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG');
+}
+
+if (defined('T_READONLY') === false) {
+    define('T_READONLY', 'PHPCS_T_READONLY');
+}
+
+if (defined('T_ENUM') === false) {
+    define('T_ENUM', 'PHPCS_T_ENUM');
+}
+
 // Tokens used for parsing doc blocks.
 define('T_DOC_COMMENT_STAR', 'PHPCS_T_DOC_COMMENT_STAR');
 define('T_DOC_COMMENT_WHITESPACE', 'PHPCS_T_DOC_COMMENT_WHITESPACE');
@@ -151,6 +200,7 @@ final class Tokens
         T_CLASS               => 1000,
         T_INTERFACE           => 1000,
         T_TRAIT               => 1000,
+        T_ENUM                => 1000,
         T_NAMESPACE           => 1000,
         T_FUNCTION            => 100,
         T_CLOSURE             => 100,
@@ -170,6 +220,7 @@ final class Tokens
         T_CATCH               => 50,
         T_FINALLY             => 50,
         T_SWITCH              => 50,
+        T_MATCH               => 50,
 
         T_SELF                => 25,
         T_PARENT              => 25,
@@ -362,6 +413,7 @@ final class Tokens
         T_ELSEIF     => T_ELSEIF,
         T_CATCH      => T_CATCH,
         T_DECLARE    => T_DECLARE,
+        T_MATCH      => T_MATCH,
     ];
 
     /**
@@ -374,6 +426,7 @@ final class Tokens
         T_ANON_CLASS => T_ANON_CLASS,
         T_INTERFACE  => T_INTERFACE,
         T_TRAIT      => T_TRAIT,
+        T_ENUM       => T_ENUM,
         T_NAMESPACE  => T_NAMESPACE,
         T_FUNCTION   => T_FUNCTION,
         T_CLOSURE    => T_CLOSURE,
@@ -394,6 +447,7 @@ final class Tokens
         T_PROPERTY   => T_PROPERTY,
         T_OBJECT     => T_OBJECT,
         T_USE        => T_USE,
+        T_MATCH      => T_MATCH,
     ];
 
     /**
@@ -574,6 +628,7 @@ final class Tokens
         T_UNSET        => T_UNSET,
         T_EMPTY        => T_EMPTY,
         T_SELF         => T_SELF,
+        T_PARENT       => T_PARENT,
         T_STATIC       => T_STATIC,
     ];
 
@@ -587,6 +642,105 @@ final class Tokens
         T_ANON_CLASS => T_ANON_CLASS,
         T_INTERFACE  => T_INTERFACE,
         T_TRAIT      => T_TRAIT,
+        T_ENUM       => T_ENUM,
+    ];
+
+    /**
+     * Tokens representing PHP magic constants.
+     *
+     * @var array <int|string> => <int|string>
+     *
+     * @link https://www.php.net/language.constants.predefined PHP Manual on magic constants
+     */
+    public static $magicConstants = [
+        T_CLASS_C  => T_CLASS_C,
+        T_DIR      => T_DIR,
+        T_FILE     => T_FILE,
+        T_FUNC_C   => T_FUNC_C,
+        T_LINE     => T_LINE,
+        T_METHOD_C => T_METHOD_C,
+        T_NS_C     => T_NS_C,
+        T_TRAIT_C  => T_TRAIT_C,
+    ];
+
+    /**
+     * Tokens representing context sensitive keywords in PHP.
+     *
+     * @var array<int|string, int|string>
+     *
+     * https://wiki.php.net/rfc/context_sensitive_lexer
+     */
+    public static $contextSensitiveKeywords = [
+        T_ABSTRACT     => T_ABSTRACT,
+        T_ARRAY        => T_ARRAY,
+        T_AS           => T_AS,
+        T_BREAK        => T_BREAK,
+        T_CALLABLE     => T_CALLABLE,
+        T_CASE         => T_CASE,
+        T_CATCH        => T_CATCH,
+        T_CLASS        => T_CLASS,
+        T_CLONE        => T_CLONE,
+        T_CONST        => T_CONST,
+        T_CONTINUE     => T_CONTINUE,
+        T_DECLARE      => T_DECLARE,
+        T_DEFAULT      => T_DEFAULT,
+        T_DO           => T_DO,
+        T_ECHO         => T_ECHO,
+        T_ELSE         => T_ELSE,
+        T_ELSEIF       => T_ELSEIF,
+        T_EMPTY        => T_EMPTY,
+        T_ENDDECLARE   => T_ENDDECLARE,
+        T_ENDFOR       => T_ENDFOR,
+        T_ENDFOREACH   => T_ENDFOREACH,
+        T_ENDIF        => T_ENDIF,
+        T_ENDSWITCH    => T_ENDSWITCH,
+        T_ENDWHILE     => T_ENDWHILE,
+        T_ENUM         => T_ENUM,
+        T_EVAL         => T_EVAL,
+        T_EXIT         => T_EXIT,
+        T_EXTENDS      => T_EXTENDS,
+        T_FINAL        => T_FINAL,
+        T_FINALLY      => T_FINALLY,
+        T_FN           => T_FN,
+        T_FOR          => T_FOR,
+        T_FOREACH      => T_FOREACH,
+        T_FUNCTION     => T_FUNCTION,
+        T_GLOBAL       => T_GLOBAL,
+        T_GOTO         => T_GOTO,
+        T_IF           => T_IF,
+        T_IMPLEMENTS   => T_IMPLEMENTS,
+        T_INCLUDE      => T_INCLUDE,
+        T_INCLUDE_ONCE => T_INCLUDE_ONCE,
+        T_INSTANCEOF   => T_INSTANCEOF,
+        T_INSTEADOF    => T_INSTEADOF,
+        T_INTERFACE    => T_INTERFACE,
+        T_ISSET        => T_ISSET,
+        T_LIST         => T_LIST,
+        T_LOGICAL_AND  => T_LOGICAL_AND,
+        T_LOGICAL_OR   => T_LOGICAL_OR,
+        T_LOGICAL_XOR  => T_LOGICAL_XOR,
+        T_MATCH        => T_MATCH,
+        T_NAMESPACE    => T_NAMESPACE,
+        T_NEW          => T_NEW,
+        T_PRINT        => T_PRINT,
+        T_PRIVATE      => T_PRIVATE,
+        T_PROTECTED    => T_PROTECTED,
+        T_PUBLIC       => T_PUBLIC,
+        T_READONLY     => T_READONLY,
+        T_REQUIRE      => T_REQUIRE,
+        T_REQUIRE_ONCE => T_REQUIRE_ONCE,
+        T_RETURN       => T_RETURN,
+        T_STATIC       => T_STATIC,
+        T_SWITCH       => T_SWITCH,
+        T_THROW        => T_THROW,
+        T_TRAIT        => T_TRAIT,
+        T_TRY          => T_TRY,
+        T_UNSET        => T_UNSET,
+        T_USE          => T_USE,
+        T_VAR          => T_VAR,
+        T_WHILE        => T_WHILE,
+        T_YIELD        => T_YIELD,
+        T_YIELD_FROM   => T_YIELD_FROM,
     ];
 
 

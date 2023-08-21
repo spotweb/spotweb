@@ -28,7 +28,7 @@ abstract class NodeDefinition implements NodeParentInterface
     protected $defaultValue;
     protected $default = false;
     protected $required = false;
-    protected $deprecationMessage = null;
+    protected $deprecation = [];
     protected $merge;
     protected $allowEmptyValue = true;
     protected $nullEquivalent;
@@ -95,7 +95,7 @@ abstract class NodeDefinition implements NodeParentInterface
     /**
      * Returns the parent node.
      *
-     * @return NodeParentInterface|NodeBuilder|NodeDefinition|ArrayNodeDefinition|VariableNodeDefinition|null The builder of the parent node
+     * @return NodeParentInterface|NodeBuilder|NodeDefinition|ArrayNodeDefinition|VariableNodeDefinition|null
      */
     public function end()
     {
@@ -104,8 +104,6 @@ abstract class NodeDefinition implements NodeParentInterface
 
     /**
      * Creates the node.
-     *
-     * @param bool $forceRootNode Whether to force this node as the root node
      *
      * @return NodeInterface
      */
@@ -124,7 +122,9 @@ abstract class NodeDefinition implements NodeParentInterface
         }
 
         $node = $this->createNode();
-        $node->setAttributes($this->attributes);
+        if ($node instanceof BaseNode) {
+            $node->setAttributes($this->attributes);
+        }
 
         return $node;
     }
@@ -159,14 +159,35 @@ abstract class NodeDefinition implements NodeParentInterface
     /**
      * Sets the node as deprecated.
      *
+     * @param string $package The name of the composer package that is triggering the deprecation
+     * @param string $version The version of the package that introduced the deprecation
+     * @param string $message the deprecation message to use
+     *
      * You can use %node% and %path% placeholders in your message to display,
-     * respectively, the node name and its complete path.
+     * respectively, the node name and its complete path
      *
      * @return $this
      */
-    public function setDeprecated(string $message = 'The child node "%node%" at path "%path%" is deprecated.')
+    public function setDeprecated(/* string $package, string $version, string $message = 'The child node "%node%" at path "%path%" is deprecated.' */)
     {
-        $this->deprecationMessage = $message;
+        $args = \func_get_args();
+
+        if (\func_num_args() < 2) {
+            trigger_deprecation('symfony/config', '5.1', 'The signature of method "%s()" requires 3 arguments: "string $package, string $version, string $message", not defining them is deprecated.', __METHOD__);
+
+            $message = $args[0] ?? 'The child node "%node%" at path "%path%" is deprecated.';
+            $package = $version = '';
+        } else {
+            $package = (string) $args[0];
+            $version = (string) $args[1];
+            $message = (string) ($args[2] ?? 'The child node "%node%" at path "%path%" is deprecated.');
+        }
+
+        $this->deprecation = [
+            'package' => $package,
+            'version' => $version,
+            'message' => $message,
+        ];
 
         return $this;
     }
@@ -336,7 +357,7 @@ abstract class NodeDefinition implements NodeParentInterface
     /**
      * Instantiate and configure the node according to this definition.
      *
-     * @return NodeInterface The node instance
+     * @return NodeInterface
      *
      * @throws InvalidDefinitionException When the definition is invalid
      */

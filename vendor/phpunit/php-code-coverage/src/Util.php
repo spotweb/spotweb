@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the php-code-coverage package.
  *
@@ -7,42 +7,34 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\CodeCoverage;
 
 /**
  * Utility methods.
  */
-class Util
+final class Util
 {
     /**
-     * @param float $a
-     * @param float $b
-     * @param bool  $asString
-     * @param bool  $fixedWidth
-     *
      * @return float|int|string
      */
-    public static function percent($a, $b, $asString = false, $fixedWidth = false)
+    public static function percent(float $a, float $b, bool $asString = false, bool $fixedWidth = false)
     {
         if ($asString && $b == 0) {
             return '';
         }
 
+        $percent = 100;
+
         if ($b > 0) {
             $percent = ($a / $b) * 100;
-        } else {
-            $percent = 100;
         }
 
         if ($asString) {
-            if ($fixedWidth) {
-                return sprintf('%6.2F%%', $percent);
-            }
+            $format = $fixedWidth ? '%6.2F%%' : '%01.2F%%';
 
-            return sprintf('%01.2F%%', $percent);
-        } else {
-            return $percent;
+            return \sprintf($format, $percent);
         }
+
+        return $percent;
     }
 }

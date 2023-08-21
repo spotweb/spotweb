@@ -1,6 +1,45 @@
 CHANGELOG
 =========
 
+5.4
+---
+
+ * Add `TesterTrait::assertCommandIsSuccessful()` to test command
+ * Deprecate `HelperSet::setCommand()` and `getCommand()` without replacement
+
+5.3
+---
+
+ * Add `GithubActionReporter` to render annotations in a Github Action
+ * Add `InputOption::VALUE_NEGATABLE` flag to handle `--foo`/`--no-foo` options
+ * Add the `Command::$defaultDescription` static property and the `description` attribute
+   on the `console.command` tag to allow the `list` command to instantiate commands lazily
+ * Add option `--short` to the `list` command
+ * Add support for bright colors
+ * Add `#[AsCommand]` attribute for declaring commands on PHP 8
+ * Add `Helper::width()` and `Helper::length()`
+ * The `--ansi` and `--no-ansi` options now default to `null`.
+
+5.2.0
+-----
+
+ * Added `SingleCommandApplication::setAutoExit()` to allow testing via `CommandTester`
+ * added support for multiline responses to questions through `Question::setMultiline()`
+   and `Question::isMultiline()`
+ * Added `SignalRegistry` class to stack signals handlers
+ * Added support for signals:
+    * Added `Application::getSignalRegistry()` and `Application::setSignalsToDispatchEvent()` methods
+    * Added `SignalableCommandInterface` interface
+ * Added `TableCellStyle` class to customize table cell
+ * Removed `php ` prefix invocation from help messages.
+
+5.1.0
+-----
+
+ * `Command::setHidden()` is final since Symfony 5.1
+ * Add `SingleCommandApplication`
+ * Add `Cursor` class
+
 5.0.0
 -----
 
@@ -63,9 +102,9 @@ CHANGELOG
  * `OutputFormatter` throws an exception when unknown options are used
  * removed `QuestionHelper::setInputStream()/getInputStream()`
  * removed `Application::getTerminalWidth()/getTerminalHeight()` and
-  `Application::setTerminalDimensions()/getTerminalDimensions()`
-* removed `ConsoleExceptionEvent`
-* removed `ConsoleEvents::EXCEPTION`
+   `Application::setTerminalDimensions()/getTerminalDimensions()`
+ * removed `ConsoleExceptionEvent`
+ * removed `ConsoleEvents::EXCEPTION`
 
 3.4.0
 -----
@@ -82,23 +121,23 @@ CHANGELOG
 3.3.0
 -----
 
-* added `ExceptionListener`
-* added `AddConsoleCommandPass` (originally in FrameworkBundle)
-* [BC BREAK] `Input::getOption()` no longer returns the default value for options
-  with value optional explicitly passed empty
-* added console.error event to catch exceptions thrown by other listeners
-* deprecated console.exception event in favor of console.error
-* added ability to handle `CommandNotFoundException` through the
- `console.error` event
-* deprecated default validation in `SymfonyQuestionHelper::ask`
+ * added `ExceptionListener`
+ * added `AddConsoleCommandPass` (originally in FrameworkBundle)
+ * [BC BREAK] `Input::getOption()` no longer returns the default value for options
+   with value optional explicitly passed empty
+ * added console.error event to catch exceptions thrown by other listeners
+ * deprecated console.exception event in favor of console.error
+ * added ability to handle `CommandNotFoundException` through the
+   `console.error` event
+ * deprecated default validation in `SymfonyQuestionHelper::ask`
 
 3.2.0
 ------
 
-* added `setInputs()` method to CommandTester for ease testing of commands expecting inputs
-* added `setStream()` and `getStream()` methods to Input (implement StreamableInputInterface)
-* added StreamableInputInterface
-* added LockableTrait
+ * added `setInputs()` method to CommandTester for ease testing of commands expecting inputs
+ * added `setStream()` and `getStream()` methods to Input (implement StreamableInputInterface)
+ * added StreamableInputInterface
+ * added LockableTrait
 
 3.1.0
 -----
