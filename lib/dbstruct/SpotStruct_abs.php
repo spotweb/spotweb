@@ -405,7 +405,7 @@ abstract class SpotStruct_abs
         $this->validateColumn('spotterid', 'spots', 'VARCHAR(32)', null, false, 'ascii_bin');
         $this->validateColumn('editstamp', 'spots', 'INTEGER UNSIGNED', null, false, '');
         $this->validateColumn('editor', 'spots', 'VARCHAR(128)', null, false, 'utf8');
-        $this->alterStorageEngine('spots', 'MyISAM');
+        $this->alterStorageEngine('spots', 'InnoDB');
 
         // ---- spotsfull table ---- #
         $this->createTable('spotsfull', 'utf8');
@@ -539,7 +539,7 @@ abstract class SpotStruct_abs
         $this->validateColumn('lasthit', 'sessions', 'INTEGER', null, false, '');
         $this->validateColumn('ipaddr', 'sessions', 'VARCHAR(45)', "''", true, 'ascii');
         $this->validateColumn('devicetype', 'sessions', 'VARCHAR(8)', "''", true, 'ascii');
-        $this->alterStorageEngine('sessions', 'MyISAM');
+        $this->alterStorageEngine('sessions', 'InnoDB');
 
         // ---- securitygroups ----
         $this->createTable('securitygroups', 'ascii');
