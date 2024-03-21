@@ -384,10 +384,10 @@ msgid "Find NZB"
 msgstr "NZB zoeken"
 
 msgid "Delete from watchlist (w)"
-msgstr "Verwijder uit watchlist (w)"
+msgstr "Verwijder uit volglijst (w)"
 
 msgid "Place in watchlist (w)"
-msgstr "Plaats in watchlist (w)"
+msgstr "Plaats in volglijst(w)"
 
 msgid "Add NZB to SABnzbd queue (you already downloaded this spot) (s)"
 msgstr "Voeg NZB aan SABnzbd wachtrij toe (je hebt deze spot al gedownload) (s)"
@@ -491,7 +491,7 @@ msgid "Go to category '%s'"
 msgstr "Ga naar de categorie '%s'"
 
 msgid "Position in watchlist (w)"
-msgstr "Plaats in watchlist (w)"
+msgstr "Plaats in volglijst (w)"
 
 msgid "%d comments on '%s'"
 msgstr "%d reacties bij '%s'"
@@ -623,6 +623,21 @@ msgstr "Stacktraces maken het gemakkelijk om problemen te achterhalen, ze kunnen
 msgid "Retrieve increment"
 msgstr "Ophalen per..."
 
+msgid "Enable imagepreview in spot overview"
+msgstr "Plaatjes tonen in spot overzicht"
+
+msgid "Highlight spots based on amount of comments"
+msgstr "Spots markeren gebaseerd op hoeveelheid commentaar"
+
+msgid "Amount of comments to highlight spot"
+msgstr "Hoeveel commentaar om een spot te markeren"
+
+msgid "Blacklist used during retrieve:"
+msgstr "Op te halen zwarte lijst:"
+
+msgid "Whitelist used during retrieve:"
+msgstr "Op te halen witte lijst:"
+
 msgid "Lower this if you get timeouts during retrieve"
 msgstr "Verlaag dit als je regelmatig timeouts krijgt tijdens retrieve"
 
@@ -693,11 +708,17 @@ msgstr "Relevantie"
 msgid "Latest first"
 msgstr "Nieuwste eerst"
 
-msgid "Formatting of dates"
-msgstr "Opmaak van datums"
+msgid "Formatting of dates. To use long php_intl should be installed"
+msgstr "Opmaak van datums. Om lang te gebruiken moet php_intl zijn geinstalleerd"
 
 msgid "Human"
 msgstr "Menselijk"
+
+msgid "Long"
+msgstr "Lang"
+
+msgid "Short"
+msgstr "Kort"
 
 msgid "Template for non-mobile devices"
 msgstr "Template voor niet-mobiele apparaten"
@@ -724,7 +745,7 @@ msgid "Should we keep track of the downloads that are done?"
 msgstr "Moeten we bijhouden welke downloads er gedaan zijn?"
 
 msgid "Shall we keep track of a watchlist?"
-msgstr "Moeten we een watchlist bijhouden?"
+msgstr "Moeten we een volglijst bijhouden?"
 
 msgid "Show filesize in spotoverview?"
 msgstr "Toon bestandsgrootte in spotoverzicht?"
@@ -853,7 +874,7 @@ msgid "Use the following standard body"
 msgstr "De volgende body standaard invullen"
 
 msgid "Send message when a spot is added or deleted from the watchlist?"
-msgstr "Bericht versturen wanneer een spot is toegevoegd aan of verwijderd van de watchlist?"
+msgstr "Bericht versturen wanneer een spot is toegevoegd aan of verwijderd van de volglijst?"
 
 msgid "Send message when a NZB file is send? Doesn't work for client-SABnzbd."
 msgstr "Bericht versturen wanneer een NZB is verzonden? Werkt niet voor client-SABnzbd."
@@ -1016,7 +1037,7 @@ msgid "Queue"
 msgstr "Wachtrij"
 
 msgid "Quick Links"
-msgstr "Quick Links"
+msgstr "Snelle toegang"
 
 msgid "Show new spots in filter &quot;%s&quot;"
 msgstr "Laat nieuwe spots in filter &quot;%s&quot; zien"
@@ -1348,8 +1369,29 @@ msgstr "Geen plaatje opgegeven"
 msgid "unknown"
 msgstr "onbekende"
 
+msgid "Reset filters"
+msgstr "Geen filters"
+
+msgid "New"
+msgstr "Nieuw"
+
+msgid "My spots"
+msgstr "Mijn spots"
+
+msgid "Watchlist"
+msgstr "Volglijst"
+
+msgid "Downloaded"
+msgstr "Gedownload"
+
 msgid "Statistics"
 msgstr "Statistieken"
+
+msgid "Recently viewed"
+msgstr "Recent bekeken"
+
+msgid "Documentation" 
+msgstr "Documentatie"
 
 msgid "Unknown error"
 msgstr "Onbekende fout"
@@ -1761,7 +1803,7 @@ msgid "Use downloads manager API "
 msgstr "SABnzbd+ API gebruiken (niet download manager integratie)"
 
 msgid "Keep watchlist"
-msgstr "Watchlist bijhouden"
+msgstr "Volglijst bijhouden"
 
 msgid "Keep downloadlist"
 msgstr "Downloadlist bijhouden"

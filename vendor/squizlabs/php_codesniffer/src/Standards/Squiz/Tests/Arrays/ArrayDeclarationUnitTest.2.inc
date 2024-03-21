@@ -179,7 +179,7 @@ $listItems[$aliasPath] = [
                           'itemContent' => implode('<br/>', $aliases)
                          ];
 
-$x = 
+$x =
      [
       $x,
       $y,
@@ -383,6 +383,18 @@ HERE
       ,
        ];
 
+[
+ lorem(
+     1
+ ), 2,
+];
+
+[
+ 1 => lorem(
+     1
+ ), 2 => 2,
+];
+
 $foo = [
         'тип'  => 'авто',
         'цвет' => 'синий',
@@ -412,6 +424,45 @@ $array = [
           2 => fn ($x) => yield 'a' => $x,
           3 => '3',
          ];
+
+$foo = [
+        $this->fn => 'value',
+        $foo->fn => 'value',
+       ];
+
+[$a, $b,
+$c];
+
+['a' => $a, 'b' => $b,
+'c' => $c];
+
+[
+ static function() {
+     return null;
+ },
+ (array) [],
+ (bool) [],
+ (double) [],
+ (int) [],
+ (object) [],
+ (string) [],
+ (unset) [],
+];
+
+[
+ 'foo',
+ 'bar'
+ // This is a non-fixable error.
+ ,
+];
+
+yield [
+    static fn () : string => '',
+];
+
+yield [
+       static fn () : string => '',
+      ];
 
 // Intentional syntax error.
 $a = [

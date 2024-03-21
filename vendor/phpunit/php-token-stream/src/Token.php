@@ -135,6 +135,7 @@ abstract class PHP_TokenWithScope extends PHP_Token
 
         while ($this->endTokenId === null && isset($tokens[$i])) {
             if ($tokens[$i] instanceof PHP_Token_OPEN_CURLY ||
+                $tokens[$i] instanceof PHP_Token_DOLLAR_OPEN_CURLY_BRACES ||
                 $tokens[$i] instanceof PHP_Token_CURLY_OPEN) {
                 $block++;
             } elseif ($tokens[$i] instanceof PHP_Token_CLOSE_CURLY) {
@@ -185,7 +186,7 @@ abstract class PHP_TokenWithScopeAndVisibility extends PHP_TokenWithScope
                 $tokens[$i] instanceof PHP_Token_PROTECTED ||
                 $tokens[$i] instanceof PHP_Token_PUBLIC)) {
                 return strtolower(
-                    str_replace('PHP_Token_', '', get_class($tokens[$i]))
+                    str_replace('PHP_Token_', '', PHP_Token_Util::getClass($tokens[$i]))
                 );
             }
             if (isset($tokens[$i]) &&
@@ -219,7 +220,7 @@ abstract class PHP_TokenWithScopeAndVisibility extends PHP_TokenWithScope
                 $tokens[$i] instanceof PHP_Token_FINAL ||
                 $tokens[$i] instanceof PHP_Token_ABSTRACT)) {
                 $keywords[] = strtolower(
-                    str_replace('PHP_Token_', '', get_class($tokens[$i]))
+                    str_replace('PHP_Token_', '', PHP_Token_Util::getClass($tokens[$i]))
                 );
             }
         }
@@ -271,7 +272,7 @@ abstract class PHP_Token_Includes extends PHP_Token
         if ($tokens[$this->id + 2] instanceof PHP_Token_CONSTANT_ENCAPSED_STRING) {
             $this->name = trim($tokens[$this->id + 2], "'\"");
             $this->type = strtolower(
-                str_replace('PHP_Token_', '', get_class($tokens[$this->id]))
+                str_replace('PHP_Token_', '', PHP_Token_Util::getClass($tokens[$this->id]))
             );
         }
     }
@@ -404,7 +405,7 @@ class PHP_Token_FUNCTION extends PHP_TokenWithScopeAndVisibility
         $tokens    = $this->tokenStream->tokens();
 
         for ($i = $this->id; $i <= $end; $i++) {
-            switch (get_class($tokens[$i])) {
+            switch (PHP_Token_Util::getClass($tokens[$i])) {
                 case 'PHP_Token_IF':
                 case 'PHP_Token_ELSEIF':
                 case 'PHP_Token_FOR':
@@ -1350,111 +1351,11 @@ class PHP_Token_YIELD_FROM extends PHP_Token
 {
 }
 
-// Tokens introduced in HackLang / HHVM
-class PHP_Token_ASYNC extends PHP_Token
+// Tokens introduced in PHP 7.4
+class PHP_Token_COALESCE_EQUAL extends PHP_Token
 {
 }
 
-class PHP_Token_AWAIT extends PHP_Token
-{
-}
-
-class PHP_Token_COMPILER_HALT_OFFSET extends PHP_Token
-{
-}
-
-class PHP_Token_ENUM extends PHP_Token
-{
-}
-
-class PHP_Token_EQUALS extends PHP_Token
-{
-}
-
-class PHP_Token_IN extends PHP_Token
-{
-}
-
-class PHP_Token_JOIN extends PHP_Token
-{
-}
-
-class PHP_Token_LAMBDA_ARROW extends PHP_Token
-{
-}
-
-class PHP_Token_LAMBDA_CP extends PHP_Token
-{
-}
-
-class PHP_Token_LAMBDA_OP extends PHP_Token
-{
-}
-
-class PHP_Token_ONUMBER extends PHP_Token
-{
-}
-
-class PHP_Token_NULLSAFE_OBJECT_OPERATOR extends PHP_Token
-{
-}
-
-class PHP_Token_SHAPE extends PHP_Token
-{
-}
-
-class PHP_Token_SUPER extends PHP_Token
-{
-}
-
-class PHP_Token_TYPE extends PHP_Token
-{
-}
-
-class PHP_Token_TYPELIST_GT extends PHP_Token
-{
-}
-
-class PHP_Token_TYPELIST_LT extends PHP_Token
-{
-}
-
-class PHP_Token_WHERE extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_ATTRIBUTE extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_CATEGORY extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_CATEGORY_LABEL extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_CHILDREN extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_LABEL extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_REQUIRED extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_TAG_GT extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_TAG_LT extends PHP_Token
-{
-}
-
-class PHP_Token_XHP_TEXT extends PHP_Token
+class PHP_Token_FN extends PHP_Token
 {
 }

@@ -10,6 +10,8 @@ use PhpCoveralls\Bundle\CoverallsBundle\Version;
  * Data represents "json_file" of Coveralls API.
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class JsonFile extends Coveralls
 {
@@ -99,11 +101,25 @@ class JsonFile extends Coveralls
      */
     protected $metrics;
 
+    /**
+     * If this is set, the build will not be considered done until a webhook has
+     * been sent to https://coveralls.io/webhook?repo_token=….
+     *
+     * @var bool
+     */
+    protected $parallel;
+
+    /**
+     * If this is set, the job being reported will be named in the view and have
+     * it’s own independent status reported to your VCS provider.
+     *
+     * @var string
+     */
+    protected $flagName;
+
     // API
 
     /**
-     * {@inheritdoc}
-     *
      * @see \PhpCoveralls\Bundle\CoverallsBundle\Entity\ArrayConvertable::toArray()
      */
     public function toArray()
@@ -120,6 +136,8 @@ class JsonFile extends Coveralls
             'service_pull_request' => 'servicePullRequest',
             'service_event_type' => 'serviceEventType',
             'repo_token' => 'repoToken',
+            'parallel' => 'parallel',
+            'flag_name' => 'flagName',
             'git' => 'git',
             'run_at' => 'runAt',
             'source_files' => 'sourceFiles',
@@ -143,15 +161,16 @@ class JsonFile extends Coveralls
      *
      * @param array $env $_SERVER environment
      *
-     * @throws \RuntimeException
-     *
      * @return $this
+     *
+     * @throws \RuntimeException
      */
     public function fillJobs(array $env)
     {
         return $this
             ->fillStandardizedEnvVars($env)
-            ->ensureJobs();
+            ->ensureJobs()
+        ;
     }
 
     /**
@@ -222,8 +241,6 @@ class JsonFile extends Coveralls
 
     /**
      * Add source file.
-     *
-     * @param SourceFile $sourceFile
      */
     public function addSourceFile(SourceFile $sourceFile)
     {
@@ -237,7 +254,7 @@ class JsonFile extends Coveralls
      */
     public function hasSourceFiles()
     {
-        return count($this->sourceFiles) > 0;
+        return \count($this->sourceFiles) > 0;
     }
 
     /**
@@ -296,6 +313,54 @@ class JsonFile extends Coveralls
     public function getRepoToken()
     {
         return $this->repoToken;
+    }
+
+    /**
+     * Set parallel.
+     *
+     * @param string $parallel parallel
+     *
+     * @return $this
+     */
+    public function setParallel($parallel)
+    {
+        $this->parallel = $parallel;
+
+        return $this;
+    }
+
+    /**
+     * Return parallel.
+     *
+     * @return null|bool
+     */
+    public function getParallel()
+    {
+        return $this->parallel;
+    }
+
+    /**
+     * Set flag name.
+     *
+     * @param string $flagName flag name
+     *
+     * @return $this
+     */
+    public function setFlagName($flagName)
+    {
+        $this->flagName = $flagName;
+
+        return $this;
+    }
+
+    /**
+     * Return flag name.
+     *
+     * @return null|string
+     */
+    public function getFlagName()
+    {
+        return $this->flagName;
     }
 
     /**
@@ -440,8 +505,6 @@ class JsonFile extends Coveralls
      * Convert to json property.
      *
      * @param mixed $prop
-     *
-     * @return mixed
      */
     protected function toJsonProperty($prop)
     {
@@ -449,7 +512,7 @@ class JsonFile extends Coveralls
             return $prop->toArray();
         }
 
-        if (is_array($prop)) {
+        if (\is_array($prop)) {
             return $this->toJsonPropertyArray($prop);
         }
 
@@ -458,8 +521,6 @@ class JsonFile extends Coveralls
 
     /**
      * Convert to array as json property.
-     *
-     * @param array $propArray
      *
      * @return array
      */
@@ -507,6 +568,8 @@ class JsonFile extends Coveralls
             'serviceJobId' => 'CI_JOB_ID',
             'serviceEventType' => 'COVERALLS_EVENT_TYPE',
             'repoToken' => 'COVERALLS_REPO_TOKEN',
+            'parallel' => 'COVERALLS_PARALLEL',
+            'flagName' => 'COVERALLS_FLAG_NAME',
         ];
 
         foreach ($map as $propName => $envName) {
@@ -521,9 +584,9 @@ class JsonFile extends Coveralls
     /**
      * Ensure data consistency for jobs API.
      *
-     * @throws \RuntimeException
-     *
      * @return $this
+     *
+     * @throws \RuntimeException
      */
     protected function ensureJobs()
     {
@@ -547,6 +610,10 @@ class JsonFile extends Coveralls
             return $this;
         }
 
+        if ($this->requireGithubActions()) {
+            return $this;
+        }
+
         if ($this->isUnsupportedServiceJob()) {
             return $this;
         }
@@ -561,7 +628,10 @@ class JsonFile extends Coveralls
      */
     protected function requireServiceJobId()
     {
-        return $this->serviceName !== null && $this->serviceJobId !== null && $this->repoToken === null;
+        return $this->serviceName !== null
+            && $this->serviceNumber !== null
+            && $this->serviceJobId !== null
+            && $this->repoToken === null;
     }
 
     /**
@@ -571,7 +641,9 @@ class JsonFile extends Coveralls
      */
     protected function requireServiceNumber()
     {
-        return $this->serviceName !== null && $this->serviceNumber !== null && $this->repoToken !== null;
+        return $this->serviceName !== null
+            && $this->serviceNumber !== null
+            && $this->repoToken !== null;
     }
 
     /**
@@ -581,7 +653,9 @@ class JsonFile extends Coveralls
      */
     protected function requireServiceEventType()
     {
-        return $this->serviceName !== null && $this->serviceEventType !== null && $this->repoToken !== null;
+        return $this->serviceName !== null
+            && $this->serviceEventType !== null
+            && $this->repoToken !== null;
     }
 
     /**
@@ -591,7 +665,18 @@ class JsonFile extends Coveralls
      */
     protected function requireRepoToken()
     {
-        return $this->serviceName === 'travis-pro' && $this->repoToken !== null;
+        return $this->serviceName === 'travis-pro'
+            && $this->repoToken !== null;
+    }
+
+    /**
+     * Return whether the job requires "service_number", "service_job_id" and "repo_token" (for GithubActions).
+     *
+     * @return bool
+     */
+    protected function requireGithubActions()
+    {
+        return $this->serviceName === 'github' && $this->serviceJobId !== null && $this->repoToken !== null;
     }
 
     /**
@@ -601,6 +686,40 @@ class JsonFile extends Coveralls
      */
     protected function isUnsupportedServiceJob()
     {
-        return $this->serviceJobId === null && $this->serviceNumber === null && $this->serviceEventType === null && $this->repoToken !== null;
+        return $this->serviceJobId === null
+            && $this->serviceNumber === null
+            && $this->serviceEventType === null
+            && $this->repoToken !== null;
+    }
+
+    protected function onJsonError()
+    {
+        $array = $this->toArray();
+
+        if (!empty($array['git'])) {
+            $this->throwWhenInvalidJson($array['git'], '[git]');
+        }
+
+        $sourceFiles = empty($array['source_files']) ? [] : $array['source_files'];
+
+        foreach ($sourceFiles as $item) {
+            $this->throwWhenInvalidJson($item, '[source_files]: ' . $item['name']);
+        }
+    }
+
+    /**
+     * @param string $source
+     */
+    private function throwWhenInvalidJson(array $item, $source)
+    {
+        json_encode($item);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \UnexpectedValueException(sprintf(
+                'Can not encode to JSON, error: "%s" in "%s".',
+                json_last_error_msg(),
+                $source
+            ));
+        }
     }
 }

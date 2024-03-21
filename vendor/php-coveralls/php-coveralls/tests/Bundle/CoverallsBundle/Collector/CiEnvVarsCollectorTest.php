@@ -10,14 +10,11 @@ use PhpCoveralls\Tests\ProjectTestCase;
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Collector\CiEnvVarsCollector
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class CiEnvVarsCollectorTest extends ProjectTestCase
+final class CiEnvVarsCollectorTest extends ProjectTestCase
 {
-    protected function setUp()
-    {
-        $this->setUpDir(realpath(__DIR__ . '/../../..'));
-    }
-
     // collect()
 
     /**
@@ -27,20 +24,25 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
     {
         $serviceName = 'travis-ci';
         $serviceJobId = '1.1';
+        $serviceBuildNumber = '123456';
 
         $env = [];
         $env['TRAVIS'] = true;
         $env['TRAVIS_JOB_ID'] = $serviceJobId;
+        $env['TRAVIS_BUILD_NUMBER'] = $serviceBuildNumber;
 
         $object = $this->createCiEnvVarsCollector();
 
         $actual = $object->collect($env);
 
-        $this->assertArrayHasKey('CI_NAME', $actual);
-        $this->assertSame($serviceName, $actual['CI_NAME']);
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
 
-        $this->assertArrayHasKey('CI_JOB_ID', $actual);
-        $this->assertSame($serviceJobId, $actual['CI_JOB_ID']);
+        self::assertArrayHasKey('CI_JOB_ID', $actual);
+        self::assertSame($serviceJobId, $actual['CI_JOB_ID']);
+
+        self::assertArrayHasKey('CI_BUILD_NUMBER', $actual);
+        self::assertSame($serviceBuildNumber, $actual['CI_BUILD_NUMBER']);
 
         return $object;
     }
@@ -52,11 +54,13 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
     {
         $serviceName = 'travis-pro';
         $serviceJobId = '1.2';
+        $serviceBuildNumber = '12345';
         $repoToken = 'your_token';
 
         $env = [];
         $env['TRAVIS'] = true;
         $env['TRAVIS_JOB_ID'] = $serviceJobId;
+        $env['TRAVIS_BUILD_NUMBER'] = $serviceBuildNumber;
         $env['COVERALLS_REPO_TOKEN'] = $repoToken;
 
         $config = $this->createConfiguration();
@@ -66,14 +70,17 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
 
         $actual = $object->collect($env);
 
-        $this->assertArrayHasKey('CI_NAME', $actual);
-        $this->assertSame($serviceName, $actual['CI_NAME']);
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
 
-        $this->assertArrayHasKey('CI_JOB_ID', $actual);
-        $this->assertSame($serviceJobId, $actual['CI_JOB_ID']);
+        self::assertArrayHasKey('CI_JOB_ID', $actual);
+        self::assertSame($serviceJobId, $actual['CI_JOB_ID']);
 
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $actual);
-        $this->assertSame($repoToken, $actual['COVERALLS_REPO_TOKEN']);
+        self::assertArrayHasKey('CI_BUILD_NUMBER', $actual);
+        self::assertSame($serviceBuildNumber, $actual['CI_BUILD_NUMBER']);
+
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $actual);
+        self::assertSame($repoToken, $actual['COVERALLS_REPO_TOKEN']);
 
         return $object;
     }
@@ -89,17 +96,17 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
         $env = [];
         $env['COVERALLS_REPO_TOKEN'] = 'token';
         $env['CIRCLECI'] = 'true';
-        $env['CIRCLE_BUILD_NUM'] = $serviceNumber;
+        $env['CIRCLE_WORKFLOW_ID'] = $serviceNumber;
 
         $object = $this->createCiEnvVarsCollector();
 
         $actual = $object->collect($env);
 
-        $this->assertArrayHasKey('CI_NAME', $actual);
-        $this->assertSame($serviceName, $actual['CI_NAME']);
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
 
-        $this->assertArrayHasKey('CI_BUILD_NUMBER', $actual);
-        $this->assertSame($serviceNumber, $actual['CI_BUILD_NUMBER']);
+        self::assertArrayHasKey('CI_BUILD_NUMBER', $actual);
+        self::assertSame($serviceNumber, $actual['CI_BUILD_NUMBER']);
 
         return $object;
     }
@@ -122,14 +129,105 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
 
         $actual = $object->collect($env);
 
-        $this->assertArrayHasKey('CI_NAME', $actual);
-        $this->assertSame($serviceName, $actual['CI_NAME']);
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
 
-        $this->assertArrayHasKey('CI_BUILD_NUMBER', $actual);
-        $this->assertSame($serviceNumber, $actual['CI_BUILD_NUMBER']);
+        self::assertArrayHasKey('CI_BUILD_NUMBER', $actual);
+        self::assertSame($serviceNumber, $actual['CI_BUILD_NUMBER']);
 
-        $this->assertArrayHasKey('CI_BUILD_URL', $actual);
-        $this->assertSame($buildUrl, $actual['CI_BUILD_URL']);
+        self::assertArrayHasKey('CI_BUILD_URL', $actual);
+        self::assertSame($buildUrl, $actual['CI_BUILD_URL']);
+
+        return $object;
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCollectGithubActionsEnvVars()
+    {
+        $serviceName = 'github';
+        $jobId = '275038505';
+
+        $env = [];
+        $env['COVERALLS_REPO_TOKEN'] = 'token';
+        $env['GITHUB_ACTIONS'] = true;
+        $env['GITHUB_EVENT_NAME'] = 'push';
+        $env['GITHUB_REF'] = 'refs/heads/master';
+        $env['GITHUB_RUN_ID'] = '275038505';
+
+        $object = $this->createCiEnvVarsCollector();
+
+        $actual = $object->collect($env);
+
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
+
+        self::assertArrayHasKey('CI_JOB_ID', $actual);
+        self::assertSame($jobId, $actual['CI_JOB_ID']);
+
+        self::assertArrayHasKey('CI_BRANCH', $actual);
+        self::assertSame('master', $actual['CI_BRANCH']);
+
+        return $object;
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCollectGithubActionsEnvVarsForPullRequest()
+    {
+        $serviceName = 'github';
+
+        $env = [];
+        $env['COVERALLS_REPO_TOKEN'] = 'token';
+        $env['GITHUB_ACTIONS'] = true;
+        $env['GITHUB_EVENT_NAME'] = 'pull_request';
+        $env['GITHUB_REF'] = 'refs/pull/1/merge';
+        $env['GITHUB_RUN_ID'] = '275038505';
+
+        $object = $this->createCiEnvVarsCollector();
+
+        $actual = $object->collect($env);
+
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
+
+        self::assertArrayHasKey('CI_JOB_ID', $actual);
+        self::assertSame('275038505', $actual['CI_JOB_ID']);
+
+        self::assertArrayHasKey('CI_BRANCH', $actual);
+        self::assertSame('refs/pull/1/merge', $actual['CI_BRANCH']);
+
+        return $object;
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCollectGithubActionsEnvVarsForTag()
+    {
+        $serviceName = 'github';
+
+        $env = [];
+        $env['COVERALLS_REPO_TOKEN'] = 'token';
+        $env['GITHUB_ACTIONS'] = true;
+        $env['GITHUB_EVENT_NAME'] = 'push';
+        $env['GITHUB_REF'] = 'refs/tags/v123.456.789';
+        $env['GITHUB_RUN_ID'] = '275038505';
+
+        $object = $this->createCiEnvVarsCollector();
+
+        $actual = $object->collect($env);
+
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
+
+        self::assertArrayHasKey('CI_JOB_ID', $actual);
+        self::assertSame('275038505', $actual['CI_JOB_ID']);
+
+        self::assertArrayHasKey('CI_BRANCH', $actual);
+        self::assertSame('v123.456.789', $actual['CI_BRANCH']);
 
         return $object;
     }
@@ -150,14 +248,14 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
 
         $actual = $object->collect($env);
 
-        $this->assertArrayHasKey('CI_NAME', $actual);
-        $this->assertSame($serviceName, $actual['CI_NAME']);
+        self::assertArrayHasKey('CI_NAME', $actual);
+        self::assertSame($serviceName, $actual['CI_NAME']);
 
-        $this->assertArrayHasKey('COVERALLS_EVENT_TYPE', $actual);
-        $this->assertSame($serviceEventType, $actual['COVERALLS_EVENT_TYPE']);
+        self::assertArrayHasKey('COVERALLS_EVENT_TYPE', $actual);
+        self::assertSame($serviceEventType, $actual['COVERALLS_EVENT_TYPE']);
 
-        $this->assertArrayHasKey('CI_JOB_ID', $actual);
-        $this->assertNull($actual['CI_JOB_ID']);
+        self::assertArrayHasKey('CI_JOB_ID', $actual);
+        self::assertNull($actual['CI_JOB_ID']);
 
         return $object;
     }
@@ -178,8 +276,8 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
 
         $actual = $object->collect($env);
 
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $actual);
-        $this->assertSame($repoToken, $actual['COVERALLS_REPO_TOKEN']);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $actual);
+        self::assertSame($repoToken, $actual['COVERALLS_REPO_TOKEN']);
 
         return $object;
     }
@@ -198,8 +296,33 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
 
         $actual = $object->collect($env);
 
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $actual);
-        $this->assertSame($repoToken, $actual['COVERALLS_REPO_TOKEN']);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $actual);
+        self::assertSame($repoToken, $actual['COVERALLS_REPO_TOKEN']);
+
+        return $object;
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCollectParallel()
+    {
+        $parallel = true;
+        $flagName = 'php-7.4';
+
+        $env = [];
+        $env['COVERALLS_PARALLEL'] = $parallel;
+        $env['COVERALLS_FLAG_NAME'] = $flagName;
+
+        $object = $this->createCiEnvVarsCollector();
+
+        $actual = $object->collect($env);
+
+        self::assertArrayHasKey('COVERALLS_PARALLEL', $actual);
+        self::assertSame($parallel, $actual['COVERALLS_PARALLEL']);
+
+        self::assertArrayHasKey('COVERALLS_FLAG_NAME', $actual);
+        self::assertSame($flagName, $actual['COVERALLS_FLAG_NAME']);
 
         return $object;
     }
@@ -213,119 +336,137 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
     {
         $object = $this->createCiEnvVarsCollector();
 
-        $this->assertNull($object->getReadEnv());
+        self::assertNull($object->getReadEnv());
     }
 
     /**
      * @test
-     * @depends shouldCollectTravisCiEnvVars
      *
-     * @param CiEnvVarsCollector $object
+     * @depends shouldCollectTravisCiEnvVars
      */
     public function shouldHaveReadEnvAfterCollectTravisCiEnvVars(CiEnvVarsCollector $object)
     {
         $readEnv = $object->getReadEnv();
 
-        $this->assertCount(3, $readEnv);
-        $this->assertArrayHasKey('TRAVIS', $readEnv);
-        $this->assertArrayHasKey('TRAVIS_JOB_ID', $readEnv);
-        $this->assertArrayHasKey('CI_NAME', $readEnv);
+        self::assertCount(4, $readEnv);
+        self::assertArrayHasKey('TRAVIS', $readEnv);
+        self::assertArrayHasKey('TRAVIS_JOB_ID', $readEnv);
+        self::assertArrayHasKey('CI_NAME', $readEnv);
+        self::assertArrayHasKey('CI_BUILD_NUMBER', $readEnv);
     }
 
     /**
      * @test
-     * @depends shouldCollectTravisProEnvVars
      *
-     * @param CiEnvVarsCollector $object
+     * @depends shouldCollectGithubActionsEnvVars
+     */
+    public function shouldHaveReadEnvAfterCollectGithubActionsEnvVars(CiEnvVarsCollector $object)
+    {
+        $readEnv = $object->getReadEnv();
+
+        self::assertCount(6, $readEnv);
+        self::assertArrayHasKey('GITHUB_REF', $readEnv);
+        self::assertArrayHasKey('CI_NAME', $readEnv);
+        self::assertArrayHasKey('CI_JOB_ID', $readEnv);
+        self::assertArrayHasKey('GITHUB_ACTIONS', $readEnv);
+        self::assertArrayHasKey('CI_BRANCH', $readEnv);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+    }
+
+    /**
+     * @test
+     *
+     * @depends shouldCollectTravisProEnvVars
      */
     public function shouldHaveReadEnvAfterCollectTravisProEnvVars(CiEnvVarsCollector $object)
     {
         $readEnv = $object->getReadEnv();
 
-        $this->assertCount(4, $readEnv);
-        $this->assertArrayHasKey('TRAVIS', $readEnv);
-        $this->assertArrayHasKey('TRAVIS_JOB_ID', $readEnv);
-        $this->assertArrayHasKey('CI_NAME', $readEnv);
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+        self::assertCount(5, $readEnv);
+        self::assertArrayHasKey('TRAVIS', $readEnv);
+        self::assertArrayHasKey('TRAVIS_JOB_ID', $readEnv);
+        self::assertArrayHasKey('CI_NAME', $readEnv);
+        self::assertArrayHasKey('CI_BUILD_NUMBER', $readEnv);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
     }
 
     /**
      * @test
-     * @depends shouldCollectCircleCiEnvVars
      *
-     * @param CiEnvVarsCollector $object
+     * @depends shouldCollectCircleCiEnvVars
      */
     public function shouldHaveReadEnvAfterCollectCircleCiEnvVars(CiEnvVarsCollector $object)
     {
         $readEnv = $object->getReadEnv();
 
-        $this->assertCount(4, $readEnv);
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
-        $this->assertArrayHasKey('CIRCLECI', $readEnv);
-        $this->assertArrayHasKey('CIRCLE_BUILD_NUM', $readEnv);
-        $this->assertArrayHasKey('CI_NAME', $readEnv);
+        self::assertCount(4, $readEnv);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+        self::assertArrayHasKey('CIRCLECI', $readEnv);
+        self::assertArrayHasKey('CIRCLE_WORKFLOW_ID', $readEnv);
+        self::assertArrayHasKey('CI_NAME', $readEnv);
     }
 
     /**
      * @test
-     * @depends shouldCollectJenkinsEnvVars
      *
-     * @param CiEnvVarsCollector $object
+     * @depends shouldCollectJenkinsEnvVars
      */
     public function shouldHaveReadEnvAfterCollectJenkinsEnvVars(CiEnvVarsCollector $object)
     {
         $readEnv = $object->getReadEnv();
 
-        $this->assertCount(4, $readEnv);
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
-        $this->assertArrayHasKey('JENKINS_URL', $readEnv);
-        $this->assertArrayHasKey('BUILD_NUMBER', $readEnv);
-        $this->assertArrayHasKey('CI_NAME', $readEnv);
+        self::assertCount(4, $readEnv);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+        self::assertArrayHasKey('JENKINS_URL', $readEnv);
+        self::assertArrayHasKey('BUILD_NUMBER', $readEnv);
+        self::assertArrayHasKey('CI_NAME', $readEnv);
     }
 
     /**
      * @test
-     * @depends shouldCollectLocalEnvVars
      *
-     * @param CiEnvVarsCollector $object
+     * @depends shouldCollectLocalEnvVars
      */
     public function shouldHaveReadEnvAfterCollectLocalEnvVars(CiEnvVarsCollector $object)
     {
         $readEnv = $object->getReadEnv();
 
-        $this->assertCount(4, $readEnv);
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
-        $this->assertArrayHasKey('COVERALLS_RUN_LOCALLY', $readEnv);
-        $this->assertArrayHasKey('COVERALLS_EVENT_TYPE', $readEnv);
-        $this->assertArrayHasKey('CI_NAME', $readEnv);
+        self::assertCount(4, $readEnv);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+        self::assertArrayHasKey('COVERALLS_RUN_LOCALLY', $readEnv);
+        self::assertArrayHasKey('COVERALLS_EVENT_TYPE', $readEnv);
+        self::assertArrayHasKey('CI_NAME', $readEnv);
     }
 
     /**
      * @test
-     * @depends shouldCollectUnsupportedConfig
      *
-     * @param CiEnvVarsCollector $object
+     * @depends shouldCollectUnsupportedConfig
      */
     public function shouldHaveReadEnvAfterCollectUnsupportedConfig(CiEnvVarsCollector $object)
     {
         $readEnv = $object->getReadEnv();
 
-        $this->assertCount(1, $readEnv);
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+        self::assertCount(1, $readEnv);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
     }
 
     /**
      * @test
-     * @depends shouldCollectUnsupportedEnvVars
      *
-     * @param CiEnvVarsCollector $object
+     * @depends shouldCollectUnsupportedEnvVars
      */
     public function shouldHaveReadEnvAfterCollectUnsupportedEnvVars(CiEnvVarsCollector $object)
     {
         $readEnv = $object->getReadEnv();
 
-        $this->assertCount(1, $readEnv);
-        $this->assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+        self::assertCount(1, $readEnv);
+        self::assertArrayHasKey('COVERALLS_REPO_TOKEN', $readEnv);
+    }
+
+    protected function legacySetUp()
+    {
+        $this->setUpDir(realpath(__DIR__ . '/../../..'));
     }
 
     /**
@@ -336,7 +477,8 @@ class CiEnvVarsCollectorTest extends ProjectTestCase
         $config = new Configuration();
 
         return $config
-        ->addCloverXmlPath($this->cloverXmlPath);
+        ->addCloverXmlPath($this->cloverXmlPath)
+        ;
     }
 
     /**

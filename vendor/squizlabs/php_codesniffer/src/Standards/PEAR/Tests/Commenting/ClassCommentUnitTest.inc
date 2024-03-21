@@ -118,3 +118,28 @@ trait Empty_Trait_Doc
 {
 
 }//end trait
+
+
+/**
+ *
+ *
+ */
+enum Empty_Enum_Doc
+{
+
+}//end enum
+
+
+/**
+ * Sample class comment
+ *
+ * @category  PHP
+ * @package   PHP_CodeSniffer
+ * @author    Greg Sherwood <gsherwood@squiz.net>
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @link      http://pear.php.net/package/PHP_CodeSniffer
+ */
+#[Authenticate('admin_logged_in')]
+class TodoController extends AbstractController implements MustBeLoggedInInterface
+{
+}

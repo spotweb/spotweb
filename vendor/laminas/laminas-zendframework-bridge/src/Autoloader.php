@@ -12,6 +12,18 @@ use ArrayObject;
 use Composer\Autoload\ClassLoader;
 use RuntimeException;
 
+use function array_values;
+use function class_alias;
+use function class_exists;
+use function explode;
+use function file_exists;
+use function interface_exists;
+use function spl_autoload_register;
+use function strlen;
+use function strtr;
+use function substr;
+use function trait_exists;
+
 /**
  * Alias legacy Zend Framework project classes/interfaces/traits to Laminas equivalents.
  */
@@ -54,6 +66,10 @@ class Autoloader
      */
     private static function getClassLoader()
     {
+        if (getenv('COMPOSER_VENDOR_DIR') && file_exists(getenv('COMPOSER_VENDOR_DIR') . '/autoload.php')) {
+            return include getenv('COMPOSER_VENDOR_DIR') . '/autoload.php';
+        }
+
         if (file_exists(__DIR__ . '/../../../autoload.php')) {
             return include __DIR__ . '/../../../autoload.php';
         }

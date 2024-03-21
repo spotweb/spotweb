@@ -1,10 +1,12 @@
 <?php
 
+use Imdb\Config;
+use Imdb\Title;
+
 require_once __DIR__ . "/helpers.php";
 
 class TitleTest extends PHPUnit\Framework\TestCase
 {
-
     /**
      * IMDb IDs for testing:
      * 0133093 = The Matrix (has everything)
@@ -43,8 +45,8 @@ class TitleTest extends PHPUnit\Framework\TestCase
      */
     public function testConstruct_from_ini_constructed_config()
     {
-        $config = new \Imdb\Config(dirname(__FILE__) . '/resources/test.ini');
-        $imdb = new \Imdb\Title('0133093', $config);
+        $config = new Config(dirname(__FILE__) . '/resources/test.ini');
+        $imdb = new Title('0133093', $config);
         $this->assertEquals('test.local', $imdb->imdbsite);
         $this->assertEquals('/somefolder', $imdb->cachedir);
         $this->assertEquals(false, $imdb->storecache);
@@ -53,60 +55,60 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function test_constructor_with_integer_imdbid_is_coerced_to_7_digit_string()
     {
-        $imdb = new \Imdb\Title(133093);
+        $imdb = new Title(133093);
         $this->assertEquals('0133093', $imdb->imdbid());
     }
 
     public function test_constructor_with_ttxxxxxxx_is_coerced_to_7_digit_string()
     {
-        $imdb = new \Imdb\Title('tt0133093');
+        $imdb = new Title('tt0133093');
         $this->assertEquals('0133093', $imdb->imdbid());
     }
 
     public function test_constructor_with_url_is_coerced_to_7_digit_string()
     {
-        $imdb = new \Imdb\Title('https://www.imdb.com/title/tt0133093/');
+        $imdb = new Title('https://www.imdb.com/title/tt0133093/');
         $this->assertEquals('0133093', $imdb->imdbid());
     }
 
     public function test_constructor_with_8_digit_integer_imdbid_is_coerced_to_8_digit_string()
     {
-        $imdb = new \Imdb\Title(10027990);
+        $imdb = new Title(10027990);
         $this->assertEquals('10027990', $imdb->imdbid());
     }
 
     public function test_constructor_with_ttxxxxxxxx_retains_the_8_digit_string()
     {
-        $imdb = new \Imdb\Title('tt10027990');
+        $imdb = new Title('tt10027990');
         $this->assertEquals('10027990', $imdb->imdbid());
     }
 
     public function test_constructor_with_url_retains_the_8_digit_string()
     {
-        $imdb = new \Imdb\Title('https://www.imdb.com/title/tt10027990/');
+        $imdb = new Title('https://www.imdb.com/title/tt10027990/');
         $this->assertEquals('10027990', $imdb->imdbid());
     }
 
     public function test_constructor_with_custom_logger()
     {
-        $logger = \Mockery::mock('\Psr\Log\LoggerInterface', function($mock) {
-                $mock->shouldReceive('debug');
-                $mock->shouldReceive('error');
-            });
-        $imdb = new \Imdb\Title('some rubbish', null, $logger);
-        \Mockery::close(); // Assert that the mocked object was called as expected
+        $logger = Mockery::mock('\Psr\Log\LoggerInterface', function ($mock) {
+            $mock->shouldReceive('debug');
+            $mock->shouldReceive('error');
+        });
+        new Title('some rubbish', null, $logger);
+        Mockery::close(); // Assert that the mocked object was called as expected
         $this->assertTrue(true);
     }
 
     public function test_constructor_with_custom_cache()
     {
-        $cache = \Mockery::mock('\Psr\SimpleCache\CacheInterface', function($mock) {
-                $mock->shouldReceive('get')->andReturn('test');
-                $mock->shouldReceive('purge');
-            });
-        $imdb = new \Imdb\Title('', null, null, $cache);
+        $cache = Mockery::mock('\Psr\SimpleCache\CacheInterface', function ($mock) {
+            $mock->shouldReceive('get')->andReturn('test');
+            $mock->shouldReceive('purge');
+        });
+        $imdb = new Title('', null, null, $cache);
         $imdb->title();
-        \Mockery::close();
+        Mockery::close();
         $this->assertTrue(true);
     }
 
@@ -151,7 +153,7 @@ class TitleTest extends PHPUnit\Framework\TestCase
     public function testMovietype_on_TVMiniseries()
     {
         $imdb = $this->getImdb("0314979");
-        $this->assertEquals($imdb->movietype(), \Imdb\Title::TV_MINI_SERIES);
+        $this->assertEquals($imdb->movietype(), Title::TV_MINI_SERIES);
     }
 
     public function testMovietype_on_videoGame()
@@ -192,10 +194,10 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
     public function testTitle_different_language()
     {
-        $config = new \Imdb\Config();
+        $config = new Config();
         $config->language = 'de-de';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
-        $title = new \Imdb\Title(3110958, $config);
+        $title = new Title(3110958, $config);
         $this->assertEquals('Die Unfassbaren 2', $title->title());
     }
 
@@ -309,13 +311,13 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('USA', $runtimes[1]['annotations'][2]);
     }
 
-    // Apocalypse now "147 min | 196 min (Redux)"
+    // Apocalypse now "147 min | 202 min (Redux)"
     public function testRuntimes_two_runtimes_one_annotation()
     {
         $imdb = $this->getImdb('0078788');
         $runtimes = $imdb->runtimes();
         $this->assertEquals(147, $runtimes[0]['time']);
-        $this->assertEquals(196, $runtimes[1]['time']);
+        $this->assertEquals(202, $runtimes[1]['time']);
         $this->assertEquals('Redux', $runtimes[1]['annotations'][0]);
     }
 
@@ -418,7 +420,6 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertIsArray($recommendations);
         $this->assertCount(12, $recommendations);
 
-        $titlesWithEndYear = 0;
         foreach ($recommendations as $recommendation) {
             $this->assertIsArray($recommendation);
             $this->assertTrue(strlen($recommendation['title']) > 0); // title
@@ -751,14 +752,16 @@ class TitleTest extends PHPUnit\Framework\TestCase
 
         $matches = 0;
         foreach ($akas as $aka) {
-            if ($aka['title'] == 'Kaze no tani no Naushika') {
+            if ($aka['title'] == 'Kaze no tani no Naushika' && count($aka['comments']) > 0) {
                 // No country
                 $this->assertEquals('Kaze no tani no Naushika', $aka['title']);
-                $this->assertThat($aka['comments'][0],
+                $this->assertThat(
+                    $aka['comments'][0],
                     $this->logicalOr(
                         $this->equalTo('original title'),
                         $this->equalTo('French title')
-                    ));
+                    )
+                );
                 ++$matches;
             } elseif ($aka['title'] == 'Naushika iz Doline vjetrova') {
                 // Country, no comment
@@ -893,36 +896,38 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $plot = $imdb->plot_split();
         $this->assertEquals(
             array(
-            array(
-                'plot' => 0,
-                'author' => array(
-                    'name' => '',
-                    'url' => ''
+                array(
+                    'plot' => 0,
+                    'author' => array(
+                        'name' => '',
+                        'url' => ''
+                    )
+                ),
+                array(
+                    'plot' => 0,
+                    'author' => array(
+                        'name' => 'Paramount Pictures',
+                        'url' => 'https://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_1'
+                    )
                 )
             ),
             array(
-                'plot' => 0,
-                'author' => array(
-                    'name' => 'Paramount Pictures',
-                    'url' => 'https://www.imdb.com/search/title?plot_author=Paramount Pictures&view=simple&sort=alpha&ref_=ttpl_pl_1'
+                array(
+                    'plot' => strpos($plot[0]['plot'], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark."),
+                    'author' => array(
+                        'name' => $plot[0]['author']['name'],
+                        'url' => $plot[0]['author']['url']
+                    )
+                ),
+                array(
+                    'plot' => strpos($plot[1]['plot'], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
+                    'author' => array(
+                        'name' => $plot[1]['author']['name'],
+                        'url' => $plot[1]['author']['url']
+                    )
                 )
             )
-            ), array(
-            array(
-                'plot' => strpos($plot[0]['plot'], "Literature professor and gambler Jim Bennett's debt causes him to borrow money from his mother and a loan shark."),
-                'author' => array(
-                    'name' => $plot[0]['author']['name'],
-                    'url' => $plot[0]['author']['url']
-                )
-            ),
-            array(
-                'plot' => strpos($plot[1]['plot'], "Jim Bennett is a risk taker. Both an English professor and a high-stakes gambler, Bennett bets it all when he"),
-                'author' => array(
-                    'name' => $plot[1]['author']['name'],
-                    'url' => $plot[1]['author']['url']
-                )
-            )
-        ));
+        );
     }
 
     public function testSynopsis()
@@ -1359,36 +1364,20 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(10, $lastEpisode['episode']);
     }
 
-    public function testEpisodes_returns_episodes_for_a_multiseason_show_with_missing_airdates()
-    {
-        $imdb = $this->getImdb('1027544');
-        $seasons = $imdb->episodes();
-        $this->assertIsArray($seasons);
-        $this->assertCount(4, $seasons);
-        $episode = $seasons[1][20];
-
-        $this->assertEquals('1956132', $episode['imdbid']);
-        $this->assertEquals("Mama Mia", $episode['title']);
-        $this->assertEquals('', $episode['airdate']);
-        $this->assertEquals("Mr Carburettor is in a panic as his mother is coming to visit and he needs everything to be perfect.", $episode['plot']);
-        $this->assertEquals(1, $episode['season']);
-        $this->assertEquals(20, $episode['episode']);
-    }
-
     public function testEpisodes_returns_episodes_for_a_multiseason_show_with_empty_plots()
     {
         $imdb = $this->getImdb('1027544');
         $seasons = $imdb->episodes();
         $this->assertIsArray($seasons);
         $this->assertCount(4, $seasons);
-        $episode = $seasons[1][14];
+        $episode = $seasons[2][15];
 
-        $this->assertEquals('1827207', $episode['imdbid']);
-        $this->assertEquals("Make Up Your Mind Roary", $episode['title']);
-        $this->assertEquals('2007', $episode['airdate']);
+        $this->assertEquals('4558438', $episode['imdbid']);
+        $this->assertEquals("Funny Business", $episode['title']);
+        $this->assertEquals('27 May 2010', $episode['airdate']);
         $this->assertEquals("", $episode['plot']);
-        $this->assertEquals(1, $episode['season']);
-        $this->assertEquals(14, $episode['episode']);
+        $this->assertEquals(2, $episode['season']);
+        $this->assertEquals(15, $episode['episode']);
     }
 
     public function testEpisodes_returns_unknown_season_episodes()
@@ -1399,14 +1388,19 @@ class TitleTest extends PHPUnit\Framework\TestCase
         $this->assertIsArray($seasons);
         $this->assertCount(4, $seasons);
 
-        $episode = $seasons[-1][0];
-
-        $this->assertEquals('1981928', $episode['imdbid']);
-        $this->assertEquals("Rules Are Rules", $episode['title']);
-        $this->assertEquals('9 Sep. 2010', $episode['airdate']);
-        $this->assertEquals("", $episode['plot']);
-        $this->assertEquals(-1, $episode['season']);
-        $this->assertEquals(-1, $episode['episode']);
+        $matches = 0;
+        foreach ($seasons[-1] as $episode) {
+            if ($episode['title'] == 'Rules Are Rules') {
+                $this->assertEquals('1981928', $episode['imdbid']);
+                $this->assertEquals("Rules Are Rules", $episode['title']);
+                $this->assertEquals('9 Sep. 2010', $episode['airdate']);
+                $this->assertEquals("", $episode['plot']);
+                $this->assertEquals(-1, $episode['season']);
+                $this->assertEquals(-1, $episode['episode']);
+                ++$matches;
+            }
+        }
+        $this->assertEquals(1, $matches);
     }
 
     // Some shows don't work on seasons and so have many episodes assigned to season 1. Imdb used to just timeout rendering the page but they now cut the request off and don't render the page
@@ -1565,13 +1559,15 @@ class TitleTest extends PHPUnit\Framework\TestCase
             ), $conn["followedBy"][0]);
     }
 
-    public function testSoundtrack_nosoundtracks() {
+    public function testSoundtrack_nosoundtracks()
+    {
         $imdb = $this->getImdb('1899250');
         $result = $imdb->soundtrack();
         $this->assertEmpty($result);
     }
 
-    public function testSoundtrack_matrix() {
+    public function testSoundtrack_matrix()
+    {
         $imdb = $this->getImdb();
         $result = $imdb->soundtrack();
         $this->assertnotEmpty($result);
@@ -1702,9 +1698,9 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
     public function testParentalGuide_spoilers()
     {
         $imdb = $this->getImdb(120737);
-        $parentalGuide = $imdb->parentalGuide(TRUE);
+        $parentalGuide = $imdb->parentalGuide(true);
         $violence = $parentalGuide['Frightening'][1];
-        $this->assertSame(0, strpos($violence, 'Gandalf&#39;s "death" scene'));
+        $this->assertSame(0, strpos($violence, 'Gandalf\'s "death" scene'));
     }
 
     public function testOfficialsites()
@@ -1716,7 +1712,8 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
                 'url' => 'https://www.facebook.com/TheMatrixMovie/',
                 'name' => 'Official Facebook'
             ],
-            $officialSites);
+            $officialSites
+        );
     }
 
     public function testKeywords_all()
@@ -2001,17 +1998,17 @@ Under License from Universal Music Special Markets <br />", $rid['credits_raw'])
     /**
      * Create an imdb object that uses cached pages
      * The matrix by default
-     * @return \Imdb\Title
+     * @return Title
      */
     protected function getImdb($imdbId = '0133093')
     {
-        $config = new \Imdb\Config();
+        $config = new Config();
         $config->language = 'en-US';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
         $config->cache_expire = 3600;
         $config->debug = false;
-        $imdb = new \Imdb\Title($imdbId, $config);
+        $imdb = new Title($imdbId, $config);
         return $imdb;
     }
 }

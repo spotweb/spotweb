@@ -16,6 +16,25 @@ use PHP_CodeSniffer\Util\Tokens;
 class FunctionCommentSniff implements Sniff
 {
 
+    /**
+     * Disable the check for functions with a lower visibility than the value given.
+     *
+     * Allowed values are public, protected, and private.
+     *
+     * @var string
+     */
+    public $minimumVisibility = 'private';
+
+    /**
+     * Array of methods which do not require a return type.
+     *
+     * @var array
+     */
+    public $specialMethods = [
+        '__construct',
+        '__destruct',
+    ];
+
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -40,17 +59,40 @@ class FunctionCommentSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-        $find   = Tokens::$methodPrefixes;
-        $find[] = T_WHITESPACE;
+        $scopeModifier = $phpcsFile->getMethodProperties($stackPtr)['scope'];
+        if ($scopeModifier === 'protected'
+            && $this->minimumVisibility === 'public'
+            || $scopeModifier === 'private'
+            && ($this->minimumVisibility === 'public' || $this->minimumVisibility === 'protected')
+        ) {
+            return;
+        }
 
-        $commentEnd = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
+        $tokens = $phpcsFile->getTokens();
+        $ignore = Tokens::$methodPrefixes;
+        $ignore[T_WHITESPACE] = T_WHITESPACE;
+
+        for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
+            if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
+                continue;
+            }
+
+            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+                && isset($tokens[$commentEnd]['attribute_opener']) === true
+            ) {
+                $commentEnd = $tokens[$commentEnd]['attribute_opener'];
+                continue;
+            }
+
+            break;
+        }
+
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
             // Inline comments might just be closing comments for
             // control structures or functions instead of function comments
             // using the wrong comment type. If there is other code on the line,
             // assume they relate to that code.
-            $prev = $phpcsFile->findPrevious($find, ($commentEnd - 1), null, true);
+            $prev = $phpcsFile->findPrevious($ignore, ($commentEnd - 1), null, true);
             if ($prev !== false && $tokens[$prev]['line'] === $tokens[$commentEnd]['line']) {
                 $commentEnd = $prev;
             }
@@ -78,8 +120,19 @@ class FunctionCommentSniff implements Sniff
         }
 
         if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
-            $error = 'There must be no blank lines after the function comment';
-            $phpcsFile->addError($error, $commentEnd, 'SpacingAfter');
+            for ($i = ($commentEnd + 1); $i < $stackPtr; $i++) {
+                if ($tokens[$i]['column'] !== 1) {
+                    continue;
+                }
+
+                if ($tokens[$i]['code'] === T_WHITESPACE
+                    && $tokens[$i]['line'] !== $tokens[($i + 1)]['line']
+                ) {
+                    $error = 'There must be no blank lines after the function comment';
+                    $phpcsFile->addError($error, $commentEnd, 'SpacingAfter');
+                    break;
+                }
+            }
         }
 
         $commentStart = $tokens[$commentEnd]['comment_opener'];
@@ -117,7 +170,7 @@ class FunctionCommentSniff implements Sniff
 
         // Skip constructor and destructor.
         $methodName      = $phpcsFile->getDeclarationName($stackPtr);
-        $isSpecialMethod = ($methodName === '__construct' || $methodName === '__destruct');
+        $isSpecialMethod = in_array($methodName,  $this->specialMethods, true);
 
         $return = null;
         foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
@@ -132,10 +185,6 @@ class FunctionCommentSniff implements Sniff
             }
         }
 
-        if ($isSpecialMethod === true) {
-            return;
-        }
-
         if ($return !== null) {
             $content = $tokens[($return + 2)]['content'];
             if (empty($content) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
@@ -143,6 +192,10 @@ class FunctionCommentSniff implements Sniff
                 $phpcsFile->addError($error, $return, 'MissingReturnType');
             }
         } else {
+            if ($isSpecialMethod === true) {
+                return;
+            }
+
             $error = 'Missing @return tag in function comment';
             $phpcsFile->addError($error, $tokens[$commentStart]['comment_closer'], 'MissingReturn');
         }//end if

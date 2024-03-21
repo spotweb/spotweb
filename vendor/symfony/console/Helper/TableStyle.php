@@ -46,7 +46,7 @@ class TableStyle
     private $cellRowFormat = '%s';
     private $cellRowContentFormat = ' %s ';
     private $borderFormat = '%s';
-    private $padType = STR_PAD_RIGHT;
+    private $padType = \STR_PAD_RIGHT;
 
     /**
      * Sets padding character, used for cell padding.
@@ -56,7 +56,7 @@ class TableStyle
     public function setPaddingChar(string $paddingChar)
     {
         if (!$paddingChar) {
-            throw new LogicException('The padding char must not be empty');
+            throw new LogicException('The padding char must not be empty.');
         }
 
         $this->paddingChar = $paddingChar;
@@ -87,6 +87,8 @@ class TableStyle
      * ║ 80-902734-1-6 │ And Then There Were None │ Agatha Christie  ║
      * ╚═══════════════╧══════════════════════════╧══════════════════╝
      * </code>
+     *
+     * @return $this
      */
     public function setHorizontalBorderChars(string $outside, string $inside = null): self
     {
@@ -110,6 +112,8 @@ class TableStyle
      * ║ 80-902734-1-6 │ And Then There Were None │ Agatha Christie  ║
      * ╚═══════════════╧══════════════════════════╧══════════════════╝
      * </code>
+     *
+     * @return $this
      */
     public function setVerticalBorderChars(string $outside, string $inside = null): self
     {
@@ -162,6 +166,8 @@ class TableStyle
      * @param string|null $topLeftBottom  Top left bottom char (see #8' of example), equals to $midLeft if null
      * @param string|null $topMidBottom   Top mid bottom char (see #0' of example), equals to $cross if null
      * @param string|null $topRightBottom Top right bottom char (see #4' of example), equals to $midRight if null
+     *
+     * @return $this
      */
     public function setCrossingChars(string $cross, string $topLeft, string $topMid, string $topRight, string $midRight, string $bottomRight, string $bottomMid, string $bottomLeft, string $midLeft, string $topLeftBottom = null, string $topMidBottom = null, string $topRightBottom = null): self
     {
@@ -319,7 +325,7 @@ class TableStyle
      */
     public function setPadType(int $padType)
     {
-        if (!\in_array($padType, [STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH], true)) {
+        if (!\in_array($padType, [\STR_PAD_LEFT, \STR_PAD_RIGHT, \STR_PAD_BOTH], true)) {
             throw new InvalidArgumentException('Invalid padding type. Expected one of (STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH).');
         }
 
@@ -343,6 +349,9 @@ class TableStyle
         return $this->headerTitleFormat;
     }
 
+    /**
+     * @return $this
+     */
     public function setHeaderTitleFormat(string $format): self
     {
         $this->headerTitleFormat = $format;
@@ -355,6 +364,9 @@ class TableStyle
         return $this->footerTitleFormat;
     }
 
+    /**
+     * @return $this
+     */
     public function setFooterTitleFormat(string $format): self
     {
         $this->footerTitleFormat = $format;

@@ -11,6 +11,7 @@
     bootstrap="vendor/autoload.php"
     colors="true"
     columns="max"
+    convertDeprecationsToExceptions="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"

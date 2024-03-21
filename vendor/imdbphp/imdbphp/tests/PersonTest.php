@@ -1,6 +1,6 @@
 <?php
 
-use \Imdb\Title;
+use Imdb\Title;
 
 require_once __DIR__ . "/helpers.php";
 
@@ -514,7 +514,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $config->language = 'en-GB';
         $config->imdbsite = 'www.imdb.com';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
-        $config->usezip = true;
+        $config->usezip = false;
         $config->cache_expire = 3600;
 
         return new \Imdb\Person($id, $config);

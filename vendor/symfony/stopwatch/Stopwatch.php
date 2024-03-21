@@ -13,6 +13,9 @@ namespace Symfony\Component\Stopwatch;
 
 use Symfony\Contracts\Service\ResetInterface;
 
+// Help opcache.preload discover always-needed symbols
+class_exists(Section::class);
+
 /**
  * Stopwatch provides a way to profile code.
  *
@@ -64,7 +67,7 @@ class Stopwatch implements ResetInterface
         $current = end($this->activeSections);
 
         if (null !== $id && null === $current->get($id)) {
-            throw new \LogicException(sprintf('The section "%s" has been started at an other level and can not be opened.', $id));
+            throw new \LogicException(sprintf('The section "%s" has been started at an other level and cannot be opened.', $id));
         }
 
         $this->start('__section__.child', 'section');

@@ -4,7 +4,7 @@
  * Define several version constants
  * used throughput Spotweb
  */
-define('SPOTWEB_SETTINGS_VERSION', '0.34');
+define('SPOTWEB_SETTINGS_VERSION', '0.35');
 define('SPOTWEB_SECURITY_VERSION', '0.34');
 define('SPOTDB_SCHEMA_VERSION', '0.68');
 define('SPOTWEB_VERSION', '0.'.(SPOTDB_SCHEMA_VERSION * 100).'.'.(SPOTWEB_SETTINGS_VERSION * 100).'.'.(SPOTWEB_SECURITY_VERSION * 100));
@@ -42,6 +42,7 @@ class Bootstrap
         $daoFactory = $this->getDaoFactory();
         $settings = $this->getSettings($daoFactory, true);
         $spotReq = $this->getSpotReq($settings);
+        $GLOBALS['_intl'] = extension_loaded('intl');
 
         /*
          * Set the cache path

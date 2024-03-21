@@ -8,15 +8,15 @@ class Notifications_Factory
         // niet weten wat we includen in combinate met __autoload()
         switch ($provider) {
             case 'email': $handler = new Notifications_Email($appName, $dataArray);
-            break;
+                break;
             case 'growl': $handler = new Notifications_Growl($appName, $dataArray);
-            break;
+                break;
             case 'prowl': $handler = new Notifications_Prowl($appName, $dataArray);
-            break;
+                break;
             case 'twitter': $handler = new Notifications_Twitter($appName, $dataArray);
-            break;
+                break;
             default: $handler = false;
-            break;
+                break;
         } // switch
 
         return $handler;

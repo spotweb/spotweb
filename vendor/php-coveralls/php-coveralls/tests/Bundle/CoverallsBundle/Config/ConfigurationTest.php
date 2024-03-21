@@ -3,24 +3,21 @@
 namespace PhpCoveralls\Tests\Bundle\CoverallsBundle\Config;
 
 use PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration;
-use PHPUnit\Framework\TestCase;
+use PhpCoveralls\Tests\ProjectTestCase;
 
 /**
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class ConfigurationTest extends TestCase
+final class ConfigurationTest extends ProjectTestCase
 {
     /**
      * @var Configuration
      */
     private $object;
-
-    protected function setUp()
-    {
-        $this->object = new Configuration();
-    }
 
     // hasRepoToken()
     // getRepoToken()
@@ -30,8 +27,8 @@ class ConfigurationTest extends TestCase
      */
     public function shouldNotHaveRepoTokenOnConstruction()
     {
-        $this->assertFalse($this->object->hasRepoToken());
-        $this->assertNull($this->object->getRepoToken());
+        self::assertFalse($this->object->hasRepoToken());
+        self::assertNull($this->object->getRepoToken());
     }
 
     // hasServiceName()
@@ -42,8 +39,8 @@ class ConfigurationTest extends TestCase
      */
     public function shouldNotHaveServiceNameOnConstruction()
     {
-        $this->assertFalse($this->object->hasServiceName());
-        $this->assertNull($this->object->getServiceName());
+        self::assertFalse($this->object->hasServiceName());
+        self::assertNull($this->object->getServiceName());
     }
 
     // getCloverXmlPaths()
@@ -53,7 +50,7 @@ class ConfigurationTest extends TestCase
      */
     public function shouldHaveEmptyCloverXmlPathsOnConstruction()
     {
-        $this->assertEmpty($this->object->getCloverXmlPaths());
+        self::assertEmpty($this->object->getCloverXmlPaths());
     }
 
     // getRootDir()
@@ -63,7 +60,7 @@ class ConfigurationTest extends TestCase
      */
     public function shouldNotRootDirOnConstruction()
     {
-        $this->assertNull($this->object->getRootDir());
+        self::assertNull($this->object->getRootDir());
     }
 
     // getJsonPath()
@@ -73,7 +70,7 @@ class ConfigurationTest extends TestCase
      */
     public function shouldNotHaveJsonPathOnConstruction()
     {
-        $this->assertNull($this->object->getJsonPath());
+        self::assertNull($this->object->getJsonPath());
     }
 
     // isDryRun()
@@ -83,7 +80,7 @@ class ConfigurationTest extends TestCase
      */
     public function shouldBeDryRunOnConstruction()
     {
-        $this->assertTrue($this->object->isDryRun());
+        self::assertTrue($this->object->isDryRun());
     }
 
     // isExcludeNoStatements()
@@ -93,7 +90,7 @@ class ConfigurationTest extends TestCase
      */
     public function shouldNotBeExcludeNotStatementsOnConstruction()
     {
-        $this->assertFalse($this->object->isExcludeNoStatements());
+        self::assertFalse($this->object->isExcludeNoStatements());
     }
 
     // isVerbose
@@ -103,7 +100,7 @@ class ConfigurationTest extends TestCase
      */
     public function shouldNotBeVerboseOnConstruction()
     {
-        $this->assertFalse($this->object->isVerbose());
+        self::assertFalse($this->object->isVerbose());
     }
 
     // getEnv()
@@ -113,7 +110,7 @@ class ConfigurationTest extends TestCase
      */
     public function shouldBeProdEnvOnConstruction()
     {
-        $this->assertSame('prod', $this->object->getEnv());
+        self::assertSame('prod', $this->object->getEnv());
     }
 
     // isTestEnv()
@@ -127,10 +124,10 @@ class ConfigurationTest extends TestCase
 
         $this->object->setEnv($expected);
 
-        $this->assertSame($expected, $this->object->getEnv());
-        $this->assertTrue($this->object->isTestEnv());
-        $this->assertFalse($this->object->isDevEnv());
-        $this->assertFalse($this->object->isProdEnv());
+        self::assertSame($expected, $this->object->getEnv());
+        self::assertTrue($this->object->isTestEnv());
+        self::assertFalse($this->object->isDevEnv());
+        self::assertFalse($this->object->isProdEnv());
     }
 
     // isDevEnv()
@@ -144,10 +141,10 @@ class ConfigurationTest extends TestCase
 
         $this->object->setEnv($expected);
 
-        $this->assertSame($expected, $this->object->getEnv());
-        $this->assertFalse($this->object->isTestEnv());
-        $this->assertTrue($this->object->isDevEnv());
-        $this->assertFalse($this->object->isProdEnv());
+        self::assertSame($expected, $this->object->getEnv());
+        self::assertFalse($this->object->isTestEnv());
+        self::assertTrue($this->object->isDevEnv());
+        self::assertFalse($this->object->isProdEnv());
     }
 
     // isProdEnv()
@@ -161,10 +158,10 @@ class ConfigurationTest extends TestCase
 
         $this->object->setEnv($expected);
 
-        $this->assertSame($expected, $this->object->getEnv());
-        $this->assertFalse($this->object->isTestEnv());
-        $this->assertFalse($this->object->isDevEnv());
-        $this->assertTrue($this->object->isProdEnv());
+        self::assertSame($expected, $this->object->getEnv());
+        self::assertFalse($this->object->isTestEnv());
+        self::assertFalse($this->object->isDevEnv());
+        self::assertTrue($this->object->isProdEnv());
     }
 
     // setEntryPoint
@@ -178,8 +175,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setEntryPoint($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame($expected, $this->object->getEntryPoint());
+        self::assertSame($same, $this->object);
+        self::assertSame($expected, $this->object->getEntryPoint());
     }
 
     // setRootDir()
@@ -193,8 +190,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setRootDir($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame($expected, $this->object->getRootDir());
+        self::assertSame($same, $this->object);
+        self::assertSame($expected, $this->object->getRootDir());
     }
 
     // setRepoToken()
@@ -208,8 +205,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setRepoToken($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame($expected, $this->object->getRepoToken());
+        self::assertSame($same, $this->object);
+        self::assertSame($expected, $this->object->getRepoToken());
     }
 
     // setServiceName()
@@ -223,8 +220,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setServiceName($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame($expected, $this->object->getServiceName());
+        self::assertSame($same, $this->object);
+        self::assertSame($expected, $this->object->getServiceName());
     }
 
     // setCloverXmlPaths()
@@ -238,8 +235,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setCloverXmlPaths($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame($expected, $this->object->getCloverXmlPaths());
+        self::assertSame($same, $this->object);
+        self::assertSame($expected, $this->object->getCloverXmlPaths());
     }
 
     // addCloverXmlPath()
@@ -253,8 +250,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->addCloverXmlPath($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame([$expected], $this->object->getCloverXmlPaths());
+        self::assertSame($same, $this->object);
+        self::assertSame([$expected], $this->object->getCloverXmlPaths());
     }
 
     // setJsonPath()
@@ -268,8 +265,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setJsonPath($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame($expected, $this->object->getJsonPath());
+        self::assertSame($same, $this->object);
+        self::assertSame($expected, $this->object->getJsonPath());
     }
 
     // setDryRun()
@@ -283,8 +280,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setDryRun($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertFalse($this->object->isDryRun());
+        self::assertSame($same, $this->object);
+        self::assertFalse($this->object->isDryRun());
     }
 
     /**
@@ -296,8 +293,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setDryRun($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertTrue($this->object->isDryRun());
+        self::assertSame($same, $this->object);
+        self::assertTrue($this->object->isDryRun());
     }
 
     // setExcludeNoStatements()
@@ -311,8 +308,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setExcludeNoStatements($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertFalse($this->object->isExcludeNoStatements());
+        self::assertSame($same, $this->object);
+        self::assertFalse($this->object->isExcludeNoStatements());
     }
 
     /**
@@ -324,8 +321,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setExcludeNoStatements($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertTrue($this->object->isExcludeNoStatements());
+        self::assertSame($same, $this->object);
+        self::assertTrue($this->object->isExcludeNoStatements());
     }
 
     // setExcludeNoStatementsUnlessFalse()
@@ -339,8 +336,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setExcludeNoStatementsUnlessFalse($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertFalse($this->object->isExcludeNoStatements());
+        self::assertSame($same, $this->object);
+        self::assertFalse($this->object->isExcludeNoStatements());
     }
 
     /**
@@ -352,8 +349,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setExcludeNoStatementsUnlessFalse($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertTrue($this->object->isExcludeNoStatements());
+        self::assertSame($same, $this->object);
+        self::assertTrue($this->object->isExcludeNoStatements());
     }
 
     /**
@@ -366,8 +363,8 @@ class ConfigurationTest extends TestCase
         $same = $this->object->setExcludeNoStatements(true);
         $same = $this->object->setExcludeNoStatementsUnlessFalse($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertTrue($this->object->isExcludeNoStatements());
+        self::assertSame($same, $this->object);
+        self::assertTrue($this->object->isExcludeNoStatements());
     }
 
     /**
@@ -380,8 +377,8 @@ class ConfigurationTest extends TestCase
         $same = $this->object->setExcludeNoStatements(true);
         $same = $this->object->setExcludeNoStatementsUnlessFalse($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertTrue($this->object->isExcludeNoStatements());
+        self::assertSame($same, $this->object);
+        self::assertTrue($this->object->isExcludeNoStatements());
     }
 
     // setVerbose()
@@ -395,8 +392,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setVerbose($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertFalse($this->object->isVerbose());
+        self::assertSame($same, $this->object);
+        self::assertFalse($this->object->isVerbose());
     }
 
     /**
@@ -408,8 +405,8 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setVerbose($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertTrue($this->object->isVerbose());
+        self::assertSame($same, $this->object);
+        self::assertTrue($this->object->isVerbose());
     }
 
     // setEnv()
@@ -423,7 +420,12 @@ class ConfigurationTest extends TestCase
 
         $same = $this->object->setEnv($expected);
 
-        $this->assertSame($same, $this->object);
-        $this->assertSame($expected, $this->object->getEnv());
+        self::assertSame($same, $this->object);
+        self::assertSame($expected, $this->object->getEnv());
+    }
+
+    protected function legacySetUp()
+    {
+        $this->object = new Configuration();
     }
 }

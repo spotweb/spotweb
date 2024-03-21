@@ -19,7 +19,6 @@ class CalendarTest extends PHPUnit\Framework\TestCase
             $this->assertIsNumeric($calendarItem['year']);
             $this->assertIsNumeric($calendarItem['imdbid']);
         }
-
     }
 
     protected function getCalendar()

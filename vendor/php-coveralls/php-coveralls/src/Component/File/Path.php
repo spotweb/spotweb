@@ -18,7 +18,7 @@ class Path
      */
     public function isRelativePath($path)
     {
-        if (strlen($path) === 0) {
+        if ($path === '') {
             return true;
         }
 
@@ -26,7 +26,7 @@ class Path
             return !preg_match('/^[a-z]+\:\\\\/i', $path);
         }
 
-        return strpos($path, DIRECTORY_SEPARATOR) !== 0;
+        return strpos($path, \DIRECTORY_SEPARATOR) !== 0;
     }
 
     /**
@@ -39,12 +39,12 @@ class Path
      */
     public function toAbsolutePath($path, $rootDir)
     {
-        if (!is_string($path)) {
+        if (!\is_string($path)) {
             return false;
         }
 
         if ($this->isRelativePath($path)) {
-            return $rootDir . DIRECTORY_SEPARATOR . $path;
+            return $rootDir . \DIRECTORY_SEPARATOR . $path;
         }
 
         return $path;
@@ -60,12 +60,12 @@ class Path
      */
     public function getRealPath($path, $rootDir)
     {
-        if (!is_string($path)) {
+        if (!\is_string($path)) {
             return false;
         }
 
         if ($this->isRelativePath($path)) {
-            return realpath($rootDir . DIRECTORY_SEPARATOR . $path);
+            return realpath($rootDir . \DIRECTORY_SEPARATOR . $path);
         }
 
         return realpath($path);
@@ -81,15 +81,15 @@ class Path
      */
     public function getRealDir($path, $rootDir)
     {
-        if (!is_string($path)) {
+        if (!\is_string($path)) {
             return false;
         }
 
         if ($this->isRelativePath($path)) {
-            return realpath($rootDir . DIRECTORY_SEPARATOR . dirname($path));
+            return realpath($rootDir . \DIRECTORY_SEPARATOR . \dirname($path));
         }
 
-        return realpath(dirname($path));
+        return realpath(\dirname($path));
     }
 
     /**
@@ -104,11 +104,11 @@ class Path
     {
         $realDir = $this->getRealDir($path, $rootDir);
 
-        if (!is_string($realDir)) {
+        if (!\is_string($realDir)) {
             return false;
         }
 
-        return $realDir . DIRECTORY_SEPARATOR . basename($path);
+        return $realDir . \DIRECTORY_SEPARATOR . basename($path);
     }
 
     /**

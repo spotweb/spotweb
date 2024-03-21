@@ -22,7 +22,6 @@ namespace Imdb;
  */
 class Charts extends MdbBase
 {
-
     protected $page = null;
 
     /**
@@ -106,5 +105,4 @@ class Charts extends MdbBase
     {
         return "https://" . $this->config->imdbsite . "/chart/$context";
     }
-
 }

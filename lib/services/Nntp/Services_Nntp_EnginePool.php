@@ -37,7 +37,7 @@ class Services_Nntp_EnginePool
          */
         switch ($type) {
             case 'hdr': self::$_instances[$type] = new Services_Nntp_Engine($settings_nntp_hdr);
-            break;
+                break;
             case 'bin':
 
                 $settings_nntp_bin = $settings->get('nntp_nzb');

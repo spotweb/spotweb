@@ -381,3 +381,98 @@ public function setTranslator($a, &$b): void
 {
     $this->translator = $translator;
 }
+
+// phpcs:set PEAR.Commenting.FunctionComment minimumVisibility protected
+private function setTranslator2($a, &$b): void
+{
+    $this->translator = $translator;
+}
+
+// phpcs:set PEAR.Commenting.FunctionComment minimumVisibility public
+protected function setTranslator3($a, &$b): void
+{
+    $this->translator = $translator;
+}
+
+private function setTranslator4($a, &$b): void
+{
+    $this->translator = $translator;
+}
+
+class Bar {
+    /**
+     * The PHP5 constructor
+     *
+     * @return
+     */
+    public function __construct() {
+
+    }
+}
+
+// phpcs:set PEAR.Commenting.FunctionComment specialMethods[]
+class Bar {
+    /**
+     * The PHP5 constructor
+     */
+    public function __construct() {
+
+    }
+}
+
+// phpcs:set PEAR.Commenting.FunctionComment specialMethods[] ignored
+/**
+ * Should be ok
+ */
+public function ignored() {
+
+}
+
+// phpcs:set PEAR.Commenting.FunctionComment specialMethods[] __construct,__destruct
+
+class Something implements JsonSerializable {
+    /**
+     * Single attribute.
+     *
+     * @return mixed
+     */
+    #[ReturnTypeWillChange]
+    public function jsonSerialize() {}
+
+    /**
+     * Multiple attributes.
+     *
+     * @return Something
+     */
+    #[AttributeA]
+    #[AttributeB]
+    public function methodName() {}
+
+    /**
+     * Blank line between docblock and attribute.
+     *
+     * @return mixed
+     */
+
+    #[ReturnTypeWillChange]
+    public function blankLineDetectionA() {}
+
+    /**
+     * Blank line between attribute and function declaration.
+     *
+     * @return mixed
+     */
+    #[ReturnTypeWillChange]
+
+    public function blankLineDetectionB() {}
+
+    /**
+     * Blank line between both docblock and attribute and attribute and function declaration.
+     *
+     * @return mixed
+     */
+
+    #[ReturnTypeWillChange]
+
+    public function blankLineDetectionC() {}
+}

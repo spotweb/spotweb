@@ -86,9 +86,9 @@ class Jobs extends CoverallsApi
      *
      * @param array $env $_SERVER environment
      *
-     * @throws \PhpCoveralls\Bundle\CoverallsBundle\Entity\Exception\RequirementsNotSatisfiedException
-     *
      * @return $this
+     *
+     * @throws \PhpCoveralls\Bundle\CoverallsBundle\Entity\Exception\RequirementsNotSatisfiedException
      */
     public function collectEnvVars(array $env)
     {

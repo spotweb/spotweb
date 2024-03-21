@@ -36,7 +36,7 @@
      /**
       * Returns the currently passed connection object.
       *
-      * @return dbeng_abs
+       * @return dbeng_abs
       */
      public function getConnection()
      {

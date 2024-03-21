@@ -7,5 +7,4 @@ namespace Imdb;
  */
 class Exception extends \Exception
 {
-
 }

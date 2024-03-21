@@ -62,3 +62,49 @@ $closureWithDefaultParamter = function(array $testArray=array()) {};
 while ( ( $csvdata = fgetcsv( $handle, 2000, $separator ) ) !== false ) {
 	// Do something.
 }
+
+// Issue #2787.
+class Foo {
+    protected ?int $id = null;
+}
+
+class Bar
+{
+    // Multi-property assignments.
+    private $a = false, $b = true; // Non-typed.
+    public bool $c = false, $d = true;
+    protected int $e = 123, $f = 987;
+}
+
+switch ($b < 10 && $a = 10) {
+    case true:
+        break;
+}
+
+$array = [
+    match ($b < 10 && $a = 10) {
+        true => 10,
+        false => 0
+    },
+];
+
+$arrow_function = fn ($a = null) => $a;
+
+function ($html) {
+    $regEx = '/regexp/';
+
+    return preg_replace_callback($regEx, function ($matches) {
+        [$all] = $matches;
+        return $all;
+    }, $html);
+};
+
+
+function () {
+    $a = false;
+
+    some_label:
+
+    $b = getB();
+};
+

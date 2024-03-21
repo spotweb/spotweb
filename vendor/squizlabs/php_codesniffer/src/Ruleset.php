@@ -126,15 +126,9 @@ class Ruleset
      */
     public function __construct(Config $config)
     {
-        // Ignore sniff restrictions if caching is on.
-        $restrictions = [];
-        $exclusions   = [];
-        if ($config->cache === false) {
-            $restrictions = $config->sniffs;
-            $exclusions   = $config->exclude;
-        }
-
         $this->config = $config;
+        $restrictions = $config->sniffs;
+        $exclusions   = $config->exclude;
         $sniffs       = [];
 
         $standardPaths = [];
@@ -200,6 +194,12 @@ class Ruleset
             $sniffs = array_merge($sniffs, $this->processRuleset($standard));
         }//end foreach
 
+        // Ignore sniff restrictions if caching is on.
+        if ($config->cache === true) {
+            $restrictions = [];
+            $exclusions   = [];
+        }
+
         $sniffRestrictions = [];
         foreach ($restrictions as $sniffCode) {
             $parts     = explode('.', strtolower($sniffCode));
@@ -249,7 +249,12 @@ class Ruleset
         // one last time and clear the output buffer.
         $sniffs[] = '';
 
-        echo PHP_EOL."The $this->name standard contains $sniffCount sniffs".PHP_EOL;
+        $summaryLine = PHP_EOL."The $this->name standard contains 1 sniff".PHP_EOL;
+        if ($sniffCount !== 1) {
+            $summaryLine = str_replace('1 sniff', "$sniffCount sniffs", $summaryLine);
+        }
+
+        echo $summaryLine;
 
         ob_start();
 
@@ -726,7 +731,7 @@ class Ruleset
         } else {
             // See if this is a whole standard being referenced.
             $path = Util\Standards::getInstalledStandardPath($ref);
-            if (Util\Common::isPharFile($path) === true && strpos($path, 'ruleset.xml') === false) {
+            if ($path !== null && Util\Common::isPharFile($path) === true && strpos($path, 'ruleset.xml') === false) {
                 // If the ruleset exists inside the phar file, use it.
                 if (file_exists($path.DIRECTORY_SEPARATOR.'ruleset.xml') === true) {
                     $path .= DIRECTORY_SEPARATOR.'ruleset.xml';
@@ -865,7 +870,10 @@ class Ruleset
 
         $parts      = explode('.', $ref);
         $partsCount = count($parts);
-        if ($partsCount <= 2 || $partsCount > count(array_filter($parts))) {
+        if ($partsCount <= 2
+            || $partsCount > count(array_filter($parts))
+            || in_array($ref, $newSniffs) === true
+        ) {
             // We are processing a standard, a category of sniffs or a relative path inclusion.
             foreach ($newSniffs as $sniffFile) {
                 $parts = explode(DIRECTORY_SEPARATOR, $sniffFile);

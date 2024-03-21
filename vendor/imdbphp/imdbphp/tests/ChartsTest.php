@@ -15,8 +15,8 @@ class ChartsTest extends PHPUnit\Framework\TestCase
         for ($i = 0; $i < 10; $i++) {
             $this->assertIsString($moviemeter[$i]);
             $this->assertThat(strlen($moviemeter[$i]), $this->logicalOr(
-              $this->equalTo(7),
-              $this->equalTo(8)
+                $this->equalTo(7),
+                $this->equalTo(8)
             ), "imdb IDs should be 7 or 8 digits");
         }
     }

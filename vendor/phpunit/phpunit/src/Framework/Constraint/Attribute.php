@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -7,19 +7,24 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace PHPUnit\Framework\Constraint;
 
-class PHPUnit_Framework_Constraint_Attribute extends PHPUnit_Framework_Constraint_Composite
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\ExpectationFailedException;
+
+/**
+ * @deprecated https://github.com/sebastianbergmann/phpunit/issues/3338
+ *
+ * @codeCoverageIgnore
+ */
+final class Attribute extends Composite
 {
     /**
      * @var string
      */
-    protected $attributeName;
+    private $attributeName;
 
-    /**
-     * @param PHPUnit_Framework_Constraint $constraint
-     * @param string                       $attributeName
-     */
-    public function __construct(PHPUnit_Framework_Constraint $constraint, $attributeName)
+    public function __construct(Constraint $constraint, string $attributeName)
     {
         parent::__construct($constraint);
 
@@ -27,7 +32,7 @@ class PHPUnit_Framework_Constraint_Attribute extends PHPUnit_Framework_Constrain
     }
 
     /**
-     * Evaluates the constraint for parameter $other
+     * Evaluates the constraint for parameter $other.
      *
      * If $returnResult is set to false (the default), an exception is thrown
      * in case of a failure. null is returned otherwise.
@@ -36,18 +41,14 @@ class PHPUnit_Framework_Constraint_Attribute extends PHPUnit_Framework_Constrain
      * a boolean value instead: true in case of success, false in case of a
      * failure.
      *
-     * @param mixed  $other        Value or object to evaluate.
-     * @param string $description  Additional information about the test
-     * @param bool   $returnResult Whether to return a result or throw an exception
-     *
-     * @return mixed
-     *
-     * @throws PHPUnit_Framework_ExpectationFailedException
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws ExpectationFailedException
      */
-    public function evaluate($other, $description = '', $returnResult = false)
+    public function evaluate($other, string $description = '', bool $returnResult = false)
     {
         return parent::evaluate(
-            PHPUnit_Framework_Assert::readAttribute(
+            Assert::readAttribute(
                 $other,
                 $this->attributeName
             ),
@@ -58,26 +59,21 @@ class PHPUnit_Framework_Constraint_Attribute extends PHPUnit_Framework_Constrain
 
     /**
      * Returns a string representation of the constraint.
-     *
-     * @return string
      */
-    public function toString()
+    public function toString(): string
     {
-        return 'attribute "' . $this->attributeName . '" ' .
-               $this->innerConstraint->toString();
+        return 'attribute "' . $this->attributeName . '" ' . $this->innerConstraint()->toString();
     }
 
     /**
-     * Returns the description of the failure
+     * Returns the description of the failure.
      *
      * The beginning of failure messages is "Failed asserting that" in most
      * cases. This method should return the second part of that sentence.
      *
-     * @param mixed $other Evaluated value or object.
-     *
-     * @return string
+     * @param mixed $other evaluated value or object
      */
-    protected function failureDescription($other)
+    protected function failureDescription($other): string
     {
         return $this->toString();
     }

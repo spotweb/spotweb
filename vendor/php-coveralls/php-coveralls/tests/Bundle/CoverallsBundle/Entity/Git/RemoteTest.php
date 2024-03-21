@@ -3,25 +3,22 @@
 namespace PhpCoveralls\Tests\Bundle\CoverallsBundle\Entity\Git;
 
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Remote;
-use PHPUnit\Framework\TestCase;
+use PhpCoveralls\Tests\ProjectTestCase;
 
 /**
- * @covers \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Remote
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Entity\Coveralls
+ * @covers \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Remote
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class RemoteTest extends TestCase
+final class RemoteTest extends ProjectTestCase
 {
     /**
      * @var Remote
      */
     private $object;
-
-    protected function setUp()
-    {
-        $this->object = new Remote();
-    }
 
     // getName()
 
@@ -30,7 +27,7 @@ class RemoteTest extends TestCase
      */
     public function shouldNotHaveRemoteNameOnConstruction()
     {
-        $this->assertNull($this->object->getName());
+        self::assertNull($this->object->getName());
     }
 
     // getUrl()
@@ -40,7 +37,7 @@ class RemoteTest extends TestCase
      */
     public function shouldNotHaveUrlOnConstruction()
     {
-        $this->assertNull($this->object->getUrl());
+        self::assertNull($this->object->getUrl());
     }
 
     // setName()
@@ -54,8 +51,8 @@ class RemoteTest extends TestCase
 
         $obj = $this->object->setName($expected);
 
-        $this->assertSame($expected, $this->object->getName());
-        $this->assertSame($obj, $this->object);
+        self::assertSame($expected, $this->object->getName());
+        self::assertSame($obj, $this->object);
     }
 
     // setUrl()
@@ -69,8 +66,8 @@ class RemoteTest extends TestCase
 
         $obj = $this->object->setUrl($expected);
 
-        $this->assertSame($expected, $this->object->getUrl());
-        $this->assertSame($obj, $this->object);
+        self::assertSame($expected, $this->object->getUrl());
+        self::assertSame($obj, $this->object);
     }
 
     // toArray()
@@ -85,8 +82,8 @@ class RemoteTest extends TestCase
             'url' => null,
         ];
 
-        $this->assertSame($expected, $this->object->toArray());
-        $this->assertSame(json_encode($expected), (string) $this->object);
+        self::assertSame($expected, $this->object->toArray());
+        self::assertSame(json_encode($expected), (string) $this->object);
     }
 
     /**
@@ -99,14 +96,20 @@ class RemoteTest extends TestCase
 
         $this->object
             ->setName($name)
-            ->setUrl($url);
+            ->setUrl($url)
+        ;
 
         $expected = [
             'name' => $name,
             'url' => $url,
         ];
 
-        $this->assertSame($expected, $this->object->toArray());
-        $this->assertSame(json_encode($expected), (string) $this->object);
+        self::assertSame($expected, $this->object->toArray());
+        self::assertSame(json_encode($expected), (string) $this->object);
+    }
+
+    protected function legacySetUp()
+    {
+        $this->object = new Remote();
     }
 }

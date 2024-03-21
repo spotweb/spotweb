@@ -96,7 +96,7 @@ class Configuration
      */
     public function setEntryPoint($entryPoint)
     {
-        $this->entryPoint = \rtrim($entryPoint, '/');
+        $this->entryPoint = rtrim($entryPoint, '/');
 
         return $this;
     }

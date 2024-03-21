@@ -64,19 +64,26 @@ class GitInfoCollector
     /**
      * Collect branch name.
      *
-     * @throws \RuntimeException
-     *
      * @return string
+     *
+     * @throws \RuntimeException
      */
     protected function collectBranch()
     {
         $branchesResult = $this->command->getBranches();
 
         foreach ($branchesResult as $result) {
-            if (strpos($result, '* ') === 0) {
-                $exploded = explode('* ', $result, 2);
+            if ($result === '* (no branch)') {
+                // Case detected on Travis PUSH hook for tags, can be reporduced by following command:
+                // $ git clone --depth=1 --branch=v2.4.0 https://github.com/php-coveralls/php-coveralls.git php-coveralls && cd php-coveralls && git branch
+                // * (no branch)
+                return '(no branch)';
+            }
 
-                return $exploded[1];
+            if (strpos($result, '* ') === 0) {
+                preg_match('/^\* (?:\(HEAD detached at )?([\w\/\-]+)\)?/', $result, $matches);
+
+                return $matches[1];
             }
         }
 
@@ -86,15 +93,15 @@ class GitInfoCollector
     /**
      * Collect commit info.
      *
-     * @throws \RuntimeException
-     *
      * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Commit
+     *
+     * @throws \RuntimeException
      */
     protected function collectCommit()
     {
         $commitResult = $this->command->getHeadCommit();
 
-        if (count($commitResult) !== 6 || array_keys($commitResult) !== range(0, 5)) {
+        if (\count($commitResult) !== 6 || array_keys($commitResult) !== range(0, 5)) {
             throw new \RuntimeException();
         }
 
@@ -106,21 +113,22 @@ class GitInfoCollector
             ->setAuthorEmail($commitResult[2])
             ->setCommitterName($commitResult[3])
             ->setCommitterEmail($commitResult[4])
-            ->setMessage($commitResult[5]);
+            ->setMessage($commitResult[5])
+        ;
     }
 
     /**
      * Collect remotes info.
      *
-     * @throws \RuntimeException
-     *
      * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Remote[]
+     *
+     * @throws \RuntimeException
      */
     protected function collectRemotes()
     {
         $remotesResult = $this->command->getRemotes();
 
-        if (count($remotesResult) === 0) {
+        if (\count($remotesResult) === 0) {
             throw new \RuntimeException();
         }
 

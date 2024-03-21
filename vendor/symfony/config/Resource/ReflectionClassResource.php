@@ -83,9 +83,9 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
         }
         do {
             $file = $class->getFileName();
-            if (false !== $file && file_exists($file)) {
+            if (false !== $file && is_file($file)) {
                 foreach ($this->excludedVendors as $vendor) {
-                    if (0 === strpos($file, $vendor) && false !== strpbrk(substr($file, \strlen($vendor), 1), '/'.\DIRECTORY_SEPARATOR)) {
+                    if (str_starts_with($file, $vendor) && false !== strpbrk(substr($file, \strlen($vendor), 1), '/'.\DIRECTORY_SEPARATOR)) {
                         $file = false;
                         break;
                     }
@@ -121,6 +121,15 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
 
     private function generateSignature(\ReflectionClass $class): iterable
     {
+        if (\PHP_VERSION_ID >= 80000) {
+            $attributes = [];
+            foreach ($class->getAttributes() as $a) {
+                $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
+            }
+            yield print_r($attributes, true);
+            $attributes = [];
+        }
+
         yield $class->getDocComment();
         yield (int) $class->isFinal();
         yield (int) $class->isAbstract();
@@ -137,22 +146,58 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
             $defaults = $class->getDefaultProperties();
 
             foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED) as $p) {
-                yield $p->getDocComment().$p;
+                if (\PHP_VERSION_ID >= 80000) {
+                    foreach ($p->getAttributes() as $a) {
+                        $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
+                    }
+                    yield print_r($attributes, true);
+                    $attributes = [];
+                }
+
+                yield $p->getDocComment();
+                yield $p->isDefault() ? '<default>' : '';
+                yield $p->isPublic() ? 'public' : 'protected';
+                yield $p->isStatic() ? 'static' : '';
+                yield '$'.$p->name;
                 yield print_r(isset($defaults[$p->name]) && !\is_object($defaults[$p->name]) ? $defaults[$p->name] : null, true);
             }
         }
 
+        $defined = \Closure::bind(static function ($c) { return \defined($c); }, null, $class->name);
+
         foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED) as $m) {
+            if (\PHP_VERSION_ID >= 80000) {
+                foreach ($m->getAttributes() as $a) {
+                    $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
+                }
+                yield print_r($attributes, true);
+                $attributes = [];
+            }
+
             $defaults = [];
             $parametersWithUndefinedConstants = [];
             foreach ($m->getParameters() as $p) {
+                if (\PHP_VERSION_ID >= 80000) {
+                    foreach ($p->getAttributes() as $a) {
+                        $attributes[] = [$a->getName(), \PHP_VERSION_ID >= 80100 ? (string) $a : $a->getArguments()];
+                    }
+                    yield print_r($attributes, true);
+                    $attributes = [];
+                }
+
                 if (!$p->isDefaultValueAvailable()) {
                     $defaults[$p->name] = null;
 
                     continue;
                 }
 
-                if (!$p->isDefaultValueConstant() || \defined($p->getDefaultValueConstantName())) {
+                if (\PHP_VERSION_ID >= 80100) {
+                    $defaults[$p->name] = (string) $p;
+
+                    continue;
+                }
+
+                if (!$p->isDefaultValueConstant() || $defined($p->getDefaultValueConstantName())) {
                     $defaults[$p->name] = $p->getDefaultValue();
 
                     continue;
@@ -165,6 +210,7 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
             if (!$parametersWithUndefinedConstants) {
                 yield preg_replace('/^  @@.*/m', '', $m);
             } else {
+                $t = $m->getReturnType();
                 $stack = [
                     $m->getDocComment(),
                     $m->getName(),
@@ -175,15 +221,16 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
                     $m->isPrivate(),
                     $m->isProtected(),
                     $m->returnsReference(),
-                    $m->hasReturnType() ? $m->getReturnType()->getName() : '',
+                    $t instanceof \ReflectionNamedType ? ((string) $t->allowsNull()).$t->getName() : (string) $t,
                 ];
 
                 foreach ($m->getParameters() as $p) {
                     if (!isset($parametersWithUndefinedConstants[$p->name])) {
                         $stack[] = (string) $p;
                     } else {
+                        $t = $p->getType();
                         $stack[] = $p->isOptional();
-                        $stack[] = $p->hasType() ? $p->getType()->getName() : '';
+                        $stack[] = $t instanceof \ReflectionNamedType ? ((string) $t->allowsNull()).$t->getName() : (string) $t;
                         $stack[] = $p->isPassedByReference();
                         $stack[] = $p->isVariadic();
                         $stack[] = $p->getName();

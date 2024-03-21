@@ -4,7 +4,6 @@ namespace Imdb;
 
 class TitleSearch extends MdbBase
 {
-
     const MOVIE = Title::MOVIE;
     const TV_SERIES = Title::TV_SERIES;
     const TV_EPISODE = Title::TV_EPISODE;

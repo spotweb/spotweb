@@ -32,3 +32,16 @@ $foo = new $bar['a'] [$baz['a']/* comment */  ['b']]['b'];
 $a = new self::$transport[$cap_string];
 $renderer = new $this->inline_diff_renderer;
 $a = new ${$varHoldingClassName};
+
+$class = new $obj?->classname();
+$class = new $obj?->classname;
+$class = new ${$obj?->classname};
+
+// Issue 3456.
+// Anon classes should be skipped, even when there is an attribute between the new and the class keywords.
+$anonWithAttribute = new #[SomeAttribute('summary')] class {
+    public const SOME_STUFF = 'foo';
+};
+
+$foo = new parent();
+$foo = new parent;

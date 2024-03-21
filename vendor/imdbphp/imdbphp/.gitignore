@@ -4,3 +4,4 @@
 /cache
 /.idea
 /demo/images
+/.php-cs-fixer.cache

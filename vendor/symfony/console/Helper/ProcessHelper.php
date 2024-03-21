@@ -31,11 +31,13 @@ class ProcessHelper extends Helper
      * @param array|Process $cmd      An instance of Process or an array of the command and arguments
      * @param callable|null $callback A PHP callback to run whenever there is some
      *                                output available on STDOUT or STDERR
-     *
-     * @return Process The process that ran
      */
     public function run(OutputInterface $output, $cmd, string $error = null, callable $callback = null, int $verbosity = OutputInterface::VERBOSITY_VERY_VERBOSE): Process
     {
+        if (!class_exists(Process::class)) {
+            throw new \LogicException('The ProcessHelper cannot be run as the Process component is not installed. Try running "compose require symfony/process".');
+        }
+
         if ($output instanceof ConsoleOutputInterface) {
             $output = $output->getErrorOutput();
         }
@@ -47,7 +49,7 @@ class ProcessHelper extends Helper
         }
 
         if (!\is_array($cmd)) {
-            throw new \TypeError(sprintf('The "command" argument of "%s()" must be an array or a "%s" instance, "%s" given.', __METHOD__, Process::class, \is_object($cmd) ? \get_class($cmd) : \gettype($cmd)));
+            throw new \TypeError(sprintf('The "command" argument of "%s()" must be an array or a "%s" instance, "%s" given.', __METHOD__, Process::class, get_debug_type($cmd)));
         }
 
         if (\is_string($cmd[0] ?? null)) {
@@ -88,11 +90,9 @@ class ProcessHelper extends Helper
      * This is identical to run() except that an exception is thrown if the process
      * exits with a non-zero exit code.
      *
-     * @param string|Process $cmd      An instance of Process or a command to run
-     * @param callable|null  $callback A PHP callback to run whenever there is some
-     *                                 output available on STDOUT or STDERR
-     *
-     * @return Process The process that ran
+     * @param array|Process $cmd      An instance of Process or a command to run
+     * @param callable|null $callback A PHP callback to run whenever there is some
+     *                                output available on STDOUT or STDERR
      *
      * @throws ProcessFailedException
      *

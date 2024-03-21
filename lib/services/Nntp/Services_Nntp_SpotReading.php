@@ -29,20 +29,20 @@ class Services_Nntp_SpotReading
             $keys = explode(':', $hdr);
 
             switch (strtolower($keys[0])) {
-                case 'from': $tmpAr['fromhdr'] = utf8_encode(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))));
-                break;
+                case 'from': $tmpAr['fromhdr'] = mb_convert_encoding(trim(substr($hdr, strlen('From: '), strpos($hdr, '<') - 1 - strlen('From: '))), 'ISO-8859-1', 'UTF-8');
+                    break;
                 case 'date': $tmpAr['stamp'] = strtotime(substr($hdr, strlen('Date: ')));
-                break;
+                    break;
                 case 'x-xml': $tmpAr['fullxml'] .= substr($hdr, 7);
-                break;
+                    break;
                 case 'x-user-signature': $tmpAr['user-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 18));
-                break;
+                    break;
                 case 'x-xml-signature': $tmpAr['xml-signature'] = $this->_spotParseUtil->spotUnprepareBase64(substr($hdr, 17));
-                break;
+                    break;
                 case 'x-newsreader': $tmpAr['newsreader'] = substr($hdr, 14);
-                break;
+                    break;
                 case 'x-user-avatar': $tmpAr['user-avatar'] .= substr($hdr, 15);
-                break;
+                    break;
                 case 'x-user-key':
                     $xml = simplexml_load_string(substr($hdr, 12));
                     if ($xml !== false) {
@@ -120,7 +120,7 @@ class Services_Nntp_SpotReading
                 } // if
 
                 // encode the body for UTF8 and transform it from an array to an EOL delimited string
-                $tmpAr['body'] = utf8_encode(implode("\r\n", $tmpAr['body']));
+                $tmpAr['body'] = mb_convert_encoding(implode("\r\n", $tmpAr['body']), 'ISO-8859-1', 'UTF-8');
 
                 /*
                  * Some comments are not actual comments but incorreclty posted NZB

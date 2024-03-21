@@ -2,6 +2,131 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.1.1 - 2020-09-14
+
+### Fixed
+
+- [#71](https://github.com/laminas/laminas-zendframework-bridge/pull/71) fixes detection of the vendor directory when the `COMPOSER_VENDOR_DIR` env variable is missing or empty. Previously, this could lead to scenarios where a non-existent path was used for finding the bridge autoloader.
+
+
+-----
+
+### Release Notes for [1.1.1](https://github.com/laminas/laminas-zendframework-bridge/milestone/5)
+
+
+
+### 1.1.1
+
+- Total issues resolved: **0**
+- Total pull requests resolved: **1**
+- Total contributors: **1**
+
+#### Bug
+
+ - [71: Verify `COMPOSER&#95;VENDOR&#95;DIR` in conditional](https://github.com/laminas/laminas-zendframework-bridge/pull/71) thanks to @aaronbushnell
+
+## 1.1.0 - 2020-08-18
+
+### Added
+
+- [#68](https://github.com/laminas/laminas-zendframework-bridge/pull/68) adds support for the upcoming PHP 8.0 release.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#67](https://github.com/laminas/laminas-zendframework-bridge/pull/67) fixes how the Composer autoload file is found, looking first in the `COMPOSER_VENDOR_DIR` before trying to resolve relative to where the package is installed.
+
+## 1.0.4 - 2020-05-20
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#66](https://github.com/laminas/laminas-zendframework-bridge/pull/66) ensures that references to BjyAuthorize templates are not rewritten, so that they can be resolved during runtime.
+
+## 1.0.3 - 2020-04-03
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#63](https://github.com/laminas/laminas-zendframework-bridge/pull/63) fixes handling of dependency configuration to ensure each of delegators, initializers, and abstract factories are properly handled during configuraiton post processing. The new approach should allow delegators to work post-migration to Laminas or Mezzio.
+
+- [#61](https://github.com/laminas/laminas-zendframework-bridge/pull/61) ensures configuration for delegator factories gets rewritten; the functionality broke in version 1.0.1.
+
+## 1.0.2 - 2020-03-26
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#55](https://github.com/laminas/laminas-zendframework-bridge/pull/55) adds provisions to ensure that references to legacy classes/interfaces in dependency configuration always create aliases from the legacy to the new classes. Previously, we did straight replacements in the configuration, which could lead to the legacy service no longer being available. Now it will remain available.
+
+- [#59](https://github.com/laminas/laminas-zendframework-bridge/pull/59) fixes the replacement rules such as to avoid replacing references to API Skeletons packages, classes, or configuration keys.
+
+- [#57](https://github.com/laminas/laminas-zendframework-bridge/pull/57) fixes how references to the "zf-apigility" key are replaced. Previously, they were rewritten to "laminas-api-tools", but the correct replacement is "api-tools".
+
+- [#56](https://github.com/laminas/laminas-zendframework-bridge/pull/56) provides a mechanism to add additional maps with multiple levels of namespace separator escaping, in order to ensure that all various known permutations are matched. The escaping is applied to both the original and target, to ensure that rewrites conform to the original escaping.
+
+- [#56](https://github.com/laminas/laminas-zendframework-bridge/pull/56) makes changes to the replacement rules to ensure we do not replace references to "Zend" or "ZF" if they occur as subnamespaces OR as class names (formerly, we only enforced subnamespaces). Additional rules were provided for cases where one or both occur within our own packages.
+
+- [#52](https://github.com/laminas/laminas-zendframework-bridge/pull/52) fixes a scenario whereby factory _values_ were not being rewritten during configuration post processing.
+
+- [#52](https://github.com/laminas/laminas-zendframework-bridge/pull/52) fixes an issue that occurs with the configuration post processor. Previously, when a service name used as a factory or invokable was encountered that referenced a legacy class, it would get rewritten. This would cause issues if the service was not exposed in the original legacy package, however, as there would now be no alias of the legacy service to the new one. This patch modifies the configuration post processor such that it now tests to see if a service name it will rename exists as an alias; if not, it also creates the alias.
+
 ## 1.0.1 - 2020-01-07
 
 ### Added

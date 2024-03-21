@@ -12,13 +12,14 @@
 namespace Symfony\Component\Config\Definition\Dumper;
 
 use Symfony\Component\Config\Definition\ArrayNode;
+use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\EnumNode;
 use Symfony\Component\Config\Definition\NodeInterface;
 use Symfony\Component\Config\Definition\PrototypedArrayNode;
 
 /**
- * Dumps a XML reference configuration for the given configuration/node instance.
+ * Dumps an XML reference configuration for the given configuration/node instance.
  *
  * @author Wouter J <waldio.webdesign@gmail.com>
  */
@@ -48,12 +49,12 @@ class XmlReferenceDumper
 
         // xml remapping
         if ($node->getParent()) {
-            $remapping = array_filter($node->getParent()->getXmlRemappings(), function ($mapping) use ($rootName) {
+            $remapping = array_filter($node->getParent()->getXmlRemappings(), function (array $mapping) use ($rootName) {
                 return $rootName === $mapping[1];
             });
 
             if (\count($remapping)) {
-                list($singular) = current($remapping);
+                [$singular] = current($remapping);
                 $rootName = $singular;
             }
         }
@@ -126,50 +127,53 @@ class XmlReferenceDumper
 
             // get attributes and elements
             foreach ($children as $child) {
-                if (!$child instanceof ArrayNode) {
-                    // get attributes
-
-                    // metadata
-                    $name = str_replace('_', '-', $child->getName());
-                    $value = '%%%%not_defined%%%%'; // use a string which isn't used in the normal world
-
-                    // comments
-                    $comments = [];
-                    if ($info = $child->getInfo()) {
-                        $comments[] = $info;
-                    }
-
-                    if ($example = $child->getExample()) {
-                        $comments[] = 'Example: '.$example;
-                    }
-
-                    if ($child->isRequired()) {
-                        $comments[] = 'Required';
-                    }
-
-                    if ($child->isDeprecated()) {
-                        $comments[] = sprintf('Deprecated (%s)', $child->getDeprecationMessage($child->getName(), $node->getPath()));
-                    }
-
-                    if ($child instanceof EnumNode) {
-                        $comments[] = 'One of '.implode('; ', array_map('json_encode', $child->getValues()));
-                    }
-
-                    if (\count($comments)) {
-                        $rootAttributeComments[$name] = implode(";\n", $comments);
-                    }
-
-                    // default values
-                    if ($child->hasDefaultValue()) {
-                        $value = $child->getDefaultValue();
-                    }
-
-                    // append attribute
-                    $rootAttributes[$name] = $value;
-                } else {
+                if ($child instanceof ArrayNode) {
                     // get elements
                     $rootChildren[] = $child;
+
+                    continue;
                 }
+
+                // get attributes
+
+                // metadata
+                $name = str_replace('_', '-', $child->getName());
+                $value = '%%%%not_defined%%%%'; // use a string which isn't used in the normal world
+
+                // comments
+                $comments = [];
+                if ($child instanceof BaseNode && $info = $child->getInfo()) {
+                    $comments[] = $info;
+                }
+
+                if ($child instanceof BaseNode && $example = $child->getExample()) {
+                    $comments[] = 'Example: '.(\is_array($example) ? implode(', ', $example) : $example);
+                }
+
+                if ($child->isRequired()) {
+                    $comments[] = 'Required';
+                }
+
+                if ($child instanceof BaseNode && $child->isDeprecated()) {
+                    $deprecation = $child->getDeprecation($child->getName(), $node->getPath());
+                    $comments[] = sprintf('Deprecated (%s)', ($deprecation['package'] || $deprecation['version'] ? "Since {$deprecation['package']} {$deprecation['version']}: " : '').$deprecation['message']);
+                }
+
+                if ($child instanceof EnumNode) {
+                    $comments[] = 'One of '.implode('; ', array_map('json_encode', $child->getValues()));
+                }
+
+                if (\count($comments)) {
+                    $rootAttributeComments[$name] = implode(";\n", $comments);
+                }
+
+                // default values
+                if ($child->hasDefaultValue()) {
+                    $value = $child->getDefaultValue();
+                }
+
+                // append attribute
+                $rootAttributes[$name] = $value;
             }
         }
 
@@ -188,7 +192,7 @@ class XmlReferenceDumper
                 $commentDepth = $depth + 4 + \strlen($attrName) + 2;
                 $commentLines = explode("\n", $comment);
                 $multiline = (\count($commentLines) > 1);
-                $comment = implode(PHP_EOL.str_repeat(' ', $commentDepth), $commentLines);
+                $comment = implode(\PHP_EOL.str_repeat(' ', $commentDepth), $commentLines);
 
                 if ($multiline) {
                     $this->writeLine('<!--', $depth);
@@ -259,7 +263,7 @@ class XmlReferenceDumper
         $indent = \strlen($text) + $indent;
         $format = '%'.$indent.'s';
 
-        $this->reference .= sprintf($format, $text).PHP_EOL;
+        $this->reference .= sprintf($format, $text).\PHP_EOL;
     }
 
     /**

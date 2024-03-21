@@ -1,7 +1,8 @@
 php-coveralls
 =============
 
-[![Build Status](https://travis-ci.org/php-coveralls/php-coveralls.svg?branch=master)](https://travis-ci.org/php-coveralls/php-coveralls)
+[![Static Code Analysis](https://github.com/php-coveralls/php-coveralls/actions/workflows/static-code-analysis.yml/badge.svg)](https://github.com/php-coveralls/php-coveralls/actions/workflows/static-code-analysis.yml)
+[![CI](https://github.com/php-coveralls/php-coveralls/actions/workflows/ci.yml/badge.svg)](https://github.com/php-coveralls/php-coveralls/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/php-coveralls/php-coveralls/badge.png?branch=master)](https://coveralls.io/r/php-coveralls/php-coveralls)
 
 [![Latest Stable Version](https://poser.pugx.org/php-coveralls/php-coveralls/v/stable.png)](https://packagist.org/packages/php-coveralls/php-coveralls)
@@ -13,7 +14,7 @@ PHP client library for [Coveralls](https://coveralls.io).
 
 - PHP 5.5+ for 2.x or 5.3+ for 1.x
 - On [GitHub](https://github.com/)
-- Building on [Travis CI](http://travis-ci.org/), [CircleCI](https://circleci.com/), [Jenkins](http://jenkins-ci.org/) or [Codeship](https://www.codeship.io/)
+- Building on [Travis CI](http://travis-ci.org/), [CircleCI](https://circleci.com/), [Jenkins](http://jenkins-ci.org/), [Codeship](https://www.codeship.io/) or [GitHub Actions](https://github.com/features/actions)
 - Testing by [PHPUnit](https://github.com/sebastianbergmann/phpunit/) or other testing framework that can generate clover style coverage report
 
 # Installation
@@ -24,13 +25,13 @@ We started to create a phar file, starting from the version 0.7.0
 release. It is available at the URLs like:
 
 ```
-https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
+https://github.com/php-coveralls/php-coveralls/releases/download/v2.6.0/php-coveralls.phar
 ```
 
 Download the file and add exec permissions:
 
 ```sh
-$ wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
+$ wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.6.0/php-coveralls.phar
 $ chmod +x php-coveralls.phar
 ```
 
@@ -45,7 +46,7 @@ $ composer require --dev php-coveralls/php-coveralls
 If you need support for PHP versions older than 5.5, you will need to use a 1.x version:
 
 ```sh
-$ composer require --dev php-coveralls/php-coveralls '^2.2'
+$ composer require --dev 'php-coveralls/php-coveralls:^1.1'
 ```
 
 You can see this library on [Packagist](https://packagist.org/packages/php-coveralls/php-coveralls).
@@ -104,7 +105,7 @@ Above settings are good for most projects if your test suite is executed once a 
 
 ```json
     "require-dev": {
-        "php-coveralls/php-coveralls": "^2.2",
+        "php-coveralls/php-coveralls": "^2.6",
         "phpunit/phpcov": "^2.0"
     },
 ```
@@ -169,6 +170,10 @@ php:
   - 5.4
   - 5.3
 
+env:
+  global:
+    - XDEBUG_MODE=coverage
+
 matrix:
   allow_failures:
     - php: 5.5
@@ -176,6 +181,7 @@ matrix:
 install:
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --dev --no-interaction
+
 script:
   - mkdir -p build/logs
   - php vendor/bin/phpunit -c phpunit.xml.dist
@@ -237,6 +243,19 @@ In the "Configure your environment variables" section:
 COVERALLS_REPO_TOKEN=your_token
 ```
 
+## GitHub Actions
+
+Add a new step after phpunit generate coverage report.
+
+```yaml
+- name: Upload coverage results to Coveralls
+  env:
+    COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    composer global require php-coveralls/php-coveralls
+    php-coveralls --coverage_clover=build/logs/clover.xml -v
+```
+
 ## From local environment
 
 If you would like to call Coveralls API from your local environment, you can set `COVERALLS_RUN_LOCALLY` environment variable. This configuration requires `repo_token` to specify which project on Coveralls your project maps to. This can be done by configuring `.coveralls.yml` or `COVERALLS_REPO_TOKEN` environment variable.
@@ -256,6 +275,25 @@ php-coveralls set the following properties to `json_file` which is sent to Cover
 
 - service_name: php-coveralls
 - service_event_type: manual
+
+## Parallel Builds
+
+Coveralls provides the ability to combine coverage result from multiple parallel builds into one. To enable the feature you can set the following in your environment variable.
+
+```sh
+COVERALLS_PARALLEL=true
+```
+
+To distinguish your job name, please set the `COVERALLS_FLAG_NAME` environment variable.
+
+```sh
+COVERALLS_FLAG_NAME=$YOUR_PHP_VERSION
+```
+
+Bear in mind that you will need to configure your build to send a webhook after all the parallel builds are done in order for Coveralls to merge the results.
+
+Refer to [Parallel Builds Webhook](https://docs.coveralls.io/parallel-build-webhook) for more information for setup on your environment.
+
 
 ## CLI options
 

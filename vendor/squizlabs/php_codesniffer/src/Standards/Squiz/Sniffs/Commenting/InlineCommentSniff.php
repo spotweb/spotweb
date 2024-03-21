@@ -59,17 +59,22 @@ class InlineCommentSniff implements Sniff
         // We are only interested in inline doc block comments, which are
         // not allowed.
         if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_OPEN_TAG) {
-            $nextToken = $phpcsFile->findNext(
-                Tokens::$emptyTokens,
-                ($stackPtr + 1),
-                null,
-                true
-            );
+            $nextToken = $stackPtr;
+            do {
+                $nextToken = $phpcsFile->findNext(Tokens::$emptyTokens, ($nextToken + 1), null, true);
+                if ($tokens[$nextToken]['code'] === T_ATTRIBUTE) {
+                    $nextToken = $tokens[$nextToken]['attribute_closer'];
+                    continue;
+                }
+
+                break;
+            } while (true);
 
             $ignore = [
                 T_CLASS,
                 T_INTERFACE,
                 T_TRAIT,
+                T_ENUM,
                 T_FUNCTION,
                 T_CLOSURE,
                 T_PUBLIC,

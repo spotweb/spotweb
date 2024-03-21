@@ -10,21 +10,21 @@ class Services_NzbHandler_Factory
          */
         switch ($action) {
             case 'disable': $handler = new Services_NzbHandler_Disable($settings, $nzbHandling);
-            break;
+                break;
             case 'save': $handler = new Services_NzbHandler_Save($settings, $nzbHandling);
-            break;
+                break;
             case 'runcommand': $handler = new Services_NzbHandler_Runcommand($settings, $nzbHandling);
-            break;
+                break;
             case 'push-sabnzbd': $handler = new Services_NzbHandler_Pushsabnzbd($settings, $nzbHandling);
-            break;
+                break;
             case 'client-sabnzbd': $handler = new Services_NzbHandler_Clientsabnzbd($settings, $nzbHandling);
-            break;
+                break;
             case 'nzbget': $handler = new Services_NzbHandler_Nzbget($settings, $nzbHandling);
-            break;
+                break;
             case 'nzbvortex': $handler = new Services_NzbHandler_NZBVortex($settings, $nzbHandling);
-            break;
+                break;
             default: $handler = new Services_NzbHandler_Display($settings, $nzbHandling);
-            break;
+                break;
         } // switch
 
         if (!$handler instanceof Services_NzbHandler_Disable && $handler->isAvailable() !== true) {

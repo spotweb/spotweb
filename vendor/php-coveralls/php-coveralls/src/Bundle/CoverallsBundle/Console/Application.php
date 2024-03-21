@@ -37,8 +37,6 @@ class Application extends BaseApplication
     // accessor
 
     /**
-     * {@inheritdoc}
-     *
      * @see \Symfony\Component\Console\Application::getDefinition()
      */
     public function getDefinition()
@@ -53,18 +51,16 @@ class Application extends BaseApplication
     // internal method
 
     /**
-     * {@inheritdoc}
-     *
      * @see \Symfony\Component\Console\Application::getCommandName()
      */
     protected function getCommandName(InputInterface $input)
     {
+        unset($input);
+
         return 'coveralls:v1:jobs';
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @see \Symfony\Component\Console\Application::getDefaultCommands()
      */
     protected function getDefaultCommands()

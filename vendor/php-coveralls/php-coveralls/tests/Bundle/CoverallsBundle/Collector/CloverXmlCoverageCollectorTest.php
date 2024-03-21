@@ -12,20 +12,15 @@ use PhpCoveralls\Tests\ProjectTestCase;
  * @covers \PhpCoveralls\Bundle\CoverallsBundle\Collector\CloverXmlCoverageCollector
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
+ *
+ * @internal
  */
-class CloverXmlCoverageCollectorTest extends ProjectTestCase
+final class CloverXmlCoverageCollectorTest extends ProjectTestCase
 {
     /**
      * @var CloverXmlCoverageCollector
      */
     private $object;
-
-    protected function setUp()
-    {
-        $this->setUpDir(realpath(__DIR__ . '/../../..'));
-
-        $this->object = new CloverXmlCoverageCollector();
-    }
 
     // getJsonFile()
 
@@ -34,7 +29,7 @@ class CloverXmlCoverageCollectorTest extends ProjectTestCase
      */
     public function shouldNotHaveJsonFileOnConstruction()
     {
-        $this->assertNull($this->object->getJsonFile());
+        self::assertNull($this->object->getJsonFile());
     }
 
     // collect() under srcDir
@@ -47,7 +42,7 @@ class CloverXmlCoverageCollectorTest extends ProjectTestCase
         $xml = $this->createCloverXml();
         $jsonFile = $this->object->collect($xml, $this->srcDir);
 
-        $this->assertSame($jsonFile, $this->object->getJsonFile());
+        self::assertSame($jsonFile, $this->object->getJsonFile());
         $this->assertJsonFile($jsonFile, null, null, null, null, '2013-04-13 10:28:13 +0000');
 
         return $jsonFile;
@@ -55,9 +50,8 @@ class CloverXmlCoverageCollectorTest extends ProjectTestCase
 
     /**
      * @test
-     * @depends shouldCollect
      *
-     * @param JsonFile $jsonFile
+     * @depends shouldCollect
      *
      * @return JsonFile
      */
@@ -65,42 +59,40 @@ class CloverXmlCoverageCollectorTest extends ProjectTestCase
     {
         $sourceFiles = $jsonFile->getSourceFiles();
 
-        $this->assertCount(3, $sourceFiles);
+        self::assertCount(3, $sourceFiles);
 
         return $jsonFile;
     }
 
     /**
      * @test
-     * @depends shouldCollectSourceFiles
      *
-     * @param JsonFile $jsonFile
+     * @depends shouldCollectSourceFiles
      */
     public function shouldCollectSourceFileTest1(JsonFile $jsonFile)
     {
         $sourceFiles = $jsonFile->getSourceFiles();
 
         $name1 = 'test.php';
-        $path1 = $this->srcDir . DIRECTORY_SEPARATOR . $name1;
+        $path1 = $this->srcDir . \DIRECTORY_SEPARATOR . $name1;
 
-        $this->assertArrayHasKey($path1, $sourceFiles);
+        self::assertArrayHasKey($path1, $sourceFiles);
         $this->assertSourceFileTest1($sourceFiles[$path1]);
     }
 
     /**
      * @test
-     * @depends shouldCollectSourceFiles
      *
-     * @param JsonFile $jsonFile
+     * @depends shouldCollectSourceFiles
      */
     public function shouldCollectSourceFileTest2(JsonFile $jsonFile)
     {
         $sourceFiles = $jsonFile->getSourceFiles();
 
         $name2 = 'test2.php';
-        $path2 = $this->srcDir . DIRECTORY_SEPARATOR . $name2;
+        $path2 = $this->srcDir . \DIRECTORY_SEPARATOR . $name2;
 
-        $this->assertArrayHasKey($path2, $sourceFiles);
+        self::assertArrayHasKey($path2, $sourceFiles);
         $this->assertSourceFileTest2($sourceFiles[$path2]);
     }
 
@@ -112,9 +104,9 @@ class CloverXmlCoverageCollectorTest extends ProjectTestCase
     public function shouldCollectUnderRootDir()
     {
         $xml = $this->createCloverXml();
-        $jsonFile = $this->object->collect($xml, DIRECTORY_SEPARATOR);
+        $jsonFile = $this->object->collect($xml, \DIRECTORY_SEPARATOR);
 
-        $this->assertSame($jsonFile, $this->object->getJsonFile());
+        self::assertSame($jsonFile, $this->object->getJsonFile());
         $this->assertJsonFile($jsonFile, null, null, null, null, '2013-04-13 10:28:13 +0000');
 
         return $jsonFile;
@@ -122,9 +114,8 @@ class CloverXmlCoverageCollectorTest extends ProjectTestCase
 
     /**
      * @test
-     * @depends shouldCollectUnderRootDir
      *
-     * @param JsonFile $jsonFile
+     * @depends shouldCollectUnderRootDir
      *
      * @return JsonFile
      */
@@ -132,43 +123,48 @@ class CloverXmlCoverageCollectorTest extends ProjectTestCase
     {
         $sourceFiles = $jsonFile->getSourceFiles();
 
-        $this->assertCount(3, $sourceFiles);
+        self::assertCount(3, $sourceFiles);
 
         return $jsonFile;
     }
 
     /**
      * @test
-     * @depends shouldCollectSourceFilesUnderRootDir
      *
-     * @param JsonFile $jsonFile
+     * @depends shouldCollectSourceFilesUnderRootDir
      */
     public function shouldCollectSourceFileTest1UnderRootDir(JsonFile $jsonFile)
     {
         $sourceFiles = $jsonFile->getSourceFiles();
 
         $name1 = 'test.php';
-        $path1 = $this->srcDir . DIRECTORY_SEPARATOR . $name1;
+        $path1 = $this->srcDir . \DIRECTORY_SEPARATOR . $name1;
 
-        $this->assertArrayHasKey($path1, $sourceFiles);
+        self::assertArrayHasKey($path1, $sourceFiles);
         $this->assertSourceFileTest1UnderRootDir($sourceFiles[$path1]);
     }
 
     /**
      * @test
-     * @depends shouldCollectSourceFilesUnderRootDir
      *
-     * @param JsonFile $jsonFile
+     * @depends shouldCollectSourceFilesUnderRootDir
      */
     public function shouldCollectSourceFileTest2UnderRootDir(JsonFile $jsonFile)
     {
         $sourceFiles = $jsonFile->getSourceFiles();
 
         $name2 = 'test2.php';
-        $path2 = $this->srcDir . DIRECTORY_SEPARATOR . $name2;
+        $path2 = $this->srcDir . \DIRECTORY_SEPARATOR . $name2;
 
-        $this->assertArrayHasKey($path2, $sourceFiles);
+        self::assertArrayHasKey($path2, $sourceFiles);
         $this->assertSourceFileTest2UnderRootDir($sourceFiles[$path2]);
+    }
+
+    protected function legacySetUp()
+    {
+        $this->setUpDir(realpath(__DIR__ . '/../../..'));
+
+        $this->object = new CloverXmlCoverageCollector();
     }
 
     /**
@@ -236,34 +232,32 @@ XML;
      */
     protected function assertJsonFile($jsonFile, $serviceName, $serviceJobId, $repoToken, $git, $runAt)
     {
-        $this->assertSame($serviceName, $jsonFile->getServiceName());
-        $this->assertSame($serviceJobId, $jsonFile->getServiceJobId());
-        $this->assertSame($repoToken, $jsonFile->getRepoToken());
-        $this->assertSame($git, $jsonFile->getGit());
-        $this->assertSame($runAt, $jsonFile->getRunAt());
+        self::assertSame($serviceName, $jsonFile->getServiceName());
+        self::assertSame($serviceJobId, $jsonFile->getServiceJobId());
+        self::assertSame($repoToken, $jsonFile->getRepoToken());
+        self::assertSame($git, $jsonFile->getGit());
+        self::assertSame($runAt, $jsonFile->getRunAt());
     }
 
     /**
-     * @param SourceFile $sourceFile
-     * @param string     $name
-     * @param string     $path
-     * @param int        $fileLines
-     * @param array      $coverage
-     * @param string     $source
+     * @param string $name
+     * @param string $path
+     * @param int    $fileLines
+     * @param string $source
      */
     protected function assertSourceFile(SourceFile $sourceFile, $name, $path, $fileLines, array $coverage, $source)
     {
-        $this->assertSame($name, $sourceFile->getName());
+        self::assertSame($name, $sourceFile->getName());
         $this->assertSamePath($path, $sourceFile->getPath());
-        $this->assertSame($fileLines, $sourceFile->getFileLines());
-        $this->assertSame($coverage, $sourceFile->getCoverage());
-        $this->assertSame($source, $sourceFile->getSource());
+        self::assertSame($fileLines, $sourceFile->getFileLines());
+        self::assertSame($coverage, $sourceFile->getCoverage());
+        self::assertSame($source, $sourceFile->getSource());
     }
 
     protected function assertSourceFileTest1(SourceFile $sourceFile)
     {
         $name1 = 'test.php';
-        $path1 = $this->srcDir . DIRECTORY_SEPARATOR . $name1;
+        $path1 = $this->srcDir . \DIRECTORY_SEPARATOR . $name1;
         $fileLines1 = 9;
         $coverage1 = array_fill(0, $fileLines1, null);
         $coverage1[6] = 3;
@@ -275,7 +269,7 @@ XML;
     protected function assertSourceFileTest2(SourceFile $sourceFile)
     {
         $name2 = 'test2.php';
-        $path2 = $this->srcDir . DIRECTORY_SEPARATOR . $name2;
+        $path2 = $this->srcDir . \DIRECTORY_SEPARATOR . $name2;
         $fileLines2 = 10;
         $coverage2 = array_fill(0, $fileLines2, null);
         $coverage2[7] = 0;
@@ -287,7 +281,7 @@ XML;
     protected function assertSourceFileTest1UnderRootDir(SourceFile $sourceFile)
     {
         $name1 = 'test.php';
-        $path1 = $this->srcDir . DIRECTORY_SEPARATOR . $name1;
+        $path1 = $this->srcDir . \DIRECTORY_SEPARATOR . $name1;
         $fileLines1 = 9;
         $coverage1 = array_fill(0, $fileLines1, null);
         $coverage1[6] = 3;
@@ -299,7 +293,7 @@ XML;
     protected function assertSourceFileTest2UnderRootDir(SourceFile $sourceFile)
     {
         $name2 = 'test2.php';
-        $path2 = $this->srcDir . DIRECTORY_SEPARATOR . $name2;
+        $path2 = $this->srcDir . \DIRECTORY_SEPARATOR . $name2;
         $fileLines2 = 10;
         $coverage2 = array_fill(0, $fileLines2, null);
         $coverage2[7] = 0;

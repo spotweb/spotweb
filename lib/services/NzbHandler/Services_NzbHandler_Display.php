@@ -17,7 +17,7 @@ class Services_NzbHandler_Display extends Services_NzbHandler_abs
 
         switch ($this->_nzbHandling['prepare_action']) {
             case 'zip': header('Content-Disposition: attachment; filename="'.$nzb['filename'].'"');
-            break;
+                break;
             default: header('Content-Disposition: inline; filename="'.$nzb['filename'].'"');
         } // switch
         echo $nzb['nzb'];

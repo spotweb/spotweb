@@ -20,13 +20,13 @@ abstract class SpotStruct_abs
         switch ($dbEngine) {
             case 'mysql':
             case 'pdo_mysql': return new SpotStruct_mysql($dbCon);
-            break;
+                break;
 
             case 'pdo_pgsql': return new SpotStruct_pgsql($dbCon);
-            break;
+                break;
 
             case 'pdo_sqlite': return new SpotStruct_sqlite($dbCon);
-            break;
+                break;
 
             default: throw new Exception("Unknown database engine '".$dbEngine."'");
         } // switch
@@ -267,9 +267,9 @@ abstract class SpotStruct_abs
             if ($same) {
                 switch (strtolower($type)) {
                     case 'fulltext': $same = (strtolower($q[$i]['index_type']) == 'fulltext');
-                    break;
+                        break;
                     case 'unique': $same = ($qUpper['NON_UNIQUE'] == 0);
-                    break;
+                        break;
                     case '': $same = (strtolower($q[$i]['index_type']) != 'fulltext') && ($qUpper['NON_UNIQUE'] == 1);
                 } // switch
             } // if

@@ -50,7 +50,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
          */
         switch ($this->_params['t']) {
             case '': $this->showApiError(200);
-            break;
+                break;
             case 'search':
             case 's':
             case 'tvsearch':
@@ -58,13 +58,13 @@ class SpotPage_newznabapi extends SpotPage_Abs
             case 'music':
             case 'movie':
             case 'm': $this->search($outputtype);
-            break;
+                break;
             case 'd':
             case 'details': $this->spotDetails($outputtype);
-            break;
+                break;
             case 'g':
             case 'get': $this->getNzb();
-            break;
+                break;
             default: $this->showApiError(202);
         } // switch
     }
@@ -468,7 +468,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 $enclosure->setAttribute('length', $spot['filesize']);
                 switch ($nzbhandling['prepare_action']) {
                     case 'zip': $enclosure->setAttribute('type', 'application/zip');
-                    break;
+                        break;
                     default: $enclosure->setAttribute('type', 'application/x-nzb');
                 } // switch
                 $item->appendChild($enclosure);
@@ -666,7 +666,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $enclosure->setAttribute('length', $spot['filesize']);
             switch ($nzbhandling['prepare_action']) {
                 case 'zip': $enclosure->setAttribute('type', 'application/zip');
-                break;
+                    break;
                 default: $enclosure->setAttribute('type', 'application/x-nzb');
             } // switch
             $item->appendChild($enclosure);
@@ -859,44 +859,44 @@ class SpotPage_newznabapi extends SpotPage_Abs
     {
         switch ($errcode) {
             case 100: $errtext = 'Incorrect user credentials';
-            break;
+                break;
             case 101: $errtext = 'Account suspended';
-            break;
+                break;
             case 102: $errtext = 'Insufficient priviledges/not authorized';
-            break;
+                break;
             case 103: $errtext = 'Registration denied';
-            break;
+                break;
             case 104: $errtext = 'Registrations are closed';
-            break;
+                break;
             case 105: $errtext = 'Invalid registration (Email Address Taken)';
-            break;
+                break;
             case 106: $errtext = 'Invalid registration (Email Address Bad Format)';
-            break;
+                break;
             case 107: $errtext = 'Registration Failed (Data error)';
-            break;
+                break;
 
             case 200: $errtext = 'Missing parameter';
-            break;
+                break;
             case 201: $errtext = 'Incorrect parameter';
-            break;
+                break;
             case 202: $errtext = 'No such function';
-            break;
+                break;
             case 203: $errtext = 'Function not available';
-            break;
+                break;
 
             case 300: $errtext = 'On TVSearch no q, tvmaze or rid parameter present';
-            break;
+                break;
             case 301: $errtext = 'IMDB information returned is invalid';
-            break;
+                break;
             case 302: $errtext = 'Error in fetching spot information';
-            break;
+                break;
 
             case 500: $errtext = 'Request limit reached';
-            break;
+                break;
             case 501: $errtext = 'Download limit reached';
-            break;
+                break;
             default: $errtext = 'Unknown error';
-            break;
+                break;
         } // switch
 
         $doc = new DOMDocument('1.0', 'utf-8');

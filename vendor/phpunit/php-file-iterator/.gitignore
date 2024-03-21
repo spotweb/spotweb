@@ -1,7 +1,5 @@
-build/api
-build/code-browser
-build/coverage
-build/logs
-build/pdepend
-cache.properties
-phpunit.xml
+/.idea
+/vendor/
+/.php_cs
+/.php_cs.cache
+/composer.lock

@@ -2,6 +2,9 @@
 
 class Services_Retriever_Reports extends Services_Retriever_Base
 {
+    protected $_reportDao;
+    protected $_spotDao;
+
     /**
      * Server is the server array we are expecting to connect to
      * db - database object.
@@ -23,35 +26,35 @@ class Services_Retriever_Reports extends Services_Retriever_Base
     {
         switch ($cat) {
             case 'start': echo 'Retrieving new reports from server '.$txt.'...'.PHP_EOL;
-            break;
+                break;
             case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL;
-            break;
+                break;
             case 'done': echo 'Finished retrieving reports.'.PHP_EOL.PHP_EOL;
-            break;
+                break;
             case 'groupmessagecount': echo 'Appr. Message count: 	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'firstmsg': echo 'First message number:	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'lastmsg': echo 'Last message number:	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'curartnr': echo 'Current article number:	'.$txt.''.PHP_EOL;
-            break;
+                break;
             case 'progress': echo 'Retrieving '.$txt;
-            break;
+                break;
             case 'loopcount': echo ', found '.$txt.' reports';
-            break;
+                break;
             case 'timer': echo ' in '.$txt.' seconds'.PHP_EOL;
-            break;
+                break;
             case 'totalprocessed': echo 'Processed a total of '.$txt.' reports'.PHP_EOL;
-            break;
+                break;
             case 'searchmsgid': echo 'Looking for articlenumber for messageid'.PHP_EOL;
-            break;
+                break;
             case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
-            break;
+                break;
             case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible';
-            break;
+                break;
             case '': echo PHP_EOL;
-            break;
+                break;
 
             default: echo $cat.$txt;
         } // switch
@@ -125,8 +128,8 @@ class Services_Retriever_Reports extends Services_Retriever_Base
 
                     // prepare the report to be added to the database
                     $reportDbList[] = ['messageid' => $reportId,
-                        'fromhdr'                  => utf8_encode($msgheader['From']),
-                        'keyword'                  => utf8_encode($msgheader['keyword']),
+                        'fromhdr'                  => mb_convert_encoding($msgheader['From'], 'ASCII'),
+                        'keyword'                  => mb_convert_encoding($msgheader['keyword'], 'ASCII'),
                         'nntpref'                  => $msgheader['References'], ];
                 } // if
 

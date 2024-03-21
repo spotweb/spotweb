@@ -38,7 +38,7 @@ class PersonSearch extends MdbBase
      * This empties the collected search results. Without calling this, every
      * new search appends its results to the ones collected by the previous search.
      */
-    function reset()
+    public function reset()
     {
         $this->resu = array();
     }
@@ -98,7 +98,7 @@ class PersonSearch extends MdbBase
             $xpath = $this->getXpathPage($this->name);
             $cells = $xpath->query("//section[@data-testid='find-results-section-name']//div[@class='ipc-metadata-list-summary-item__tc']");
 
-            foreach($cells as $cell) {
+            foreach ($cells as $cell) {
                 $linkAndName = $xpath->query('.//a[@class="ipc-metadata-list-summary-item__t"]', $cell);
 
                 if ($linkAndName->length < 1 || !preg_match('!nm(?<pid>\d+)!', $linkAndName->item(0)->getAttribute('href'), $href)) {

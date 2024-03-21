@@ -82,6 +82,7 @@ class SideEffectsSniff implements Sniff
             T_CLASS     => T_CLASS,
             T_INTERFACE => T_INTERFACE,
             T_TRAIT     => T_TRAIT,
+            T_ENUM      => T_ENUM,
             T_FUNCTION  => T_FUNCTION,
         ];
 
@@ -178,6 +179,14 @@ class SideEffectsSniff implements Sniff
                 continue;
             }
 
+            // Ignore attributes.
+            if ($tokens[$i]['code'] === T_ATTRIBUTE
+                && isset($tokens[$i]['attribute_closer']) === true
+            ) {
+                $i = $tokens[$i]['attribute_closer'];
+                continue;
+            }
+
             // Detect and skip over symbols.
             if (isset($symbols[$tokens[$i]['code']]) === true
                 && isset($tokens[$i]['scope_closer']) === true
@@ -193,6 +202,7 @@ class SideEffectsSniff implements Sniff
             ) {
                 $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($i - 1), null, true);
                 if ($tokens[$prev]['code'] !== T_OBJECT_OPERATOR
+                    && $tokens[$prev]['code'] !== T_NULLSAFE_OBJECT_OPERATOR
                     && $tokens[$prev]['code'] !== T_DOUBLE_COLON
                     && $tokens[$prev]['code'] !== T_FUNCTION
                 ) {
@@ -216,11 +226,13 @@ class SideEffectsSniff implements Sniff
                 && strtolower($tokens[$i]['content']) === 'defined'
             ) {
                 $openBracket = $phpcsFile->findNext(Tokens::$emptyTokens, ($i + 1), null, true);
-                if ($tokens[$openBracket]['code'] === T_OPEN_PARENTHESIS
+                if ($openBracket !== false
+                    && $tokens[$openBracket]['code'] === T_OPEN_PARENTHESIS
                     && isset($tokens[$openBracket]['parenthesis_closer']) === true
                 ) {
                     $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($i - 1), null, true);
                     if ($tokens[$prev]['code'] !== T_OBJECT_OPERATOR
+                        && $tokens[$prev]['code'] !== T_NULLSAFE_OBJECT_OPERATOR
                         && $tokens[$prev]['code'] !== T_DOUBLE_COLON
                         && $tokens[$prev]['code'] !== T_FUNCTION
                     ) {

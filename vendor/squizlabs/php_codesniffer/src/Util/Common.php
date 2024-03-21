@@ -49,6 +49,34 @@ class Common
 
 
     /**
+     * Checks if a file is readable.
+     *
+     * Addresses PHP bug related to reading files from network drives on Windows.
+     * e.g. when using WSL2.
+     *
+     * @param string $path The path to the file.
+     *
+     * @return boolean
+     */
+    public static function isReadable($path)
+    {
+        if (@is_readable($path) === true) {
+            return true;
+        }
+
+        if (@file_exists($path) === true && @is_file($path) === true) {
+            $f = @fopen($path, 'rb');
+            if (fclose($f) === true) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }//end isReadable()
+
+
+    /**
      * CodeSniffer alternative for realpath.
      *
      * Allows for PHAR support.
@@ -212,6 +240,28 @@ class Common
 
 
     /**
+     * Escape a path to a system command.
+     *
+     * @param string $cmd The path to the system command.
+     *
+     * @return string
+     */
+    public static function escapeshellcmd($cmd)
+    {
+        $cmd = escapeshellcmd($cmd);
+
+        if (stripos(PHP_OS, 'WIN') === 0) {
+            // Spaces are not escaped by escapeshellcmd on Windows, but need to be
+            // for the command to be able to execute.
+            $cmd = preg_replace('`(?<!^) `', '^ ', $cmd);
+        }
+
+        return $cmd;
+
+    }//end escapeshellcmd()
+
+
+    /**
      * Prepares token content for output to screen.
      *
      * Replaces invisible characters so they are visible. On non-Windows
@@ -225,7 +275,7 @@ class Common
      */
     public static function prepareForOutput($content, $exclude=[])
     {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        if (stripos(PHP_OS, 'WIN') === 0) {
             if (in_array("\r", $exclude, true) === false) {
                 $content = str_replace("\r", '\r', $content);
             }
@@ -322,7 +372,7 @@ class Common
             for ($i = 1; $i < $length; $i++) {
                 $ascii = ord($string[$i]);
                 if ($ascii >= 48 && $ascii <= 57) {
-                    // The character is a number, so it cant be a capital.
+                    // The character is a number, so it can't be a capital.
                     $isCaps = false;
                 } else {
                     if (strtoupper($string[$i]) === $string[$i]) {

@@ -4,7 +4,6 @@ namespace Imdb;
 
 class Parsing
 {
-
     /**
      * Parse a HTML table into an array of rows which are an array of cells containing the string in each <td></td>
      * @param string $html The HTML to parse

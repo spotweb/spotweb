@@ -1,10 +1,10 @@
 language: php
 
 php:
-  - 7.0
   - 7.1
   - 7.2
-  - master
+  - 7.3
+  - 7.4snapshot
 
 sudo: false
 

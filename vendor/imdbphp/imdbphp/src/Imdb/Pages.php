@@ -10,7 +10,6 @@ use Psr\SimpleCache\CacheInterface;
  */
 class Pages
 {
-
     /**
      * @var Config
      */
@@ -89,8 +88,10 @@ class Pages
             $this->logger->debug("[Page] Following redirect from [$url] to [$redirectUrl]");
             return $this->requestPage($redirectUrl);
         } else {
-            $this->logger->error("[Page] Failed to retrieve url [{url}]. Response headers:{headers}",
-              array('url' => $url, 'headers' => $req->getLastResponseHeaders()));
+            $this->logger->error(
+                "[Page] Failed to retrieve url [{url}]. Response headers:{headers}",
+                array('url' => $url, 'headers' => $req->getLastResponseHeaders())
+            );
             if ($this->config->throwHttpExceptions) {
                 $exception = new Exception\Http("Failed to retrieve url [$url]. Status code [{$req->getStatus()}]");
                 $exception->HTTPStatusCode = $req->getStatus();
@@ -122,5 +123,4 @@ class Pages
     {
         return new Request($url, $this->config);
     }
-
 }

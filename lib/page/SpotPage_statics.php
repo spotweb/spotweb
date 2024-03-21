@@ -87,9 +87,9 @@ class SpotPage_statics extends SpotPage_Abs
                 header('Vary: Accept-Encoding'); // sta toe dat proxy servers dit cachen
                 break;
             case 'js': $this->sendContentTypeHeader('js');
-            break;
+                break;
             case 'ico': $this->sendContentTypeHeader('ico');
-            break;
+                break;
         } // switch
 
         // we don't want this code to expire

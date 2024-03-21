@@ -64,10 +64,51 @@ $array = [
     $c ? $d : $e,
 ];
 
+$foo =
+[
+    'bar' =>
+    [
+    ],
+];
+
+$foo = [
+    'foo'
+        . 'bar',
+    [
+        'baz',
+        'qux',
+    ],
+];
+
 // phpcs:set Generic.Arrays.ArrayIndent indent 2
 
 $var = [
   1 => 'one',
   2 => 'two',
   /* three */ 3 => 'three',
+];
+
+// phpcs:set Generic.Arrays.ArrayIndent indent 4
+
+$array = array(
+    match ($test) { 1 => 'a', 2 => 'b' }
+          => 'dynamic keys, woho!',
+);
+
+$array = [
+    match ($test) { 1 => 'a', 2 => 'b' }
+       => 'dynamic keys, woho!',
+];
+
+// Ensure that PHP 8.0 named parameters don't affect the sniff.
+$array = [
+    functionCall(
+        name: $value
+    ),
+];
+
+$array = [
+    functionCall(
+    name: $value
+    ),
 ];

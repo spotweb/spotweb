@@ -37,7 +37,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::MOVIE) {
+            if ($result->movietype() !== TitleSearch::MOVIE) {
                 $wrongMovieType = true;
             }
         }
@@ -53,7 +53,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::TV_SERIES) {
+            if ($result->movietype() !== TitleSearch::TV_SERIES) {
                 $wrongMovieType = true;
             }
         }
@@ -76,7 +76,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::TV_EPISODE) {
+            if ($result->movietype() !== TitleSearch::TV_EPISODE) {
                 $wrongMovieType = true;
             }
         }
@@ -99,7 +99,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::GAME) {
+            if ($result->movietype() !== TitleSearch::GAME) {
                 $wrongMovieType = true;
             }
         }
@@ -122,7 +122,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::TV_MINI_SERIES) {
+            if ($result->movietype() !== TitleSearch::TV_MINI_SERIES) {
                 $wrongMovieType = true;
             }
         }
@@ -151,7 +151,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::MOVIE) {
+            if ($result->movietype() !== TitleSearch::MOVIE) {
                 $wrongMovieType = true;
             }
         }
@@ -163,12 +163,12 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
         $maxResults = 3;
         $search = $this->getimdbsearch();
         $results = $search->search('The Lord of the Rings', array(TitleSearch::MOVIE), $maxResults);
-        
+
         $this->assertEquals($maxResults, count($results));
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::MOVIE) {
+            if ($result->movietype() !== TitleSearch::MOVIE) {
                 $wrongMovieType = true;
             }
         }
@@ -179,18 +179,18 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
     {
         $search = $this->getimdbsearch();
         $results = $search->search('The Lord of the Rings', array(TitleSearch::MOVIE));
-        
+
         $this->assertGreaterThan(10, count($results));
 
         $wrongMovieType = false;
         foreach ($results as $result) {
-            if($result->movietype() !== TitleSearch::MOVIE) {
+            if ($result->movietype() !== TitleSearch::MOVIE) {
                 $wrongMovieType = true;
             }
         }
         $this->assertFalse($wrongMovieType, "Should only return ". TitleSearch::MOVIE);
     }
-    
+
     protected function getimdbsearch()
     {
         $config = new Config();

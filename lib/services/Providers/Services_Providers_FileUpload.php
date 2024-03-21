@@ -58,19 +58,19 @@ class Services_Providers_FileUpload
 
         switch ($_FILES[$this->_formName]['error'][$this->_fieldName]) {
             case UPLOAD_ERR_INI_SIZE: return "Uploaded file too large, check your PHP's INI file";
-            break;
+                break;
             case UPLOAD_ERR_FORM_SIZE: return 'Uploaded file too large, exceeds maximum size of Spotweb';
-            break;
+                break;
             case UPLOAD_ERR_PARTIAL: return 'File was only uploaded partially';
-            break;
+                break;
             case UPLOAD_ERR_NO_FILE: return 'No file was uploaded';
-            break;
+                break;
             case UPLOAD_ERR_NO_TMP_DIR: return 'Temp folder of PHP is missing, please fix your PHP.INI file';
-            break;
+                break;
             case UPLOAD_ERR_CANT_WRITE: return 'Failed to write uploaded file to disk, please check your server config';
-            break;
+                break;
             case UPLOAD_ERR_EXTENSION: return 'Some PHP extension interfered with uploaded, please check your server config';
-            break;
+                break;
 
             default: return 'unk: '.$_FILES[$this->_formName]['error'][$this->_fieldName];
         } // switch
