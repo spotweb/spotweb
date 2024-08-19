@@ -182,7 +182,6 @@ class SpotInstall
                     $form['hdr']['verifyname'] = isset($form['verifyname']);
                     $form['nzb']['verifyname'] = isset($form['verifyname']);
                     $form['post']['verifyname'] = isset($form['verifyname']);
-
                 } else {
                     foreach ($serverList->usenetservers->server as $provider) {
                         if (extension_loaded('openssl') && isset($provider->ssl)) {
