@@ -342,7 +342,7 @@ class Services_User_Filters
                 $tmpFilter = explode(':', urldecode($filterValue));
 
                 // and create the actual filter
-                if (count($tmpFilter) >= 4) {
+                if (count($tmpFilter) >= 3) {
                     $filterValueList[] = ['fieldname' => $tmpFilter[0],
                         'operator'                    => $tmpFilter[1],
                         'booloper'                    => $tmpFilter[2],
@@ -455,15 +455,27 @@ class Services_User_Filters
              */
             $filterValues = [];
             foreach ($filterItem->xpath('values/item') as $valueItem) {
-                $filterValues[] = urlencode(
-                    (string) $valueItem->fieldname.
-                                    ':'.
-                                   (string) $valueItem->operator.
-                                    ':'.
-                                   (string) $valueItem->booloper.
-                                   ':'.
-                                   (string) $valueItem->value
-                );
+                if ((string) $valueItem->value != "") {
+                    $filterValues[] = urlencode(
+                        (string) $valueItem->fieldname .
+                        ':' .
+                        (string) $valueItem->operator .
+                        ':' .
+                        (string) $valueItem->booloper .
+                        ':' .
+                        (string) $valueItem->value
+                    );
+                } else {
+                    $filterValues[] = urlencode(
+                        (string) $valueItem->fieldname .
+                        ':' .
+                        (string) $valueItem->operator .
+                        ':' .
+                        (string) $valueItem->booloper
+                    );
+
+                }
+
             } // foreach
             $filter['valuelist'] = $filterValues;
 
