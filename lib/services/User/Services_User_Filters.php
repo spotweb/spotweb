@@ -455,27 +455,25 @@ class Services_User_Filters
              */
             $filterValues = [];
             foreach ($filterItem->xpath('values/item') as $valueItem) {
-                if ((string) $valueItem->value != "") {
+                if ((string) $valueItem->value != '') {
                     $filterValues[] = urlencode(
-                        (string) $valueItem->fieldname .
-                        ':' .
-                        (string) $valueItem->operator .
-                        ':' .
-                        (string) $valueItem->booloper .
-                        ':' .
+                        (string) $valueItem->fieldname.
+                        ':'.
+                        (string) $valueItem->operator.
+                        ':'.
+                        (string) $valueItem->booloper.
+                        ':'.
                         (string) $valueItem->value
                     );
                 } else {
                     $filterValues[] = urlencode(
-                        (string) $valueItem->fieldname .
-                        ':' .
-                        (string) $valueItem->operator .
-                        ':' .
+                        (string) $valueItem->fieldname.
+                        ':'.
+                        (string) $valueItem->operator.
+                        ':'.
                         (string) $valueItem->booloper
                     );
-
                 }
-
             } // foreach
             $filter['valuelist'] = $filterValues;
 
