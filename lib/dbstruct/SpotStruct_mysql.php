@@ -1,4 +1,5 @@
 <?php
+
 use GuzzleHttp\Promise\Is;
 
 class SpotStruct_mysql extends SpotStruct_abs
