@@ -1,4 +1,5 @@
 <?php
+use GuzzleHttp\Promise\Is;
 
 class SpotStruct_mysql extends SpotStruct_abs
 {
@@ -248,8 +249,10 @@ class SpotStruct_mysql extends SpotStruct_abs
     {
         if (!$this->columnExists($tablename, $colName)) {
             // set the DEFAULT value
-            if (strlen($colDefault) != 0) {
-                $colDefault = 'DEFAULT '.$colDefault;
+            if (isset($colDefault)) {
+                if (strlen($colDefault) > 0) {
+                    $colDefault = 'DEFAULT '.$colDefault;
+                }
             } // if
 
             // Convert the column type to a type we use in MySQL
@@ -377,8 +380,8 @@ class SpotStruct_mysql extends SpotStruct_abs
     /* alters a storage engine (only mysql knows something about store engines, but well  :P ) */
     public function alterStorageEngine($tablename, $engine)
     {
-        $q = $this->_dbcon->singleQuery("SELECT ENGINE 
-										FROM information_schema.TABLES 
+        $q = $this->_dbcon->singleQuery("SELECT ENGINE
+										FROM information_schema.TABLES
 										WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '".$tablename."'");
 
         if (strtolower($q) != strtolower($engine)) {
@@ -399,11 +402,11 @@ class SpotStruct_mysql extends SpotStruct_abs
     /* drop a foreign key constraint */
     public function dropForeignKey($tablename, $colname, $reftable, $refcolumn, $action)
     {
-        $q = $this->_dbcon->arrayQuery("SELECT CONSTRAINT_NAME FROM information_schema.key_column_usage 
-										WHERE TABLE_SCHEMA = DATABASE() 
-										  AND TABLE_NAME = '".$tablename."' 
+        $q = $this->_dbcon->arrayQuery("SELECT CONSTRAINT_NAME FROM information_schema.key_column_usage
+										WHERE TABLE_SCHEMA = DATABASE()
+										  AND TABLE_NAME = '".$tablename."'
 										  AND COLUMN_NAME = '".$colname."'
-										  AND REFERENCED_TABLE_NAME = '".$reftable."' 
+										  AND REFERENCED_TABLE_NAME = '".$reftable."'
 										  AND REFERENCED_COLUMN_NAME = '".$refcolumn."'");
         if (!empty($q)) {
             foreach ($q as $res) {
@@ -417,14 +420,14 @@ class SpotStruct_mysql extends SpotStruct_abs
     /* creates a foreign key constraint */
     public function addForeignKey($tablename, $colname, $reftable, $refcolumn, $action)
     {
-        $q = $this->_dbcon->arrayQuery("SELECT * FROM information_schema.key_column_usage 
-										WHERE TABLE_SCHEMA = DATABASE() 
-										  AND TABLE_NAME = '".$tablename."' 
+        $q = $this->_dbcon->arrayQuery("SELECT * FROM information_schema.key_column_usage
+										WHERE TABLE_SCHEMA = DATABASE()
+										  AND TABLE_NAME = '".$tablename."'
 										  AND COLUMN_NAME = '".$colname."'
-										  AND REFERENCED_TABLE_NAME = '".$reftable."' 
+										  AND REFERENCED_TABLE_NAME = '".$reftable."'
 										  AND REFERENCED_COLUMN_NAME = '".$refcolumn."'");
         if (empty($q)) {
-            $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' ADD FOREIGN KEY ('.$colname.') 
+            $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' ADD FOREIGN KEY ('.$colname.')
 										REFERENCES '.$reftable.' ('.$refcolumn.') '.$action);
         } // if
     }
@@ -434,13 +437,13 @@ class SpotStruct_mysql extends SpotStruct_abs
     /* Returns in a fixed format, column information */
     public function getColumnInfo($tablename, $colname)
     {
-        $q = $this->_dbcon->arrayQuery("SELECT COLUMN_NAME, 
-											   COLUMN_DEFAULT, 
-											   IS_NULLABLE, 
-											   COLUMN_TYPE, 
-											   CHARACTER_SET_NAME, 
-											   COLLATION_NAME 
-										FROM information_schema.COLUMNS 
+        $q = $this->_dbcon->arrayQuery("SELECT COLUMN_NAME,
+											   COLUMN_DEFAULT,
+											   IS_NULLABLE,
+											   COLUMN_TYPE,
+											   CHARACTER_SET_NAME,
+											   COLLATION_NAME
+										FROM information_schema.COLUMNS
 										WHERE TABLE_NAME = '".$tablename."'
 										  AND COLUMN_NAME = '".$colname."'
 										  AND TABLE_SCHEMA = DATABASE()");
@@ -509,14 +512,14 @@ class SpotStruct_mysql extends SpotStruct_abs
     /* Returns in a fixed format, index information */
     public function getIndexInfo($idxname, $tablename)
     {
-        $q = $this->_dbcon->arrayQuery("SELECT 
-											column_name, 
-											non_unique, 
+        $q = $this->_dbcon->arrayQuery("SELECT
+											column_name,
+											non_unique,
 											lower(index_type) as index_type
-										FROM information_schema.STATISTICS 
-										WHERE TABLE_SCHEMA = DATABASE() 
-										  AND table_name = '".$tablename."' 
-										  AND index_name = '".$idxname."' 
+										FROM information_schema.STATISTICS
+										WHERE TABLE_SCHEMA = DATABASE()
+										  AND table_name = '".$tablename."'
+										  AND index_name = '".$idxname."'
 										ORDER BY seq_in_index");
 
         return $q;
