@@ -221,8 +221,8 @@ function updateSabPanel(start,limit) {
             sabActions(start,limit,state+"queue");
         });
         $("table.sabInfo td.diskspace").html("<strong title='<t>Free space (complete)</t>'>"+queue.freediskspace+"</strong> / <strong title='<t>Totale space (complete)</t>'>"+queue.totaldiskspace+"</strong> <t>GB</t>");
-        $("table.sabInfo td.speed").html("<strong>"+(queue.bytepersec/1024).toFixed(2)+"</strong> <t>KB/s</t>");
-        $("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+(queue.speedlimit!=0?queue.speedlimit:"")+"'><label><t>KB/s</t></label>");
+        $("table.sabInfo td.speed").html("<strong>"+(queue.bytepersec/1048576).toFixed(2)+"</strong> <t>MB/s</t>");
+        $("table.sabInfo td.speedlimit").html("<input type='text' name='speedLimit' value='"+(queue.speedlimit!=0?queue.speedlimit:"")+"'><label><t>%</t></label>");
         $("td.speedlimit input[name=speedLimit]").focus(function(){
             $(this).addClass("hasFocus");
         });
