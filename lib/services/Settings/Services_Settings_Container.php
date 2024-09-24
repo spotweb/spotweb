@@ -67,7 +67,11 @@ class Services_Settings_Container
      */
     public function get($name)
     {
-        return self::$_settings[$name];
+        if (isset(self::$_settings[$name])) {
+            return self::$_settings[$name];
+        } else {
+            return null;
+        }
     }
 
     // get
