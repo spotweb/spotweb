@@ -78,9 +78,8 @@ class Services_User_Filters
         $result = new Dto_FormResult();
 
         // Remove any spaces
-        $filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
-        $filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
-
+        $filter['title'] = trim(mb_convert_encoding($filter['title'], 'UTF-8', 'ISO-8859-1'), " \t\n\r\0\x0B");
+    
         // Make sure a filter name is valid
         if (strlen($filter['title']) < 2) {
             $result->addError(_('Invalid filter name'));
