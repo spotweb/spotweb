@@ -70,6 +70,7 @@ class dbeng_pdo_pgsql extends dbeng_pdo
                 $this->exec('CREATE USER '.$usr." WITH PASSWORD '".$pass."'");
             }
             $this->exec('GRANT ALL privileges ON DATABASE '.$db.' TO '.$usr.'');
+            $this->exec('ALTER DATABASE ' . $db . ' OWNER TO ' . $usr . '');
         } catch (Exception $e) {
             $this->exec('DROP DATABASE '.$db);
 
