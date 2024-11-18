@@ -208,6 +208,7 @@ class SpotUbb_parser
         } // while
 
         $tmp['tagname'] = strtolower($tmp['tagname']);
+
         return $tmp;
     }
 
@@ -409,8 +410,8 @@ class SpotUbb_parser
         // Define the regular expression
         $colorEx = "/\[color=(?:&quot;)?(#?[a-z0-9]+)?(?:&quot;)?](.*?)\[\/color]/i";
         $parseresult = preg_replace($colorEx, '<font color="$1">$2</font>', $parseresult);
-        return $parseresult;
 
+        return $parseresult;
     }
 
     // func. parse()
