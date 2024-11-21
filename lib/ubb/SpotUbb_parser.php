@@ -208,6 +208,7 @@ class SpotUbb_parser
         } // while
 
         $tmp['tagname'] = strtolower($tmp['tagname']);
+
         return $tmp;
     }
 
@@ -403,7 +404,7 @@ class SpotUbb_parser
     public function parse()
     {
         $parseresult = $this->tokenize();
-        
+
         $parseresult = $this->converttoubb($parseresult);
 
         // Define the COLOR regular expression
@@ -413,11 +414,11 @@ class SpotUbb_parser
         // Do missed [url]
         // [url]xxx[/url] with "http" converted by linkify
         $url1Ex = '/\[url]<a.+?link:(.+?)".+?\[\/url]/i';
-                // [url=xxx]yyy[/url] with "http" converted by linkify, optionally with &quot;
+        // [url=xxx]yyy[/url] with "http" converted by linkify, optionally with &quot;
         $url2Ex = '/\[url=(?:&quot;)?<a.+?link:(.+?)(?:&quot;)?".+?](.+?)\[\/url]/i';
-                // Simple [url="xxx"]yyy[/url] without or with quotes but not linkified
+        // Simple [url="xxx"]yyy[/url] without or with quotes but not linkified
         $url3Ex = '/\[url=(?:&quot;)?(.+?)(?:&quot;)?](.+?)\[\/url]/i';
-                // Simple [url]xxx[/url] without or with quotes but not linkified
+        // Simple [url]xxx[/url] without or with quotes but not linkified
         $url4Ex = '/\[url](.+?)\[\/url]/i';
 
         $parseresult = preg_replace($url1Ex, '<a href="link:$1" title="$1">$1</a>', $parseresult);
@@ -425,20 +426,16 @@ class SpotUbb_parser
         $parseresult = preg_replace($url3Ex, '<a href="link:$1" title="$1">$2</a>', $parseresult);
         $parseresult = preg_replace($url4Ex, '<a href="link:$1" title="$1">$1</a>', $parseresult);
 
-        
         // Do missed tokens
 
-        $parseresult = str_ireplace("[b]", "<b>", $parseresult);
-        $parseresult = str_ireplace("[/b]", "</b>", $parseresult);
-        $parseresult = str_ireplace("[u]", "<u>", $parseresult);
-        $parseresult = str_ireplace("[/u]", "</u>", $parseresult);
-        $parseresult = str_ireplace("[i]", "<i>", $parseresult);
-        $parseresult = str_ireplace("[/i]", "</i>", $parseresult);
-
-
+        $parseresult = str_ireplace('[b]', '<b>', $parseresult);
+        $parseresult = str_ireplace('[/b]', '</b>', $parseresult);
+        $parseresult = str_ireplace('[u]', '<u>', $parseresult);
+        $parseresult = str_ireplace('[/u]', '</u>', $parseresult);
+        $parseresult = str_ireplace('[i]', '<i>', $parseresult);
+        $parseresult = str_ireplace('[/i]', '</i>', $parseresult);
 
         return $parseresult;
-
     }
 
     // func. parse()
