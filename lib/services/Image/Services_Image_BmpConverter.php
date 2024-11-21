@@ -60,11 +60,12 @@ class Services_Image_BmpConverter
         return $imageString;
     }
 
-    private function is_gd_image($image ) {
-        if ( $image instanceof GdImage
-                || is_resource( $image ) && 'gd' === get_resource_type( $image )
+    private function is_gd_image($image)
+    {
+        if ($image instanceof GdImage
+                || is_resource($image) && 'gd' === get_resource_type($image)
         ) {
-               return true;
+            return true;
         }
 
         return false;

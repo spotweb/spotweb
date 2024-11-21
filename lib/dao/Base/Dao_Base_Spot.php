@@ -560,7 +560,7 @@ class Dao_Base_Spot implements Dao_Spot
         $this->_conn->modify(
             'UPDATE spots SET title = :title, spotterid = :spotterid WHERE messageid = :messageid',
             [
-                ':title'     => [substr($fullSpot['title'],0,128), PDO::PARAM_STR],
+                ':title'     => [substr($fullSpot['title'], 0, 128), PDO::PARAM_STR],
                 ':spotterid' => [$fullSpot['spotterid'], PDO::PARAM_STR],
                 ':messageid' => [$fullSpot['messageid'], PDO::PARAM_STR],
             ]
