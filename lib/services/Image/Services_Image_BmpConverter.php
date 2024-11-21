@@ -28,7 +28,6 @@ class Services_Image_BmpConverter
              * we use needs both a source file and a destination file
              * so lets create those
              */
-
             if ($this->bmp2gd($srcFname, $dstFname)) {
                 $tmpImg = imagecreatefromgd($dstFname);
             } else {
@@ -44,7 +43,7 @@ class Services_Image_BmpConverter
             /*
              * If conversion somehow failed, don't bother anymore
              */
-            if (!is_resource($tmpImg)) {
+            if (!$this->is_gd_image($tmpImg)) {
                 return false;
             } // if
 
@@ -59,6 +58,16 @@ class Services_Image_BmpConverter
         } // if
 
         return $imageString;
+    }
+
+    private function is_gd_image($image ) {
+        if ( $image instanceof GdImage
+                || is_resource( $image ) && 'gd' === get_resource_type( $image )
+        ) {
+               return true;
+        }
+
+        return false;
     }
 
     // convertBmpImageStringToJpeg
