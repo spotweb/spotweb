@@ -501,7 +501,6 @@ class SpotTemplateHelper
         if ($this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, 'getimage')) {
             $apiKey = $this->makeApiRequestString();
         } // if
-        $deb = $this->makeBaseUrl('path').'?page=getimage&amp;messageid='.urlencode($spot['messageid']).'&amp;image[height]='.$height.'&amp;image[width]='.$width.$apiKey;
 
         return $this->makeBaseUrl('path').'?page=getimage&amp;messageid='.urlencode($spot['messageid']).'&amp;image[height]='.$height.'&amp;image[width]='.$width.$apiKey;
     }
