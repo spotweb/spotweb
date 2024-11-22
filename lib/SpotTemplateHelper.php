@@ -501,6 +501,7 @@ class SpotTemplateHelper
         if ($this->_spotSec->allowed(SpotSecurity::spotsec_consume_api, 'getimage')) {
             $apiKey = $this->makeApiRequestString();
         } // if
+
         return $this->makeBaseUrl('path').'?page=getimage&amp;messageid='.urlencode($spot['messageid']).'&amp;image[height]='.$height.'&amp;image[width]='.$width.$apiKey;
     }
 
@@ -713,7 +714,6 @@ class SpotTemplateHelper
         // Define the regex IMG pattern in PHP
         $pattern = '/\[img](?:\[url=)?((https|http):\/\/[-A-Za-z0-9+&@#\/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#\/%=~_(|]).*?(\[?:\/url])?\[\/img]/mi';
         $tmp = preg_replace_callback($pattern, 'imgUbbEvaluator', $tmp);
-
 
         // initialize ubb parser
         $parser = new SpotUbb_parser($tmp);
@@ -1513,7 +1513,7 @@ function imgUbbEvaluator($match)
     $safeValue = safeHref($decodedValue);
 
     // Return the formatted HTML string
-    return '<img class="img_box" src="' . $safeValue . '" />' . '<br clear="all">';
+    return '<img class="img_box" src="'.$safeValue.'" />'.'<br clear="all">';
 }
 
 // Helper function to sanitize URLs (you'll need to define your SafeHref logic here)
@@ -1522,4 +1522,3 @@ function safeHref($url)
     // A basic example to sanitize URLs; adjust to your application's needs
     return filter_var($url, FILTER_SANITIZE_URL);
 }
-
