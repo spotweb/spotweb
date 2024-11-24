@@ -711,6 +711,10 @@ class SpotTemplateHelper
         $pattern = "(([^=])((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*))";
         $tmp = preg_replace($pattern, '\1[url=\2]\2[/url]', $tmp);
 
+        // Define the regex IMG pattern in PHP
+        $pattern = '/\[img](?:\[url=)?((https|http):\/\/[-A-Za-z0-9+&@#\/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#\/%=~_(|]).*?(\[?:\/url])?\[\/img]/mi';
+        $tmp = preg_replace_callback($pattern, 'imgUbbEvaluator', $tmp);
+
         // initialize ubb parser
         $parser = new SpotUbb_parser($tmp);
         TagHandler::setDeniedTags([]);
@@ -1498,3 +1502,23 @@ class SpotTemplateHelper
 
     // getTemplatePreferences
 } // class SpotTemplateHelper
+
+function imgUbbEvaluator($match)
+{
+    // Get the value of the first capturing group
+    $value = $match[1];
+
+    // Decode any HTML entities in the value and sanitize the URL
+    $decodedValue = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
+    $safeValue = safeHref($decodedValue);
+
+    // Return the formatted HTML string
+    return '<img class="img_box" src="'.$safeValue.'" />'.'<br clear="all">';
+}
+
+// Helper function to sanitize URLs (you'll need to define your SafeHref logic here)
+function safeHref($url)
+{
+    // A basic example to sanitize URLs; adjust to your application's needs
+    return filter_var($url, FILTER_SANITIZE_URL);
+}
