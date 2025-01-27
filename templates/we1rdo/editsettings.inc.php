@@ -42,7 +42,7 @@ if ($result->isSubmitted()) {
     if ($retrieve_newer_than < 1254373200) {
         $retrieve_newer_than = 1254373200; // 2009-11-01
     } // if
-    echo "<script type='text/javascript'>var retrieveNewerThanDate = '".date('%d-%m-%Y', $retrieve_newer_than)."';</script>";
+    echo "<script type='text/javascript'>var retrieveNewerThanDate = '".date('d-m-y', $retrieve_newer_than)."';</script>";
 ?>
 </div>
 	<div id='toolbar'>
@@ -267,7 +267,7 @@ if ($result->isSubmitted()) {
 						</select>					
 
 					<dt><label for="editsettingsform[retrieve_newer_than]"><?php echo _('Retrieve spots after... Select November 1, 2009 to fetch all spots'); ?><br /><?php echo _('To skip all FTD spots select November 24, 2010'); ?></label></dt>
-					<dd><div id="datepicker"></div><input type="hidden" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"></dd>
+					<dd><input type="text" id="retrieve_newer_than" name="editsettingsform[retrieve_newer_than]"><div id="datepicker"></div></dd>
 
 					<dt><label for="editsettingsform[retrieve_full]"><?php echo _('Retrieve full spots'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[retrieve_full]" id="use_retrieve_full" <?php if ($this->_settings->get('retrieve_full')) {

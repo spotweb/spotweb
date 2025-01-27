@@ -5,7 +5,7 @@
   "license": "MIT",
   "require": {
     "mobiledetect/mobiledetectlib": "^2.5.2",
-    "phpseclib/phpseclib": "^2.0.2",
+    "phpseclib/phpseclib": "^3.0.34",
     "abraham/twitteroauth": "^0.2.0",
     "xenji/prowlphp": "^1.0.0",
     "ext-mbstring": "*",

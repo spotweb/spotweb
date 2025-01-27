@@ -529,7 +529,7 @@ class Services_Upgrade_Users
                 $dbCon->rawExec('INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES('.$user['userid'].", 'filter', 'WMV', 'wmv', 1, ".$beeldFilterId.", 'cat0_z0_a1')");
                 $dbCon->rawExec('INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES('.$user['userid'].", 'filter', 'MPEG', 'mpg', 2, ".$beeldFilterId.", 'cat0_z0_a2')");
                 $dbCon->rawExec('INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES('.$user['userid'].", 'filter', 'DVD', 'dvd', 3, ".$beeldFilterId.", 'cat0_z0_a3,cat0_z0_a10')");
-                $dbCon->rawExec('INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES('.$user['userid'].", 'filter', 'HD', 'hd', 4, ".$beeldFilterId.", 'cat0_z0_a4,cat0_z0_a6,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9')");
+                $dbCon->rawExec('INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES('.$user['userid'].", 'filter', 'HD', 'hd', 4, ".$beeldFilterId.", 'cat0_z0_a4,cat0_z0_a6,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9,cat0_z0_a15,')");
                 $dbCon->rawExec('INSERT INTO filters(userid,filtertype,title,icon,torder,tparent,tree) VALUES('.$user['userid'].", 'filter', 'Series', 'tv', 5, ".$beeldFilterId.", 'cat0_z1')");
 
                 /* Books */

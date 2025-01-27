@@ -36,7 +36,7 @@ class SpotPage_editspot extends SpotPage_Abs
         try {
             $svcActn_GetSpot = new Services_Actions_GetSpot($this->_settings, $this->_daoFactory, $this->_spotSec);
             $fullSpot = $svcActn_GetSpot->getFullSpot($this->_currentSession, $this->_messageId, true);
-            $fullSpot = str_replace('[br]', "\n", $fullSpot);
+            $fullSpot['description'] = str_replace('[br]', "\n", $fullSpot['description']);
         } catch (Exception $ex) {
             $result->addError($ex->getMessage());
         } // catch

@@ -78,8 +78,7 @@ class Services_User_Filters
         $result = new Dto_FormResult();
 
         // Remove any spaces
-        $filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
-        $filter['title'] = trim(utf8_decode($filter['title']), " \t\n\r\0\x0B");
+        $filter['title'] = trim(mb_convert_encoding($filter['title'], 'UTF-8', 'ISO-8859-1'), " \t\n\r\0\x0B");
 
         // Make sure a filter name is valid
         if (strlen($filter['title']) < 2) {
@@ -342,7 +341,7 @@ class Services_User_Filters
                 $tmpFilter = explode(':', urldecode($filterValue));
 
                 // and create the actual filter
-                if (count($tmpFilter) >= 4) {
+                if (count($tmpFilter) >= 3) {
                     $filterValueList[] = ['fieldname' => $tmpFilter[0],
                         'operator'                    => $tmpFilter[1],
                         'booloper'                    => $tmpFilter[2],
@@ -455,15 +454,25 @@ class Services_User_Filters
              */
             $filterValues = [];
             foreach ($filterItem->xpath('values/item') as $valueItem) {
-                $filterValues[] = urlencode(
-                    (string) $valueItem->fieldname.
-                                    ':'.
-                                   (string) $valueItem->operator.
-                                    ':'.
-                                   (string) $valueItem->booloper.
-                                   ':'.
-                                   (string) $valueItem->value
-                );
+                if ((string) $valueItem->value != '') {
+                    $filterValues[] = urlencode(
+                        (string) $valueItem->fieldname.
+                        ':'.
+                        (string) $valueItem->operator.
+                        ':'.
+                        (string) $valueItem->booloper.
+                        ':'.
+                        (string) $valueItem->value
+                    );
+                } else {
+                    $filterValues[] = urlencode(
+                        (string) $valueItem->fieldname.
+                        ':'.
+                        (string) $valueItem->operator.
+                        ':'.
+                        (string) $valueItem->booloper
+                    );
+                }
             } // foreach
             $filter['valuelist'] = $filterValues;
 

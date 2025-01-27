@@ -657,3 +657,17 @@ tr.ui-widget-header a {
 	color:#fff; 
 	display:inline;
 }
+.img_box {
+	display: block;
+	clear: both;
+	/* float: left;   */
+	-ms-transition: all 0.4s linear;
+	transition: all 0.4s linear;
+	max-width: 350px;
+	/* top right bottom left (2021-10-20) */
+	margin: 10px 0 10px 0;
+}
+
+.img_box:hover {
+	max-width: 100%;
+}	
