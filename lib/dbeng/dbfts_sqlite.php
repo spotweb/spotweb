@@ -2,6 +2,32 @@
 
 class dbfts_sqlite extends dbfts_abs
 {
+    /**
+     * Prepare (mangle) an FTS query to make sure we can use them.
+     *
+     * @param $searchTerm
+     *
+     * @return string
+     */
+    private function prepareFtsQuery($searchTerm)
+    {
+        /*
+         * + signs get incorrectly interpreted by the query
+         * parser used for PostgreSQL by us, so for now we strip those.
+         */
+        if (strpos('+-~<>', $searchTerm[0]) !== false) {
+            $searchTerm = substr($searchTerm, 1);
+        } // if
+
+        $searchTerm = str_replace(
+            ['-', '+'],
+            [' NOT ', ' AND '],
+            $searchTerm
+        );
+
+        return $searchTerm;
+    }
+
     /*
      * Constructs a query part to match textfields. Abstracted so we can use
      * a database specific FTS engine if one is provided by the DBMS
@@ -37,6 +63,14 @@ class dbfts_sqlite extends dbfts_abs
 
         foreach ($searchFields as $searchItem) {
             $searchValue = trim($searchItem['value']);
+
+            /*
+             * Do some preparation for the searchvalue, test cases:
+             *
+             * +"Revolution (2012)" +"Season 2"
+             */
+            $searchValue = $this->prepareFtsQuery($searchValue);
+
             /*
              * The caller usually provides an expiciet table.fieldname
              * for the select, but sqlite doesn't recgnize this in its
