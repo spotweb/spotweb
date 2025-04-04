@@ -13,7 +13,7 @@ class dbfts_sqlite extends dbfts_abs
     {
         /*
          * + signs get incorrectly interpreted by the query
-         * parser used for PostgreSQL by us, so for now we strip those.
+         * parser used for SQLite by us, so for now we strip those.
          */
         if (strpos('+-~<>', $searchTerm[0]) !== false) {
             $searchTerm = substr($searchTerm, 1);
