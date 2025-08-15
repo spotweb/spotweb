@@ -98,7 +98,7 @@ class Services_Settings_Base
         }
 
         // We don't want to save megabyts of CSS, so put a limit to the size
-        if (strlen($settings['customcss'] > 1024 * 10)) {
+        if (strlen($settings['customcss']) > 1024 * 10) {
             $result->addError(_('Custom CSS is too large'));
         } // if
 

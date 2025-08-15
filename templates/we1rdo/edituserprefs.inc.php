@@ -51,10 +51,10 @@ if (!$dialogembedded) { ?>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_keep_own_filters, '')) { ?>
 	<?php if (!$dialogembedded) { ?>
-			<li><a href="?page=render&tplname=listfilters" title="<?php echo _('Filters'); ?>"><span><?php echo _('Filters'); ?></span></a></li>
+			<li><a href="?page=render&tplname=listfilters" title="<?php echo ('Filters'); ?>"><span><?php echo _('Filters'); ?></span></a></li>
 	<?php } ?>
 <!--
-			<li><a href="?page=render&tplname=cat2dlmapping" title="<?php echo _('Download categories'); ?>"><span><?php echo _('Download categories'); ?></span></a></li>
+			<li><a href="?page=render&tplname=cat2dlmapping" title="<?php echo ('Download categories'); ?>"><span><?php echo _('Download categories'); ?></span></a></li>
 -->
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
@@ -68,7 +68,7 @@ if (!$dialogembedded) { ?>
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) { ?>
 	<?php if (!$dialogembedded) { ?>
-			<li><a href="?page=render&tplname=editspotterblacklist" title="<?php echo _('Listed spotters'); ?>"><span><?php echo _('Listed spotters'); ?></span></a></li>
+			<li><a href="?page=render&tplname=editspotterblacklist" title="<?php echo ('Listed spotters'); ?>"><span><?php echo _('Listed spotters'); ?></span></a></li>
 	<?php } ?>
 <?php } ?>
 	

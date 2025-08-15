@@ -37,7 +37,7 @@ class Services_Providers_FullSpot
              */
             $spotHeader = $this->_spotDao->getSpotHeader($msgId);
             if (empty($spotHeader)) {
-                throw new Exception('Spot is not in our Spotweb database');
+                throw new Exception('Spot <'.$msgId.'>is not in our Spotweb database');
             } // if
 
             /*

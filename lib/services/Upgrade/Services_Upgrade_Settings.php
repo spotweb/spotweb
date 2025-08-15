@@ -48,7 +48,7 @@ class Services_Upgrade_Settings
         $this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
         $this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // This secret can be shared
         $this->setIfNot('auditlevel', 0); // No auditing
-        $this->setIfNot('system_languages', ['nl_NL' => 'Nederlands', 'en_US' => 'English']);
+        $this->setIfNot('system_languages', ['nl_NL' => 'Nederlands', 'en_US' => 'English', 'tr_TR' => 'Turkish', 'fr_FR' => 'French']);
         $this->setIfNot('retention', 0);
         $this->setIfNot('retentiontype', 'fullonly');
         $this->setIfNot('deny_robots', true);

@@ -512,7 +512,7 @@ class Dao_Base_Spot implements Dao_Spot
             $spot['subcatc'] = substr($spot['subcatc'], 0, 63);
             $spot['subcatd'] = substr($spot['subcatd'], 0, 63);
             $spot['spotterid'] = substr($spot['spotterid'], 0, 31);
-            $spot['catgory'] = (int) $spot['category'];
+            $spot['category'] = (int) $spot['category'];
             $spot['stamp'] = (int) $spot['stamp'];
             $spot['reversestamp'] = (int) ($spot['stamp'] * -1);
 

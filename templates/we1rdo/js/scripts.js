@@ -403,9 +403,9 @@ function toggleImageSize() {
 	if($("img.spotinfoimage").hasClass("full")) {
 		$("img.spotinfoimage").removeClass("full");
 		$("img.spotinfoimage").removeAttr("style");
-		$('a.postimage').attr('title', '<t>Click on this image to show real size (i)</t>');
+		$('a.postimage').attr('title', "<t>Click on this image to show real size (i)</t>");
 	} else {
-		$('a.postimage').attr('title', '<t>Click image to reduce</t>');
+		$('a.postimage').attr('title', "<t>Click image to reduce</t>");
 		$("img.spotinfoimage").addClass("full");
 		$("img.spotinfoimage").css({
 			'max-width': $("div#overlay").width() - 5,
