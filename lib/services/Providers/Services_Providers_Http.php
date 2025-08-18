@@ -67,7 +67,7 @@ class Services_Providers_Http
     /*
      * constructor
      */
-    public function __construct(Dao_Cache $cacheDao = null)
+    public function __construct(?Dao_Cache $cacheDao = null)
     {
         $this->_cacheDao = $cacheDao;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Translation code for Spotweb
  */
