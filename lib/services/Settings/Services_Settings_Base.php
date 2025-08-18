@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Class to storage all settings in. Contains both 'ownsettings.php' settings as database settings
  */
