@@ -136,7 +136,7 @@ if ((!is_readable($settings['openssl_cnf_path'])) && extension_loaded('openssl')
 if (!isset($_SERVER['HTTP_X_FORWARDED_URI'])) {
     $loc = (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']).'/' : '/');
 } else {
-    $loc = ($_SERVER['HTTP_X_FORWARDED_URI'] != '/' && $_SERVER['HTTP_X_FORWARDED_URI'] != '\\' ? $_SERVER['HTTP_X_FORWARDED_URI'].'/' : '/');
+    $loc = ($_SERVER['HTTP_X_FORWARDED_URI'] != '/' && $_SERVER['HTTP_X_FORWARDED_URI'] != '\\' ? strtok($_SERVER['HTTP_X_FORWARDED_URI'], '?').'/' : '/');
 }
 $ssloverride = (isset($settings['ssloverride']) ? $settings['ssloverride'] : false);
 $httpxssl = isset($_SERVER['HTTP_X_SSL']);
