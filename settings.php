@@ -133,10 +133,10 @@ if ((!is_readable($settings['openssl_cnf_path'])) && extension_loaded('openssl')
  * use HTTPS in case of HTTPS in server vars or ssloveride in ownsettings or HTTP_X_SSL in server vars
  * For use of an nginx reverse proxy x_forwarded_uri $request_uri can be added if the location differs from the default location
  */
-if (!isset($_SERVER['HTTP_X_FORWARDED_URI'])) {
+if (empty($_SERVER['HTTP_X_FORWARDED_URI'])) {
     $loc = (dirname($_SERVER['PHP_SELF']) != '/' && dirname($_SERVER['PHP_SELF']) != '\\' ? dirname($_SERVER['PHP_SELF']).'/' : '/');
 } else {
-    $loc = ($_SERVER['HTTP_X_FORWARDED_URI'] != '/' && $_SERVER['HTTP_X_FORWARDED_URI'] != '\\' ? strtok($_SERVER['HTTP_X_FORWARDED_URI'], '?').'/' : '/');
+    $loc = ($_SERVER['HTTP_X_FORWARDED_URI'] != '/' && $_SERVER['HTTP_X_FORWARDED_URI'] != '\\' ? strtok($_SERVER['HTTP_X_FORWARDED_URI'], '?') : '/');
 }
 $ssloverride = (isset($settings['ssloverride']) ? $settings['ssloverride'] : false);
 $httpxssl = isset($_SERVER['HTTP_X_SSL']);
