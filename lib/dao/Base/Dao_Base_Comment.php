@@ -170,6 +170,10 @@ class Dao_Base_Comment implements Dao_Comment
          * its in the proper format for inserting into the
          * database
          */
+        if (empty($fullComments)) {
+            return;
+        }
+        $newarray = [];
         foreach ($fullComments as &$comment) {
             /*
              * Cut off the from header so we don't overflow the database field,
@@ -185,15 +189,20 @@ class Dao_Base_Comment implements Dao_Comment
              * Make sure we only store valid utf-8
              */
             $comment['body'] = mb_convert_encoding($comment['body'], 'UTF-8', 'UTF-8');
+            if (strlen($comment['user-key']) < 256) {
+                $newarray[] = $comment;
+            }
         } // foreach
 
-        $this->_conn->batchInsert(
-            $fullComments,
-            'INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar) VALUES ',
-            [PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR],
-            ['messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar'],
-            ''
-        );
+        if (!empty($newarray)) {
+            $this->_conn->batchInsert(
+                $newarray,
+                'INSERT INTO commentsfull(messageid, fromhdr, stamp, usersignature, userkey, spotterid, body, verified, avatar) VALUES ',
+                [PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR],
+                ['messageid', 'fromhdr', 'stamp', 'user-signature', 'user-key', 'spotterid', 'body', 'verified', 'user-avatar'],
+                ''
+            );
+        }
     }
 
     // addFullComments
