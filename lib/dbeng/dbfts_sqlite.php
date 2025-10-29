@@ -25,7 +25,7 @@ class dbfts_sqlite extends dbfts_abs
             $searchTerm
         );
         if ($searchTerm[0] !== '"') {
-            $searchTerm = '"' . $searchTerm . '"';
+            $searchTerm = '"'.$searchTerm.'"';
         }
 
         return $searchTerm;
