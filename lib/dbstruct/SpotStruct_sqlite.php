@@ -51,7 +51,6 @@ class SpotStruct_sqlite extends SpotStruct_abs
     public function clearcache()
     {
         $this->_dbcon->rawExec('DELETE FROM cache');
-        $this->_dbcon->rawExec('VACUUM');
     }
 
     // clearcache https://www.tutorialspoint.com/sqlite/sqlite_truncate_table.htm

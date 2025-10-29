@@ -24,6 +24,9 @@ class dbfts_sqlite extends dbfts_abs
             [' NOT ', ' AND '],
             $searchTerm
         );
+        if ($searchTerm[0] !== '"') {
+            $searchTerm = '"' . $searchTerm . '"';
+        }
 
         return $searchTerm;
     }
@@ -79,7 +82,8 @@ class dbfts_sqlite extends dbfts_abs
              */
             $tmpField = explode('.', $searchItem['fieldname']);
             $field = $tmpField[1];
-            $matchList[] = $field.':'.substr($this->_db->safe($searchValue), 1, -1);
+            $safeValue = $this->_db->safe($searchValue);
+            $matchList[] = $field.':'.substr($safeValue, 1, -1);
         } // foreach
 
         // add one WHERE MATCH conditions with all conditions
