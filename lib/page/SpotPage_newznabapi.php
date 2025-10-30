@@ -196,7 +196,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 if (!empty($seasonSearch)) {
                     if (!empty($episodeSearch)) {
                         $searchParams['value'][] = 'Titel:=:AND:+"'.$tvInfo->getTitle().'"';
-                        $searchParams['value'][] = 'Titel:=:DEF:'.$seasonSearch.' '.$episodeSearch;
+                        $searchParams['value'][] = 'Titel:=:DEF:'.$seasonSearch.$episodeSearch;
                     } else {
                         // Complete season search, add wildcard character to season
                         if (empty($this->_params['noalt']) or $this->_params['noalt'] != '1') {
