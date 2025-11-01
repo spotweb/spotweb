@@ -67,7 +67,7 @@ class dbfts_pgsql extends dbfts_abs
             $o_parse->debug = false;
             $o_parse->upper_op_only = true;
             $o_parse->use_prepared_sql = false;
-            $o_parse->set_default_op('OR');
+            $o_parse->set_default_op('AND');
 
             /*
              * Do some preparation for the searchvalue, test cases:
