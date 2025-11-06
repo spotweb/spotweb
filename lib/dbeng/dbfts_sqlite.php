@@ -13,11 +13,11 @@ class dbfts_sqlite extends dbfts_abs
     {
         // Checks for each condition
         $results = [
-            'non_ascii' => preg_match('/[^\x00-\x7F]/u', $input) > 0,
-            'ascii_letters' => preg_match('/[a-zA-Z]/', $input) > 0,
+            'non_ascii'      => preg_match('/[^\x00-\x7F]/u', $input) > 0,
+            'ascii_letters'  => preg_match('/[a-zA-Z]/', $input) > 0,
             'decimal_digits' => preg_match('/[0-9]/', $input) > 0,
-            'underscore' => strpos($input, '_') !== false,
-            'substitute' => strpos($input, "\x1A") !== false, // Substitute character is ASCII 26
+            'underscore'     => strpos($input, '_') !== false,
+            'substitute'     => strpos($input, "\x1A") !== false, // Substitute character is ASCII 26
         ];
 
         return $results;
@@ -30,7 +30,8 @@ class dbfts_sqlite extends dbfts_abs
         $pattern = '/^[^\x00-\x7F]|[a-zA-Z0-9_\x1A]+$/u';
 
         // Ensure the string matches valid characters only
-        return preg_match($pattern, $input) === 1 && !preg_match('/[^a-zA-Z0-9_\x1A]/u', $input);    }
+        return preg_match($pattern, $input) === 1 && !preg_match('/[^a-zA-Z0-9_\x1A]/u', $input);
+    }
 
     private function prepareFtsQuery($searchTerm)
     {
@@ -53,9 +54,9 @@ class dbfts_sqlite extends dbfts_abs
                 $term = substr($term, 0, -1);
                 if ($term[0] !== '"') {
                     $term = $this->_db->safe($term);
-                    $term = str_replace('\'','"', $term);
+                    $term = str_replace('\'', '"', $term);
                 }
-                $term = $term . '*';
+                $term = $term.'*';
             } else {
                 if (!preg_match('/AND|OR|NOT/', $term)) {
                     if ($term[0] !== '"') {
@@ -67,23 +68,23 @@ class dbfts_sqlite extends dbfts_abs
             $tempList[] = $term;
         }
         $searchTerm = implode(' ', $tempList);
+
         return $searchTerm;
 
         if (substr($searchTerm, -1) === '*') {
-            $searchTerm = substr($searchTerm,0,-1);
+            $searchTerm = substr($searchTerm, 0, -1);
             if ($searchTerm[0] !== '"') {
-                $searchTerm = '"' . $searchTerm . '"';
+                $searchTerm = '"'.$searchTerm.'"';
             }
-            $searchTerm = $searchTerm . '*';
-        }
-        else {
+            $searchTerm = $searchTerm.'*';
+        } else {
             if ($searchTerm[0] !== '"') {
                 if (!preg_match('/[\+\-]/', $searchTerm)) {
-                    $searchTerm = '"' . $searchTerm . '"';
+                    $searchTerm = '"'.$searchTerm.'"';
                 }
-
             }
         }
+
         return $searchTerm;
     }
 
@@ -128,7 +129,7 @@ class dbfts_sqlite extends dbfts_abs
              *
              * +"Revolution (2012)" +"Season 2"
              */
-             $searchValue = $this->prepareFtsQuery($searchValue);
+            $searchValue = $this->prepareFtsQuery($searchValue);
 
             /*
              * The caller usually provides an expiciet table.fieldname
@@ -138,8 +139,7 @@ class dbfts_sqlite extends dbfts_abs
              */
             $tmpField = explode('.', $searchItem['fieldname']);
             $field = $tmpField[1];
-            $matchList[] = $field . ':' . $searchValue;
-            
+            $matchList[] = $field.':'.$searchValue;
         } // foreach
 
         // add one WHERE MATCH conditions with all conditions
