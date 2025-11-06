@@ -9,25 +9,81 @@ class dbfts_sqlite extends dbfts_abs
      *
      * @return string
      */
+    private function testString($input)
+    {
+        // Checks for each condition
+        $results = [
+            'non_ascii' => preg_match('/[^\x00-\x7F]/u', $input) > 0,
+            'ascii_letters' => preg_match('/[a-zA-Z]/', $input) > 0,
+            'decimal_digits' => preg_match('/[0-9]/', $input) > 0,
+            'underscore' => strpos($input, '_') !== false,
+            'substitute' => strpos($input, "\x1A") !== false, // Substitute character is ASCII 26
+        ];
+
+        return $results;
+    }
+
+    private function containsValidCharacters($input)
+    {
+        // Regular expression pattern to allow only valid characters
+        // Anchors ensure we are checking the entire string
+        $pattern = '/^[^\x00-\x7F]|[a-zA-Z0-9_\x1A]+$/u';
+
+        // Ensure the string matches valid characters only
+        return preg_match($pattern, $input) === 1 && !preg_match('/[^a-zA-Z0-9_\x1A]/u', $input);    }
+
     private function prepareFtsQuery($searchTerm)
     {
         /*
-         * + signs get incorrectly interpreted by the query
+         * First + signs get incorrectly interpreted by the query
          * parser used for SQLite by us, so for now we strip those.
          */
         if (strpos('+-~<>', $searchTerm[0]) !== false) {
             $searchTerm = substr($searchTerm, 1);
         } // if
-
         $searchTerm = str_replace(
             ['-', '+'],
             [' NOT ', ' AND '],
             $searchTerm
         );
-        if ($searchTerm[0] !== '"') {
-            $searchTerm = '"'.$searchTerm.'"';
-        }
 
+        $termList = $this->splitWords($searchTerm);
+        foreach ($termList as $term) {
+            if (substr($term, -1) === '*') {
+                $term = substr($term, 0, -1);
+                if ($term[0] !== '"') {
+                    $term = $this->_db->safe($term);
+                    $term = str_replace('\'','"', $term);
+                }
+                $term = $term . '*';
+            } else {
+                if (!preg_match('/AND|OR|NOT/', $term)) {
+                    if ($term[0] !== '"') {
+                        $term = $this->_db->safe($term);
+                        $term = str_replace('\'', '"', $term);
+                    }
+                }
+            }
+            $tempList[] = $term;
+        }
+        $searchTerm = implode(' ', $tempList);
+        return $searchTerm;
+
+        if (substr($searchTerm, -1) === '*') {
+            $searchTerm = substr($searchTerm,0,-1);
+            if ($searchTerm[0] !== '"') {
+                $searchTerm = '"' . $searchTerm . '"';
+            }
+            $searchTerm = $searchTerm . '*';
+        }
+        else {
+            if ($searchTerm[0] !== '"') {
+                if (!preg_match('/[\+\-]/', $searchTerm)) {
+                    $searchTerm = '"' . $searchTerm . '"';
+                }
+
+            }
+        }
         return $searchTerm;
     }
 
@@ -64,7 +120,7 @@ class dbfts_sqlite extends dbfts_abs
          * so we have to collapse all textqueries into one query
          */
 
-        foreach ($searchFields as $searchItem) {
+        foreach ($searchFields as $index => $searchItem) {
             $searchValue = trim($searchItem['value']);
 
             /*
@@ -72,7 +128,7 @@ class dbfts_sqlite extends dbfts_abs
              *
              * +"Revolution (2012)" +"Season 2"
              */
-            $searchValue = $this->prepareFtsQuery($searchValue);
+             $searchValue = $this->prepareFtsQuery($searchValue);
 
             /*
              * The caller usually provides an expiciet table.fieldname
@@ -82,8 +138,8 @@ class dbfts_sqlite extends dbfts_abs
              */
             $tmpField = explode('.', $searchItem['fieldname']);
             $field = $tmpField[1];
-            $safeValue = $this->_db->safe($searchValue);
-            $matchList[] = $field.':'.substr($safeValue, 1, -1);
+            $matchList[] = $field . ':' . $searchValue;
+            
         } // foreach
 
         // add one WHERE MATCH conditions with all conditions
