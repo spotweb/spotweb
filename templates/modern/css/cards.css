@@ -1,0 +1,80 @@
+/* Cards view for modern theme */
+
+.cardsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+.spotCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spotCard .thumb img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; display: block; }
+
+.spotCard .topRow { display: flex; align-items: center; gap: 8px; }
+.spotCard .badge { font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 6px; color: #fff; }
+.spotCard.spotcat0 .badge { background: #3b82f6; }
+.spotCard.spotcat1 .badge { background: #f59e0b; }
+.spotCard.spotcat2 .badge { background: #22c55e; }
+.spotCard.spotcat3 .badge { background: #ef4444; }
+
+.spotCard .title a { color: var(--color-text) !important; text-decoration: none; font-weight: 700; letter-spacing: .1px; }
+.spotCard .title a:hover { text-decoration: underline; }
+
+.spotCard .meta { display: flex; flex-wrap: wrap; gap: 10px; color: var(--color-muted); font-size: 12.5px; }
+.spotCard .meta a { color: var(--color-text) !important; text-decoration: none; }
+.spotCard .meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+.spotCard .actions { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.spotCard .actions a.nzb { background: var(--color-accent); color: #fff; border-radius: 6px; padding: 4px 8px; text-decoration: none; font-weight: 600; }
+.spotCard .actions a.nzb.downloaded { opacity: 0.75; }
+
+.spotCard .footerRow { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.spotCard .comments { font-weight: 700; color: var(--color-accent) !important; text-decoration: none; }
+.spotCard .comments:hover { text-decoration: underline; }
+.spotCard .watch { display: inline-flex; align-items: center; gap: 6px; }
+.spotCard .watch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.spotCard .watch a.add { color: #f87171; }
+.spotCard .watch a.add:hover { color: #fbbf24; }
+.spotCard .watch a.remove { color: #fbbf24; }
+.spotCard .watch a.remove:hover { color: #f59e0b; }
+.spotCard .multi { display: inline-flex; align-items: center; gap: 6px; }
+
+.cardsNotice {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  color: #a57900;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 0 0 16px 0;
+}
+
+/* Cards pager */
+.cardsPager { display:flex; justify-content:center; gap:12px; margin:16px 0; }
+.cardsPager a { display:inline-flex; align-items:center; justify-content:center; padding:6px 14px; border-radius:6px; border:1px solid var(--color-border); background:var(--color-surface-2); color:var(--color-text) !important; text-decoration:none; font-weight:600; transition:background 0.2s ease, color 0.2s ease, border 0.2s ease; }
+.cardsPager a:hover { background:var(--color-surface); border-color:var(--color-accent); }
+.cardsPager a:focus { outline:none; box-shadow:0 0 0 2px rgba(37,99,235,0.2); }
+/* Dark hover */
+html[data-theme="dark"] .spotCard:hover { background: var(--color-surface-2); }
+
+/* Density adjustments */
+html[data-density="compact"] .cardsGrid { gap: 8px; }
+html[data-density="compact"] .spotCard { padding: 8px; gap: 6px; }
+html[data-density="compact"] .spotCard .thumb img { height: 150px; }
+html[data-density="compact"] .spotCard .meta { font-size: 11px; gap: 8px; }
+html[data-density="compact"] .spotCard .actions a.nzb { padding: 3px 6px; font-size: 12px; }
+

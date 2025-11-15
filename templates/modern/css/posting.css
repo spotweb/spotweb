@@ -1,0 +1,146 @@
+.ui-dialog[aria-describedby="editdialogdiv"],
+.ui-dialog[aria-describedby="editdialogdiv"] .ui-widget-content,
+.ui-dialog[aria-describedby="editdialogdiv"] .ui-widget,
+#editdialogdiv .ui-dialog,
+#editdialogdiv .ui-widget-content,
+#editdialogdiv .ui-widget {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"],
+#editdialogdiv .ui-dialog {
+  border: 2px solid rgba(239, 68, 68, 0.7) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 35px 80px rgba(15, 23, 42, 0.45);
+  background: radial-gradient(circle at top, rgba(255,255,255,0.95), var(--color-surface)) !important;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] .ui-widget-header,
+#editdialogdiv .ui-widget-header {
+  background: var(--sw-strip-gradient) !important;
+  border: none !important;
+  border-radius: 16px 16px 0 0 !important;
+  color: var(--sw-strip-text) !important;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] .ui-dialog-titlebar-close,
+#editdialogdiv .ui-dialog-titlebar-close {
+  filter: invert(100%);
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv,
+#editdialogdiv .newspotdiv {
+  background: linear-gradient(145deg, rgba(248, 250, 252, 0.98), rgba(229, 234, 241, 0.9));
+  border-radius: 14px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 12px;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv fieldset,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv legend,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv dt,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv dd,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv p,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv table,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv th,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv td,
+#editdialogdiv .newspotdiv fieldset,
+#editdialogdiv .newspotdiv legend,
+#editdialogdiv .newspotdiv dt,
+#editdialogdiv .newspotdiv dd,
+#editdialogdiv .newspotdiv p,
+#editdialogdiv .newspotdiv table,
+#editdialogdiv .newspotdiv th,
+#editdialogdiv .newspotdiv td {
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv .categorydropdown select,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv input,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv textarea,
+.ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv select,
+#editdialogdiv .newspotdiv .categorydropdown select,
+#editdialogdiv .newspotdiv input,
+#editdialogdiv .newspotdiv textarea,
+#editdialogdiv .newspotdiv select {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text);
+  padding: 4px 6px;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.postspotform,
+#editdialogdiv form.postspotform {
+  font: 14px/1.5 var(--font, 'Segoe UI', sans-serif);
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.postspotform label,
+#editdialogdiv form.postspotform label {
+  display: block;
+  font-weight: 600;
+  margin: 12px 0 4px;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.postspotform textarea,
+#editdialogdiv form.postspotform textarea {
+  min-height: 110px;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.postspotform input[type="submit"],
+.ui-dialog[aria-describedby="editdialogdiv"] form.postspotform button,
+#editdialogdiv form.postspotform input[type="submit"],
+#editdialogdiv form.postspotform button {
+  background: var(--color-accent) !important;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"],
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .ui-widget-content,
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .ui-widget,
+html[data-theme="dark"] #editdialogdiv .ui-dialog,
+html[data-theme="dark"] #editdialogdiv .ui-widget-content,
+html[data-theme="dark"] #editdialogdiv .ui-widget {
+  background: #111926 !important;
+  color: #f4f5f7 !important;
+}
+
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"],
+html[data-theme="dark"] #editdialogdiv .ui-dialog {
+  border-color: rgba(239, 68, 68, 0.75) !important;
+  box-shadow: 0 50px 90px rgba(0, 0, 0, 0.65);
+  background: radial-gradient(circle at top, rgba(30, 37, 51, 0.95), #0d111b) !important;
+}
+
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv,
+html[data-theme="dark"] #editdialogdiv .newspotdiv {
+  background: rgba(13,18,28,0.96);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv .categorydropdown select,
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv input,
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv textarea,
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv select,
+html[data-theme="dark"] #editdialogdiv .newspotdiv .categorydropdown select,
+html[data-theme="dark"] #editdialogdiv .newspotdiv input,
+html[data-theme="dark"] #editdialogdiv .newspotdiv textarea,
+html[data-theme="dark"] #editdialogdiv .newspotdiv select {
+  background: rgba(10, 14, 22, 0.95);
+  border-color: rgba(59, 72, 90, 0.7);
+  color: #f4f5f7;
+}
+
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] form.postspotform input[type="submit"],
+html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] form.postspotform button,
+html[data-theme="dark"] #editdialogdiv form.postspotform input[type="submit"],
+html[data-theme="dark"] #editdialogdiv form.postspotform button {
+  background: #3b82f6;
+}

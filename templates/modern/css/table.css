@@ -1,0 +1,99 @@
+﻿/* Modern table tweaks: thumbnails + readability */
+
+table.spots { width: 100% !important; }
+table.spots tr.head th { background: var(--color-surface-2) !important; color: var(--color-text) !important; text-shadow: none !important; }
+table.spots td { background: transparent; color: var(--color-text) !important; }
+table.spots tr:hover td { background: var(--color-surface) !important; }
+
+/* Ensure links are readable in dark/light */
+table.spots td a,
+table.spots tr td a.spotlink { color: var(--color-text) !important; text-decoration: none; }
+table.spots tr:hover td a { color: var(--color-text) !important; }
+
+/* Dark theme: ensure strong contrast for table text */
+html[data-theme="dark"] table.spots td,
+html[data-theme="dark"] table.spots td a,
+html[data-theme="dark"] table.spots tr td a.spotlink { color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr:hover td a { color: #ffffff !important; }
+
+
+/* Watchlist icons (match cards view styling) */
+table.spots td.watch { text-align: center; }
+table.spots td.watch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: none !important;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+table.spots td.watch a::before {
+  content: '\2605';
+  font-size: 16px;
+  color: #fbbf24;
+}
+table.spots td.watch a.add::before {
+  content: '\2606';
+  color: #f87171;
+}
+table.spots td.watch a.add:hover::before {
+  color: #fbbf24;
+}
+table.spots td.watch a.remove:hover::before {
+  color: #f59e0b;
+}
+
+/* Poster column wider for longer names */
+table.spots td.poster,
+table.spots th.poster {
+  min-width: 135px !important;
+  width: 135px !important;
+  overflow: hidden !important;
+  white-space: nowrap;
+}
+
+table.spots td.poster a {
+  display: inline-block;
+  min-width: 135px !important;
+  width: 135px !important;
+}
+
+/* Thumbnail inside the title cell */
+/* thumbnails disabled */
+
+
+/* Table pager */
+.tablePager { display:flex; justify-content:center; gap:12px; margin:16px 0; }
+.tablePager a { display:inline-flex; align-items:center; justify-content:center; padding:6px 14px; border-radius:6px; border:1px solid var(--color-border); background:var(--color-surface-2); color:var(--color-text) !important; text-decoration:none; font-weight:600; transition:background 0.2s ease, color 0.2s ease, border 0.2s ease; }
+.tablePager a:hover { background:var(--color-surface); border-color:var(--color-accent); }
+.tablePager a:focus { outline:none; box-shadow:0 0 0 2px rgba(37,99,235,0.2); }
+.tablePager a.prev::before { content:'\00AB'; margin-right:6px; }
+.tablePager a.next::after { content:'\00BB'; margin-left:6px; }
+/* Per-category color accents */
+table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.18) !important; color: #1d4ed8 !important; }
+table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #b45309 !important; }
+table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #0f766e !important; }
+table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.2) !important; color: #b91c1c !important; }
+table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.2) !important; color: #7c3aed !important; }
+
+/* Dark theme: reuse category accent backgrounds */
+html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.28) !important; color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.32) !important; color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.28) !important; color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.32) !important; color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.3) !important; color: #ffffff !important; }
+
+table.spots tr td.date,
+table.spots tr td.filesize { color: rgba(15, 23, 42, 0.78) !important; }
+html[data-theme="dark"] table.spots tr td.date,
+html[data-theme="dark"] table.spots tr td.filesize { color: #e2e8f0 !important; }
+table.spots tr td span.age,
+table.spots tr td span.filesize { color: inherit !important; }
+
+
+
+
+/* End poster width overrides */
