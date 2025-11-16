@@ -40,7 +40,7 @@ class Services_Actions_SpeedDial
         /*
          * Get the total amount of spots
          */
-        $totalSpots = $svcCacheNewSpotCount->getSpotCount('');
+        $totalSpots = $svcCacheNewSpotCount->getSpotCount('','');
         $lastUpdate = $this->_tplHelper->formatDate($this->_daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots), 'lastupdate');
 
         $svc_ImageSpeedDial = new Services_Image_SpeedDial();
