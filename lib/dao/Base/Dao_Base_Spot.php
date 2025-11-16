@@ -731,20 +731,19 @@ class Dao_Base_Spot implements Dao_Spot
     // getSpotCount
     public function getSpotCount($sqlFilter, $additionalTableList)
     {
-        SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
+        SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
         if (empty($sqlFilter)) {
             $query = 'SELECT COUNT(1) FROM spots AS s';
         } else {
-
-            $query = 'SELECT COUNT(1) FROM spots AS s ' .
-                          $additionalTableList. 
+            $query = 'SELECT COUNT(1) FROM spots AS s '.
+                          $additionalTableList.
                         ' LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
 						LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.ouruserid = -1) AND (bl.idtype = 1))
-						WHERE ' . $sqlFilter . ' AND (bl.spotterid IS NULL)';
+						WHERE '.$sqlFilter.' AND (bl.spotterid IS NULL)';
         } // else
         $cnt = $this->_conn->singleQuery($query);
-        SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, [$sqlFilter]);
+        SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$sqlFilter]);
         if ($cnt == null) {
             return 0;
         } else {

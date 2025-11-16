@@ -174,7 +174,7 @@ class Services_Actions_CacheNewSpotCount
              */
             $additionalTableList = '';
             foreach ($parsedSearch['additionalTables'] as $additionalTable) {
-                $additionalTableList = ', ' . $additionalTable . $additionalTableList;
+                $additionalTableList = ', '.$additionalTable.$additionalTableList;
             } // foreach
             echo '.';
             $spotCount = $this->_spotDao->getSpotCount($parsedSearch['filter'], $additionalTableList);
@@ -205,6 +205,7 @@ class Services_Actions_CacheNewSpotCount
          */
         $this->_userFilterCountDao->createFilterCountsForEveryone();
         echo PHP_EOL;
+
         return $statisticsUpdate;
     }
 
@@ -213,7 +214,7 @@ class Services_Actions_CacheNewSpotCount
     /*
      * Returns the amount of spots for a specific version
      */
-    public function getSpotCount($sqlFilter,$additionalTableList)
+    public function getSpotCount($sqlFilter, $additionalTableList)
     {
         return $this->_spotDao->getSpotCount($sqlFilter, $additionalTableList);
     }
