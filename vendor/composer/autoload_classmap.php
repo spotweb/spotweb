@@ -822,6 +822,7 @@ return array(
     'SpotTemplateHelper' => $baseDir . '/lib/SpotTemplateHelper.php',
     'SpotTemplateHelper_Examplechild' => $baseDir . '/templates/examplechild/SpotTemplateHelper_Examplechild.php',
     'SpotTemplateHelper_Mobile' => $baseDir . '/templates/mobile/SpotTemplateHelper_Mobile.php',
+    'SpotTemplateHelper_Modern' => $baseDir . '/templates/modern/SpotTemplateHelper_Modern.php',
     'SpotTemplateHelper_We1rdo' => $baseDir . '/templates/we1rdo/SpotTemplateHelper_We1rdo.php',
     'SpotTiming' => $baseDir . '/lib/SpotTiming.php',
     'SpotTranslation' => $baseDir . '/lib/SpotTranslation.php',

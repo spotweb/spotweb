@@ -48,6 +48,7 @@ class Services_Upgrade_Settings
         $this->setIfNot('twitter_consumer_key', 'LRJCpeHASigYtWEmxoNPA');
         $this->setIfNot('twitter_consumer_secret', 'QvwZglJNpzAnoVDt40uUyu5dRDlVFVs4ddxfEkYp7A'); // This secret can be shared
         $this->setIfNot('auditlevel', 0); // No auditing
+        $this->remove('system_languages');
         $this->setIfNot('system_languages', ['nl_NL' => 'Nederlands', 'en_US' => 'English', 'tr_TR' => 'Turkish', 'fr_FR' => 'French']);
         $this->setIfNot('retention', 0);
         $this->setIfNot('retentiontype', 'fullonly');
@@ -88,10 +89,15 @@ class Services_Upgrade_Settings
         );
         $this->setIfNot('nonauthenticated_userid', 1);
         $this->setIfNot('custom_admin_userid', 2);
+        if ($this->_settings->get('settingsversion') < 0.40) {
+            $this->remove('valid_templates');
+        }
         $this->setIfNot(
             'valid_templates',
             [
                 'we1rdo' => 'we1rdo',
+                'mobile' => 'mobile',
+                'modern' => 'modern',
             ]
         );
         $this->setIfNot('ms_translator_subscriptionkey', '');
@@ -122,7 +128,9 @@ class Services_Upgrade_Settings
      */
     public function remove($name)
     {
-        $this->_settings->remove($name);
+        if ($this->_settings->exists($name)) {
+            $this->_settings->remove($name);
+        }
     }
 
     // remove
