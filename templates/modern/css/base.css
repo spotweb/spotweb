@@ -1,0 +1,189 @@
+/* Modern base theme (light) */
+
+:root {
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f3f5;
+  --color-border: #dfe3e8;
+  --color-text: #1f2937;
+  --color-muted: #6b7280;
+  --color-accent: #2563eb;
+  --radius: 8px;
+}
+
+html { background: var(--color-bg); }
+body { color: var(--color-text); font: 14px/1.6 -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+
+/* Toolbar */
+div#toolbar {
+  height: 30px;
+
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+  background: linear-gradient(180deg, #2b2f36, #21262d) !important;
+  border-bottom: 1px solid #161a1e;
+  padding-right: 100px;
+}
+
+div#toolbar .toolbarButton {
+  float: right;
+  position: relative;
+  z-index: 900;
+}
+
+div#toolbar .toolbarButton.dropdown ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+div#toolbar .toolbarButton.dropdown ul > li { list-style: none; padding: 0; position: relative; }
+
+.toolbarButton.dropdown ul ul { display: none; position: absolute; top: 100%; left: 0; z-index: 4000 !important; width: max-content; min-width: 0; padding: 4px 6px; background: rgba(33, 38, 45, 0.96); border: 1px solid rgba(63, 70, 80, 0.9); border-radius: 6px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
+.toolbarButton.dropdown ul li:hover > ul,
+.toolbarButton.dropdown ul ul:hover {
+  display: block;
+}
+.toolbarButton.dropdown ul ul li { margin: 0; padding: 0; }
+.toolbarButton.dropdown ul ul li a { display: block; padding: 4px 10px; margin: 0; line-height: 1.4; color: #e3e7ef !important; text-shadow: none !important; background: none !important; white-space: nowrap; }
+.toolbarButton.dropdown ul ul li a:hover {
+  background: rgba(59, 130, 246, 0.18) !important;
+}
+
+.toolbarButton p {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  border-radius: 6px !important;
+}
+.toolbarButton p,
+.toolbarButton p a,
+.toolbarButton p span {
+  color: rgba(255,255,255,0.92) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.55);
+}
+
+.toolbarButton.config p,
+.toolbarButton.logininfo p {
+  width: 110px;
+  height: 24px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolbarButton.config p a,
+.toolbarButton.logininfo p a {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 0 6px !important;
+  background: none !important;
+}
+
+.toolbarButton.addspot p,
+.toolbarButton.addspot p a {
+  height: 24px !important;
+  line-height: 24px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 110px !important;
+  gap: 6px;
+}
+
+.toolbarButton.addspot p a {
+  background: none !important;
+  padding-left: 0 !important;
+}
+
+.toolbarButton.addspot p a::before {
+  content: "\002B";
+  font-weight: 600;
+  font-size: 16px;
+  color: #22c55e;
+}
+
+.toolbarButton.config p a::before,
+.toolbarButton.logininfo p a::before {
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(255,255,255,0.85);
+}
+
+.toolbarButton.config p a::before {
+  content: "\2699";
+}
+
+.toolbarButton.logininfo p a::before {
+  content: "\1F464";
+}
+
+/* Sidebar */
+div#filter { background: var(--color-surface); border-right: none !important; }
+div.filter a.viewState h4 {
+  background: var(--sw-strip-gradient) !important;
+  color: var(--sw-strip-text) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.75);
+  border-bottom: 1px solid var(--sw-strip-border);
+  height: 24px;
+  line-height: 24px;
+  margin: 0;
+  border-radius: 0 6px 6px 0;
+}
+div.filter a.viewState h4 span { top: 6px !important; }
+
+/* Buttons */
+.greyButton, .smallGreyButton { background: var(--color-accent) !important; border: 0 !important; color: #fff !important; border-radius: 6px !important; }
+
+/* Links */
+a { color: #0f172a; }
+
+/* Spots table headers */
+table.spots tr.head th {
+  background: var(--sw-strip-gradient) !important;
+  color: var(--sw-strip-text) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.75) !important;
+  border-bottom: 1px solid var(--sw-strip-border);
+  height: 25px;
+  line-height: 25px;
+}
+table.spots tr.head th a { color: inherit !important; }
+table.spots tr td { border-color: var(--color-border) !important; }
+table.spots tr:hover td { background: var(--color-surface) !important; }
+
+/* Improve text contrast in general */
+.cardsGrid, .spotCard, .details, .sidebarPanel, .filterlist { color: var(--color-text); }
+.spotCard .title a { color: var(--color-text); font-size: 14.5px; }
+.spotCard .meta { color: var(--color-muted); font-size: 12.5px; }
+
+.toolbarButton.viewmode p,
+.toolbarButton.theme p {
+  width: 110px;
+  height: 24px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border: 1px solid rgba(234, 179, 8, 0.6) !important;
+  box-shadow: 0 0 4px rgba(234, 179, 8, 0.35);
+  margin: -1px 6px 0 0 !important;
+}
+.toolbarButton.viewmode { margin-top: -1px; }
+.toolbarButton.theme { margin-top: -1px; }
+.toolbarButton.viewmode p a,
+.toolbarButton.theme p a {
+  width: 100%;
+  height: 100%;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px !important;
+}

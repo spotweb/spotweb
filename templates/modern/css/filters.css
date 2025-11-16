@@ -1,0 +1,195 @@
+/* Modern filters */
+
+div.filter ul.filterlist li a.filter {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:6px; padding:0 6px; border-radius: 6px;
+  background: var(--color-surface) !important; border:1px solid var(--color-border) !important;
+  color: var(--color-text) !important; text-decoration:none !important;
+  width: 234px;
+  box-sizing: border-box;
+}
+div.filter ul.filterlist li a.filter:hover { background: var(--color-surface-2) !important; }
+div.filter ul.filterlist li a.filter.selected { border-color: var(--color-accent) !important; box-shadow: 0 0 0 1px var(--color-accent) inset; }
+div.filter ul.filterlist li a.filter .newspots { background: var(--color-accent) !important; color:#fff !important; border-radius:10px; padding:0 4px; }
+
+
+div.filter ul.filterlist li { margin-bottom: 6px; }
+
+
+html[data-theme="dark"] div.filter { background: rgba(20, 23, 28, 0.85); }
+
+/* Colored accents per category (light theme) */
+div.filter ul.filterlist li.spotcat0 > a.filter { background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(59,130,246,0.05)) !important; border-color: rgba(59,130,246,0.35) !important; }
+div.filter ul.filterlist li.spotcat1 > a.filter { background: linear-gradient(135deg, rgba(234,179,8,0.18), rgba(202,138,4,0.05)) !important; border-color: rgba(202,138,4,0.35) !important; }
+div.filter ul.filterlist li.spotcat2 > a.filter { background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(5,150,105,0.05)) !important; border-color: rgba(5,150,105,0.35) !important; }
+div.filter ul.filterlist li.spotcat3 > a.filter { background: linear-gradient(135deg, rgba(239,68,68,0.18), rgba(220,38,38,0.05)) !important; border-color: rgba(220,38,38,0.35) !important; }
+div.filter ul.filterlist li.spotcat4 > a.filter { background: linear-gradient(135deg, rgba(168,85,247,0.18), rgba(139,92,246,0.05)) !important; border-color: rgba(139,92,246,0.35) !important; }
+div.filter ul.filterlist li.spotcat5 > a.filter { background: linear-gradient(135deg, rgba(96,165,250,0.18), rgba(37,99,235,0.05)) !important; border-color: rgba(37,99,235,0.35) !important; }
+
+div.filter ul.filterlist li[class*="spotcat"] > a.filter { color: #0f172a !important; }
+div.filter ul.filterlist li[class*="spotcat"] > a.filter .spoticon { filter: brightness(0.9); }
+
+/* Dark theme variants */
+html[data-theme="dark"] div.filter ul.filterlist.quicklinks li a.filter { background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(59,130,246,0.05)) !important; border: 1px solid rgba(59,130,246,0.4) !important; box-shadow: inset 0 0 0 1px rgba(15,23,42,0.4); color: #e2e8f0 !important; }
+html[data-theme="dark"] div.filter ul.filterlist.quicklinks li a.filter .spoticon { filter: brightness(1.4); }
+
+html[data-theme="dark"] div.filter ul.filterlist li.spotcat0 > a.filter { background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(30,64,175,0.12)) !important; border-color: rgba(59,130,246,0.45) !important; color: #e0f2ff !important; }
+html[data-theme="dark"] div.filter ul.filterlist li.spotcat1 > a.filter { background: linear-gradient(135deg, rgba(234,179,8,0.28), rgba(146,64,14,0.15)) !important; border-color: rgba(202,138,4,0.45) !important; color: #fefce8 !important; }
+html[data-theme="dark"] div.filter ul.filterlist li.spotcat2 > a.filter { background: linear-gradient(135deg, rgba(16,185,129,0.28), rgba(4,120,87,0.15)) !important; border-color: rgba(4,120,87,0.45) !important; color: #d1fae5 !important; }
+html[data-theme="dark"] div.filter ul.filterlist li.spotcat3 > a.filter { background: linear-gradient(135deg, rgba(239,68,68,0.28), rgba(185,28,28,0.15)) !important; border-color: rgba(180,35,24,0.45) !important; color: #fee2e2 !important; }
+html[data-theme="dark"] div.filter ul.filterlist li.spotcat4 > a.filter { background: linear-gradient(135deg, rgba(168,85,247,0.28), rgba(109,40,217,0.15)) !important; border-color: rgba(139,92,246,0.45) !important; color: #ede9fe !important; }
+html[data-theme="dark"] div.filter ul.filterlist li.spotcat5 > a.filter { background: linear-gradient(135deg, rgba(96,165,250,0.28), rgba(37,99,235,0.15)) !important; border-color: rgba(37,99,235,0.45) !important; color: #e0f2ff !important; }
+
+html[data-theme="dark"] div.filter ul.filterlist li[class*="spotcat"] > a.filter .spoticon { filter: brightness(1.4); }
+html[data-theme="dark"] div.filter ul.filterlist li[class*="spotcat"] > a.filter:hover { transform: translateX(1px); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18); }
+
+/* Advanced search overlay (solid background) */
+div.sidebarPanel.advancedSearch {
+  position: absolute;
+  top: calc(var(--sw-toolbar-offset, 42px) + 6px);
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  background: #ffffff !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  border-radius: 10px;
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.20);
+  padding: 10px 12px;
+  z-index: 320;
+  overflow-y: auto;
+  min-height: calc(100vh - var(--sw-toolbar-offset, 42px) - 12px);
+}
+
+body.fixed div#filter .sidebarPanel.advancedSearch {
+  position: fixed;
+  left: 0;
+  right: auto;
+}
+
+div.sidebarPanel.advancedSearch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+div.sidebarPanel.advancedSearch > * {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch::before {
+  background: #03050a !important;
+  border-color: rgba(15, 23, 42, 0.65) !important;
+  box-shadow: 0 24px 54px rgba(0,0,0,0.75);
+}
+div.sidebarPanel.advancedSearch h4,
+div.sidebarPanel.advancedSearch h4 a {
+  background: #f4f5f7 !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  color: var(--color-text) !important;
+  text-shadow: none !important;
+}
+
+div.sidebarPanel.advancedSearch div.search,
+div.sidebarPanel.advancedSearch ul.search li input+label,
+div.sidebarPanel.advancedSearch ul.search select,
+div.sidebarPanel.advancedSearch table.search tr,
+div.sidebarPanel.advancedSearch table.search th,
+div.sidebarPanel.advancedSearch table.search td,
+div.sidebarPanel.advancedSearch ul.dynatree-container,
+div.sidebarPanel.advancedSearch .ui-slider,
+div.sidebarPanel.advancedSearch .ui-slider-range,
+div.sidebarPanel.advancedSearch a.greyButton.addFilter {
+  background: #f9fafb !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  color: var(--color-text) !important;
+  text-shadow: none !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+div.sidebarPanel.advancedSearch ul.dynatree-container a,
+div.sidebarPanel.advancedSearch ul.dynatree-container span {
+  color: #111827 !important;
+}
+
+div.sidebarPanel.advancedSearch select {
+  background: #0f1622 !important;
+  border: 1px solid rgba(15, 23, 42, 0.6) !important;
+  color: #f8fafc !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+  appearance: none;
+}
+
+div.sidebarPanel.advancedSearch select option {
+  background: #0b1120 !important;
+  color: #f8fafc !important;
+}
+
+div.sidebarPanel.advancedSearch ul.search li input:checked + label,
+div.sidebarPanel.advancedSearch ul.search li input:focus + label,
+div.sidebarPanel.advancedSearch ul.search li input:hover + label {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+}
+
+div.sidebarPanel.advancedSearch div.search input.searchbox {
+  color: var(--color-text);
+}
+
+div.sidebarPanel.advancedSearch a.greyButton.addFilter {
+  color: #fff !important;
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.55);
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch h4,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch h4 a,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch div.search,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search li input+label,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search select,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch table.search tr,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch .ui-slider {
+  background: rgba(4, 6, 10, 0.95) !important;
+  border-color: rgba(8, 13, 22, 0.9) !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container a,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container span {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search li input:checked + label,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search li input:hover + label {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch select {
+  background: rgba(4, 6, 10, 0.85) !important;
+  border-color: rgba(8, 13, 22, 0.78) !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch select option {
+  background: rgba(3, 5, 10, 0.95) !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch a.greyButton.addFilter {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
