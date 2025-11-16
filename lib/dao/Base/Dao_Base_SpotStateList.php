@@ -117,7 +117,7 @@ class Dao_Base_SpotStateList implements Dao_SpotStateList
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
 
         $this->_conn->modify(
-            'UPDATE spotstatelist SET watch = NULL WHERE messageid = :messageid AND ouruserid = :ouruserid LIMIT 1',
+            'UPDATE spotstatelist SET watch = NULL WHERE messageid = :messageid AND ouruserid = :ouruserid',
             [
                 ':messageid' => [$messageid, PDO::PARAM_STR],
                 ':ouruserid' => [$ourUserId, PDO::PARAM_INT],

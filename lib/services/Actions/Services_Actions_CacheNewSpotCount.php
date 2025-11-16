@@ -168,7 +168,16 @@ class Services_Actions_CacheNewSpotCount
              * And convert the parsed system to an SQL statement and actually run it
              */
             $parsedSearch = $this->_queryParser->filterToQuery($query_params['search'], [], $userSession, []);
-            $spotCount = $this->_spotDao->getSpotCount($parsedSearch['filter']);
+            /*
+             * even additional tables might be requested, mostly used for FTS
+             * with virtual tables
+             */
+            $additionalTableList = '';
+            foreach ($parsedSearch['additionalTables'] as $additionalTable) {
+                $additionalTableList = ', '.$additionalTable.$additionalTableList;
+            } // foreach
+            echo '.';
+            $spotCount = $this->_spotDao->getSpotCount($parsedSearch['filter'], $additionalTableList);
 
             /*
              * Because we only ask for new spots, just increase the current
@@ -195,6 +204,7 @@ class Services_Actions_CacheNewSpotCount
          * users, hence we make sure all these records do exist
          */
         $this->_userFilterCountDao->createFilterCountsForEveryone();
+        echo PHP_EOL;
 
         return $statisticsUpdate;
     }
@@ -204,9 +214,9 @@ class Services_Actions_CacheNewSpotCount
     /*
      * Returns the amount of spots for a specific version
      */
-    public function getSpotCount($sqlFilter)
+    public function getSpotCount($sqlFilter, $additionalTableList)
     {
-        return $this->_spotDao->getSpotCount($sqlFilter);
+        return $this->_spotDao->getSpotCount($sqlFilter, $additionalTableList);
     }
 
     // getSpotCount
