@@ -511,21 +511,19 @@ class Services_Upgrade_Users
         // Security level 0.35
         //#######################################################################
         if ($forceReset || ($this->_settings->get('securityversion') < 0.35)) {
-            $exists = $dbCon->singleQuery("SELECT 1 FROM grouppermissions WHERE groupid=3 AND permissionid=" . SpotSecurity::spotsec_select_template . " AND objectid='modern' LIMIT 1");
+            $exists = $dbCon->singleQuery('SELECT 1 FROM grouppermissions WHERE groupid=3 AND permissionid='.SpotSecurity::spotsec_select_template." AND objectid='modern' LIMIT 1");
             if (!$exists) {
-                $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, ' . SpotSecurity::spotsec_select_template . ", 'modern')");
+                $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_select_template.", 'modern')");
             }
-            $exists = $dbCon->singleQuery("SELECT 1 FROM grouppermissions WHERE groupid=2 AND permissionid=".SpotSecurity::spotsec_create_new_user." LIMIT 1");
+            $exists = $dbCon->singleQuery('SELECT 1 FROM grouppermissions WHERE groupid=2 AND permissionid='.SpotSecurity::spotsec_create_new_user.' LIMIT 1');
             if ($exists) {
-                $dbCon->rawExec("DELETE FROM grouppermissions where groupid=2 and permissionid=". SpotSecurity::spotsec_create_new_user);
+                $dbCon->rawExec('DELETE FROM grouppermissions where groupid=2 and permissionid='.SpotSecurity::spotsec_create_new_user);
             }
-            $exists = $dbCon->singleQuery("SELECT 1 FROM grouppermissions WHERE groupid=4 AND permissionid=" . SpotSecurity::spotsec_create_new_user . " LIMIT 1");
+            $exists = $dbCon->singleQuery('SELECT 1 FROM grouppermissions WHERE groupid=4 AND permissionid='.SpotSecurity::spotsec_create_new_user.' LIMIT 1');
             if (!$exists) {
-                $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(4, ' . SpotSecurity::spotsec_create_new_user . ", '')");
+                $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(4, '.SpotSecurity::spotsec_create_new_user.", '')");
             }
-
         }
-
     }
 
     // updateSecurityGroups
