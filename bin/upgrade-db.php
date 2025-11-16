@@ -55,9 +55,9 @@ try {
     $svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $settings, $dbSettings['engine']);
     $svcUpgradeBase->database();
     echo 'Schema update done'.PHP_EOL;
-    echo 'Updating users' . PHP_EOL;
+    echo 'Updating users'.PHP_EOL;
     $svcUpgradeBase->users();
-    echo "Users' update done" . PHP_EOL;
+    echo "Users' update done".PHP_EOL;
     echo 'Updating settings'.PHP_EOL;
     $svcUpgradeBase->settings();
     $svcUpgradeBase->usenetState();

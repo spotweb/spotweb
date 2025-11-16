@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
             require_once __DIR__.'/../we1rdo/includes/footer.inc.php';
         }
         SpotTiming::stop('tpl:spotsinc-modern-cards');
+
         return;
     }
 
@@ -59,8 +60,8 @@ document.addEventListener("DOMContentLoaded", function() {
     $show_watchlist_button = ($pref_keep_watchlist && $can_use_watchlist);
     $show_comments = ($settings->get('retrieve_comments') && $tplHelper->allowed(SpotSecurity::spotsec_view_comments, ''));
     $show_filesize = $currentSession['user']['prefs']['show_filesize'];
-    $show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_nzbbutton']));
-    $show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
+    $show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && $currentSession['user']['prefs']['show_nzbbutton']);
+    $show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && $currentSession['user']['prefs']['show_multinzb']);
     $noResults = (count($spots) == 0);
 
     if (!$noResults) {
@@ -68,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Wrap MultiNZB checkboxes in a single form (compatible with existing JS)
         if ($show_multinzb_checkbox) {
-            echo "<form action=\"\" method=\"GET\" id=\"checkboxget\" name=\"checkboxget\">";
+            echo '<form action="" method="GET" id="checkboxget" name="checkboxget">';
             echo "<input type='hidden' name='page' value='getnzb'>";
         }
 
@@ -78,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
             echo '</div>';
         }
 
-        echo "<div class=\"cardsGrid\">";
+        echo '<div class="cardsGrid">';
 
         foreach ($spots as $spot) {
             // Format spot header without touching core files
@@ -104,9 +105,9 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             $badge = isset($spot['formatname']) ? $spot['formatname'] : SpotCategories::Cat2ShortDesc($spot['category'], $spot['subcata']);
             echo '  <div class="topRow">'
-                . '    <span class="badge">'.htmlspecialchars((string)$badge).'</span>'
-                . '    <div class="title"><a onclick="openSpot(this,\''.$spotUrl.'\')" class="spotlink" href="'.$spotUrl.'">'.htmlspecialchars((string)$spot['title']).'</a></div>'
-                . '  </div>';
+                .'    <span class="badge">'.htmlspecialchars((string) $badge).'</span>'
+                .'    <div class="title"><a onclick="openSpot(this,\''.$spotUrl.'\')" class="spotlink" href="'.$spotUrl.'">'.htmlspecialchars((string) $spot['title']).'</a></div>'
+                .'  </div>';
 
             echo '  <div class="meta">';
             echo '    <span class="genre"><a href="'.$spot['subcaturl'].'">'.htmlspecialchars($spot['catdesc']).'</a></span>';
@@ -132,12 +133,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
             echo '  <div class="footerRow">';
             if ($show_comments) {
-                $commentLabel = (int)$spot['commentcount'];
+                $commentLabel = (int) $spot['commentcount'];
                 echo '    <a class="comments spotlink" onclick="return openSpot(this,\''.$spotUrl.'#comments\')" href="'.$spotUrl.'#comments">'.$commentLabel.' '._('comments').'</a>';
             }
             if ($show_watchlist_button) {
-                $addOnclick = "toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].")";
-                $removeOnclick = "toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].")";
+                $addOnclick = "toggleWatchSpot('".$spot['messageid']."','add',".$spot['id'].')';
+                $removeOnclick = "toggleWatchSpot('".$spot['messageid']."','remove',".$spot['id'].')';
                 $displayAdd = ($spot['isbeingwatched']) ? ' style=\'display:none;\'' : '';
                 $displayRemove = ($spot['isbeingwatched']) ? '' : ' style=\'display:none;\'';
                 echo '    <span class="watch">';
@@ -168,11 +169,13 @@ document.addEventListener("DOMContentLoaded", function() {
             echo '</div>';
         }
 
-        if ($show_multinzb_checkbox) { echo '</form>'; }
+        if ($show_multinzb_checkbox) {
+            echo '</form>';
+        }
 
         // Hidden inputs used by existing JS
-        echo '<input type="hidden" id="perPage" value="'.(int)$currentSession['user']['prefs']['perpage'].'">';
-        echo '<input type="hidden" id="nextPage" value="'.(int)$nextPage.'">';
+        echo '<input type="hidden" id="perPage" value="'.(int) $currentSession['user']['prefs']['perpage'].'">';
+        echo '<input type="hidden" id="nextPage" value="'.(int) $nextPage.'">';
         echo '<input type="hidden" id="getURL" value="'.$tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams().'">';
 
         echo "</div>\n<div class=\"clear\"></div>";
@@ -185,4 +188,3 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     SpotTiming::stop('tpl:spotsinc-modern-cards');
-
