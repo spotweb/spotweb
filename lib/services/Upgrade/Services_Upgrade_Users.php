@@ -253,13 +253,17 @@ class Services_Upgrade_Users
              * getUserList, retrieve the users' settings from scratch
              */
             $user = $this->_userDao->getUser($user['userid']);
-
+            if ($this->_settings->get('settingsversion') < 0.40) {
+                $this->unsetSetting($user['prefs'], 'normal_template');
+                $this->unsetSetting($user['prefs'], 'mobile_template');
+                $this->unsetSetting($user['prefs'], 'tablet_template');
+            }
             // set the users' preferences
             $this->setSettingIfNot($user['prefs'], 'perpage', 25);
             $this->setSettingIfNot($user['prefs'], 'date_formatting', 'human');
-            $this->setSettingIfNot($user['prefs'], 'normal_template', 'we1rdo');
+            $this->setSettingIfNot($user['prefs'], 'normal_template', 'modern');
             $this->setSettingIfNot($user['prefs'], 'mobile_template', 'mobile');
-            $this->setSettingIfNot($user['prefs'], 'tablet_template', 'we1rdo');
+            $this->setSettingIfNot($user['prefs'], 'tablet_template', 'modern');
             $this->setSettingIfNot($user['prefs'], 'count_newspots', true);
             $this->setSettingIfNot($user['prefs'], 'mouseover_subcats', true);
             $this->setSettingIfNot($user['prefs'], 'keep_seenlist', true);
@@ -501,6 +505,24 @@ class Services_Upgrade_Users
         //#######################################################################
         if ($forceReset || ($this->_settings->get('securityversion') < 0.33)) {
             $dbCon->rawExec("DELETE FROM grouppermissions WHERE objectid = 'notifo';");
+        }
+
+        //#######################################################################
+        // Security level 0.35
+        //#######################################################################
+        if ($forceReset || ($this->_settings->get('securityversion') < 0.35)) {
+            $exists = $dbCon->singleQuery('SELECT 1 FROM grouppermissions WHERE groupid=3 AND permissionid='.SpotSecurity::spotsec_select_template." AND objectid='modern' LIMIT 1");
+            if (!$exists) {
+                $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid, objectid) VALUES(3, '.SpotSecurity::spotsec_select_template.", 'modern')");
+            }
+            $exists = $dbCon->singleQuery('SELECT 1 FROM grouppermissions WHERE groupid=2 AND permissionid='.SpotSecurity::spotsec_create_new_user.' LIMIT 1');
+            if ($exists) {
+                $dbCon->rawExec('DELETE FROM grouppermissions where groupid=2 and permissionid='.SpotSecurity::spotsec_create_new_user);
+            }
+            $exists = $dbCon->singleQuery('SELECT 1 FROM grouppermissions WHERE groupid=4 AND permissionid='.SpotSecurity::spotsec_create_new_user.' LIMIT 1');
+            if (!$exists) {
+                $dbCon->rawExec('INSERT INTO grouppermissions(groupid,permissionid,objectid) VALUES(4, '.SpotSecurity::spotsec_create_new_user.", '')");
+            }
         }
     }
 

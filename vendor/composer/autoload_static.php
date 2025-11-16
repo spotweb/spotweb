@@ -1074,6 +1074,7 @@ class ComposerStaticInit504c4440a019baf1c7be3e9f33abe7d1
         'SpotTemplateHelper' => __DIR__ . '/../..' . '/lib/SpotTemplateHelper.php',
         'SpotTemplateHelper_Examplechild' => __DIR__ . '/../..' . '/templates/examplechild/SpotTemplateHelper_Examplechild.php',
         'SpotTemplateHelper_Mobile' => __DIR__ . '/../..' . '/templates/mobile/SpotTemplateHelper_Mobile.php',
+        'SpotTemplateHelper_Modern' => __DIR__ . '/../..' . '/templates/modern/SpotTemplateHelper_Modern.php',
         'SpotTemplateHelper_We1rdo' => __DIR__ . '/../..' . '/templates/we1rdo/SpotTemplateHelper_We1rdo.php',
         'SpotTiming' => __DIR__ . '/../..' . '/lib/SpotTiming.php',
         'SpotTranslation' => __DIR__ . '/../..' . '/lib/SpotTranslation.php',
