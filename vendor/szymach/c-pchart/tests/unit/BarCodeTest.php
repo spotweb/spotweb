@@ -1,23 +1,22 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Barcode\Barcode128;
 use CpChart\Barcode\Barcode39;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_VERTICAL;
 
-class BarCodeTest extends Unit
+final class BarCodeTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function test39Code()
+    public function test39Code(): void
     {
         $image = new Image(700, 230);
         $settings = [
@@ -71,7 +70,7 @@ class BarCodeTest extends Unit
         $this->tester->seeFileFound($filename);
     }
 
-    public function test128Code()
+    public function test128Code(): void
     {
         $image = new Image(700, 230);
         $settings = [

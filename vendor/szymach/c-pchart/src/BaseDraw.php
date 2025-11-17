@@ -3,35 +3,69 @@
 namespace CpChart;
 
 use Exception;
+use GdImage;
+
+use const AXIS_FORMAT_CURRENCY;
+use const AXIS_FORMAT_CUSTOM;
+use const AXIS_FORMAT_DATE;
+use const AXIS_FORMAT_DEFAULT;
+use const AXIS_FORMAT_METRIC;
+use const AXIS_FORMAT_TIME;
+use const AXIS_FORMAT_TRAFFIC;
+use const AXIS_X;
+use const BOUND_BOTH;
+use const BOUND_LABEL_POS_AUTO;
+use const BOUND_LABEL_POS_BOTTOM;
+use const BOUND_LABEL_POS_TOP;
+use const BOUND_MAX;
+use const BOUND_MIN;
+use const CHART_LAST_LAYOUT_REGULAR;
+use const CHART_LAST_LAYOUT_STACKED;
+use const DISPLAY_MANUAL;
+use const LABEL_POINT_BOX;
+use const LABEL_POINT_CIRCLE;
+use const LABELING_ALL;
+use const LABELING_DIFFERENT;
+use const LEGEND_HORIZONTAL;
+use const LEGEND_VERTICAL;
+use const SCALE_POS_LEFTRIGHT;
+use const TEXT_ALIGN_BOTTOMMIDDLE;
+use const TEXT_ALIGN_MIDDLELEFT;
+use const TEXT_ALIGN_MIDDLERIGHT;
+use const TEXT_ALIGN_TOPMIDDLE;
+use const VOID;
 
 /**
  * This class exists only to try and reduce the number of methods and properties
  * in the Draw class. Basically all methods not named 'drawX' were moved in here,
  * as well as all the class fields.
+ *
+ * @deprecated
+ * @internal
  */
 abstract class BaseDraw
 {
     /**
      * Width of the picture
-     * @var int
+     * @var int<1, max>
      */
     public $XSize;
 
     /**
      * Height of the picture
-     * @var int
+     * @var int<1, max>
      */
     public $YSize;
 
     /**
      * GD picture object
-     * @var resource
+     * @var GdImage
      */
     public $Picture;
 
     /**
      * Turn antialias on or off
-     * @var boolean
+     * @var bool
      */
     public $Antialias = true;
 
@@ -49,7 +83,7 @@ abstract class BaseDraw
 
     /**
      * Just to know if we need to flush the alpha channels when rendering
-     * @var boolean
+     * @var bool
      */
     public $TransparentBackground = false;
 
@@ -121,7 +155,7 @@ abstract class BaseDraw
 
     /**
      * Turn shadows on or off
-     * @var boolean
+     * @var bool
      */
     public $Shadow = false;
 
@@ -169,7 +203,7 @@ abstract class BaseDraw
 
     /**
      * Name of the session array
-     * @var int
+     * @var string
      */
     public $ImageMapIndex = "pChart";
 
@@ -181,7 +215,7 @@ abstract class BaseDraw
 
     /**
      * Automatic deletion of the image map temp files
-     * @var boolean
+     * @var bool
      */
     public $ImageMapAutoDelete = true;
 
@@ -253,12 +287,12 @@ abstract class BaseDraw
 
     /**
      * Allocate a color with transparency
-     * @param resource $Picture
+     * @param GdImage $Picture
      * @param int $R
      * @param int $G
      * @param int $B
      * @param int $Alpha
-     * @return int
+     * @return int<0, max>
      */
     public function allocateColor($Picture, $R, $G, $B, $Alpha = 100)
     {
@@ -287,14 +321,22 @@ abstract class BaseDraw
             $Alpha = 100;
         }
 
-        $Alpha = $this->convertAlpha($Alpha);
-        return imagecolorallocatealpha($Picture, (int) $R, (int) $G, (int) $B, (int) $Alpha);
+        /** @var int<0, max> $result */
+        $result = imagecolorallocatealpha(
+            $Picture,
+            (int) $R,
+            (int) $G,
+            (int) $B,
+            (int) $this->convertAlpha($Alpha)
+        );
+
+        return $result;
     }
 
     /**
      * Convert apha to base 10
      * @param int|float $AlphaValue
-     * @return integer
+     * @return float
      */
     public function convertAlpha($AlphaValue)
     {
@@ -303,7 +345,7 @@ abstract class BaseDraw
 
     /**
      * @param string $FileName
-     * @return array
+     * @return array{ 0: int|float, 1: int|float, 2: string }
      */
     public function getPicInfo($FileName)
     {
@@ -402,7 +444,8 @@ abstract class BaseDraw
                 foreach ($Factors as $Key => $Factor) {
                     if (!$Found) {
                         $XMinRescaled = $XMin;
-                        if (!($this->modulo($XMin, $Factor * $Scaled10Factor) == 0)
+                        if (
+                            !($this->modulo($XMin, $Factor * $Scaled10Factor) == 0)
                             || ($XMin != floor($XMin))
                         ) {
                             $XMinRescaled = floor($XMin / ($Factor * $Scaled10Factor))
@@ -412,7 +455,8 @@ abstract class BaseDraw
                         }
 
                         $XMaxRescaled = $XMax;
-                        if (!($this->modulo($XMax, $Factor * $Scaled10Factor) == 0)
+                        if (
+                            !($this->modulo($XMax, $Factor * $Scaled10Factor) == 0)
                             || ($XMax != floor($XMax))
                         ) {
                             $XMaxRescaled = floor($XMax / ($Factor * $Scaled10Factor))
@@ -424,7 +468,8 @@ abstract class BaseDraw
 
                         $ScaleHeightRescaled = abs($XMaxRescaled - $XMinRescaled);
 
-                        if (!$Found
+                        if (
+                            !$Found
                             && floor($ScaleHeightRescaled / ($Factor * $Scaled10Factor)) <= $MaxDivs
                         ) {
                             $Found = true;
@@ -527,8 +572,8 @@ abstract class BaseDraw
      * @param mixed $LastValue
      * @param integer $LabelingMethod
      * @param integer $ID
-     * @param boolean $LabelSkip
-     * @return boolean
+     * @param bool $LabelSkip
+     * @return bool
      */
     public function isValidLabel($Value, $LastValue, $LabelingMethod, $ID, $LabelSkip)
     {
@@ -712,7 +757,8 @@ abstract class BaseDraw
         $Data = $this->DataSet->getData();
 
         foreach ($Data["Series"] as $SerieName => $Serie) {
-            if ($Serie["isDrawable"] == true
+            if (
+                $Serie["isDrawable"] == true
                 && $SerieName != $Data["Abscissa"]
                 && isset($Serie["Picture"])
             ) {
@@ -910,7 +956,7 @@ abstract class BaseDraw
     /**
      * @param mixed $Values
      * @param array $Option
-     * @param boolean $ReturnOnly0Height
+     * @param bool $ReturnOnly0Height
      * @return int|float|array
      */
     public function scaleComputeY($Values, array $Option = [], $ReturnOnly0Height = false)
@@ -1127,7 +1173,8 @@ abstract class BaseDraw
 
         $Data = $this->DataSet->getData();
         foreach ($Data["Series"] as $SerieName => $Serie) {
-            if ($Serie["isDrawable"] == true
+            if (
+                $Serie["isDrawable"] == true
                 && $SerieName != $Data["Abscissa"]
                 && !isset($ExcludedSeries[$SerieName])
             ) {
@@ -1165,13 +1212,15 @@ abstract class BaseDraw
                     $SerieOffset = isset($Serie["XOffset"]) ? $Serie["XOffset"] : 0;
 
                     if ($Type == BOUND_MAX || $Type == BOUND_BOTH) {
-                        if ($MaxLabelPos == BOUND_LABEL_POS_TOP
+                        if (
+                            $MaxLabelPos == BOUND_LABEL_POS_TOP
                             || ($MaxLabelPos == BOUND_LABEL_POS_AUTO && $MaxValue >= 0)
                         ) {
                             $YPos = $PosArray[$MaxPos] - $DisplayOffset + 2;
                             $Align = TEXT_ALIGN_BOTTOMMIDDLE;
                         }
-                        if ($MaxLabelPos == BOUND_LABEL_POS_BOTTOM
+                        if (
+                            $MaxLabelPos == BOUND_LABEL_POS_BOTTOM
                             || ($MaxLabelPos == BOUND_LABEL_POS_AUTO && $MaxValue < 0)
                         ) {
                             $YPos = $PosArray[$MaxPos] + $DisplayOffset + 2;
@@ -1210,13 +1259,15 @@ abstract class BaseDraw
                     }
 
                     if ($Type == BOUND_MIN || $Type == BOUND_BOTH) {
-                        if ($MinLabelPos == BOUND_LABEL_POS_TOP
+                        if (
+                            $MinLabelPos == BOUND_LABEL_POS_TOP
                             || ($MinLabelPos == BOUND_LABEL_POS_AUTO && $MinValue >= 0)
                         ) {
                             $YPos = $PosArray[$MinPos] - $DisplayOffset + 2;
                             $Align = TEXT_ALIGN_BOTTOMMIDDLE;
                         }
-                        if ($MinLabelPos == BOUND_LABEL_POS_BOTTOM
+                        if (
+                            $MinLabelPos == BOUND_LABEL_POS_BOTTOM
                             || ($MinLabelPos == BOUND_LABEL_POS_AUTO && $MinValue < 0)
                         ) {
                             $YPos = $PosArray[$MinPos] + $DisplayOffset + 2;
@@ -1264,13 +1315,15 @@ abstract class BaseDraw
                     $SerieOffset = isset($Serie["XOffset"]) ? $Serie["XOffset"] : 0;
 
                     if ($Type == BOUND_MAX || $Type == BOUND_BOTH) {
-                        if ($MaxLabelPos == BOUND_LABEL_POS_TOP
+                        if (
+                            $MaxLabelPos == BOUND_LABEL_POS_TOP
                             || ($MaxLabelPos == BOUND_LABEL_POS_AUTO && $MaxValue >= 0)
                         ) {
                             $YPos = $PosArray[$MaxPos] + $DisplayOffset + 2;
                             $Align = TEXT_ALIGN_MIDDLELEFT;
                         }
-                        if ($MaxLabelPos == BOUND_LABEL_POS_BOTTOM
+                        if (
+                            $MaxLabelPos == BOUND_LABEL_POS_BOTTOM
                             || ($MaxLabelPos == BOUND_LABEL_POS_AUTO && $MaxValue < 0)
                         ) {
                             $YPos = $PosArray[$MaxPos] - $DisplayOffset + 2;
@@ -1305,13 +1358,15 @@ abstract class BaseDraw
                     }
 
                     if ($Type == BOUND_MIN || $Type == BOUND_BOTH) {
-                        if ($MinLabelPos == BOUND_LABEL_POS_TOP
+                        if (
+                            $MinLabelPos == BOUND_LABEL_POS_TOP
                             || ($MinLabelPos == BOUND_LABEL_POS_AUTO && $MinValue >= 0)
                         ) {
                             $YPos = $PosArray[$MinPos] + $DisplayOffset + 2;
                             $Align = TEXT_ALIGN_MIDDLELEFT;
                         }
-                        if ($MinLabelPos == BOUND_LABEL_POS_BOTTOM
+                        if (
+                            $MinLabelPos == BOUND_LABEL_POS_BOTTOM
                             || ($MinLabelPos == BOUND_LABEL_POS_AUTO && $MinValue < 0)
                         ) {
                             $YPos = $PosArray[$MinPos] - $DisplayOffset + 2;
@@ -1425,7 +1480,8 @@ abstract class BaseDraw
                         $AxisUnit = $Data["Axis"][$AxisID]["Unit"];
                         $XLabel = "";
 
-                        if (isset($Data["Abscissa"])
+                        if (
+                            isset($Data["Abscissa"])
                             && isset($Data["Series"][$Data["Abscissa"]]["Data"][$Index])
                         ) {
                             $XLabel = $this->scaleFormat(
@@ -1440,7 +1496,8 @@ abstract class BaseDraw
                             $Description = $OverrideTitle;
                         } elseif (count($SeriesName) == 1) {
                             $Description = $Data["Series"][$SerieName]["Description"] . " - " . $XLabel;
-                        } elseif (isset($Data["Abscissa"])
+                        } elseif (
+                            isset($Data["Abscissa"])
                             && isset($Data["Series"][$Data["Abscissa"]]["Data"][$Index])
                         ) {
                             $Description = $XLabel;
@@ -1452,7 +1509,8 @@ abstract class BaseDraw
                             "B" => $Data["Series"][$SerieName]["Color"]["B"],
                             "Alpha" => $Data["Series"][$SerieName]["Color"]["Alpha"]
                         ];
-                        if (count($SeriesName) == 1
+                        if (
+                            count($SeriesName) == 1
                             && isset($Data["Series"][$SerieName]["XOffset"])
                         ) {
                             $SerieOffset = $Data["Series"][$SerieName]["XOffset"];
@@ -1480,10 +1538,12 @@ abstract class BaseDraw
                             $Value = 0;
                             $Done = false;
                             foreach ($Data["Series"] as $Name => $SerieLookup) {
-                                if ($SerieLookup["isDrawable"] == true
+                                if (
+                                    $SerieLookup["isDrawable"] == true
                                     && $Name != $Data["Abscissa"] && !$Done
                                 ) {
-                                    if (isset($Data["Series"][$Name]["Data"][$Index])
+                                    if (
+                                        isset($Data["Series"][$Name]["Data"][$Index])
                                         && $Data["Series"][$Name]["Data"][$Index] != VOID
                                     ) {
                                         if ($Data["Series"][$Name]["Data"][$Index] >= 0 && $LookFor == "+") {
@@ -1577,7 +1637,8 @@ abstract class BaseDraw
                         $AxisUnit = $Data["Axis"][$AxisID]["Unit"];
                         $XLabel = "";
 
-                        if (isset($Data["Abscissa"])
+                        if (
+                            isset($Data["Abscissa"])
                             && isset($Data["Series"][$Data["Abscissa"]]["Data"][$Index])
                         ) {
                             $XLabel = $this->scaleFormat(
@@ -1591,16 +1652,19 @@ abstract class BaseDraw
                         if ($OverrideTitle != null) {
                             $Description = $OverrideTitle;
                         } elseif (count($SeriesName) == 1) {
-                            if (isset($Data["Abscissa"])
+                            if (
+                                isset($Data["Abscissa"])
                                 && isset($Data["Series"][$Data["Abscissa"]]["Data"][$Index])
                             ) {
                                 $Description = $Data["Series"][$SerieName]["Description"] . " - " . $XLabel;
                             }
-                        } elseif (isset($Data["Abscissa"])
+                        } elseif (
+                            isset($Data["Abscissa"])
                             && isset($Data["Series"][$Data["Abscissa"]]["Data"][$Index])
                         ) {
                             $Description = $XLabel;
                         }
+
                         $Serie = [];
                         if (isset($Data["Extended"]["Palette"][$Index])) {
                             $Serie["R"] = $Data["Extended"]["Palette"][$Index]["R"];
@@ -1640,11 +1704,13 @@ abstract class BaseDraw
                             $Value = 0;
                             $Done = false;
                             foreach ($Data["Series"] as $Name => $SerieLookup) {
-                                if ($SerieLookup["isDrawable"] == true
+                                if (
+                                    $SerieLookup["isDrawable"] == true
                                     && $Name != $Data["Abscissa"]
                                     && !$Done
                                 ) {
-                                    if (isset($Data["Series"][$Name]["Data"][$Index])
+                                    if (
+                                        isset($Data["Series"][$Name]["Data"][$Index])
                                         && $Data["Series"][$Name]["Data"][$Index] != VOID
                                     ) {
                                         if ($Data["Series"][$Name]["Data"][$Index] >= 0 && $LookFor == "+") {

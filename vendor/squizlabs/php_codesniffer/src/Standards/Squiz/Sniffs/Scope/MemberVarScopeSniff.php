@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope;
@@ -33,9 +33,15 @@ class MemberVarScopeSniff extends AbstractVariableSniff
             return;
         }
 
-        $error = 'Scope modifier not specified for member variable "%s"';
-        $data  = [$tokens[$stackPtr]['content']];
-        $phpcsFile->addError($error, $stackPtr, 'Missing', $data);
+        if ($properties['set_scope'] === false) {
+            $error = 'Scope modifier not specified for member variable "%s"';
+            $data  = [$tokens[$stackPtr]['content']];
+            $phpcsFile->addError($error, $stackPtr, 'Missing', $data);
+        } else {
+            $error = 'Read scope modifier not specified for member variable "%s"';
+            $data  = [$tokens[$stackPtr]['content']];
+            $phpcsFile->addError($error, $stackPtr, 'AsymReadMissing', $data);
+        }
 
     }//end processMemberVar()
 

@@ -52,7 +52,7 @@ class Exporter
      *
      * @return string
      */
-    public function shortenedRecursiveExport(&$data, Context $context = null)
+    public function shortenedRecursiveExport(&$data, ?Context $context = null)
     {
         $result   = [];
         $exporter = new self();
@@ -215,9 +215,9 @@ class Exporter
             \ini_set('precision', '-1');
 
             try {
-                $valueStr = (string) $value;
+                $valueStr = @(string) $value;
 
-                if ((string) (int) $value === $valueStr) {
+                if ((string) @(int) $value === $valueStr) {
                     return $valueStr . '.0';
                 }
 

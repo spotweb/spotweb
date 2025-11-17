@@ -1,11 +1,13 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const LEGEND_HORIZONTAL;
 use const LEGEND_NOBORDER;
@@ -13,14 +15,11 @@ use const SERIE_SHAPE_FILLEDSQUARE;
 use const SERIE_SHAPE_FILLEDTRIANGLE;
 use const TEXT_ALIGN_BOTTOMMIDDLE;
 
-class PlotTest extends Unit
+final class PlotTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         for ($i = 0; $i <= 20; $i++) {

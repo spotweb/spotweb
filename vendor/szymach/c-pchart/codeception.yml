@@ -1,5 +1,5 @@
 ---
-namespace: Test\CpChart
+namespace: Tests\CpChart\Support
 paths:
     tests: tests
     output: tests/_output

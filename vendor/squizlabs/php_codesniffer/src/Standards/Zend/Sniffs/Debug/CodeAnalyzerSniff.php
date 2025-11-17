@@ -5,25 +5,28 @@
  * @author    Holger Kral <holger.kral@zend.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
+ *
+ * @deprecated 3.9.0
  */
 
 namespace PHP_CodeSniffer\Standards\Zend\Sniffs\Debug;
 
+use PHP_CodeSniffer\Sniffs\DeprecatedSniff;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Util\Common;
 
-class CodeAnalyzerSniff implements Sniff
+class CodeAnalyzerSniff implements Sniff, DeprecatedSniff
 {
 
 
     /**
      * Returns the token types that this sniff is interested in.
      *
-     * @return int[]
+     * @return array<int|string>
      */
     public function register()
     {
@@ -46,7 +49,7 @@ class CodeAnalyzerSniff implements Sniff
     {
         $analyzerPath = Config::getExecutablePath('zend_ca');
         if ($analyzerPath === null) {
-            return;
+            return $phpcsFile->numTokens;
         }
 
         $fileName = $phpcsFile->getFilename();
@@ -67,7 +70,7 @@ class CodeAnalyzerSniff implements Sniff
         // provide useful error reporting.
         if (is_numeric($exitCode) === true && $exitCode > 0) {
             if (is_array($output) === true) {
-                $msg = join('\n', $output);
+                $msg = implode('\n', $output);
             }
 
             throw new RuntimeException("Failed invoking ZendCodeAnalyzer, exitcode was [$exitCode], retval was [$retval], output was [$msg]");
@@ -90,9 +93,45 @@ class CodeAnalyzerSniff implements Sniff
         }
 
         // Ignore the rest of the file.
-        return ($phpcsFile->numTokens + 1);
+        return $phpcsFile->numTokens;
 
     }//end process()
+
+
+    /**
+     * Provide the version number in which the sniff was deprecated.
+     *
+     * @return string
+     */
+    public function getDeprecationVersion()
+    {
+        return 'v3.9.0';
+
+    }//end getDeprecationVersion()
+
+
+    /**
+     * Provide the version number in which the sniff will be removed.
+     *
+     * @return string
+     */
+    public function getRemovalVersion()
+    {
+        return 'v4.0.0';
+
+    }//end getRemovalVersion()
+
+
+    /**
+     * Provide a custom message to display with the deprecation.
+     *
+     * @return string
+     */
+    public function getDeprecationMessage()
+    {
+        return '';
+
+    }//end getDeprecationMessage()
 
 
 }//end class

@@ -74,6 +74,20 @@ class Request
     }
 
     /**
+     * Send a POST request
+     *
+     * @param string|array $content
+     * @return boolean success
+     * @throws Exception\Http
+     */
+    public function post($content)
+    {
+        curl_setopt($this->ch, CURLOPT_POST, true);
+        curl_setopt($this->ch, CURLOPT_POSTFIELDS, $content);
+        return $this->sendRequest();
+    }
+
+    /**
      * Send a request to the movie site
      * @return boolean success
      * @throws Exception\Http
@@ -170,6 +184,7 @@ class Request
                 return $target;
             }
         }
+        return null;
     }
 
     public function getLastResponseHeaders()

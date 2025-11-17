@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Util\Log;
 
+use const PHP_EOL;
 use function class_exists;
 use function count;
 use function explode;
@@ -37,6 +38,7 @@ use PHPUnit\Util\Filter;
 use ReflectionClass;
 use ReflectionException;
 use SebastianBergmann\Comparator\ComparisonFailure;
+use SebastianBergmann\Timer\RuntimeException;
 use Throwable;
 
 /**
@@ -60,7 +62,7 @@ final class TeamCity extends ResultPrinter
     private $flowId;
 
     /**
-     * @throws \SebastianBergmann\Timer\RuntimeException
+     * @throws RuntimeException
      */
     public function printResult(TestResult $result): void
     {

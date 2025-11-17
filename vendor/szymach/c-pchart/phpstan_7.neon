@@ -1,0 +1,7 @@
+parameters:
+    level: 7
+    tmpDir: /tmp/phpstan_7
+    paths:
+        - src/Cache.php
+        - src/Data.php
+        - src/Image.php

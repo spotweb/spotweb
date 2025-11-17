@@ -22,15 +22,15 @@ abstract class CoverallsApi
     /**
      * HTTP client.
      *
-     * @var \GuzzleHttp\Client
+     * @var Client
      */
     protected $client;
 
     /**
      * Constructor.
      *
-     * @param Configuration      $config configuration
-     * @param \GuzzleHttp\Client $client hTTP client
+     * @param Configuration $config configuration
+     * @param Client        $client hTTP client
      */
     public function __construct(Configuration $config, Client $client = null)
     {
@@ -53,7 +53,7 @@ abstract class CoverallsApi
     /**
      * Set HTTP client.
      *
-     * @param \GuzzleHttp\Client $client hTTP client
+     * @param Client $client hTTP client
      *
      * @return $this
      */
@@ -67,7 +67,7 @@ abstract class CoverallsApi
     /**
      * Return HTTP client.
      *
-     * @return \GuzzleHttp\Client
+     * @return Client
      */
     public function getHttpClient()
     {

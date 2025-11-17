@@ -1,10 +1,12 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const LABEL_POS_BOTTOM;
 use const LABEL_POS_CENTER;
@@ -14,14 +16,11 @@ use const LABEL_POS_RIGHT;
 use const LABEL_POS_TOP;
 use const ORIENTATION_VERTICAL;
 
-class ProgressTest extends Unit
+final class ProgressTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $image = new Image(700, 250);
         $image->setShadow(

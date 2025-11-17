@@ -36,7 +36,7 @@ class GitInfoCollector
     /**
      * Collect git repository info.
      *
-     * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Git
+     * @return Git
      */
     public function collect()
     {
@@ -52,7 +52,7 @@ class GitInfoCollector
     /**
      * Return git command.
      *
-     * @return \PhpCoveralls\Component\System\Git\GitCommand
+     * @return GitCommand
      */
     public function getCommand()
     {
@@ -73,14 +73,14 @@ class GitInfoCollector
         $branchesResult = $this->command->getBranches();
 
         foreach ($branchesResult as $result) {
-            if ($result === '* (no branch)') {
+            if ('* (no branch)' === $result) {
                 // Case detected on Travis PUSH hook for tags, can be reporduced by following command:
                 // $ git clone --depth=1 --branch=v2.4.0 https://github.com/php-coveralls/php-coveralls.git php-coveralls && cd php-coveralls && git branch
                 // * (no branch)
                 return '(no branch)';
             }
 
-            if (strpos($result, '* ') === 0) {
+            if (0 === strpos($result, '* ')) {
                 preg_match('/^\* (?:\(HEAD detached at )?([\w\/\-]+)\)?/', $result, $matches);
 
                 return $matches[1];
@@ -93,7 +93,7 @@ class GitInfoCollector
     /**
      * Collect commit info.
      *
-     * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Commit
+     * @return Commit
      *
      * @throws \RuntimeException
      */
@@ -101,7 +101,7 @@ class GitInfoCollector
     {
         $commitResult = $this->command->getHeadCommit();
 
-        if (\count($commitResult) !== 6 || array_keys($commitResult) !== range(0, 5)) {
+        if (6 !== \count($commitResult) || array_keys($commitResult) !== range(0, 5)) {
             throw new \RuntimeException();
         }
 
@@ -120,7 +120,7 @@ class GitInfoCollector
     /**
      * Collect remotes info.
      *
-     * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\Git\Remote[]
+     * @return Remote[]
      *
      * @throws \RuntimeException
      */
@@ -128,7 +128,7 @@ class GitInfoCollector
     {
         $remotesResult = $this->command->getRemotes();
 
-        if (\count($remotesResult) === 0) {
+        if (0 === \count($remotesResult)) {
             throw new \RuntimeException();
         }
 
@@ -136,8 +136,8 @@ class GitInfoCollector
         $results = [];
 
         foreach ($remotesResult as $result) {
-            if (strpos($result, ' ') !== false) {
-                list($remote) = explode(' ', $result, 2);
+            if (false !== strpos($result, ' ')) {
+                [$remote] = explode(' ', $result, 2);
 
                 $results[] = $remote;
             }
@@ -150,8 +150,8 @@ class GitInfoCollector
         $remotes = [];
 
         foreach ($results as $result) {
-            if (strpos($result, "\t") !== false) {
-                list($name, $url) = explode("\t", $result, 2);
+            if (false !== strpos($result, "\t")) {
+                [$name, $url] = explode("\t", $result, 2);
 
                 $remote = new Remote();
                 $remotes[] = $remote->setName($name)->setUrl($url);

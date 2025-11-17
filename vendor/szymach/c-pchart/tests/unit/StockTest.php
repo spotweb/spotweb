@@ -1,12 +1,14 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Chart\Stock;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const AXIS_FORMAT_CURRENCY;
 use const AXIS_FORMAT_DEFAULT;
@@ -14,14 +16,11 @@ use const DIRECTION_VERTICAL;
 use const SCALE_POS_TOPBOTTOM;
 use const TEXT_ALIGN_BOTTOMLEFT;
 
-class StockTest extends Unit
+final class StockTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         $data->addPoints([34, 55, 15, 62, 38, 42], 'Open');

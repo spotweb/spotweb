@@ -1,26 +1,25 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Chart\Radar;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_VERTICAL;
 use const LEGEND_BOX;
 use const LEGEND_HORIZONTAL;
 use const RADAR_LABELS_HORIZONTAL;
 
-class PolarTest extends Unit
+final class PolarTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         $data->addPoints([10, 20, 30, 40, 50, 60, 70, 80, 90], 'ScoreA');

@@ -15,7 +15,7 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Output.
      *
-     * @var \Symfony\Component\Console\Output\OutputInterface
+     * @var OutputInterface
      */
     protected $output;
 
@@ -33,7 +33,7 @@ class ConsoleLogger extends AbstractLogger
      * @param mixed $level
      * @param mixed $message
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         unset($level, $context);
 

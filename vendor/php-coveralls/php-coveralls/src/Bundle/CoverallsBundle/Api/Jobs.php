@@ -2,9 +2,11 @@
 
 namespace PhpCoveralls\Bundle\CoverallsBundle\Api;
 
+use GuzzleHttp\Psr7\Response;
 use PhpCoveralls\Bundle\CoverallsBundle\Collector\CiEnvVarsCollector;
 use PhpCoveralls\Bundle\CoverallsBundle\Collector\CloverXmlCoverageCollector;
 use PhpCoveralls\Bundle\CoverallsBundle\Collector\GitInfoCollector;
+use PhpCoveralls\Bundle\CoverallsBundle\Entity\Exception\RequirementsNotSatisfiedException;
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\JsonFile;
 use PhpCoveralls\Component\System\Git\GitCommand;
 
@@ -88,7 +90,7 @@ class Jobs extends CoverallsApi
      *
      * @return $this
      *
-     * @throws \PhpCoveralls\Bundle\CoverallsBundle\Entity\Exception\RequirementsNotSatisfiedException
+     * @throws RequirementsNotSatisfiedException
      */
     public function collectEnvVars(array $env)
     {
@@ -96,7 +98,7 @@ class Jobs extends CoverallsApi
 
         try {
             $this->jsonFile->fillJobs($envCollector->collect($env));
-        } catch (\PhpCoveralls\Bundle\CoverallsBundle\Entity\Exception\RequirementsNotSatisfiedException $e) {
+        } catch (RequirementsNotSatisfiedException $e) {
             $e->setReadEnv($envCollector->getReadEnv());
 
             throw $e;
@@ -122,7 +124,7 @@ class Jobs extends CoverallsApi
     /**
      * Send json_file to jobs API.
      *
-     * @return null|\GuzzleHttp\Psr7\Response
+     * @return null|Response
      */
     public function send()
     {
@@ -130,7 +132,7 @@ class Jobs extends CoverallsApi
             return;
         }
 
-        $url = $this->config->getEntryPoint() . static::URL;
+        $url = $this->config->getEntryPoint().static::URL;
         $jsonPath = $this->config->getJsonPath();
 
         return $this->upload($url, $jsonPath, static::FILENAME);
@@ -171,7 +173,7 @@ class Jobs extends CoverallsApi
      * @param string $path     file path
      * @param string $filename filename
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return Response
      */
     protected function upload($url, $path, $filename)
     {

@@ -4,14 +4,19 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Tests\PHP;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-class UpperCaseConstantUnitTest extends AbstractSniffUnitTest
+/**
+ * Unit test class for the UpperCaseConstant sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\UpperCaseConstantSniff
+ */
+final class UpperCaseConstantUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -26,27 +31,33 @@ class UpperCaseConstantUnitTest extends AbstractSniffUnitTest
     public function getErrorList()
     {
         return [
-            7  => 1,
-            10 => 1,
-            15 => 1,
-            16 => 1,
-            23 => 1,
-            26 => 1,
-            31 => 1,
-            32 => 1,
-            39 => 1,
-            42 => 1,
-            47 => 1,
-            48 => 1,
-            70 => 1,
-            71 => 1,
-            85 => 1,
-            87 => 1,
-            88 => 1,
-            90 => 2,
-            92 => 2,
-            93 => 1,
-            98 => 2,
+            7   => 1,
+            10  => 1,
+            15  => 1,
+            16  => 1,
+            23  => 1,
+            26  => 1,
+            31  => 1,
+            32  => 1,
+            39  => 1,
+            42  => 1,
+            47  => 1,
+            48  => 1,
+            70  => 1,
+            71  => 1,
+            85  => 1,
+            87  => 1,
+            88  => 1,
+            90  => 2,
+            92  => 2,
+            93  => 1,
+            98  => 2,
+            112 => 1,
+            113 => 1,
+            114 => 1,
+            122 => 1,
+            123 => 1,
+            124 => 1,
         ];
 
     }//end getErrorList()

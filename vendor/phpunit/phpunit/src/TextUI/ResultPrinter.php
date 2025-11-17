@@ -39,6 +39,7 @@ use PHPUnit\Runner\PhptTestCase;
 use PHPUnit\Util\Color;
 use PHPUnit\Util\Printer;
 use SebastianBergmann\Environment\Console;
+use SebastianBergmann\Timer\RuntimeException;
 use SebastianBergmann\Timer\Timer;
 use Throwable;
 
@@ -47,23 +48,15 @@ use Throwable;
  */
 class ResultPrinter extends Printer implements TestListener
 {
-    public const EVENT_TEST_START = 0;
-
-    public const EVENT_TEST_END = 1;
-
+    public const EVENT_TEST_START      = 0;
+    public const EVENT_TEST_END        = 1;
     public const EVENT_TESTSUITE_START = 2;
-
-    public const EVENT_TESTSUITE_END = 3;
-
-    public const COLOR_NEVER = 'never';
-
-    public const COLOR_AUTO = 'auto';
-
-    public const COLOR_ALWAYS = 'always';
-
-    public const COLOR_DEFAULT = self::COLOR_NEVER;
-
-    private const AVAILABLE_COLORS = [self::COLOR_NEVER, self::COLOR_AUTO, self::COLOR_ALWAYS];
+    public const EVENT_TESTSUITE_END   = 3;
+    public const COLOR_NEVER           = 'never';
+    public const COLOR_AUTO            = 'auto';
+    public const COLOR_ALWAYS          = 'always';
+    public const COLOR_DEFAULT         = self::COLOR_NEVER;
+    private const AVAILABLE_COLORS     = [self::COLOR_NEVER, self::COLOR_AUTO, self::COLOR_ALWAYS];
 
     /**
      * @var int
@@ -173,7 +166,7 @@ class ResultPrinter extends Printer implements TestListener
     }
 
     /**
-     * @throws \SebastianBergmann\Timer\RuntimeException
+     * @throws RuntimeException
      */
     public function printResult(TestResult $result): void
     {
@@ -403,7 +396,7 @@ class ResultPrinter extends Printer implements TestListener
     }
 
     /**
-     * @throws \SebastianBergmann\Timer\RuntimeException
+     * @throws RuntimeException
      */
     protected function printHeader(TestResult $result): void
     {

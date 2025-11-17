@@ -373,7 +373,7 @@ class Services_User_Authentication
      */
     private function determineDeviceType()
     {
-        $mobDetect = new Mobile_Detect();
+        $mobDetect = new Detection\MobileDetect();
 
         if ($mobDetect->isTablet()) {
             return 'tablet';

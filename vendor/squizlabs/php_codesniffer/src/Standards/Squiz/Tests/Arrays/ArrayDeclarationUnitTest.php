@@ -4,14 +4,19 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Tests\Arrays;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-class ArrayDeclarationUnitTest extends AbstractSniffUnitTest
+/**
+ * Unit test class for the ArrayDeclaration sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Arrays\ArrayDeclarationSniff
+ */
+final class ArrayDeclarationUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -124,6 +129,15 @@ class ArrayDeclarationUnitTest extends AbstractSniffUnitTest
                 467 => 1,
                 471 => 1,
                 472 => 1,
+                510 => 1,
+                516 => 1,
+                523 => 1,
+                530 => 1,
+                537 => 1,
+                540 => 1,
+                547 => 2,
+                552 => 1,
+                557 => 1,
             ];
         case 'ArrayDeclarationUnitTest.2.inc':
             return [
@@ -210,7 +224,19 @@ class ArrayDeclarationUnitTest extends AbstractSniffUnitTest
                 456 => 1,
                 460 => 1,
                 461 => 1,
+                499 => 1,
+                505 => 1,
+                512 => 1,
+                519 => 1,
+                526 => 1,
+                529 => 1,
+                536 => 2,
+                541 => 1,
+                546 => 1,
+                555 => 2,
             ];
+        case 'ArrayDeclarationUnitTest.4.inc':
+            return [8 => 1];
         default:
             return [];
         }//end switch

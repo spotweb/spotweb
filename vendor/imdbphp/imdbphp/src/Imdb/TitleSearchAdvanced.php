@@ -48,6 +48,11 @@ class TitleSearchAdvanced extends MdbBase
     protected $countries = array();
     protected $languages = array();
     protected $sort = 'moviemeter,asc';
+    protected $start = 1;
+    /**
+     * @var integer
+     */
+    protected $count = 50;
 
     /**
      * Set which types of titles should be returned
@@ -100,6 +105,25 @@ class TitleSearchAdvanced extends MdbBase
     }
 
     /**
+     * Set the number of results to return per search
+     * Defaults to 50
+     * @param integer $count
+     */
+    public function setCount($count)
+    {
+        $this->count = $count;
+    }
+
+    /**
+     * set start of results(kinda like offset)
+     * @param string $start
+     */
+    public function setStart($start)
+    {
+        $this->start = $start;
+    }
+
+    /**
      * Perform the search
      * @return array
      * array('imdbid' => $id,
@@ -142,6 +166,9 @@ class TitleSearchAdvanced extends MdbBase
             $queries['sort'] = $this->sort;
         }
 
+        $queries['start'] = $this->start;
+        $queries['count'] = $this->count;
+
         return "https://" . $this->imdbsite . '/search/title?' . http_build_query($queries);
     }
 
@@ -152,6 +179,7 @@ class TitleSearchAdvanced extends MdbBase
             if (isset($match['type'])) {
                 return $match['type'];
             }
+            // @phpstan-ignore isset.offset
             if (isset($match['serial'])) {
                 return Title::TV_SERIES;
             }
@@ -177,41 +205,31 @@ class TitleSearchAdvanced extends MdbBase
         switch ($type) {
             case 'tv_series':
                 return Title::TV_SERIES;
-                break;
             case 'tv_episode':
                 return Title::TV_EPISODE;
-                break;
             case 'mini_series':
                 return Title::TV_MINI_SERIES;
-                break;
             case 'tv_movie':
                 return Title::TV_MOVIE;
-                break;
             case 'tv_special':
                 return Title::TV_SPECIAL;
-                break;
             case 'tv_short':
                 return Title::TV_SHORT;
-                break;
             case 'documentary':
                 return Title::MOVIE;
-                break;
             case 'game':
                 return Title::GAME;
-                break;
             case 'video':
                 return Title::VIDEO;
-                break;
             case 'short':
                 return Title::SHORT;
-                break;
             default:
                 return 'Feature Film';
         }
     }
 
     /**
-     * @param string html of page
+     * @param string $page html of page
      */
     protected function parse_results($page)
     {
@@ -228,6 +246,7 @@ class TitleSearchAdvanced extends MdbBase
             $findTitleType = false;
         }
 
+        $counter = 0;
         foreach ($resultSections as $resultSection) {
             $titleElement = $xp->query(".//h3[@class='lister-item-header']/a", $resultSection)->item(0);
             $title = trim($titleElement->nodeValue);
@@ -272,6 +291,7 @@ class TitleSearchAdvanced extends MdbBase
             }
 
             $ret[] = array(
+              'rank' => $this->start + $counter++,
               'imdbid' => $id,
               'title' => $title,
               'year' => $year,

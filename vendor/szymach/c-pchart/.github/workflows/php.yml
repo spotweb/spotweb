@@ -1,0 +1,63 @@
+---
+name: PHP Composer
+
+on:
+  pull_request:
+    branches: [ "3.1" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.0', '8.1', '8.2', '8.3', '8.4']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: gd
+        tools: codeception, composer, phpcs, phpstan
+
+    - name: Setup problem matchers for PHP
+      run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+    - name: Setup problem matchers for PHPUnit
+      run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Initialize Codeception classes for analysis
+      run: codeception build
+
+    - name: Run Codesniffer
+      run: phpcs
+
+    - name: Run PHPStan 7
+      run: phpstan analyze -c phpstan_7.neon
+
+    - name: Run PHPStan max
+      run: phpstan analyze -c phpstan_max.neon
+
+    - name: Run Codeception test suites
+      run: codeception run

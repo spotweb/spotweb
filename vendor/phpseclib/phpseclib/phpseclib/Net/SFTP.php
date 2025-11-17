@@ -758,7 +758,8 @@ class SFTP extends SSH2
                 return false;
             }
             $this->canonicalize_paths = false;
-            $this->_reset_connection(NET_SSH2_DISCONNECT_CONNECTION_LOST);
+            $this->_reset_sftp();
+            return $this->_init_sftp_connection();
         }
 
         $this->_update_stat_cache($this->pwd, array());
@@ -871,7 +872,7 @@ class SFTP extends SSH2
 
         $error = $this->status_codes[$status];
 
-        if ($this->version > 2 || strlen($response) < 4) {
+        if ($this->version > 2) {
             extract(unpack('Nlength', $this->_string_shift($response, 4)));
             $this->sftp_errors[] = $error . ': ' . $this->_string_shift($response, $length);
         } else {
@@ -914,6 +915,8 @@ class SFTP extends SSH2
      */
     function _realpath($path)
     {
+        $path = (string) $path;
+
         if (!$this->canonicalize_paths) {
             if ($this->pwd === true) {
                 return '.';
@@ -1007,6 +1010,8 @@ class SFTP extends SSH2
             return false;
         }
 
+        $dir = (string) $dir;
+
         // assume current dir if $dir is empty
         if ($dir === '') {
             $dir = './';
@@ -1016,6 +1021,9 @@ class SFTP extends SSH2
         }
 
         $dir = $this->_realpath($dir);
+        if ($dir === false) {
+            return false;
+        }
 
         // confirm that $dir is, in fact, a valid directory
         if ($this->use_stat_cache && is_array($this->_query_stat_cache($dir))) {
@@ -2312,7 +2320,7 @@ class SFTP extends SSH2
 
         if ($start >= 0) {
             $offset = $start;
-        } elseif ($mode & self::RESUME) {
+        } elseif ($mode & (self::RESUME | self::RESUME_START)) {
             // if NET_SFTP_OPEN_APPEND worked as it should _size() wouldn't need to be called
             $size = $this->size($remote_file);
             $offset = $size !== false ? $size : 0;
@@ -2385,7 +2393,11 @@ class SFTP extends SSH2
             if ($local_start >= 0) {
                 fseek($fp, $local_start);
                 $size-= $local_start;
+            } elseif ($mode & self::RESUME) {
+                fseek($fp, $offset);
+                $size-= $offset;
             }
+
         } elseif ($dataCallback) {
             $size = 0;
         } else {
@@ -2686,14 +2698,6 @@ class SFTP extends SSH2
 
             if ($clear_responses) {
                 break;
-            }
-        }
-
-        if ($length > 0 && $length <= $offset - $start) {
-            if ($local_file === false) {
-                $content = substr($content, 0, $length);
-            } else {
-                ftruncate($fp, $length + $res_offset);
             }
         }
 
@@ -3633,6 +3637,19 @@ class SFTP extends SSH2
     }
 
     /**
+     * Resets the SFTP channel for re-use
+     *
+     * @access private
+     */
+    function _reset_sftp()
+    {
+        $this->use_request_id = false;
+        $this->pwd = false;
+        $this->requestBuffer = array();
+        $this->partial_init = false;
+    }
+
+    /**
      * Resets a connection for re-use
      *
      * @param int $reason
@@ -3641,9 +3658,7 @@ class SFTP extends SSH2
     function _reset_connection($reason)
     {
         parent::_reset_connection($reason);
-        $this->use_request_id = false;
-        $this->pwd = false;
-        $this->requestBuffer = array();
+        $this->_reset_sftp();
     }
 
     /**
@@ -3792,7 +3807,7 @@ class SFTP extends SSH2
     }
 
     /**
-     * Returns all errors
+     * Returns all errors on the SFTP layer
      *
      * @return array
      * @access public
@@ -3803,7 +3818,7 @@ class SFTP extends SSH2
     }
 
     /**
-     * Returns the last error
+     * Returns the last error on the SFTP layer
      *
      * @return string
      * @access public

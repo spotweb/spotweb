@@ -180,7 +180,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
         $search = $this->getimdbsearch();
         $results = $search->search('The Lord of the Rings', array(TitleSearch::MOVIE));
 
-        $this->assertGreaterThan(10, count($results));
+        $this->assertGreaterThan(5, count($results));
 
         $wrongMovieType = false;
         foreach ($results as $result) {
@@ -197,7 +197,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
         $config->language = 'en';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
-        $config->cache_expire = 3600;
+        $config->cache_expire = 86400;
         $config->debug = false;
 
         $imdbsearch = new TitleSearch($config);

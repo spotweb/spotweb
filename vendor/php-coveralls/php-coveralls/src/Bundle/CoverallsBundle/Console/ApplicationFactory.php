@@ -40,15 +40,15 @@ class ApplicationFactory
         $command = new CoverallsJobsCommand();
         $command->setRootDir($rootDir);
 
-        if (class_exists(SingleCommandApplication::class) === false) {
+        if (false === class_exists(SingleCommandApplication::class)) {
             $application = new CoverallsApplication(self::APP_NAME, self::APP_VERSION);
-            $application->add($command);
+            method_exists($application, 'addCommand') ? $application->addCommand($command) : $application->add($command);
 
             return $application;
         }
 
         $application = new Application(self::APP_NAME, self::APP_VERSION);
-        $application->add($command);
+        method_exists($application, 'addCommand') ? $application->addCommand($command) : $application->add($command);
         $application->setDefaultCommand($command->getName(), true);
 
         return $application;

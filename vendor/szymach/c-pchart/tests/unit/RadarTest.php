@@ -1,12 +1,14 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Chart\Radar;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_VERTICAL;
 use const LEGEND_BOX;
@@ -15,14 +17,11 @@ use const RADAR_LABELS_HORIZONTAL;
 use const RADAR_LAYOUT_CIRCLE;
 use const RADAR_LAYOUT_STAR;
 
-class RadarTest extends Unit
+final class RadarTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         $data->addPoints([40, 20, 15, 10, 8, 4], 'ScoreA');

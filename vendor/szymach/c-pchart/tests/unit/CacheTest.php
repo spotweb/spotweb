@@ -1,25 +1,24 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Cache;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_VERTICAL;
 
-class CacheTest extends Unit
+final class CacheTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testWritingAndRetrievingOperations()
+    public function testWritingAndRetrievingOperations(): void
     {
-        list($data, $image) = $this->createImageData();
+        [$data, $image] = $this->createImageData();
 
         // Write to cache
         $cache = new Cache();
@@ -42,9 +41,9 @@ class CacheTest extends Unit
         $this->tester->assertEquals(true, $cache->strokeFromCache($chartHash));
     }
 
-    public function testRemovalOperations()
+    public function testRemovalOperations(): void
     {
-        list($data, $image) = $this->createImageData();
+        [$data, $image] = $this->createImageData();
 
         // Write to cache
         $cache = new Cache();
@@ -72,17 +71,20 @@ class CacheTest extends Unit
         $this->tester->assertEquals(false, $cache->isInCache($chartHash));
     }
 
-    protected function _before()
+    protected function _before(): void
     {
         $this->clearCache();
     }
 
-    protected function _after()
+    protected function _after(): void
     {
         $this->clearCache();
     }
 
-    private function createImageData()
+    /**
+     * @return array{ 0: Data, 1: Image }
+     */
+    private function createImageData(): array
     {
         $data = new Data();
         $data->addPoints([1, 3, 4, 3, 5]);
@@ -106,14 +108,14 @@ class CacheTest extends Unit
         $image->drawText(
             10,
             13,
-            'Test of the pCache class',
+            'Test of the pCache final class',
             ['R' => 255, 'G' => 255, 'B' => 255]
         );
 
         return [$data, $image];
     }
 
-    private function clearCache()
+    private function clearCache(): void
     {
         foreach (['cache.db', 'index.db'] as $cacheFile) {
             $filename = $this->getCacheFilePath($cacheFile);
@@ -123,11 +125,7 @@ class CacheTest extends Unit
         }
     }
 
-    /**
-     * @param string $filename
-     * @return string
-     */
-    private function getCacheFilePath($filename)
+    private function getCacheFilePath(string $filename): string
     {
         return sprintf('%s/%s', $this->tester->getCacheDirectory(), $filename);
     }
