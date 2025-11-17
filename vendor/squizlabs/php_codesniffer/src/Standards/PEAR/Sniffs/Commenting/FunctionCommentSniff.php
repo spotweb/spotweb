@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\PEAR\Sniffs\Commenting;
@@ -28,7 +28,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * Array of methods which do not require a return type.
      *
-     * @var array
+     * @var array<string>
      */
     public $specialMethods = [
         '__construct',
@@ -39,7 +39,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -60,10 +60,10 @@ class FunctionCommentSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $scopeModifier = $phpcsFile->getMethodProperties($stackPtr)['scope'];
-        if ($scopeModifier === 'protected'
-            && $this->minimumVisibility === 'public'
-            || $scopeModifier === 'private'
-            && ($this->minimumVisibility === 'public' || $this->minimumVisibility === 'protected')
+        if (($scopeModifier === 'protected'
+            && $this->minimumVisibility === 'public')
+            || ($scopeModifier === 'private'
+            && ($this->minimumVisibility === 'public' || $this->minimumVisibility === 'protected'))
         ) {
             return;
         }
@@ -119,21 +119,46 @@ class FunctionCommentSniff implements Sniff
             return;
         }
 
+        // Check there are no blank lines in the preamble for the property,
+        // but ignore blank lines _within_ attributes as that's not the concern of this sniff.
         if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
             for ($i = ($commentEnd + 1); $i < $stackPtr; $i++) {
-                if ($tokens[$i]['column'] !== 1) {
+                // Skip over the contents of attributes.
+                if (isset($tokens[$i]['attribute_closer']) === true) {
+                    $i = $tokens[$i]['attribute_closer'];
                     continue;
                 }
 
-                if ($tokens[$i]['code'] === T_WHITESPACE
-                    && $tokens[$i]['line'] !== $tokens[($i + 1)]['line']
+                if ($tokens[$i]['column'] !== 1
+                    || $tokens[$i]['code'] !== T_WHITESPACE
+                    || $tokens[$i]['line'] === $tokens[($i + 1)]['line']
+                    // Do not report blank lines after a PHPCS annotation as removing the blank lines could change the meaning.
+                    || isset(Tokens::$phpcsCommentTokens[$tokens[($i - 1)]['code']]) === true
                 ) {
-                    $error = 'There must be no blank lines after the function comment';
-                    $phpcsFile->addError($error, $commentEnd, 'SpacingAfter');
-                    break;
+                    continue;
                 }
-            }
-        }
+
+                $nextNonWhitespace = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), null, true);
+                $error = 'There must be no blank lines between the function comment and the declaration';
+                $fix   = $phpcsFile->addFixableError($error, $i, 'SpacingAfter');
+
+                if ($fix === true) {
+                    $phpcsFile->fixer->beginChangeset();
+
+                    for ($j = $i; $j < $nextNonWhitespace; $j++) {
+                        if ($tokens[$j]['line'] === $tokens[$nextNonWhitespace]['line']) {
+                            break;
+                        }
+
+                        $phpcsFile->fixer->replaceToken($j, '');
+                    }
+
+                    $phpcsFile->fixer->endChangeset();
+                }
+
+                $i = $nextNonWhitespace;
+            }//end for
+        }//end if
 
         $commentStart = $tokens[$commentEnd]['comment_opener'];
         foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
@@ -170,7 +195,7 @@ class FunctionCommentSniff implements Sniff
 
         // Skip constructor and destructor.
         $methodName      = $phpcsFile->getDeclarationName($stackPtr);
-        $isSpecialMethod = in_array($methodName,  $this->specialMethods, true);
+        $isSpecialMethod = in_array($methodName, $this->specialMethods, true);
 
         $return = null;
         foreach ($tokens[$commentStart]['comment_tags'] as $tag) {

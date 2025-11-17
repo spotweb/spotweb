@@ -1,11 +1,13 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Chart\Spring;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_HORIZONTAL;
 use const DIRECTION_VERTICAL;
@@ -13,14 +15,11 @@ use const NODE_SHAPE_SQUARE;
 use const NODE_SHAPE_TRIANGLE;
 use const NODE_TYPE_CENTRAL;
 
-class SpringTest extends Unit
+final class SpringTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $image = new Image(300, 300);
         $image->drawGradientArea(

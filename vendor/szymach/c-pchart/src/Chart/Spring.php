@@ -4,19 +4,6 @@ namespace CpChart\Chart;
 
 use CpChart\Image;
 
-/**
- *  Spring - class to draw spring graphs
- *
- *  Version     : 2.1.4
- *  Made by     : Jean-Damien POGOLOTTI
- *  Last Update : 19/01/2014
- *
- *  This file can be distributed under the license you can find at :
- *
- *  http://www.pchart.net/license
- *
- *  You can find the whole class documentation on the pChart web site.
- */
 class Spring
 {
     /**
@@ -70,7 +57,7 @@ class Spring
     public $Y2;
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $AutoComputeFreeZone = false;
 
@@ -92,6 +79,7 @@ class Spring
     public function __construct()
     {
         /* Set nodes defaults */
+        // @FIXME instantiate as an array
         $this->Default["R"] = 255;
         $this->Default["G"] = 255;
         $this->Default["B"] = 255;
@@ -115,6 +103,7 @@ class Spring
         $this->Default["LinkB"] = 0;
         $this->Default["LinkAlpha"] = 0;
 
+        // @FIXME instantiate as an array
         $this->Labels["Type"] = LABEL_CLASSIC;
         $this->Labels["R"] = 0;
         $this->Labels["G"] = 0;
@@ -349,7 +338,7 @@ class Spring
 
     /**
      * Set color attribute for a list of nodes
-     * @param array|string $Nodes
+     * @param array|string|number $Nodes
      * @param array $Settings
      */
     public function setNodesColor($Nodes, array $Settings = [])
@@ -434,7 +423,7 @@ class Spring
      * Check if a connection exists and create it if required
      * @param string|int $SourceID
      * @param string|int $TargetID
-     * @return boolean|null
+     * @return bool|null
      */
     public function checkConnection($SourceID, $TargetID)
     {
@@ -460,7 +449,8 @@ class Spring
         $Cpt = 1;
         if (isset($this->Data[$Key]["Connections"])) {
             foreach ($this->Data[$Key]["Connections"] as $NodeID) {
-                if (isset($this->Data[$NodeID]["X"])
+                if (
+                    isset($this->Data[$NodeID]["X"])
                     && isset($this->Data[$NodeID]["Y"])
                 ) {
                     $X = $X + $this->Data[$NodeID]["X"];
@@ -581,7 +571,8 @@ class Spring
                                 while (!$Done && $Tries <= $Weight * 2) {
                                     $Tries++;
                                     $Angle = floor(rand(0, $Weight) * $AngleDivision);
-                                    if (!isset($this->Data[$BiggestPartner]["Angular"][$Angle])
+                                    if (
+                                        !isset($this->Data[$BiggestPartner]["Angular"][$Angle])
                                         || !isset($this->Data[$BiggestPartner]["Angular"])
                                     ) {
                                         $this->Data[$BiggestPartner]["Angular"][$Angle] = $Angle;
@@ -809,7 +800,8 @@ class Spring
 
                             if (!($X1 == $X3 && $X2 == $X4 && $Y1 == $Y3 && $Y2 == $Y4)) {
                                 if ($this->intersect($X1, $Y1, $X2, $Y2, $X3, $Y3, $X4, $Y4)) {
-                                    if ($Link["Source"] != $Settings["Name"]
+                                    if (
+                                        $Link["Source"] != $Settings["Name"]
                                         && $Link["Source"] != $this->Data[$NodeID]["Name"]
                                         && $Link["Destination"] != $Settings["Name"]
                                         && $Link["Destination"] != $this->Data[$NodeID]["Name"]
@@ -914,7 +906,8 @@ class Spring
             }
 
             $Conflicts = $this->lastPass();
-            if ($this->History["MinimumConflicts"] == -1
+            if (
+                $this->History["MinimumConflicts"] == -1
                 || $Conflicts < $this->History["MinimumConflicts"]
             ) {
                 $this->History["MinimumConflicts"] = $Conflicts;
@@ -944,7 +937,8 @@ class Spring
                         $Drawn[$NodeID] = "";
                     }
 
-                    if (isset($this->Data[$NodeID])
+                    if (
+                        isset($this->Data[$NodeID])
                         && !isset($Drawn[$Key][$NodeID])
                         && !isset($Drawn[$NodeID][$Key])
                     ) {
@@ -976,7 +970,8 @@ class Spring
                         $Drawn[$Key][$NodeID] = true;
 
                         if (isset($this->Links) && count($this->Links)) {
-                            if (isset($this->Links[$Key][$NodeID]["Name"])
+                            if (
+                                isset($this->Links[$Key][$NodeID]["Name"])
                                 || isset($this->Links[$NodeID][$Key]["Name"])
                             ) {
                                 $Name = isset($this->Links[$Key][$NodeID]["Name"])
@@ -1155,7 +1150,7 @@ class Spring
      * @param int $Y3
      * @param int $X4
      * @param int $Y4
-     * @return boolean
+     * @return bool
      */
     public function intersect($X1, $Y1, $X2, $Y2, $X3, $Y3, $X4, $Y4)
     {
@@ -1173,7 +1168,8 @@ class Spring
         }
         $Yi = $Xi * (($Y1 - $Y2) / $C) + (($X1 * $Y2 - $X2 * $Y1) / $C);
 
-        if ($Xi >= min($X1, $X2)
+        if (
+            $Xi >= min($X1, $X2)
             && $Xi >= min($X3, $X4)
             && $Xi <= max($X1, $X2)
             && $Xi <= max($X3, $X4)

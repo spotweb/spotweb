@@ -17,7 +17,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/sebastianbergmann/phpunit/issues"
+        "issues": "https://github.com/sebastianbergmann/phpunit/issues",
+        "security": "https://github.com/sebastianbergmann/phpunit/security/policy"
     },
     "prefer-stable": true,
     "require": {
@@ -28,35 +29,36 @@
         "ext-mbstring": "*",
         "ext-xml": "*",
         "ext-xmlwriter": "*",
-        "doctrine/instantiator": "^1.3.1",
-        "myclabs/deep-copy": "^1.10.0",
-        "phar-io/manifest": "^2.0.3",
-        "phar-io/version": "^3.0.2",
-        "phpunit/php-code-coverage": "^7.0.12",
-        "phpunit/php-file-iterator": "^2.0.4",
+        "doctrine/instantiator": "^1.5.0",
+        "myclabs/deep-copy": "^1.13.4",
+        "phar-io/manifest": "^2.0.4",
+        "phar-io/version": "^3.2.1",
+        "phpunit/php-code-coverage": "^7.0.17",
+        "phpunit/php-file-iterator": "^2.0.6",
         "phpunit/php-text-template": "^1.2.1",
-        "phpunit/php-timer": "^2.1.2",
-        "sebastian/comparator": "^3.0.5",
-        "sebastian/diff": "^3.0.2",
-        "sebastian/environment": "^4.2.3",
-        "sebastian/exporter": "^3.1.5",
-        "sebastian/global-state": "^3.0.0",
-        "sebastian/object-enumerator": "^3.0.3",
-        "sebastian/resource-operations": "^2.0.1",
-        "sebastian/type": "^1.1.3",
+        "phpunit/php-timer": "^2.1.4",
+        "sebastian/comparator": "^3.0.6",
+        "sebastian/diff": "^3.0.6",
+        "sebastian/environment": "^4.2.5",
+        "sebastian/exporter": "^3.1.8",
+        "sebastian/global-state": "^3.0.6",
+        "sebastian/object-enumerator": "^3.0.5",
+        "sebastian/resource-operations": "^2.0.3",
+        "sebastian/type": "^1.1.5",
         "sebastian/version": "^2.0.1"
     },
     "config": {
         "platform": {
             "php": "7.2.0"
         },
+        "classmap-authoritative": true,
         "optimize-autoloader": true,
         "sort-packages": true
     },
     "suggest": {
-        "phpunit/php-invoker": "^2.0.0",
-        "ext-soap": "*",
-        "ext-xdebug": "*"
+        "phpunit/php-invoker": "To allow enforcing time limits",
+        "ext-soap": "To be able to generate mocks based on WSDL files",
+        "ext-xdebug": "PHP extension that provides line coverage as well as branch and path coverage"
     },
     "bin": [
         "phpunit"

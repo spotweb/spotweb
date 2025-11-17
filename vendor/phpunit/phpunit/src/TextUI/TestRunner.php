@@ -84,10 +84,8 @@ use SebastianBergmann\Timer\Timer;
  */
 final class TestRunner extends BaseTestRunner
 {
-    public const SUCCESS_EXIT = 0;
-
-    public const FAILURE_EXIT = 1;
-
+    public const SUCCESS_EXIT   = 0;
+    public const FAILURE_EXIT   = 1;
     public const EXCEPTION_EXIT = 2;
 
     /**
@@ -120,7 +118,7 @@ final class TestRunner extends BaseTestRunner
      */
     private $extensions = [];
 
-    public function __construct(TestSuiteLoader $loader = null, CodeCoverageFilter $filter = null)
+    public function __construct(?TestSuiteLoader $loader = null, ?CodeCoverageFilter $filter = null)
     {
         if ($filter === null) {
             $filter = new CodeCoverageFilter;

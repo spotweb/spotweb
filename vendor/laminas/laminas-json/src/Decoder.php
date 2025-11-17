@@ -1,16 +1,29 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-json for the canonical source repository
- * @copyright https://github.com/laminas/laminas-json/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-json/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Json;
 
 use Laminas\Json\Exception\InvalidArgumentException;
 use Laminas\Json\Exception\RuntimeException;
 use stdClass;
+
+use function chr;
+use function floatval;
+use function function_exists;
+use function hexdec;
+use function in_array;
+use function intval;
+use function is_numeric;
+use function is_string;
+use function mb_convert_encoding;
+use function ord;
+use function preg_match;
+use function sprintf;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function substr;
+
+use const PREG_OFFSET_CAPTURE;
 
 /**
  * Decode JSON encoded string to PHP variable constructs
@@ -22,14 +35,14 @@ class Decoder
      * for public consumption, they are just used internally to the
      * class.
      */
-    const EOF       = 0;
-    const DATUM     = 1;
-    const LBRACE    = 2;
-    const LBRACKET  = 3;
-    const RBRACE    = 4;
-    const RBRACKET  = 5;
-    const COMMA     = 6;
-    const COLON     = 7;
+    public const EOF      = 0;
+    public const DATUM    = 1;
+    public const LBRACE   = 2;
+    public const LBRACKET = 3;
+    public const RBRACE   = 4;
+    public const RBRACKET = 5;
+    public const COMMA    = 6;
+    public const COLON    = 7;
 
     /**
      * Use to maintain a "pointer" to the source being decoded
@@ -49,7 +62,6 @@ class Decoder
      * The offset within the source being decoded
      *
      * @var int
-     *
      */
     protected $offset;
 
@@ -68,9 +80,7 @@ class Decoder
      */
     protected $decodeType;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     protected $tokenValue;
 
     /**
@@ -81,6 +91,7 @@ class Decoder
      *
      * @link   http://solarphp.com/
      * @link   https://github.com/solarphp/core/blob/master/Solar/Json.php
+     *
      * @param  string $chrs
      * @return string
      */
@@ -96,49 +107,49 @@ class Decoder
             switch (true) {
                 case preg_match('/\\\u[0-9A-F]{4}/i', substr($chrs, $i, 6)):
                     // single, escaped unicode character
-                    $utf16 = chr(hexdec(substr($chrs, ($i + 2), 2)))
-                           . chr(hexdec(substr($chrs, ($i + 4), 2)));
+                    $utf16    = chr(hexdec(substr($chrs, $i + 2, 2)))
+                           . chr(hexdec(substr($chrs, $i + 4, 2)));
                     $utf8char = self::utf162utf8($utf16);
-                    $search  = ['\\', "\n", "\t", "\r", chr(0x08), chr(0x0C), '"', '\'', '/'];
+                    $search   = ['\\', "\n", "\t", "\r", chr(0x08), chr(0x0C), '"', '\'', '/'];
                     if (in_array($utf8char, $search)) {
-                        $replace = ['\\\\', '\\n', '\\t', '\\r', '\\b', '\\f', '\\"', '\\\'', '\\/'];
-                        $utf8char  = str_replace($search, $replace, $utf8char);
+                        $replace  = ['\\\\', '\\n', '\\t', '\\r', '\\b', '\\f', '\\"', '\\\'', '\\/'];
+                        $utf8char = str_replace($search, $replace, $utf8char);
                     }
                     $utf8 .= $utf8char;
-                    $i += 5;
+                    $i    += 5;
                     break;
                 case ($ordChrsC >= 0x20) && ($ordChrsC <= 0x7F):
                     $utf8 .= $chrs[$i];
                     break;
-                case ($ordChrsC & 0xE0) == 0xC0:
+                case ($ordChrsC & 0xE0) === 0xC0:
                     // characters U-00000080 - U-000007FF, mask 110XXXXX
                     //see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                     $utf8 .= substr($chrs, $i, 2);
                     ++$i;
                     break;
-                case ($ordChrsC & 0xF0) == 0xE0:
+                case ($ordChrsC & 0xF0) === 0xE0:
                     // characters U-00000800 - U-0000FFFF, mask 1110XXXX
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                     $utf8 .= substr($chrs, $i, 3);
-                    $i += 2;
+                    $i    += 2;
                     break;
-                case ($ordChrsC & 0xF8) == 0xF0:
+                case ($ordChrsC & 0xF8) === 0xF0:
                     // characters U-00010000 - U-001FFFFF, mask 11110XXX
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                     $utf8 .= substr($chrs, $i, 4);
-                    $i += 3;
+                    $i    += 3;
                     break;
-                case ($ordChrsC & 0xFC) == 0xF8:
+                case ($ordChrsC & 0xFC) === 0xF8:
                     // characters U-00200000 - U-03FFFFFF, mask 111110XX
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                     $utf8 .= substr($chrs, $i, 5);
-                    $i += 4;
+                    $i    += 4;
                     break;
-                case ($ordChrsC & 0xFE) == 0xFC:
+                case ($ordChrsC & 0xFE) === 0xFC:
                     // characters U-04000000 - U-7FFFFFFF, mask 1111110X
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                     $utf8 .= substr($chrs, $i, 6);
-                    $i += 5;
+                    $i    += 5;
                     break;
             }
         }
@@ -163,17 +174,13 @@ class Decoder
         $this->token        = self::EOF;
         $this->offset       = 0;
 
-        switch ($decodeType) {
-            case Json::TYPE_ARRAY:
-            case Json::TYPE_OBJECT:
-                $this->decodeType = $decodeType;
-                break;
-            default:
-                throw new InvalidArgumentException(sprintf(
-                    'Unknown decode type "%s", please use one of the Json::TYPE_* constants',
-                    $decodeType
-                ));
-        }
+        $this->decodeType = match ($decodeType) {
+            Json::TYPE_ARRAY, Json::TYPE_OBJECT => $decodeType,
+            default => throw new InvalidArgumentException(sprintf(
+                'Unknown decode type "%s", please use one of the Json::TYPE_* constants',
+                $decodeType
+            )),
+        };
 
         // Set pointer at first token
         $this->getNextToken();
@@ -218,13 +225,13 @@ class Decoder
     {
         switch ($this->token) {
             case self::DATUM:
-                $result  = $this->tokenValue;
+                $result = $this->tokenValue;
                 $this->getNextToken();
-                return($result);
+                return $result;
             case self::LBRACE:
-                return($this->decodeObject());
+                return $this->decodeObject();
             case self::LBRACKET:
-                return($this->decodeArray());
+                return $this->decodeArray();
             default:
                 return;
         }
@@ -263,7 +270,7 @@ class Decoder
 
             $this->getNextToken();
             $members[$key] = $this->decodeValue();
-            $tok = $this->token;
+            $tok           = $this->token;
 
             if ($tok === self::RBRACE) {
                 break;
@@ -315,7 +322,7 @@ class Decoder
 
             $tok = $this->token;
 
-            if ($tok == self::RBRACKET || ! $tok) {
+            if ($tok === self::RBRACKET || ! $tok) {
                 break;
             }
 
@@ -335,8 +342,9 @@ class Decoder
      */
     protected function eatWhitespace()
     {
-        if (preg_match('/([\t\b\f\n\r ])*/s', $this->source, $matches, PREG_OFFSET_CAPTURE, $this->offset)
-            && $matches[0][1] == $this->offset
+        if (
+            preg_match('/([\t\b\f\n\r ])*/s', $this->source, $matches, PREG_OFFSET_CAPTURE, $this->offset)
+            && $matches[0][1] === $this->offset
         ) {
             $this->offset += strlen($matches[0][0]);
         }
@@ -355,7 +363,7 @@ class Decoder
         $this->eatWhitespace();
 
         if ($this->offset >= $this->sourceLength) {
-            return(self::EOF);
+            return self::EOF;
         }
 
         $str       = $this->source;
@@ -408,40 +416,21 @@ class Decoder
                     }
 
                     $chr = $str[$i];
-                    switch ($chr) {
-                        case '"':
-                            $result .= '"';
-                            break;
-                        case '\\':
-                            $result .= '\\';
-                            break;
-                        case '/':
-                            $result .= '/';
-                            break;
-                        case 'b':
-                            $result .= "\x08";
-                            break;
-                        case 'f':
-                            $result .= "\x0c";
-                            break;
-                        case 'n':
-                            $result .= "\x0a";
-                            break;
-                        case 'r':
-                            $result .= "\x0d";
-                            break;
-                        case 't':
-                            $result .= "\x09";
-                            break;
-                        case '\'':
-                            $result .= '\'';
-                            break;
-                        default:
-                            throw new RuntimeException(sprintf('Illegal escape sequence "%s"', $chr));
-                    }
+                    match ($chr) {
+                        '"' => $result  .= '"',
+                        '\\' => $result .= '\\',
+                        '/' => $result  .= '/',
+                        'b' => $result  .= "\x08",
+                        'f' => $result  .= "\x0c",
+                        'n' => $result  .= "\x0a",
+                        'r' => $result  .= "\x0d",
+                        't' => $result  .= "\x09",
+                        '\'' => $result .= '\'',
+                        default => throw new RuntimeException(sprintf('Illegal escape sequence "%s"', $chr)),
+                    };
                 } while ($i < $strLength);
 
-                $this->token = self::DATUM;
+                $this->token      = self::DATUM;
                 $this->tokenValue = $result;
                 break;
             case 't':
@@ -449,27 +438,27 @@ class Decoder
                     $this->token = self::DATUM;
                 }
                 $this->tokenValue = true;
-                $i += 3;
+                $i               += 3;
                 break;
             case 'f':
                 if (($i + 4) < $strLength && $start === strpos($str, "false", $start)) {
                     $this->token = self::DATUM;
                 }
                 $this->tokenValue = false;
-                $i += 4;
+                $i               += 4;
                 break;
             case 'n':
                 if (($i + 3) < $strLength && $start === strpos($str, "null", $start)) {
                     $this->token = self::DATUM;
                 }
                 $this->tokenValue = null;
-                $i += 3;
+                $i               += 3;
                 break;
         }
 
         if ($this->token !== self::EOF) {
             $this->offset = $i + 1; // Consume the last token character
-            return ($this->token);
+            return $this->token;
         }
 
         $chr = $str[$i];
@@ -478,8 +467,9 @@ class Decoder
             throw new RuntimeException('Illegal Token');
         }
 
-        if (preg_match('/-?([0-9])*(\.[0-9]*)?((e|E)((-|\+)?)[0-9]+)?/s', $str, $matches, PREG_OFFSET_CAPTURE, $start)
-            && $matches[0][1] == $start
+        if (
+            preg_match('/-?([0-9])*(\.[0-9]*)?((e|E)((-|\+)?)[0-9]+)?/s', $str, $matches, PREG_OFFSET_CAPTURE, $start)
+            && $matches[0][1] === $start
         ) {
             $datum = $matches[0][0];
 
@@ -493,10 +483,11 @@ class Decoder
 
             $val  = intval($datum);
             $fVal = floatval($datum);
-            $this->tokenValue = ($val == $fVal ? $val : $fVal);
 
-            $this->token = self::DATUM;
-            $this->offset = $start + strlen($datum);
+            // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
+            $this->tokenValue = $val == $fVal ? $val : $fVal;
+            $this->token      = self::DATUM;
+            $this->offset     = $start + strlen($datum);
         }
 
         return $this->token;
@@ -512,6 +503,7 @@ class Decoder
      * This method is from the Solar Framework by Paul M. Jones.
      *
      * @link   http://solarphp.com
+     *
      * @param  string $utf16 UTF-16 character
      * @return string UTF-8 character
      */
@@ -523,28 +515,24 @@ class Decoder
         }
 
         $bytes = (ord($utf16[0]) << 8) | ord($utf16[1]);
+        return match (true) {
+            // This case should never be reached, because we are in ASCII range;
+            // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
+            (0x7F & $bytes) === $bytes => chr(0x7F & $bytes),
 
-        switch (true) {
-            case ((0x7F & $bytes) == $bytes):
-                // This case should never be reached, because we are in ASCII range;
-                // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                return chr(0x7F & $bytes);
+            // Return a 2-byte UTF-8 character;
+            // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
+            (0x07FF & $bytes) === $bytes => chr(0xC0 | (($bytes >> 6) & 0x1F))
+                . chr(0x80 | ($bytes & 0x3F)),
 
-            case (0x07FF & $bytes) == $bytes:
-                // Return a 2-byte UTF-8 character;
-                // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                return chr(0xC0 | (($bytes >> 6) & 0x1F))
-                    . chr(0x80 | ($bytes & 0x3F));
+            // Return a 3-byte UTF-8 character;
+            // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
+            (0xFFFF & $bytes) === $bytes => chr(0xE0 | (($bytes >> 12) & 0x0F))
+                . chr(0x80 | (($bytes >> 6) & 0x3F))
+                . chr(0x80 | ($bytes & 0x3F)),
 
-            case (0xFFFF & $bytes) == $bytes:
-                // Return a 3-byte UTF-8 character;
-                // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                return chr(0xE0 | (($bytes >> 12) & 0x0F))
-                    . chr(0x80 | (($bytes >> 6) & 0x3F))
-                    . chr(0x80 | ($bytes & 0x3F));
-        }
-
-        // ignoring UTF-32 for now, sorry
-        return '';
+            // ignoring UTF-32 for now, sorry
+            default => '',
+        };
     }
 }

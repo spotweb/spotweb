@@ -4,20 +4,35 @@ namespace CpChart\Chart;
 
 use CpChart\Data;
 use CpChart\Image;
+use UI\Exception\RuntimeException;
 
-/**
- *  Pie - class to draw pie charts
- *
- *  Version     : 2.1.4
- *  Made by     : Jean-Damien POGOLOTTI
- *  Last Update : 19/01/2014
- *
- *  This file can be distributed under the license you can find at :
- *
- *  http://www.pchart.net/license
- *
- *  You can find the whole class documentation on the pChart web site.
- */
+use function count;
+
+use const LEGEND_BOX;
+use const LEGEND_HORIZONTAL;
+use const LEGEND_ROUND;
+use const LEGEND_VERTICAL;
+use const PI;
+use const PIE_LABEL_COLOR_AUTO;
+use const PIE_LABEL_COLOR_MANUAL;
+use const PIE_NO_ABSCISSA;
+use const PIE_NO_DATASERIE;
+use const PIE_RENDERED;
+use const PIE_SUMISNULL;
+use const PIE_VALUE_BOTH;
+use const PIE_VALUE_INSIDE;
+use const PIE_VALUE_NATURAL;
+use const PIE_VALUE_OUTSIDE;
+use const PIE_VALUE_PERCENTAGE;
+use const TEXT_ALIGN_BOTTOMLEFT;
+use const TEXT_ALIGN_BOTTOMRIGHT;
+use const TEXT_ALIGN_MIDDLELEFT;
+use const TEXT_ALIGN_MIDDLEMIDDLE;
+use const TEXT_ALIGN_MIDDLERIGHT;
+use const TEXT_ALIGN_TOPLEFT;
+use const TEXT_ALIGN_TOPRIGHT;
+use const VOID;
+
 class Pie
 {
     /**
@@ -35,10 +50,6 @@ class Pie
      */
     public $LabelPos = [];
 
-    /**
-     * @param Image $pChartObject
-     * @param Data $pDataObject
-     */
     public function __construct(Image $pChartObject, Data $pDataObject)
     {
         $this->pChartObject = $pChartObject;
@@ -381,11 +392,7 @@ class Pie
                     $Yc = sin(($Angle - 90) * PI / 180) * ($Radius) / 2 + $Y;
                 }
 
-                if ($WriteValues == PIE_VALUE_PERCENTAGE) {
-                    $Display = round((100 / $SerieSum) * $Value, $Precision) . "%";
-                } elseif ($WriteValues == PIE_VALUE_NATURAL) {
-                    $Display = $Value . $ValueSuffix;
-                }
+                $Display = $this->getDisplayValue($Value, $WriteValues, $SerieSum, $Precision, $ValueSuffix);
                 $this->pChartObject->drawText($Xc, $Yc, $Display, $Settings);
 
                 $Offset = $EndAngle + $DataGapAngle;
@@ -758,7 +765,8 @@ class Pie
                     $this->pChartObject->drawLine($Xc, $Yc, $Xc, $Yc - $SliceHeight, $Settings);
                 }
 
-                if (isset($SliceAngle[$SliceID][1])
+                if (
+                    isset($SliceAngle[$SliceID][1])
                     && $SliceAngle[$SliceID][1] > 270
                     && $SliceAngle[$SliceID][count($SliceAngle[$SliceID]) - 1] < 270
                 ) {
@@ -767,7 +775,8 @@ class Pie
                     $this->pChartObject->drawLine($Xc, $Yc, $Xc, $Yc - $SliceHeight, $Settings);
                 }
 
-                if (isset($SliceAngle[$SliceID][1])
+                if (
+                    isset($SliceAngle[$SliceID][1])
                     && $SliceAngle[$SliceID][1] > 90
                     && $SliceAngle[$SliceID][count($SliceAngle[$SliceID]) - 1] < 90
                 ) {
@@ -907,12 +916,7 @@ class Pie
                     $Yc = sin(($Angle - 90) * PI / 180) * ($Radius * $SkewFactor) / 2 + $Y - $SliceHeight;
                 }
 
-                if ($WriteValues == PIE_VALUE_PERCENTAGE) {
-                    $Display = round((100 / $SerieSum) * $Value, $Precision) . "%";
-                } elseif ($WriteValues == PIE_VALUE_NATURAL) {
-                    $Display = $Value . $ValueSuffix;
-                }
-
+                $Display = $this->getDisplayValue($Value, $WriteValues, $SerieSum, $Precision, $ValueSuffix);
                 $this->pChartObject->drawText($Xc, $Yc, $Display, $Settings);
 
                 $Offset = $EndAngle - $DataGapAngle;
@@ -1184,11 +1188,11 @@ class Pie
      * @param string $Label
      * @param int|float $Angle
      * @param array $Settings
-     * @param boolean $Stacked
+     * @param bool $Stacked
      * @param int $Xc
      * @param int $Yc
      * @param int $Radius
-     * @param boolean $Reversed
+     * @param bool $Reversed
      */
     public function writePieLabel(
         $X,
@@ -1230,27 +1234,31 @@ class Pie
                             && $YBottom <= $Settings["YBottom"]
                         );
 
-                        if ($Angle <= 90
+                        if (
+                            $Angle <= 90
                             && ($yTopAboveTopBelowBottom || $yBottomAboveTopBelowBottom)
                         ) {
                             $this->shift(0, 180, -($Height + 2), $Reversed);
                             $Done = true;
                         }
-                        if ($Angle > 90
+                        if (
+                            $Angle > 90
                             && $Angle <= 180
                             && ($yTopAboveTopBelowBottom || $yBottomAboveTopBelowBottom)
                         ) {
                             $this->shift(0, 180, -($Height + 2), $Reversed);
                             $Done = true;
                         }
-                        if ($Angle > 180
+                        if (
+                            $Angle > 180
                             && $Angle <= 270
                             && ($yTopAboveTopBelowBottom || $yBottomAboveTopBelowBottom)
                         ) {
                             $this->shift(180, 360, ($Height + 2), $Reversed);
                             $Done = true;
                         }
-                        if ($Angle > 270
+                        if (
+                            $Angle > 270
                             && $Angle <= 360
                             && ($yTopAboveTopBelowBottom || $yBottomAboveTopBelowBottom)
                         ) {
@@ -1286,7 +1294,7 @@ class Pie
      * @param int $StartAngle
      * @param int $EndAngle
      * @param int $Offset
-     * @param boolean $Reversed
+     * @param bool $Reversed
      */
     public function shift($StartAngle, $EndAngle, $Offset, $Reversed)
     {
@@ -1644,13 +1652,7 @@ class Pie
                     $Align = TEXT_ALIGN_MIDDLEMIDDLE;
                 }
 
-                if ($WriteValues == PIE_VALUE_PERCENTAGE) {
-                    $Display = round((100 / $SerieSum) * $Value, $Precision) . "%";
-                } elseif ($WriteValues == PIE_VALUE_NATURAL) {
-                    $Display = $Value . $ValueSuffix;
-                } else {
-                    $Display = "";
-                }
+                $Display = $this->getDisplayValue($Value, $WriteValues, $SerieSum, $Precision, $ValueSuffix);
                 $this->pChartObject->drawText(
                     $Xc,
                     $Yc,
@@ -2316,5 +2318,59 @@ class Pie
         $Data["Series"][$AbscissaSerie]["Data"] = $NewAbscissa;
 
         return [$Data, $NewPalette];
+    }
+
+    /**
+     * Returns the value to display on a pie chart.
+     *
+     * @param int|float $Value
+     *   The value of current item.
+     * @param int $WriteValues
+     *   The type of value to write:
+     *   - PIE_VALUE_NATURAL for an absolute value;
+     *   - PIE_VALUE_PERCENTAGE for a percentage value;
+     *   - PIE_VALUE_BOTH for both an absolute and percentage value.
+     * @param int $SerieSum
+     *   The sum of all items.
+     * @param int $Precision
+     *   The number of decimal digits to round to, in case of displaying a percentage.
+     * @param string $ValueSuffix
+     *   The text to display after the value, in case an absolute value gets displayed.
+     *
+     * @return string
+     *   The value to use for display.
+     */
+    private function getDisplayValue($Value, $WriteValues, $SerieSum, $Precision, $ValueSuffix)
+    {
+        $ValidWriteValues = [PIE_VALUE_NATURAL, PIE_VALUE_PERCENTAGE, PIE_VALUE_BOTH];
+        if (false === in_array($WriteValues, $ValidWriteValues, true)) {
+            return '';
+        }
+
+        $BothOrNatural = in_array($WriteValues, [PIE_VALUE_NATURAL, PIE_VALUE_BOTH], true);
+        $BothOrPercentage = in_array($WriteValues, [PIE_VALUE_PERCENTAGE, PIE_VALUE_BOTH], true);
+
+        $Absolute = true === $BothOrNatural ? ($Value . $ValueSuffix) : null;
+        $Percentage = true === $BothOrPercentage
+            ? sprintf('%s%%', round((100 / $SerieSum) * $Value, $Precision))
+            : null
+        ;
+
+        if (null === $Absolute && null === $Percentage) {
+            throw new RuntimeException(
+                "Neither absolute nor percentage display value was calculated"
+                . " for display value \"{$WriteValues}\"."
+            );
+        }
+
+        if (null !== $Absolute && null !== $Percentage) {
+            $Result = "{$Absolute}\n({$Percentage})";
+        } elseif (null !== $Absolute) {
+            $Result = $Absolute;
+        } elseif (null !== $Percentage) {
+            $Result = $Percentage;
+        }
+
+        return $Result;
     }
 }

@@ -5,10 +5,20 @@ interface MyInterface {}
 trait MyTrait {}
 enum MyEnum implements Colorful {}
 
-class MyClass
+readonly class MyClass
 {
     var $myVar = null;
     const myConst = true;
 }
 
 $a = new class() {};
+
+$anon = new readonly class() {};
+
+class FinalProperties {
+    final int $prop = 1;
+}
+
+abstract class AbstractProperties {
+    abstract int $prop {set;}
+}

@@ -16,16 +16,19 @@
         "forum": "https://discourse.laminas.dev"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
+    "abandoned": true,
     "require": {
-        "php": "^5.6 || ^7.0",
-        "laminas/laminas-zendframework-bridge": "^1.0"
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~1.0.0",
-        "laminas/laminas-stdlib": "^2.7.7 || ^3.1",
-        "phpunit/phpunit": "^5.7.23 || ^6.4.3"
+        "laminas/laminas-coding-standard": "~2.4.0",
+        "laminas/laminas-stdlib": "^2.7.7 || ^3.19",
+        "phpunit/phpunit": "^9.5.25"
     },
     "suggest": {
         "laminas/laminas-json-server": "For implementing JSON-RPC servers",
@@ -51,7 +54,7 @@
         "test": "phpunit --colors=always",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
     },
-    "replace": {
-        "zendframework/zend-json": "^3.1.2"
+    "conflict": {
+        "zendframework/zend-json": "*"
     }
 }

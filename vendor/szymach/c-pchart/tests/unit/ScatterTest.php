@@ -1,12 +1,14 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Chart\Scatter;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const AXIS_POSITION_BOTTOM;
 use const AXIS_POSITION_LEFT;
@@ -18,14 +20,11 @@ use const DIRECTION_VERTICAL;
 use const LEGEND_HORIZONTAL;
 use const LEGEND_NOBORDER;
 
-class ScatterTest extends Unit
+final class ScatterTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testBestFitChartRender()
+    public function testBestFitChartRender(): void
     {
         $data = new Data();
         for ($i = 0; $i <= 360; $i = $i + 10) {
@@ -98,7 +97,7 @@ class ScatterTest extends Unit
         $this->tester->seeFileFound($filename);
     }
 
-    public function testLineChartRender()
+    public function testLineChartRender(): void
     {
         $data = new Data();
         for ($i = 0; $i <= 360; $i = $i + 10) {
@@ -172,7 +171,7 @@ class ScatterTest extends Unit
         $this->tester->seeFileFound($filename);
     }
 
-    public function testPlotChartRender()
+    public function testPlotChartRender(): void
     {
         $data = new Data();
         for ($i = 0; $i <= 360; $i = $i + 10) {
@@ -246,7 +245,7 @@ class ScatterTest extends Unit
         $this->tester->seeFileFound($filename);
     }
 
-    public function testSplineChartRender()
+    public function testSplineChartRender(): void
     {
         $data = new Data();
         for ($i = 0; $i <= 360; $i = $i + 90) {

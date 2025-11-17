@@ -4,7 +4,7 @@ $config = new PhpCsFixer\Config();
 
 return $config
     ->setRules(array(
-        '@PER' => true,
+        '@PER-CS1.0' => true,
         'visibility_required' => array(
             'elements' => array(
                 'method',

@@ -476,3 +476,75 @@ class Something implements JsonSerializable {
 
     public function blankLineDetectionC() {}
 }
+
+class SpacingAfter {
+    /**
+     * There are multiple blank lines between this comment and the next function.
+     *
+     * @return void
+     */
+
+
+
+
+
+
+
+
+    public function multipleBlankLines() {}
+
+    /**
+     * There are multiple blank lines, and some "empty" lines with only
+     * spaces/tabs between this comment and the next function.
+     *
+     * @return void
+     */
+
+
+        
+
+		
+
+	  
+
+
+    public function multipleLinesSomeEmpty() {}
+}
+
+class HandleBlankLinesBetweenDocblockAndDeclarationWithAttributes
+{
+    /**
+     * Blank line between docblock and attribute.
+     *
+     * @return mixed
+     */
+
+    #[ReturnTypeWillChange]
+
+
+
+
+
+    #[
+
+        AnotherAttribute
+
+    ]#[AndAThirdAsWell]
+
+    public function blankLineDetectionA()
+    {
+
+    }//end blankLineDetectionA()
+
+    /**
+     * Blank line between attribute and function declaration.
+     *
+     * @return mixed
+     */
+    #[ReturnTypeWillChange]
+
+    public function blankLineDetectionB()
+    {
+
+    }//end blankLineDetectionB()
+}//end class

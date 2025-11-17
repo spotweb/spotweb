@@ -9,6 +9,4 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
  */
-class CoverallsBundle extends Bundle
-{
-}
+class CoverallsBundle extends Bundle {}

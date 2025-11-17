@@ -1,0 +1,7 @@
+parameters:
+    level: max
+    tmpDir: /tmp/phpstan_max
+    paths:
+        - tests
+    excludePaths:
+        - tests/_support/_generated/UnitTesterActions.php

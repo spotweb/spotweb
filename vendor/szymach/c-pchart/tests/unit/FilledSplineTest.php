@@ -1,11 +1,13 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const BOUND_BOTH;
 use const DIRECTION_VERTICAL;
@@ -13,14 +15,11 @@ use const LEGEND_NOBORDER;
 use const TEXT_ALIGN_BOTTOMLEFT;
 use const TEXT_ALIGN_MIDDLEMIDDLE;
 
-class FilledSplineTest extends Unit
+final class FilledSplineTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         $data->setAxisName(0, 'Strength');
@@ -92,14 +91,24 @@ class FilledSplineTest extends Unit
         $image->drawThreshold(0, ['WriteCaption' => true]);
         $image->setFontProperties(['R' => 255, 'G' => 255, 'B' => 255]);
         $image->drawLegend(560, 266, ['Style' => LEGEND_NOBORDER]);
+
         $settings = ['R' => 188, 'G' => 224, 'B' => 46, 'Align' => TEXT_ALIGN_BOTTOMLEFT];
-        $image->drawText(620, 270, 'Max : ' . ceil($data->getMax('Probe 1')), $settings);
-        $image->drawText(680, 270, 'Min : ' . ceil($data->getMin('Probe 1')), $settings);
-        $image->drawText(740, 270, 'Avg : ' . ceil($data->getSerieAverage('Probe 1')), $settings);
+        /** @var int|float $probe1 */
+        $probe1 = $data->getMax('Probe 1');
+        $image->drawText(620, 270, 'Max : ' . ceil($probe1), $settings);
+        $image->drawText(680, 270, 'Min : ' . ceil($probe1), $settings);
+        /** @var float $prove1SeriesAverage */
+        $prove1SeriesAverage = $data->getSerieAverage('Probe 1');
+        $image->drawText(740, 270, 'Avg : ' . ceil($prove1SeriesAverage), $settings);
+
         $settings = ['R' => 224, 'G' => 100, 'B' => 46, 'Align' => TEXT_ALIGN_BOTTOMLEFT];
-        $image->drawText(620, 283, 'Max : ' . ceil($data->getMax('Probe 2')), $settings);
-        $image->drawText(680, 283, 'Min : ' . ceil($data->getMin('Probe 2')), $settings);
-        $image->drawText(740, 283, 'Avg : ' . ceil($data->getSerieAverage('Probe 2')), $settings);
+        /** @var int|float $probe2 */
+        $probe2 = $data->getMax('Probe 2');
+        $image->drawText(620, 283, 'Max : ' . ceil($probe2), $settings);
+        $image->drawText(680, 283, 'Min : ' . ceil($probe2), $settings);
+        /** @var float $prove2SeriesAverage */
+        $prove2SeriesAverage = $data->getSerieAverage('Probe 2');
+        $image->drawText(740, 283, 'Avg : ' . ceil($prove2SeriesAverage), $settings);
 
         $filename = $this->tester->getOutputPathForChart('drawFilledSplineChart.png');
         $image->render($filename);

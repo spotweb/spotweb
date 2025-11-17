@@ -44,7 +44,7 @@ class Exception extends RuntimeException implements \PHPUnit\Exception
      */
     protected $serializableTrace;
 
-    public function __construct($message = '', $code = 0, Throwable $previous = null)
+    public function __construct($message = '', $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
@@ -69,6 +69,11 @@ class Exception extends RuntimeException implements \PHPUnit\Exception
     public function __sleep(): array
     {
         return array_keys(get_object_vars($this));
+    }
+
+    public function __serialize(): array
+    {
+        return get_object_vars($this);
     }
 
     /**

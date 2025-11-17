@@ -5,19 +5,6 @@ namespace CpChart\Chart;
 use CpChart\Data;
 use CpChart\Image;
 
-/**
- *  Stock - class to draw stock charts
- *
- *  Version     : 2.1.4
- *  Made by     : Jean-Damien POGOLOTTI
- *  Last Update : 19/01/2014
- *
- *  This file can be distributed under the license you can find at :
- *
- *  http://www.pchart.net/license
- *
- *  You can find the whole class documentation on the pChart web site.
- */
 class Stock
 {
     /**
@@ -30,10 +17,6 @@ class Stock
      */
     public $pDataObject;
 
-    /**
-     * @param Image $pChartObject
-     * @param Data $pDataObject
-     */
     public function __construct(Image $pChartObject, Data $pDataObject)
     {
         $this->pChartObject = $pChartObject;
@@ -110,7 +93,8 @@ class Stock
         $Data = $this->pChartObject->DataSet->getData();
         list($XMargin, $XDivs) = $this->pChartObject->scaleGetXSettings();
 
-        if (!isset($Data["Series"][$SerieOpen])
+        if (
+            !isset($Data["Series"][$SerieOpen])
             || !isset($Data["Series"][$SerieClose])
             || !isset($Data["Series"][$SerieMin])
             || !isset($Data["Series"][$SerieMax])
@@ -120,7 +104,8 @@ class Stock
         $Plots = [];
         foreach ($Data["Series"][$SerieOpen]["Data"] as $Key => $Value) {
             $Point = [];
-            if (isset($Data["Series"][$SerieClose]["Data"][$Key])
+            if (
+                isset($Data["Series"][$SerieClose]["Data"][$Key])
                 || isset($Data["Series"][$SerieMin]["Data"][$Key])
                 || isset($Data["Series"][$SerieMax]["Data"][$Key])
             ) {

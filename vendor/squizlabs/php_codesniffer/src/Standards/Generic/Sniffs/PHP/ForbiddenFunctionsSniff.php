@@ -7,13 +7,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 class ForbiddenFunctionsSniff implements Sniff
 {
@@ -56,7 +57,7 @@ class ForbiddenFunctionsSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -135,12 +136,12 @@ class ForbiddenFunctionsSniff implements Sniff
             T_IMPLEMENTS               => true,
         ];
 
-        $prevToken = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
+        $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
 
         // If function call is directly preceded by a NS_SEPARATOR it points to the
         // global namespace, so we should still catch it.
         if ($tokens[$prevToken]['code'] === T_NS_SEPARATOR) {
-            $prevToken = $phpcsFile->findPrevious(T_WHITESPACE, ($prevToken - 1), null, true);
+            $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($prevToken - 1), null, true);
             if ($tokens[$prevToken]['code'] === T_STRING) {
                 // Not in the global namespace.
                 return;
@@ -152,7 +153,7 @@ class ForbiddenFunctionsSniff implements Sniff
             return;
         }
 
-        $nextToken = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
+        $nextToken = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
         if (isset($ignore[$tokens[$nextToken]['code']]) === true) {
             // Not a call to a PHP function.
             return;
@@ -160,6 +161,11 @@ class ForbiddenFunctionsSniff implements Sniff
 
         if ($tokens[$stackPtr]['code'] === T_STRING && $tokens[$nextToken]['code'] !== T_OPEN_PARENTHESIS) {
             // Not a call to a PHP function.
+            return;
+        }
+
+        if (empty($tokens[$stackPtr]['nested_attributes']) === false) {
+            // Class instantiation in attribute, not function call.
             return;
         }
 
@@ -200,7 +206,7 @@ class ForbiddenFunctionsSniff implements Sniff
      * @param int                         $stackPtr  The position of the forbidden function
      *                                               in the token array.
      * @param string                      $function  The name of the forbidden function.
-     * @param string                      $pattern   The pattern used for the match.
+     * @param string|null                 $pattern   The pattern used for the match.
      *
      * @return void
      */

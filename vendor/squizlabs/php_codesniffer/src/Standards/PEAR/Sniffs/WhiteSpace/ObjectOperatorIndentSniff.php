@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\PEAR\Sniffs\WhiteSpace;
@@ -43,7 +43,7 @@ class ObjectOperatorIndentSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return int[]
+     * @return array<int|string>
      */
     public function register()
     {
@@ -191,10 +191,7 @@ class ObjectOperatorIndentSniff implements Sniff
             $next = $phpcsFile->findNext(
                 $this->targets,
                 ($next + 1),
-                null,
-                false,
-                null,
-                true
+                $end
             );
         }//end while
 

@@ -132,7 +132,7 @@ class Configuration
      */
     public function hasRepoToken()
     {
-        return $this->repoToken !== null;
+        return null !== $this->repoToken;
     }
 
     /**
@@ -166,7 +166,7 @@ class Configuration
      */
     public function hasServiceName()
     {
-        return $this->serviceName !== null;
+        return null !== $this->serviceName;
     }
 
     /**
@@ -372,7 +372,7 @@ class Configuration
      */
     public function isTestEnv()
     {
-        return $this->env === 'test';
+        return 'test' === $this->env;
     }
 
     /**
@@ -382,7 +382,7 @@ class Configuration
      */
     public function isDevEnv()
     {
-        return $this->env === 'dev';
+        return 'dev' === $this->env;
     }
 
     /**
@@ -392,6 +392,6 @@ class Configuration
      */
     public function isProdEnv()
     {
-        return $this->env === 'prod';
+        return 'prod' === $this->env;
     }
 }

@@ -10,7 +10,7 @@ class PagesTest extends PHPUnit\Framework\TestCase
     public function testGetRetrievesFromCache()
     {
         $cache = Mockery::mock('\Imdb\Cache', array(
-                'get' => 'test'
+            'get' => 'test'
         ));
 
         $pages = new Pages(new Config(), $cache, new Logger(false));
@@ -55,8 +55,8 @@ class PagesTest extends PHPUnit\Framework\TestCase
     public function testGetMakesRequestIfNotInCache()
     {
         $cache = Mockery::mock('\Imdb\Cache', array(
-                'get' => null,
-                'set' => true
+            'get' => null,
+            'set' => true
         ));
         $pages = Mockery::Mock('\Imdb\Pages[requestPage]', array(new Config(), $cache, new Logger(false)));
         $pages->shouldAllowMockingProtectedMethods();
@@ -80,18 +80,18 @@ class PagesTest extends PHPUnit\Framework\TestCase
 
         $result = $pages->get('/title/whatever');
         $this->assertEquals('test', $result);
-        \Mockery::close();
+        Mockery::close();
     }
 
     public function testGetThrowsExceptionIfHttpFails()
     {
         $this->expectException(\Imdb\Exception\Http::class);
         $cache = Mockery::mock('\Imdb\Cache', array(
-                'get' => null,
-                'set' => true
+            'get' => null,
+            'set' => true
         ));
         $request = Mockery::mock(array(
-                'sendRequest' => false
+            'sendRequest' => false
         ));
         $pages = Mockery::Mock('\Imdb\Pages[buildRequest]', array(new Config(), $cache, new Logger(false)));
         $pages->shouldAllowMockingProtectedMethods();
@@ -102,11 +102,11 @@ class PagesTest extends PHPUnit\Framework\TestCase
     public function testGetDoesNotThrowExceptionIfHttpFailsAndThrowHttpExceptionsIsFalse()
     {
         $cache = Mockery::mock('\Imdb\Cache', array(
-                'get' => null,
-                'set' => true
+            'get' => null,
+            'set' => true
         ));
         $request = Mockery::mock(array(
-                'sendRequest' => false
+            'sendRequest' => false
         ));
         $config = new Config();
         $config->throwHttpExceptions = false;

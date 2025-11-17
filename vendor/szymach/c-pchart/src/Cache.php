@@ -2,18 +2,16 @@
 
 namespace CpChart;
 
+use RuntimeException;
+
 /**
- * Cache - speed up the rendering by caching up the pictures
- *
- * Version     : 2.1.4
- * Made by     : Jean-Damien POGOLOTTI
- * Last Update : 19/01/2014
- *
- * This file can be distributed under the license you can find at :
- *
- *                http://www.pchart.net/license
- *
- * You can find the whole class documentation on the pChart web site.
+ * @phpstan-type SettingsArray array{
+ *  0: numeric-string,
+ *  1: numeric-string,
+ *  2: numeric-string,
+ *  3: numeric-string,
+ *  4: numeric-string
+ * }
  */
 class Cache
 {
@@ -33,37 +31,45 @@ class Cache
     public $CacheDB;
 
     /**
-     * @param array $Settings
+     * @param array{
+     *  CacheFolder?: string,
+     *  CacheIndex?: string,
+     *  CacheDB?: string
+     * } $Settings
      */
     public function __construct(array $Settings = [])
     {
-        $CacheFolder = isset($Settings["CacheFolder"]) ? $Settings["CacheFolder"] : __DIR__ . "/../cache";
-        $CacheIndex = isset($Settings["CacheIndex"]) ? $Settings["CacheIndex"] : "index.db";
-        $CacheDB = isset($Settings["CacheDB"]) ? $Settings["CacheDB"] : "cache.db";
+        $this->CacheFolder = $Settings["CacheFolder"] ?? __DIR__ . "/../cache";
+        $this->CacheIndex = $Settings["CacheIndex"] ?? "index.db";
+        $this->CacheDB = $Settings["CacheDB"] ?? "cache.db";
 
-        $this->CacheFolder = $CacheFolder;
-        $this->CacheIndex = $CacheIndex;
-        $this->CacheDB = $CacheDB;
-        if (!file_exists($this->CacheFolder . "/" . $this->CacheIndex)) {
-            touch($this->CacheFolder . "/" . $this->CacheIndex);
+        $indexFilePath = "$this->CacheFolder/$this->CacheIndex";
+        if (file_exists($indexFilePath) === false) {
+            touch($indexFilePath);
         }
-        if (!file_exists($this->CacheFolder . "/" . $this->CacheDB)) {
-            touch($this->CacheFolder . "/" . $this->CacheDB);
+
+        $databaseFilePath = "$this->CacheFolder/$this->CacheDB";
+        if (file_exists($databaseFilePath) === false) {
+            touch($databaseFilePath);
         }
     }
 
     /**
      * Flush the cache contents
+     * @return void
      */
     public function flush()
     {
-        if (file_exists($this->CacheFolder . "/" . $this->CacheIndex)) {
-            unlink($this->CacheFolder . "/" . $this->CacheIndex);
-            touch($this->CacheFolder . "/" . $this->CacheIndex);
+        $indexFilePath = "$this->CacheFolder/$this->CacheIndex";
+        if (file_exists($indexFilePath)) {
+            unlink($indexFilePath);
+            touch($indexFilePath);
         }
-        if (file_exists($this->CacheFolder . "/" . $this->CacheDB)) {
-            unlink($this->CacheFolder . "/" . $this->CacheDB);
-            touch($this->CacheFolder . "/" . $this->CacheDB);
+
+        $databaseFilePath = "$this->CacheFolder/$this->CacheDB";
+        if (file_exists($databaseFilePath)) {
+            unlink($databaseFilePath);
+            touch($databaseFilePath);
         }
     }
 
@@ -84,32 +90,51 @@ class Cache
      *
      * @param string $ID
      * @param Image $pChartObject
+     * @return void
      */
     public function writeToCache($ID, Image $pChartObject)
     {
         /* Compute the paths */
         $TemporaryFile = tempnam($this->CacheFolder, "tmp_");
-        $Database = $this->CacheFolder . "/" . $this->CacheDB;
-        $Index = $this->CacheFolder . "/" . $this->CacheIndex;
+        $Database = "$this->CacheFolder/$this->CacheDB";
+        $Index = "$this->CacheFolder/$this->CacheIndex";
         /* Flush the picture to a temporary file */
         imagepng($pChartObject->Picture, $TemporaryFile);
 
-        /* Retrieve the files size */
         $PictureSize = filesize($TemporaryFile);
+        if ($PictureSize === false || $PictureSize < 1) {
+            throw new RuntimeException(
+                "Invalid picture size for file $TemporaryFile"
+            );
+        }
         $DBSize = filesize($Database);
 
         /* Save the index */
-        $Handle = fopen($Index, "a");
+        $Handle = @fopen($Index, "a");
+        if ($Handle === false) {
+            throw new RuntimeException("Unable to open file $Index");
+        }
         fwrite($Handle, $ID . "," . $DBSize . "," . $PictureSize . "," . time() . ",0\r\n");
         fclose($Handle);
 
         /* Get the picture raw contents */
-        $Handle = fopen($TemporaryFile, "r");
+        $Handle = @fopen($TemporaryFile, "r");
+        if ($Handle === false) {
+            throw new RuntimeException("Unable to open file $TemporaryFile");
+        }
         $Raw = fread($Handle, $PictureSize);
+        if ($Raw === false) {
+            throw new RuntimeException(
+                "Unable to read $PictureSize from file $TemporaryFile"
+            );
+        }
         fclose($Handle);
 
         /* Save the picture in the solid database file */
-        $Handle = fopen($Database, "a");
+        $Handle = @fopen($Database, "a");
+        if ($Handle === false) {
+            throw new RuntimeException("Unable to open file $Database");
+        }
         fwrite($Handle, $Raw);
         fclose($Handle);
 
@@ -119,7 +144,8 @@ class Cache
 
     /**
      * Remove object older than the specified TS
-     * @param int $Expiry
+     * @param int<0, max> $Expiry
+     * @return void
      */
     public function removeOlderThan($Expiry)
     {
@@ -129,6 +155,7 @@ class Cache
     /**
      * Remove an object from the cache
      * @param string $ID
+     * @return void
      */
     public function remove($ID)
     {
@@ -138,20 +165,20 @@ class Cache
     /**
      * Remove with specified criterias.
      *
-     * @param array $Settings
-     * @return int
+     * @param array{ Name?: string, Expiry?: int<0, max> } $Settings
+     * @return int|null
      */
     public function dbRemoval(array $Settings)
     {
-        $ID = isset($Settings["Name"]) ? $Settings["Name"] : null;
-        $Expiry = isset($Settings["Expiry"]) ? $Settings["Expiry"] : -(24 * 60 * 60);
+        $ID = $Settings["Name"] ?? null;
+        $Expiry = $Settings["Expiry"] ?? -(24 * 60 * 60);
         $TS = time() - $Expiry;
 
         /* Compute the paths */
-        $Database = $this->CacheFolder . "/" . $this->CacheDB;
-        $Index = $this->CacheFolder . "/" . $this->CacheIndex;
-        $DatabaseTemp = $this->CacheFolder . "/" . $this->CacheDB . ".tmp";
-        $IndexTemp = $this->CacheFolder . "/" . $this->CacheIndex . ".tmp";
+        $Database = "$this->CacheFolder/$this->CacheDB";
+        $Index = "$this->CacheFolder/$this->CacheIndex";
+        $DatabaseTemp = "$this->CacheFolder/$this->CacheDB.tmp";
+        $IndexTemp = "$this->CacheFolder/$this->CacheIndex.tmp";
 
         /* Single file removal */
         if ($ID != null) {
@@ -160,35 +187,71 @@ class Cache
 
             /* If it's not in the cache DB, go away */
             if (!$Object) {
-                return(0);
+                return 0;
             }
         }
 
         /* Create the temporary files */
-        if (!file_exists($DatabaseTemp)) {
+        if (file_exists($DatabaseTemp) === false) {
             touch($DatabaseTemp);
         }
-        if (!file_exists($IndexTemp)) {
+        if (file_exists($IndexTemp) === false) {
             touch($IndexTemp);
         }
 
         /* Open the file handles */
         $IndexHandle = @fopen($Index, "r");
+        if ($IndexHandle === false) {
+            throw new RuntimeException("Unable to open file $Index");
+        }
+
         $IndexTempHandle = @fopen($IndexTemp, "w");
+        if ($IndexTempHandle === false) {
+            fclose($IndexHandle);
+            throw new RuntimeException("Unable to open file $IndexTemp");
+        }
+
         $DBHandle = @fopen($Database, "r");
+        if ($DBHandle === false) {
+            fclose($IndexHandle);
+            fclose($IndexTempHandle);
+            throw new RuntimeException("Unable to open file $Database");
+        }
+
         $DBTempHandle = @fopen($DatabaseTemp, "w");
+        if ($DBTempHandle === false) {
+            fclose($IndexHandle);
+            fclose($IndexTempHandle);
+            fclose($DBHandle);
+            throw new RuntimeException("Unable to open file $DBTempHandle");
+        }
 
         /* Remove the selected ID from the database */
-        while (!feof($IndexHandle)) {
+        while (feof($IndexHandle) === false) {
             $Entry = fgets($IndexHandle, 4096);
+            if ($Entry === false) {
+                break;
+            }
+
             $Entry = str_replace("\r", "", $Entry);
             $Entry = str_replace("\n", "", $Entry);
+            /** @var SettingsArray|false $Settings */
             $Settings = preg_split("/,/", $Entry);
+            if ($Settings === false) {
+                fclose($IndexHandle);
+                fclose($IndexTempHandle);
+                fclose($DBHandle);
+                fclose($DBTempHandle);
+                throw new RuntimeException(
+                    "Unable to read settings from entry $Entry of file $Index"
+                );
+            }
 
             if ($Entry != "") {
                 $PicID = $Settings[0];
-                $DBPos = $Settings[1];
-                $PicSize = $Settings[2];
+                $DBPos = (int) $Settings[1];
+                /** @var int<1, max> $PicSize */
+                $PicSize = (int) $Settings[2];
                 $GeneratedTS = $Settings[3];
                 $Hits = $Settings[4];
 
@@ -208,6 +271,16 @@ class Cache
 
                     fseek($DBHandle, $DBPos);
                     $Picture = fread($DBHandle, $PicSize);
+                    if ($Picture === false) {
+                        fclose($IndexHandle);
+                        fclose($IndexTempHandle);
+                        fclose($DBHandle);
+                        fclose($DBTempHandle);
+                        throw new RuntimeException(
+                            "Unable to read $PicSize from file $Database"
+                        );
+                    }
+
                     fwrite($DBTempHandle, $Picture);
                 }
             }
@@ -226,75 +299,98 @@ class Cache
         /* Swap the temp & prod DB */
         rename($DatabaseTemp, $Database);
         rename($IndexTemp, $Index);
+
+        return null;
     }
 
     /**
      * Is the file in cache?
      *
-     * @param string $ID
-     * @param boolean $Verbose
-     * @param boolean $UpdateHitsCount
-     * @return boolean
+     * @param string $id
+     * @param bool $Verbose
+     * @param bool $updateHitsCount
+     * @return bool|array{
+     *  DBPos: numeric-string,
+     *  PicSize: numeric-string,
+     *  GeneratedTS: numeric-string,
+     *  Hits: int|string
+     * }
      */
-    public function isInCache($ID, $Verbose = false, $UpdateHitsCount = false)
+    public function isInCache($id, $Verbose = false, $updateHitsCount = false)
     {
-        /* Compute the paths */
-        $Index = $this->CacheFolder . "/" . $this->CacheIndex;
+        $filePath = "$this->CacheFolder/$this->CacheIndex";
 
         /* Search the picture in the index file */
-        $Handle = @fopen($Index, "r");
-        while (!feof($Handle)) {
-            $IndexPos = ftell($Handle);
-            $Entry = fgets($Handle, 4096);
-            if ($Entry != "") {
-                $Settings = preg_split("/,/", $Entry);
-                $PicID = $Settings[0];
-                if ($PicID == $ID) {
-                    fclose($Handle);
+        $handle = @fopen($filePath, "r");
+        if ($handle === false) {
+            throw new RuntimeException("Unable to open file $filePath");
+        }
 
-                    $DBPos = $Settings[1];
-                    $PicSize = $Settings[2];
-                    $GeneratedTS = $Settings[3];
-                    $Hits = intval($Settings[4]);
+        while (feof($handle) === false) {
+            $indexPos = ftell($handle);
+            $entry = fgets($handle, 4096);
+            if ($entry != "") {
+                /** @var SettingsArray $settings */
+                $settings = preg_split("/,/", $entry);
+                $pictureId = $settings[0];
+                if ($pictureId == $id) {
+                    fclose($handle);
 
-                    if ($UpdateHitsCount) {
-                        $Hits++;
-                        if (strlen($Hits) < 7) {
-                            $Hits = $Hits . str_repeat(" ", 7 - strlen($Hits));
+                    $dbPos = $settings[1];
+                    $pictureSize = $settings[2];
+                    $generatedTs = $settings[3];
+                    $hits = (int) $settings[4];
+
+                    if ($updateHitsCount) {
+                        $hits++;
+                        $hitsAsString = (string) $hits;
+                        if (strlen($hitsAsString) < 7) {
+                            $hits = $hits . str_repeat(" ", 7 - strlen($hitsAsString));
                         }
 
-                        $Handle = @fopen($Index, "r+");
-                        fseek($Handle, $IndexPos);
+                        $handle = @fopen($filePath, "r+");
+                        if ($handle === false) {
+                            throw new RuntimeException("Unable to open file $filePath");
+                        }
+
+                        if ($indexPos === false) {
+                            fclose($handle);
+                            throw new RuntimeException(
+                                "Cannot read index position of $filePath"
+                            );
+                        }
+
+                        fseek($handle, $indexPos);
                         fwrite(
-                            $Handle,
+                            $handle,
                             sprintf(
                                 "%s,%s,%s,%s,%s\r\n",
-                                $PicID,
-                                $DBPos,
-                                $PicSize,
-                                $GeneratedTS,
-                                $Hits
+                                $pictureId,
+                                $dbPos,
+                                $pictureSize,
+                                $generatedTs,
+                                $hits
                             )
                         );
-                        fclose($Handle);
+                        fclose($handle);
                     }
 
-                    if ($Verbose) {
-                        return [
-                            "DBPos" => $DBPos,
-                            "PicSize" => $PicSize,
-                            "GeneratedTS" => $GeneratedTS,
-                            "Hits" => $Hits
-                        ];
-                    } else {
+                    if (((bool) $Verbose) === false) {
                         return true;
                     }
+
+                    return [
+                        "DBPos" => $dbPos,
+                        "PicSize" => $pictureSize,
+                        "GeneratedTS" => $generatedTs,
+                        "Hits" => $hits
+                    ];
                 }
             }
         }
-        fclose($Handle);
 
-        /* Picture isn't in the cache */
+        fclose($handle);
+
         return false;
     }
 
@@ -302,6 +398,7 @@ class Cache
      * Automatic output method based on the calling interface
      * @param string $ID
      * @param string $Destination
+     * @return void
      */
     public function autoOutput($ID, $Destination = "output.png")
     {
@@ -315,18 +412,16 @@ class Cache
     /**
      * Show image from cache
      * @param string $ID
-     * @return boolean
+     * @return bool
      */
     public function strokeFromCache($ID)
     {
-        /* Get the raw picture from the cache */
         $Picture = $this->getFromCache($ID);
-
-        /* Do we have a hit? */
         if ($Picture == null) {
             return false;
         }
 
+        // @FIXME configurable content type
         header('Content-type: image/png');
         echo $Picture;
 
@@ -334,27 +429,25 @@ class Cache
     }
 
     /**
-     * Save file from cache.
      * @param string $ID
      * @param string $Destination
-     * @return boolean
+     * @return bool
      */
     public function saveFromCache($ID, $Destination)
     {
-        /* Get the raw picture from the cache */
-        $Picture = $this->getFromCache($ID);
-
-        /* Do we have a hit? */
-        if ($Picture == null) {
+        $picture = $this->getFromCache($ID);
+        if ($picture == null) {
             return false;
         }
 
-        /* Flush the picture to a file */
-        $Handle = fopen($Destination, "w");
-        fwrite($Handle, $Picture);
-        fclose($Handle);
+        $handle = @fopen($Destination, "w");
+        if ($handle === false) {
+            throw new RuntimeException("Unable to open file $Destination");
+        }
 
-        /* All went fine */
+        fwrite($handle, $picture);
+        fclose($handle);
+
         return true;
     }
 
@@ -365,28 +458,37 @@ class Cache
      */
     public function getFromCache($ID)
     {
-        /* Compute the path */
-        $Database = $this->CacheFolder . "/" . $this->CacheDB;
-
-        /* Lookup for the picture in the cache */
-        $CacheInfo = $this->isInCache($ID, true, true);
-
-        /* Not in the cache */
-        if (!$CacheInfo) {
+        $filePath = "$this->CacheFolder/$this->CacheDB";
+        $cacheInfo = $this->isInCache($ID, true, true);
+        if ($cacheInfo === false) {
             return null;
         }
 
-        /* Get the database extended information */
-        $DBPos = $CacheInfo["DBPos"];
-        $PicSize = $CacheInfo["PicSize"];
+        if ($cacheInfo === true) {
+            throw new RuntimeException('Expected an array, got bool instead');
+        }
 
-        /* Extract the picture from the solid cache file */
-        $Handle = @fopen($Database, "r");
-        fseek($Handle, $DBPos);
-        $Picture = fread($Handle, $PicSize);
-        fclose($Handle);
+        $dbPosition = (int) $cacheInfo["DBPos"];
+        /** @var int<1, max> $pictureSize */
+        $pictureSize = (int) $cacheInfo["PicSize"];
 
-        /* Return back the raw picture data */
-        return $Picture;
+        $handle = @fopen($filePath, "r");
+        if ($handle === false) {
+            throw new RuntimeException("Unable to open file $filePath");
+        }
+
+        fseek($handle, $dbPosition);
+
+        // Raw picture data
+        $picture = fread($handle, $pictureSize);
+        fclose($handle);
+
+        if ($picture === false) {
+            throw new RuntimeException(
+                "Unable to read $pictureSize from file $filePath"
+            );
+        }
+
+        return $picture;
     }
 }

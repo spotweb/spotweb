@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-json for the canonical source repository
- * @copyright https://github.com/laminas/laminas-json/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-json/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Json;
 
 use Iterator;
@@ -15,25 +9,36 @@ use Laminas\Json\Exception\InvalidArgumentException;
 use Laminas\Json\Exception\RecursionException;
 use ReflectionClass;
 
+use function array_keys;
+use function bin2hex;
+use function chr;
+use function count;
+use function function_exists;
+use function get_class_vars;
+use function get_object_vars;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_object;
+use function is_string;
+use function mb_convert_encoding;
+use function method_exists;
+use function ord;
+use function pack;
+use function preg_replace;
+use function range;
+use function sprintf;
+use function str_replace;
+use function strlen;
+
 /**
  * Encode PHP constructs to JSON.
  */
 class Encoder
 {
-    /**
-     * Whether or not to check for possible cycling.
-     *
-     * @var bool
-     */
-    protected $cycleCheck;
-
-    /**
-     * Additional options used during encoding.
-     *
-     * @var array
-     */
-    protected $options = [];
-
     /**
      * Array of visited objects; used to prevent cycling.
      *
@@ -45,10 +50,8 @@ class Encoder
      * @param bool $cycleCheck Whether or not to check for recursion when encoding.
      * @param array $options Additional options used during encoding.
      */
-    protected function __construct($cycleCheck = false, array $options = [])
+    protected function __construct(protected $cycleCheck = false, protected array $options = [])
     {
-        $this->cycleCheck = $cycleCheck;
-        $this->options = $options;
     }
 
     /**
@@ -59,7 +62,7 @@ class Encoder
      * @param array $options Additional options used during encoding.
      * @return string The encoded value.
      */
-    public static function encode($value, $cycleCheck = false, array $options = [])
+    public static function encode(mixed $value, $cycleCheck = false, array $options = [])
     {
         $encoder = new static($cycleCheck, $options);
 
@@ -81,10 +84,10 @@ class Encoder
      * - arrays (returns from {@link encodeArray()})
      * - scalars (returns from {@link encodeDatum()})
      *
-     * @param $value mixed The value to be encoded.
+     * @param mixed $value The value to be encoded.
      * @return string Encoded value.
      */
-    protected function encodeValue(&$value)
+    protected function encodeValue(mixed &$value)
     {
         if (is_object($value)) {
             return $this->encodeObject($value);
@@ -104,7 +107,7 @@ class Encoder
      * contains the classname of $value; this can be used by consumers of the
      * resulting JSON to cast to the specific class.
      *
-     * @param $value object
+     * @param object $value
      * @return string
      * @throws RecursionException If recursive checks are enabled and the
      *     object has been serialized previously.
@@ -113,16 +116,17 @@ class Encoder
     {
         if ($this->cycleCheck) {
             if ($this->wasVisited($value)) {
-                if (! isset($this->options['silenceCyclicalExceptions'])
+                if (
+                    ! isset($this->options['silenceCyclicalExceptions'])
                     || $this->options['silenceCyclicalExceptions'] !== true
                 ) {
                     throw new RecursionException(sprintf(
                         'Cycles not supported in JSON encoding; cycle introduced by class "%s"',
-                        get_class($value)
+                        $value::class
                     ));
                 }
 
-                return '"* RECURSION (' . str_replace('\\', '\\\\', get_class($value)) . ') *"';
+                return '"* RECURSION (' . str_replace('\\', '\\\\', $value::class) . ') *"';
             }
 
             $this->visited[] = $value;
@@ -153,7 +157,7 @@ class Encoder
             }
         }
 
-        $className = get_class($value);
+        $className = $value::class;
         return '{"__className":'
             . $this->encodeString($className)
             . $props . '}';
@@ -162,10 +166,9 @@ class Encoder
     /**
      * Determine if an object has been serialized already.
      *
-     * @param mixed $value
      * @return bool
      */
-    protected function wasVisited(&$value)
+    protected function wasVisited(mixed &$value)
     {
         if (in_array($value, $this->visited, true)) {
             return true;
@@ -185,7 +188,7 @@ class Encoder
      * considered an associative array, and will be passed to
      * {@link encodeAssociativeArray()}.
      *
-     * @param $array array
+     * @param array $array
      * @return string
      */
     protected function encodeArray($array)
@@ -244,10 +247,9 @@ class Encoder
      * If value type is not a string, number, boolean, or null, the string
      * 'null' is returned.
      *
-     * @param mixed $value
      * @return string
      */
-    protected function encodeDatum($value)
+    protected function encodeDatum(mixed $value)
     {
         if (is_int($value) || is_float($value)) {
             return str_replace(',', '.', (string) $value);
@@ -294,7 +296,6 @@ class Encoder
      *
      * The encoding format is based on the class2 format.
      *
-     * @param ReflectionClass $class
      * @return string Encoded constant block in class2 format
      */
     private static function encodeConstants(ReflectionClass $class)
@@ -319,7 +320,6 @@ class Encoder
     /**
      * Encode the public methods of the ReflectionClass in the class2 format
      *
-     * @param ReflectionClass $class
      * @return string Encoded method fragment.
      */
     private static function encodeMethods(ReflectionClass $class)
@@ -358,7 +358,7 @@ class Encoder
                     $argNames .= ',';
                 }
 
-                $argNames .= sprintf('"%s"', $param->getName());
+                $argNames   .= sprintf('"%s"', $param->getName());
                 $argsStarted = true;
             }
             $argNames .= "];";
@@ -378,9 +378,7 @@ class Encoder
     /**
      * Encode the public properties of the ReflectionClass in the class2 format.
      *
-     * @param ReflectionClass $class
      * @return string Encode properties list
-     *
      */
     private static function encodeVariables(ReflectionClass $class)
     {
@@ -393,7 +391,7 @@ class Encoder
                 continue;
             }
 
-            $name = $prop->getName();
+            $name       = $prop->getName();
             $tmpArray[] = sprintf('%s:%s', $name, self::encode($propValues[$name]));
         }
 
@@ -408,9 +406,9 @@ class Encoder
      * NOTE: Currently only public methods and variables are proxied onto the
      * client machine
      *
-     * @param $className string The name of the class, the class must be
+     * @param string $className The name of the class, the class must be
      *     instantiable using a null constructor.
-     * @param $package string Optional package name appended to JavaScript
+     * @param string $package Optional package name appended to JavaScript
      *     proxy class name.
      * @return string The class2 (JavaScript) encoding of the class.
      * @throws InvalidArgumentException
@@ -462,6 +460,7 @@ class Encoder
      *
      * @link   http://solarphp.com/
      * @link   https://github.com/solarphp/core/blob/master/Solar/Json.php
+     *
      * @param  string $value
      * @return string
      */
@@ -476,53 +475,53 @@ class Encoder
             $ordVarC = ord($value[$i]);
 
             switch (true) {
-                case (($ordVarC >= 0x20) && ($ordVarC <= 0x7F)):
+                case ($ordVarC >= 0x20) && ($ordVarC <= 0x7F):
                     // characters U-00000000 - U-0000007F (same as ASCII)
                     $ascii .= $value[$i];
                     break;
 
-                case (($ordVarC & 0xE0) == 0xC0):
+                case ($ordVarC & 0xE0) === 0xC0:
                     // characters U-00000080 - U-000007FF, mask 110XXXXX
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                    $char = pack('C*', $ordVarC, ord($value[$i + 1]));
-                    $i += 1;
-                    $utf16 = self::utf82utf16($char);
+                    $char   = pack('C*', $ordVarC, ord($value[$i + 1]));
+                    $i     += 1;
+                    $utf16  = self::utf82utf16($char);
                     $ascii .= sprintf('\u%04s', bin2hex($utf16));
                     break;
 
-                case (($ordVarC & 0xF0) == 0xE0):
+                case ($ordVarC & 0xF0) === 0xE0:
                     // characters U-00000800 - U-0000FFFF, mask 1110XXXX
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                    $char = pack(
+                    $char   = pack(
                         'C*',
                         $ordVarC,
                         ord($value[$i + 1]),
                         ord($value[$i + 2])
                     );
-                    $i += 2;
-                    $utf16 = self::utf82utf16($char);
+                    $i     += 2;
+                    $utf16  = self::utf82utf16($char);
                     $ascii .= sprintf('\u%04s', bin2hex($utf16));
                     break;
 
-                case (($ordVarC & 0xF8) == 0xF0):
+                case ($ordVarC & 0xF8) === 0xF0:
                     // characters U-00010000 - U-001FFFFF, mask 11110XXX
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                    $char = pack(
+                    $char   = pack(
                         'C*',
                         $ordVarC,
                         ord($value[$i + 1]),
                         ord($value[$i + 2]),
                         ord($value[$i + 3])
                     );
-                    $i += 3;
-                    $utf16 = self::utf82utf16($char);
+                    $i     += 3;
+                    $utf16  = self::utf82utf16($char);
                     $ascii .= sprintf('\u%04s', bin2hex($utf16));
                     break;
 
-                case (($ordVarC & 0xFC) == 0xF8):
+                case ($ordVarC & 0xFC) === 0xF8:
                     // characters U-00200000 - U-03FFFFFF, mask 111110XX
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                    $char = pack(
+                    $char   = pack(
                         'C*',
                         $ordVarC,
                         ord($value[$i + 1]),
@@ -530,15 +529,15 @@ class Encoder
                         ord($value[$i + 3]),
                         ord($value[$i + 4])
                     );
-                    $i += 4;
-                    $utf16 = self::utf82utf16($char);
+                    $i     += 4;
+                    $utf16  = self::utf82utf16($char);
                     $ascii .= sprintf('\u%04s', bin2hex($utf16));
                     break;
 
-                case (($ordVarC & 0xFE) == 0xFC):
+                case ($ordVarC & 0xFE) === 0xFC:
                     // characters U-04000000 - U-7FFFFFFF, mask 1111110X
                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                    $char = pack(
+                    $char   = pack(
                         'C*',
                         $ordVarC,
                         ord($value[$i + 1]),
@@ -547,8 +546,8 @@ class Encoder
                         ord($value[$i + 4]),
                         ord($value[$i + 5])
                     );
-                    $i += 5;
-                    $utf16 = self::utf82utf16($char);
+                    $i     += 5;
+                    $utf16  = self::utf82utf16($char);
                     $ascii .= sprintf('\u%04s', bin2hex($utf16));
                     break;
             }
@@ -567,6 +566,7 @@ class Encoder
      * This method is from the Solar Framework by Paul M. Jones.
      *
      * @link http://solarphp.com
+     *
      * @param string $utf8 UTF-8 character
      * @return string UTF-16 character
      */
@@ -576,27 +576,23 @@ class Encoder
         if (function_exists('mb_convert_encoding')) {
             return mb_convert_encoding($utf8, 'UTF-16', 'UTF-8');
         }
+        return match (strlen($utf8)) {
+            // This case should never be reached, because we are in ASCII range;
+            // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
+            1 => $utf8,
 
-        switch (strlen($utf8)) {
-            case 1:
-                // This case should never be reached, because we are in ASCII range;
-                // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                return $utf8;
+            // Return a UTF-16 character from a 2-byte UTF-8 char;
+            // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
+            2 => chr(0x07 & (ord($utf8[0]) >> 2)) . chr((0xC0 & (ord($utf8[0]) << 6)) | (0x3F & ord($utf8[1]))),
 
-            case 2:
-                // Return a UTF-16 character from a 2-byte UTF-8 char;
-                // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                return chr(0x07 & (ord($utf8[0]) >> 2)) . chr((0xC0 & (ord($utf8[0]) << 6)) | (0x3F & ord($utf8[1])));
+            // Return a UTF-16 character from a 3-byte UTF-8 char;
+            // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
+            3 => chr((0xF0 & (ord($utf8[0]) << 4))
+                | (0x0F & (ord($utf8[1]) >> 2))) . chr((0xC0 & (ord($utf8[1]) << 6))
+                | (0x7F & ord($utf8[2]))),
 
-            case 3:
-                // Return a UTF-16 character from a 3-byte UTF-8 char;
-                // see: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                return chr((0xF0 & (ord($utf8[0]) << 4))
-                    | (0x0F & (ord($utf8[1]) >> 2))) . chr((0xC0 & (ord($utf8[1]) << 6))
-                    | (0x7F & ord($utf8[2])));
-        }
-
-        // ignoring UTF-32 for now, sorry
-        return '';
+            // ignoring UTF-32 for now, sorry
+            default => '',
+        };
     }
 }

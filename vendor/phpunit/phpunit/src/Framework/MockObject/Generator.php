@@ -12,6 +12,7 @@ namespace PHPUnit\Framework\MockObject;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_MAJOR_VERSION;
+use const PHP_VERSION;
 use const PREG_OFFSET_CAPTURE;
 use const WSDL_CACHE_NONE;
 use function array_diff_assoc;
@@ -43,6 +44,7 @@ use function strpos;
 use function strtolower;
 use function substr;
 use function trait_exists;
+use function version_compare;
 use Doctrine\Instantiator\Exception\ExceptionInterface as InstantiatorException;
 use Doctrine\Instantiator\Instantiator;
 use Exception;
@@ -74,7 +76,6 @@ trait MockedCloneMethodWithVoidReturnType
     }
 }
 EOT;
-
     private const MOCKED_CLONE_METHOD_WITHOUT_RETURN_TYPE_TRAIT = <<<'EOT'
 namespace PHPUnit\Framework\MockObject;
 
@@ -86,7 +87,6 @@ trait MockedCloneMethodWithoutReturnType
     }
 }
 EOT;
-
     private const UNMOCKED_CLONE_METHOD_WITH_VOID_RETURN_TYPE_TRAIT = <<<'EOT'
 namespace PHPUnit\Framework\MockObject;
 
@@ -100,7 +100,6 @@ trait UnmockedCloneMethodWithVoidReturnType
     }
 }
 EOT;
-
     private const UNMOCKED_CLONE_METHOD_WITHOUT_RETURN_TYPE_TRAIT = <<<'EOT'
 namespace PHPUnit\Framework\MockObject;
 
@@ -116,20 +115,9 @@ trait UnmockedCloneMethodWithoutReturnType
 EOT;
 
     /**
-     * @var array
+     * @var array<non-empty-string, true>
      */
-    private const BLACKLISTED_METHOD_NAMES = [
-        '__CLASS__'       => true,
-        '__DIR__'         => true,
-        '__FILE__'        => true,
-        '__FUNCTION__'    => true,
-        '__LINE__'        => true,
-        '__METHOD__'      => true,
-        '__NAMESPACE__'   => true,
-        '__TRAIT__'       => true,
-        '__clone'         => true,
-        '__halt_compiler' => true,
-    ];
+    private static $excludedMethodNames = [];
 
     /**
      * @var array
@@ -149,7 +137,7 @@ EOT;
      *
      * @throws RuntimeException
      */
-    public function getMock($type, $methods = [], array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, bool $cloneArguments = true, bool $callOriginalMethods = false, object $proxyTarget = null, bool $allowMockingUnknownTypes = true, bool $returnValueGeneration = true): MockObject
+    public function getMock($type, $methods = [], array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, bool $cloneArguments = true, bool $callOriginalMethods = false, ?object $proxyTarget = null, bool $allowMockingUnknownTypes = true, bool $returnValueGeneration = true): MockObject
     {
         if (!is_array($type) && !is_string($type)) {
             throw InvalidArgumentException::create(1, 'array or string');
@@ -287,11 +275,11 @@ EOT;
      *
      * @psalm-param class-string<RealInstanceType> $originalClassName
      *
-     * @psalm-return MockObject&RealInstanceType
-     *
      * @throws RuntimeException
+     *
+     * @psalm-return MockObject&RealInstanceType
      */
-    public function getMockForAbstractClass(string $originalClassName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, array $mockedMethods = null, bool $cloneArguments = true): MockObject
+    public function getMockForAbstractClass(string $originalClassName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, ?array $mockedMethods = null, bool $cloneArguments = true): MockObject
     {
         if (class_exists($originalClassName, $callAutoload) ||
             interface_exists($originalClassName, $callAutoload)) {
@@ -343,7 +331,7 @@ EOT;
      *
      * @throws RuntimeException
      */
-    public function getMockForTrait(string $traitName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, array $mockedMethods = null, bool $cloneArguments = true): MockObject
+    public function getMockForTrait(string $traitName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, ?array $mockedMethods = null, bool $cloneArguments = true): MockObject
     {
         if (!trait_exists($traitName, $callAutoload)) {
             throw new RuntimeException(
@@ -420,7 +408,7 @@ EOT;
         );
     }
 
-    public function generate($type, array $methods = null, string $mockClassName = '', bool $callOriginalClone = true, bool $callAutoload = true, bool $cloneArguments = true, bool $callOriginalMethods = false): MockClass
+    public function generate($type, ?array $methods = null, string $mockClassName = '', bool $callOriginalClone = true, bool $callAutoload = true, bool $cloneArguments = true, bool $callOriginalMethods = false): MockClass
     {
         if (is_array($type)) {
             sort($type);
@@ -675,7 +663,7 @@ EOT;
         return $methods;
     }
 
-    private function getObject(MockType $mockClass, $type = '', bool $callOriginalConstructor = false, bool $callAutoload = false, array $arguments = [], bool $callOriginalMethods = false, object $proxyTarget = null, bool $returnValueGeneration = true)
+    private function getObject(MockType $mockClass, $type = '', bool $callOriginalConstructor = false, bool $callAutoload = false, array $arguments = [], bool $callOriginalMethods = false, ?object $proxyTarget = null, bool $returnValueGeneration = true)
     {
         $className = $mockClass->generate();
 
@@ -1115,12 +1103,32 @@ EOT;
 
     private function canMockMethod(ReflectionMethod $method): bool
     {
-        return !($this->isConstructor($method) || $method->isFinal() || $method->isPrivate() || $this->isMethodNameBlacklisted($method->getName()));
+        return !($this->isConstructor($method) || $method->isFinal() || $method->isPrivate() || $this->isMethodNameExcluded($method->getName()));
     }
 
-    private function isMethodNameBlacklisted(string $name): bool
+    private function isMethodNameExcluded(string $name): bool
     {
-        return isset(self::BLACKLISTED_METHOD_NAMES[$name]);
+        if (self::$excludedMethodNames === []) {
+            self::$excludedMethodNames = [
+                '__CLASS__'       => true,
+                '__DIR__'         => true,
+                '__FILE__'        => true,
+                '__FUNCTION__'    => true,
+                '__LINE__'        => true,
+                '__METHOD__'      => true,
+                '__NAMESPACE__'   => true,
+                '__TRAIT__'       => true,
+                '__clone'         => true,
+                '__halt_compiler' => true,
+            ];
+
+            if (version_compare(PHP_VERSION, '8.5', '>=')) {
+                self::$excludedMethodNames['__sleep']  = true;
+                self::$excludedMethodNames['__wakeup'] = true;
+            }
+        }
+
+        return isset(self::$excludedMethodNames[$name]);
     }
 
     private function getTemplate(string $template): Text_Template

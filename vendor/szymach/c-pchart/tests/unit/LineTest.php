@@ -1,11 +1,13 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DISPLAY_AUTO;
 use const LEGEND_HORIZONTAL;
@@ -13,14 +15,11 @@ use const LEGEND_NOBORDER;
 use const SCALE_POS_TOPBOTTOM;
 use const VOID;
 
-class LineTest extends Unit
+final class LineTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         $data->addPoints([-4, VOID, VOID, 12, 8, 3], 'Probe 1');

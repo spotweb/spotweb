@@ -5,19 +5,6 @@ namespace CpChart\Barcode;
 use CpChart\Image;
 use Exception;
 
-/**
- *  pBarcode128 - class to create barcodes (128B)
- *
- *  Version     : 2.1.4
- *  Made by     : Jean-Damien POGOLOTTI
- *  Last Update : 19/01/2014
- *
- *  This file can be distributed under the license you can find at :
- *
- *  http://www.pchart.net/license
- *
- *  You can find the whole class documentation on the pChart web site.
- */
 class Barcode128
 {
     /**

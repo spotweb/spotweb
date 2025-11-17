@@ -2,10 +2,15 @@
 
 namespace PhpCoveralls\Bundle\CoverallsBundle\Repository;
 
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Response;
 use PhpCoveralls\Bundle\CoverallsBundle\Api\Jobs;
 use PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration;
+use PhpCoveralls\Bundle\CoverallsBundle\Entity\Exception\RequirementsNotSatisfiedException;
 use PhpCoveralls\Bundle\CoverallsBundle\Entity\JsonFile;
+use PhpCoveralls\Bundle\CoverallsBundle\Entity\SourceFile;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
@@ -21,21 +26,21 @@ class JobsRepository implements LoggerAwareInterface
     /**
      * Jobs API.
      *
-     * @var \PhpCoveralls\Bundle\CoverallsBundle\Api\Jobs
+     * @var Jobs
      */
     protected $api;
 
     /**
      * Configuration.
      *
-     * @var \PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration
+     * @var Configuration
      */
     protected $config;
 
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -68,12 +73,12 @@ class JobsRepository implements LoggerAwareInterface
                 ->dumpJsonFile()
                 ->send()
             ;
-        } catch (\PhpCoveralls\Bundle\CoverallsBundle\Entity\Exception\RequirementsNotSatisfiedException $e) {
-            $this->logger->error(sprintf('%s', $e->getHelpMessage()));
+        } catch (RequirementsNotSatisfiedException $e) {
+            $this->logger->error(\sprintf('%s', $e->getHelpMessage()));
 
             return false;
         } catch (\Exception $e) {
-            $this->logger->error(sprintf("%s\n\n%s", $e->getMessage(), $e->getTraceAsString()));
+            $this->logger->error(\sprintf("%s\n\n%s", $e->getMessage(), $e->getTraceAsString()));
 
             return false;
         }
@@ -84,7 +89,7 @@ class JobsRepository implements LoggerAwareInterface
     /**
      * @see \Psr\Log\LoggerAwareInterface::setLogger()
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
@@ -101,7 +106,7 @@ class JobsRepository implements LoggerAwareInterface
         $this->logger->info('Load coverage clover log:');
 
         foreach ($this->config->getCloverXmlPaths() as $path) {
-            $this->logger->info(sprintf('  - %s', $path));
+            $this->logger->info(\sprintf('  - %s', $path));
         }
 
         $jsonFile = $this->api->collectCloverXml()->getJsonFile();
@@ -149,7 +154,7 @@ class JobsRepository implements LoggerAwareInterface
     protected function dumpJsonFile()
     {
         $jsonPath = $this->config->getJsonPath();
-        $this->logger->info(sprintf('Dump submitting json file: %s', $jsonPath));
+        $this->logger->info(\sprintf('Dump submitting json file: %s', $jsonPath));
 
         $this->api->dumpJsonFile();
 
@@ -157,7 +162,7 @@ class JobsRepository implements LoggerAwareInterface
         if (\is_string($jsonPath) && file_exists($jsonPath)) {
             $filesize = number_format(filesize($jsonPath) / 1024, 2); // kB
         }
-        $this->logger->info(sprintf('File size: <info>%s</info> kB', $filesize));
+        $this->logger->info(\sprintf('File size: <info>%s</info> kB', $filesize));
 
         return $this;
     }
@@ -169,12 +174,12 @@ class JobsRepository implements LoggerAwareInterface
      */
     protected function send()
     {
-        $this->logger->info(sprintf('Submitting to %s', $this->config->getEntryPoint() . Jobs::URL));
+        $this->logger->info(\sprintf('Submitting to %s', $this->config->getEntryPoint().Jobs::URL));
 
         try {
             $response = $this->api->send();
             $message = $response
-                ? sprintf('Finish submitting. status: %s %s', $response->getStatusCode(), $response->getReasonPhrase())
+                ? \sprintf('Finish submitting. status: %s %s', $response->getStatusCode(), $response->getReasonPhrase())
                 : 'Finish dry run';
 
             $this->logger->info($message);
@@ -184,18 +189,18 @@ class JobsRepository implements LoggerAwareInterface
             }
 
             return true;
-        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+        } catch (ConnectException $e) {
             // connection error
-            $message = sprintf("Connection error occurred. %s\n\n%s", $e->getMessage(), $e->getTraceAsString());
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $message = \sprintf("Connection error occurred. %s\n\n%s", $e->getMessage(), $e->getTraceAsString());
+        } catch (ClientException $e) {
             // 422 Unprocessable Entity
             $response = $e->getResponse();
-            $message = sprintf('Client error occurred. status: %s %s', $response->getStatusCode(), $response->getReasonPhrase());
-        } catch (\GuzzleHttp\Exception\ServerException $e) {
+            $message = \sprintf('Client error occurred. status: %s %s', $response->getStatusCode(), $response->getReasonPhrase());
+        } catch (ServerException $e) {
             // 500 Internal Server Error
             // 503 Service Unavailable
             $response = $e->getResponse();
-            $message = sprintf('Server error occurred. status: %s %s', $response->getStatusCode(), $response->getReasonPhrase());
+            $message = \sprintf('Server error occurred. status: %s %s', $response->getStatusCode(), $response->getReasonPhrase());
         }
 
         $this->logger->error($message);
@@ -224,14 +229,14 @@ class JobsRepository implements LoggerAwareInterface
     protected function colorizeCoverage($coverage, $format)
     {
         if ($coverage >= 90) {
-            return sprintf('<info>%s</info>', $format);
+            return \sprintf('<info>%s</info>', $format);
         }
 
         if ($coverage >= 80) {
-            return sprintf('<comment>%s</comment>', $format);
+            return \sprintf('<comment>%s</comment>', $format);
         }
 
-        return sprintf('<fg=red>%s</fg=red>', $format);
+        return \sprintf('<fg=red>%s</fg=red>', $format);
     }
 
     /**
@@ -244,21 +249,21 @@ class JobsRepository implements LoggerAwareInterface
         $sourceFiles = $jsonFile->getSourceFiles();
         $numFiles = \count($sourceFiles);
 
-        $this->logger->info(sprintf('Found <info>%s</info> source file%s:', number_format($numFiles), $numFiles > 1 ? 's' : ''));
+        $this->logger->info(\sprintf('Found <info>%s</info> source file%s:', number_format($numFiles), $numFiles > 1 ? 's' : ''));
 
         foreach ($sourceFiles as $sourceFile) {
-            /** @var \PhpCoveralls\Bundle\CoverallsBundle\Entity\SourceFile $sourceFile */
+            /** @var SourceFile $sourceFile */
             $coverage = $sourceFile->reportLineCoverage();
-            $template = '  - ' . $this->colorizeCoverage($coverage, '%6.2f%%') . ' %s';
+            $template = '  - '.$this->colorizeCoverage($coverage, '%6.2f%%').' %s';
 
-            $this->logger->info(sprintf($template, $coverage, $sourceFile->getName()));
+            $this->logger->info(\sprintf($template, $coverage, $sourceFile->getName()));
         }
 
         $coverage = $jsonFile->reportLineCoverage();
-        $template = 'Coverage: ' . $this->colorizeCoverage($coverage, '%6.2f%% (%d/%d)');
+        $template = 'Coverage: '.$this->colorizeCoverage($coverage, '%6.2f%% (%d/%d)');
         $metrics = $jsonFile->getMetrics();
 
-        $this->logger->info(sprintf($template, $coverage, $metrics->getCoveredStatements(), $metrics->getStatements()));
+        $this->logger->info(\sprintf($template, $coverage, $metrics->getCoveredStatements(), $metrics->getStatements()));
     }
 
     /**
@@ -270,7 +275,7 @@ class JobsRepository implements LoggerAwareInterface
     {
         $raw_body = (string) $response->getBody();
         $body = json_decode($raw_body, true);
-        if ($body === null) {
+        if (null === $body) {
             // the response body is not in JSON format
             $this->logger->error($raw_body);
         } elseif (isset($body['error'])) {
@@ -279,11 +284,11 @@ class JobsRepository implements LoggerAwareInterface
             }
         } else {
             if (isset($body['message'])) {
-                $this->logger->info(sprintf('Accepted %s', $body['message']));
+                $this->logger->info(\sprintf('Accepted %s', $body['message']));
             }
 
             if (isset($body['url'])) {
-                $this->logger->info(sprintf('You can see the build on %s', $body['url']));
+                $this->logger->info(\sprintf('You can see the build on %s', $body['url']));
             }
         }
     }

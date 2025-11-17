@@ -1,7 +1,6 @@
 Table of contents:
 ==================
 * [Support](#support)
-* [Build status](#build-status)
 * [Code quality](#code-quality)
 * [About](#about)
 * [License](#license)
@@ -24,12 +23,6 @@ This project is supported in a basic manner and no new features will be introduc
 Issues and pull requests will be reviewed and resolved if need be, so feel free
 to post them.
 
-Build status:
-=============
-- [![Build Status](https://app.travis-ci.com/szymach/c-pchart.svg?branch=master)](https://app.travis-ci.com/szymach/c-pchart) master
-- [![Build Status](https://app.travis-ci.com/szymach/c-pchart.svg?branch=3.0)](https://app.travis-ci.com/szymach/c-pchart) 3.0
-- [![Build Status](https://app.travis-ci.com/szymach/c-pchart.svg?branch=2.0)](https://app.travis-ci.com/szymach/c-pchart) 2.0
-
 About:
 ======
 
@@ -44,9 +37,12 @@ not compatibile with the `2.x` branch. BC compatibility with the original librar
 is mostly retained, however you can still use the `1.x` version if you cannot risk
 any of these.
 
+If you require support for the unsupported PHP versions, you will need to use the
+`3.0.x` versions. Starting from `3.1`, only PHP `8.x` versions are supported.
+
 What was done:
 
-- Support for PHP versions from 5.4 to 8.1.
+- Support for PHP `8.x`.
 
 - Made a full port of the library's functionality. I have touched very little of
 the actual logic, so most code from the original library should work.
@@ -70,6 +66,11 @@ which did not meet the requirements set by the original author. It is now under 
 [GNU GPL v3](http://www.gnu.org/licenses/gpl-3.0.html) license, so if you wish to
 use it in a commercial project, you need to pay an [appropriate fee](http://www.pchart.net/license).
 
+UPDATE the [official website](http://www.pchart.net) is no longer active and I
+have had no success in trying to contact the original library developer. I have
+no idea how this translated to any legal actions you would have to perform in
+order to use this library in a commercial projects.
+
 Contributing:
 =============
 
@@ -85,7 +86,7 @@ For composer installation, add:
 
 ```json
 "require": {
-    "szymach/c-pchart": "^3.0"
+    "szymach/c-pchart": "^3.1"
 },
 ```
 
@@ -175,7 +176,7 @@ than the default, you need to add the full path to the file (ex. `__DIR__.'/fold
 
 References
 ==========
-[The original pChart website](http://www.pchart.net/)
+[The original pChart website](http://www.pchart.net/) (no longer active)
 
 Links
 =====

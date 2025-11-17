@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-xml for the canonical source repository
- * @copyright https://github.com/laminas/laminas-xml/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-xml/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Xml;
 
 use DOMDocument;
@@ -34,13 +28,13 @@ class Security
      * Scan XML string for potential XXE and XEE attacks
      *
      * @param   string $xml
-     * @param   DomDocument $dom
      * @param   int $libXmlConstants additional libxml constants to pass in
      * @param   callable $callback the callback to use to create the dom element
-     * @throws  Exception\RuntimeException
+     * @param   DomDocument|null $dom
      * @return  SimpleXMLElement|DomDocument|boolean
+     * @throws  Exception\RuntimeException
      */
-    private static function scanString($xml, DOMDocument $dom = null, $libXmlConstants, callable $callback)
+    private static function scanString($xml, $libXmlConstants, callable $callback, DOMDocument|null $dom = null)
     {
         // If running with PHP-FPM we perform an heuristic scan
         // We cannot use libxml_disable_entity_loader because of this bug
@@ -55,7 +49,9 @@ class Security
         }
 
         if (! self::isPhpFpm()) {
-            $loadEntities = libxml_disable_entity_loader(true);
+            if (\PHP_VERSION_ID < 80000) {
+                $loadEntities = libxml_disable_entity_loader(true);
+            }
             $useInternalXmlErrors = libxml_use_internal_errors(true);
         }
 
@@ -75,7 +71,9 @@ class Security
         if (! $result) {
             // Entity load to previous setting
             if (! self::isPhpFpm()) {
-                libxml_disable_entity_loader($loadEntities);
+                if (\PHP_VERSION_ID < 80000) {
+                    libxml_disable_entity_loader($loadEntities);
+                }
                 libxml_use_internal_errors($useInternalXmlErrors);
             }
             return false;
@@ -94,7 +92,9 @@ class Security
 
         // Entity load to previous setting
         if (! self::isPhpFpm()) {
-            libxml_disable_entity_loader($loadEntities);
+            if (\PHP_VERSION_ID < 80000) {
+                libxml_disable_entity_loader($loadEntities);
+            }
             libxml_use_internal_errors($useInternalXmlErrors);
         }
 
@@ -112,45 +112,45 @@ class Security
      * Scan XML string for potential XXE and XEE attacks
      *
      * @param   string $xml
-     * @param   DomDocument $dom
+     * @param   DomDocument|null $dom
      * @param   int $libXmlConstants additional libxml constants to pass in
      * @throws  Exception\RuntimeException
      * @return  SimpleXMLElement|DomDocument|boolean
      */
-    public static function scan($xml, DOMDocument $dom = null, $libXmlConstants = 0)
+    public static function scan($xml, DOMDocument|null $dom = null, $libXmlConstants = 0)
     {
         $callback = function ($xml, $dom, $constants) {
             return $dom->loadXml($xml, $constants);
         };
-        return self::scanString($xml, $dom, $libXmlConstants, $callback);
+        return self::scanString($xml, $libXmlConstants, $callback, $dom);
     }
 
     /**
      * Scan HTML string for potential XXE and XEE attacks
      *
      * @param   string $xml
-     * @param   DomDocument $dom
+     * @param   DomDocument|null $dom
      * @param   int $libXmlConstants additional libxml constants to pass in
      * @throws  Exception\RuntimeException
      * @return  SimpleXMLElement|DomDocument|boolean
      */
-    public static function scanHtml($html, DOMDocument $dom = null, $libXmlConstants = 0)
+    public static function scanHtml($html, DOMDocument|null $dom = null, $libXmlConstants = 0)
     {
         $callback = function ($html, $dom, $constants) {
             return $dom->loadHtml($html, $constants);
         };
-        return self::scanString($html, $dom, $libXmlConstants, $callback);
+        return self::scanString($html, $libXmlConstants, $callback, $dom);
     }
 
     /**
      * Scan XML file for potential XXE/XEE attacks
      *
      * @param  string $file
-     * @param  DOMDocument $dom
+     * @param  DOMDocument|null $dom
      * @throws Exception\InvalidArgumentException
      * @return SimpleXMLElement|DomDocument
      */
-    public static function scanFile($file, DOMDocument $dom = null)
+    public static function scanFile($file, DOMDocument|null $dom = null)
     {
         if (! file_exists($file)) {
             throw new Exception\InvalidArgumentException(

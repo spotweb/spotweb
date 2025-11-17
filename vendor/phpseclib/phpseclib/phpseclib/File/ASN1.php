@@ -817,7 +817,11 @@ class ASN1
                     $temp = new BigInteger($decoded['content'], -256);
                 }
                 if (isset($mapping['mapping'])) {
-                    $temp = (int) $temp->toString();
+                    $temp = $temp->toString();
+                    if (strlen($temp) > 1) {
+                        return false;
+                    }
+                    $temp = (int) $temp;
                     return isset($mapping['mapping'][$temp]) ?
                         $mapping['mapping'][$temp] :
                         false;
@@ -1176,6 +1180,11 @@ class ASN1
         $oid = array();
         $pos = 0;
         $len = strlen($content);
+        // see https://github.com/openjdk/jdk/blob/2deb318c9f047ec5a4b160d66a4b52f93688ec42/src/java.base/share/classes/sun/security/util/ObjectIdentifier.java#L55
+        if ($len > 4096) {
+            //user_error('Object Identifier size is limited to 4096 bytes');
+            return false;
+        }
 
         if (ord($content[$len - 1]) & 0x80) {
             return false;
@@ -1441,7 +1450,7 @@ class ASN1
                         return false;
                     }
                     break;
-                case ($c & 0x80000000) != 0:
+                case ($c & (PHP_INT_SIZE == 8 ? 0x80000000 : (1 << 31))) != 0:
                     return false;
                 case $c >= 0x04000000:
                     $v .= chr(0x80 | ($c & 0x3F));
