@@ -433,8 +433,8 @@ class SpotStruct_sqlite extends SpotStruct_abs
         $isNotUnique = (strtolower($tmpAr[1]) != 'unique');
 
         // retrieve column list and definition
-        $q['sql'] = str_replace(array("\r\n", "\n", "\r"), ' ', $q['sql']);
-        $q['sql'] = str_replace(array('[', ']'), '', $q['sql']);
+        $q['sql'] = str_replace(["\r\n", "\n", "\r"], ' ', $q['sql']);
+        $q['sql'] = str_replace(['[', ']'], '', $q['sql']);
         preg_match_all("/\((.*)\)/", $q['sql'], $tmpAr);
         $colList = explode(',', $tmpAr[1][0]);
         $colList = array_map('trim', $colList);
