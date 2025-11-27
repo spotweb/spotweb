@@ -19,11 +19,11 @@ class Services_Settings_FileContainer implements Services_Settings_IContainer
     public function initialize(array $cfg)
     {
         $this->_phpSettings = $cfg;
-        /* 
+        /*
          * Ignore valid_template in ownsettings because all templates are now included in the database
          */
         if (isset($this->_phpSettings['valid_templates'])) {
-            unset( $this->_phpSettings['valid_templates'] );
+            unset($this->_phpSettings['valid_templates']);
         }
     }
 
