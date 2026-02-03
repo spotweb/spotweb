@@ -99,7 +99,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                     }
 
                     echo '<li>';
-                    echo '<a href="'.$imageFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    echo '<a href="'.$imageFilter.'#spots" rel="external" class="js-mobile-filter"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processImage($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
                     echo '</li>';
                 }
@@ -160,7 +160,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                     }
 
                     echo '<li>';
-                    echo '<a href="'.$soundsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    echo '<a href="'.$soundsFilter.'#spots" rel="external" class="js-mobile-filter"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processSounds($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
                     echo '</li>';
                 }
@@ -221,7 +221,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                     }
 
                     echo '<li>';
-                    echo '<a href="'.$gamesFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    echo '<a href="'.$gamesFilter.'#spots" rel="external" class="js-mobile-filter"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processGames($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
                     echo '</li>';
                 }
@@ -282,7 +282,7 @@ $sortType = $currentSession['user']['prefs']['defaultsortfield'];
                     }
 
                     echo '<li>';
-                    echo '<a href="'.$appsFilter.'#spots" rel="external"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
+                    echo '<a href="'.$appsFilter.'#spots" rel="external" class="js-mobile-filter"><img src="templates/mobile/icons/'.$filter['icon'].'.png" class="ui-li-icon"/>'.$filter['title'].'</a>';
                     processApps($tplHelper, $count_newspots, $filter['children'], $defaultSortField);
                     echo '</li>';
                 }

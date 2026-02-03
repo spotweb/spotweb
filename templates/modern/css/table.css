@@ -1,8 +1,31 @@
 ﻿/* Modern table tweaks: thumbnails + readability */
 
-table.spots { width: 100% !important; }
-table.spots tr.head th { background: var(--color-surface-2) !important; color: var(--color-text) !important; text-shadow: none !important; }
-table.spots td { background: transparent; color: var(--color-text) !important; }
+table.spots { width: 100% !important; border-spacing: 0 0; }
+table.spots tr { height: 20px; }
+table.spots tr.head th {
+  background: var(--color-surface-2) !important;
+  color: var(--color-text) !important;
+  text-shadow: none !important;
+  height: 20px;
+  line-height: 20px;
+  padding: 0 0 0 5px;
+}
+table.spots td {
+  background: transparent;
+  color: var(--color-text) !important;
+  vertical-align: middle;
+}
+table.spots td a,
+table.spots td span,
+table.spots td label {
+  display: block;
+  height: 20px;
+  line-height: 20px;
+}
+table.spots td a {
+  overflow: hidden;
+  white-space: nowrap;
+}
 table.spots tr:hover td { background: var(--color-surface) !important; }
 
 /* Ensure links are readable in dark/light */

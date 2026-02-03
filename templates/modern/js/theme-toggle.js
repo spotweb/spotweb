@@ -31,10 +31,9 @@
       toolbar.appendChild(themeWrap);
     }
 
-    // View + Density controls
+    // View controls
     if (toolbar && !document.getElementById('viewCurrent')) {
       var viewPref = localStorage.getItem('spotweb_view') || 'cards';
-      var densityPref = localStorage.getItem('spotweb_density') || 'cozy';
 
       var viewWrap = document.createElement('div');
       viewWrap.className = 'toolbarButton theme dropdown right';
@@ -42,16 +41,8 @@
                           "<ul>" +
                           "<li><a href=\"#\" id=\"viewCards\">Cards</a></li>" +
                           "<li><a href=\"#\" id=\"viewTable\">Table</a></li>" +
-                          "<li class=\"sep\"></li>" +
-                          "<li><a href=\"#\" id=\"densityCozy\">Density: Cozy</a></li>" +
-                          "<li><a href=\"#\" id=\"densityCompact\">Density: Compact</a></li>" +
                           "</ul></li></ul>";
       toolbar.appendChild(viewWrap);
-
-      var updateDensity = function(mode){
-        try { localStorage.setItem('spotweb_density', mode); } catch(e){}
-        document.documentElement.setAttribute('data-density', mode);
-      };
 
       function setViewCookie(v){ try { document.cookie = 'spotweb_view=' + v + '; path=/; max-age=' + (60*60*24*365); } catch(e){} }
       document.getElementById('viewCards').onclick = function(){
@@ -70,11 +61,6 @@
         location.href = u.toString();
         return false;
       };
-      document.getElementById('densityCozy').onclick = function(){ updateDensity('cozy'); return false; };
-      document.getElementById('densityCompact').onclick = function(){ updateDensity('compact'); return false; };
-
-      // Apply saved density on load
-      document.documentElement.setAttribute('data-density', densityPref);
 
       // Sync cookie from storage if missing
       try {

@@ -52,6 +52,7 @@
 		<!-- Modern JS (loaded separately to avoid statics concatenation issues) -->
 		<script src="templates/modern/js/theme-toggle.js" type="text/javascript" defer></script>
 		<script src="templates/modern/js/back-fix.js" type="text/javascript" defer></script>
+		<script src="templates/modern/js/open-spot-fix.js" type="text/javascript" defer></script>
 		<script src="templates/modern/js/sticky-offset.js" type="text/javascript" defer></script>
 		<script src="templates/modern/js/infinite.js" type="text/javascript" defer></script>
 		<script src="templates/modern/js/table-enhance.js" type="text/javascript" defer></script>

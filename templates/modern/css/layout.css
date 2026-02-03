@@ -1,8 +1,8 @@
 /* Modern layout and spacing */
 
 :root {
-  --sw-sidebar-w: 234px;
-  --sw-gap: 14px;
+  --sw-sidebar-w: 210px;
+  --sw-gap: 10px;
   --sw-toolbar-offset: 42px;
   --sw-header-offset: var(--sw-toolbar-offset);
   --sw-strip-gradient: linear-gradient(180deg, #5e626a 0%, #3d4046 100%);
@@ -82,7 +82,6 @@ table.spots tr.head {
   border-bottom: 1px solid var(--sw-strip-border);
 }
 
-table.spots tr td { padding: 4px 6px; }
 
 body.fixed #filter {
   position: sticky;
