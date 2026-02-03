@@ -9,9 +9,9 @@ div.filter {
   --filter-backdrop: rgba(6, 9, 15, 0.78);
   background: var(--filter-backdrop);
   backdrop-filter: blur(12px);
-  border-radius: 14px;
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.35);
-  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.26);
+  padding: 8px 8px;
 }
 
 html[data-theme="light"] div.filter {
@@ -39,21 +39,21 @@ div.filter ul.filterlist li a.filter {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 6px;
-  padding: 3px 32px 3px 13px;
-  border-radius: 10px;
+  gap: 5px;
+  padding: 2px 28px 2px 10px;
+  border-radius: 8px;
   position: relative;
   overflow: hidden;
   background: var(--filter-card-bg) !important;
   border: 1px solid var(--filter-card-border) !important;
   color: var(--filter-card-text) !important;
   text-decoration: none !important;
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   letter-spacing: 0.006em;
-  width: 200px;
+  width: 180px;
   box-sizing: border-box;
   box-shadow: inset 4px 0 0 var(--filter-accent, rgba(148, 163, 184, 0.35)),
-              0 12px 26px var(--filter-accent-soft, rgba(15, 23, 42, 0.08));
+              0 8px 18px var(--filter-accent-soft, rgba(15, 23, 42, 0.08));
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -81,7 +81,7 @@ div.filter ul.filterlist li a.filter::after {
 
 div.filter ul.filterlist li a.filter:hover,
 div.filter ul.filterlist li a.filter:focus-visible {
-  transform: translateX(2px);
+  transform: translateX(1px);
   border-color: var(--filter-accent, rgba(148, 163, 184, 0.6)) !important;
 }
 
@@ -92,7 +92,7 @@ div.filter ul.filterlist li a.filter.selected::after {
 
 div.filter ul.filterlist li a.filter.selected {
   box-shadow: inset 4px 0 0 var(--filter-accent, rgba(148, 163, 184, 0.45)),
-              0 12px 30px var(--filter-accent-soft, rgba(15, 23, 42, 0.12));
+              0 10px 22px var(--filter-accent-soft, rgba(15, 23, 42, 0.12));
 }
 
 div.filter ul.filterlist li a.filter .newspots {
@@ -101,7 +101,7 @@ div.filter ul.filterlist li a.filter .newspots {
   border-radius: 999px;
   padding: 0 6px;
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   margin-left: 8px;
   order: 98;
 }
@@ -122,7 +122,7 @@ div.filter ul.filterlist li span.toggle {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
@@ -133,8 +133,8 @@ div#filter h4 {
   border: 1px solid var(--filter-card-border) !important;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  margin-bottom: 10px;
+  font-size: 0.7rem;
+  margin-bottom: 8px;
 }
 
 div#filter ul li {
@@ -244,37 +244,37 @@ div.filter ul.subfilterlist li[class*="spotcat5"] {
 }
 
 div.filter ul.subfilterlist {
-  margin: 8px 0 0;
-  padding-left: 12px;
+  margin: 6px 0 0;
+  padding-left: 10px;
   border-left: 2px solid var(--filter-accent, rgba(148, 163, 184, 0.4));
   list-style: none;
 }
 
 div.filter ul.subfilterlist li {
-  margin: 4px 0;
+  margin: 3px 0;
 }
 
 div.filter ul.subfilterlist li a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 5px 12px 5px 18px;
-  border-radius: 10px;
+  gap: 5px;
+  padding: 4px 10px 4px 14px;
+  border-radius: 8px;
   background: var(--filter-card-bg) !important;
   border: 1px solid var(--filter-card-border) !important;
   color: var(--filter-card-text) !important;
   text-decoration: none !important;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   position: relative;
   box-shadow: inset 3px 0 0 var(--filter-accent, rgba(148, 163, 184, 0.4)),
-              0 6px 14px var(--filter-accent-soft, rgba(15, 23, 42, 0.07));
+              0 4px 10px var(--filter-accent-soft, rgba(15, 23, 42, 0.07));
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 div.filter ul.subfilterlist li a:hover,
 div.filter ul.subfilterlist li a:focus-visible {
-  transform: translateX(2px);
+  transform: translateX(1px);
   border-color: var(--filter-accent, rgba(148, 163, 184, 0.5)) !important;
 }
 
@@ -508,5 +508,112 @@ html[data-theme="dark"] div.sidebarPanel.advancedSearch a.greyButton.addFilter {
   border-color: var(--color-accent) !important;
 }
 
+/* We1rdo-like filters (match classic layout) */
+div#filter,
+div.filter {
+  background: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
 
+div#filter ul,
+div.filter ul {
+  margin: 0 0 5px !important;
+  padding: 0 0 0 5px !important;
+}
+
+div#filter ul ul,
+div.filter ul ul {
+  margin: 0 0 0 10px !important;
+  padding: 0 !important;
+}
+
+div#filter li,
+div.filter li {
+  list-style: none !important;
+  margin: 0 0 5px 0 !important;
+}
+
+div#filter li li,
+div.filter li li {
+  margin: 2px 0 0 !important;
+}
+
+div#filter ul.filterlist li a.filter,
+div#filter ul.subfilterlist li a,
+div#filter ul.filterlist.quicklinks li a.filter,
+div.filter ul.filterlist li a.filter,
+div.filter ul.subfilterlist li a,
+div.filter ul.filterlist.quicklinks li a.filter {
+  display: block !important;
+  width: 100% !important;
+  background-color: #ececec !important;
+  line-height: 20px !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  color: #000 !important;
+  font-weight: bold !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important;
+  padding: 0 6px !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+  transform: none !important;
+}
+
+div#filter > ul > li.spotcat0 a,
+div.filter > ul > li.spotcat0 a { background-color: #daecff !important; }
+div#filter > ul > li.spotcat1 a,
+div.filter > ul > li.spotcat1 a { background-color: #fffad3 !important; }
+div#filter > ul > li.spotcat2 a,
+div.filter > ul > li.spotcat2 a { background-color: #cbffcb !important; }
+div#filter > ul > li.spotcat3 a,
+div.filter > ul > li.spotcat3 a { background-color: #fedede !important; }
+
+div#filter a span.newspots,
+div.filter a span.newspots {
+  color: #333 !important;
+  margin: 0 3px 0 5px !important;
+  padding: 0 3px !important;
+  border-radius: 2px !important;
+  background: transparent !important;
+}
+
+div#filter li a.selected span.newspots,
+div.filter li a.selected span.newspots {
+  background-color: #222 !important;
+  color: #fff !important;
+}
+
+div#filter li span.toggle,
+div.filter li span.toggle {
+  display: block !important;
+  float: right !important;
+  width: 15px !important;
+  height: 14px !important;
+  margin: 2px !important;
+  border-radius: 4px !important;
+  background: url(../../we1rdo/img/sprite.png) no-repeat -77px -98px !important;
+  border: none !important;
+}
+
+div#filter li span.inclusive,
+div.filter li span.inclusive {
+  display: block !important;
+  float: right !important;
+  width: 15px !important;
+  line-height: 14px !important;
+  margin: 2px !important;
+}
+
+div#filter li.spotcat0 span.toggle,
+div.filter li.spotcat0 span.toggle { background-color: #62aefd !important; border: 1px solid #006cab !important; color: #006cab !important; }
+div#filter li.spotcat1 span.toggle,
+div.filter li.spotcat1 span.toggle { background-color: #f2d87c !important; border: 1px solid #cd9f00 !important; color: #cd9f00 !important; }
+div#filter li.spotcat2 span.toggle,
+div.filter li.spotcat2 span.toggle { background-color: #84f484 !important; border: 1px solid #00ab00 !important; color: #00ab00 !important; }
+div#filter li.spotcat3 span.toggle,
+div.filter li.spotcat3 span.toggle { background-color: #f99797 !important; border: 1px solid #ab1c00 !important; color: #ab1c00 !important; }
 
