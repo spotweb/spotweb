@@ -46,3 +46,5 @@
     Moved barcode to a `Barcode` namespace.
     Moved `cache` and `resources` directories to library root.
     Renamed `resources\data` to `resources\barcode`.
+
+3.1 Dropped support for PHP below 8.0

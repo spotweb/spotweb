@@ -570,6 +570,7 @@ class RSA
             $publickey = call_user_func_array(array($this, '_convertPublicKey'), array_values($this->_parseKey($publickey, self::PUBLIC_FORMAT_PKCS1)));
 
             // clear the buffer of error strings stemming from a minimalistic openssl.cnf
+            // https://github.com/php/php-src/issues/11054 talks about other errors this'll pick up
             while (openssl_error_string() !== false) {
             }
 
@@ -1395,9 +1396,14 @@ class RSA
                 $this->components = array();
 
                 $xml = xml_parser_create('UTF-8');
-                xml_set_object($xml, $this);
-                xml_set_element_handler($xml, '_start_element_handler', '_stop_element_handler');
-                xml_set_character_data_handler($xml, '_data_handler');
+                if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
+                    xml_set_element_handler($xml, array($this, '_start_element_handler'), array($this, '_stop_element_handler'));
+                    xml_set_character_data_handler($xml, array($this, '_data_handler'));
+                } else {
+                    xml_set_object($xml, $this);
+                    xml_set_element_handler($xml, '_start_element_handler', '_stop_element_handler');
+                    xml_set_character_data_handler($xml, '_data_handler');
+                }
                 // add <xml></xml> to account for "dangling" tags like <BitStrength>...</BitStrength> that are sometimes added
                 if (!xml_parse($xml, '<xml>' . $key . '</xml>')) {
                     xml_parser_free($xml);

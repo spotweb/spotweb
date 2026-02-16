@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+
 error_reporting(2147483647);
 
 function delete_files($target)
@@ -54,13 +55,13 @@ try {
     $svcUpgradeBase = new Services_Upgrade_Base($daoFactory, $settings, $dbSettings['engine']);
     $svcUpgradeBase->database();
     echo 'Schema update done'.PHP_EOL;
+    echo 'Updating users'.PHP_EOL;
+    $svcUpgradeBase->users();
+    echo "Users' update done".PHP_EOL;
     echo 'Updating settings'.PHP_EOL;
     $svcUpgradeBase->settings();
     $svcUpgradeBase->usenetState();
     echo 'Settings update done'.PHP_EOL;
-    $svcUpgradeBase->users($settings);
-    echo 'Updating users'.PHP_EOL;
-    echo "Users' update done".PHP_EOL;
 
     /*
      * If the user asked to change the system type..
@@ -216,7 +217,7 @@ try {
             echo 'Deleting on-disk folder..'.PHP_EOL.PHP_EOL;
             delete_files(str_replace('\\', '/', realpath(__DIR__.'/..').'/cache2'));
             echo 'Deleted on-disk folder succesfully!'.PHP_EOL.PHP_EOL;
-        // if
+            // if
         } else {
             echo "No argument passed, type --clear-cache -yes to bypass this.\n";
             echo "\033[31m The cache in DB and files on-disk will be cleared, are you sure? \033[0m \n".PHP_EOL;

@@ -23,10 +23,10 @@ final class SystemCommandExecutor implements SystemCommandExecutorInterface
     {
         exec($command, $result, $returnValue);
 
-        if ($returnValue === 0) {
+        if (0 === $returnValue) {
             return $result;
         }
 
-        throw new \RuntimeException(sprintf('Failed to execute command: %s', $command), $returnValue);
+        throw new \RuntimeException(\sprintf('Failed to execute command: %s', $command), $returnValue);
     }
 }

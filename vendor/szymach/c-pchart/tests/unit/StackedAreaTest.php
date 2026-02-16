@@ -1,11 +1,13 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_HORIZONTAL;
 use const DIRECTION_VERTICAL;
@@ -13,14 +15,11 @@ use const LEGEND_HORIZONTAL;
 use const LEGEND_NOBORDER;
 use const SCALE_MODE_ADDALL;
 
-class StackedAreaTest extends Unit
+final class StackedAreaTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         $data->addPoints([4, 0, 0, 12, 8, 3, 0, 12, 8], 'Frontend #1');

@@ -165,7 +165,7 @@ class SourceFile extends Coveralls
      */
     public function getMetrics()
     {
-        if ($this->metrics === null) {
+        if (null === $this->metrics) {
             $this->metrics = new Metrics($this->coverage);
         }
 

@@ -591,3 +591,29 @@ switch (rand()) {
     default:
         break;
 }
+
+// Fix: goto should be recognized as terminating statement.
+switch ( $a ) {
+    case 1:
+        doSomething();
+        goto jumpOut;
+    default:
+        $other = $code;
+        break;
+}
+
+jumpOut:
+doSomething();
+
+// Fixable semicolon as case/default scope opener.
+switch ($value) {
+    case 'foo':
+    case 'bar' /*comment*/:
+    case 'baz':
+        echo 'foo, bar, or baz';
+        break;
+    default:
+        echo 'Other';
+    default:
+        echo 'Other';
+}

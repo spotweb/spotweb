@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\PEAR\Sniffs\NamingConventions;
@@ -37,6 +37,10 @@ class ValidVariableNameSniff extends AbstractVariableSniff
         $memberName     = ltrim($tokens[$stackPtr]['content'], '$');
         $scope          = $memberProps['scope'];
         $scopeSpecified = $memberProps['scope_specified'];
+        if ($scopeSpecified === false && $memberProps['set_scope'] !== false) {
+            // Implicit `public` visibility for property with asymmetric visibility.
+            $scopeSpecified = true;
+        }
 
         if ($memberProps['scope'] === 'private') {
             $isPublic = false;

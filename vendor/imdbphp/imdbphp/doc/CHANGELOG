@@ -2,6 +2,57 @@
 History for IMDBPHP
 ====================
 
+v8.3.0 (02.03.2025)
+-------------------
++ Add Podcast Series & Music Video Support #333 by @CicerBro
+* Update dev dependencies
+* Format project according to coding style
+! Fix bugs found with PHPStan
+
+v8.2.0 (25.02.2024)
+-------------------
++ Add Podcast Episode support #326 by @Fossil01
+! Fix Title::trivia() - limited to 5 entries
+! Fix Title::filmingDates()
+! Fix Title::keywords_all() - limited to 50 entries
+! Fix Title::locations() - limited to 5 entries
+! Fix Title::quotes() and Title::quotes_split()
+! Fix Title::goofs() - limited to 5 entries
+! Fix Title::crazy_credits()
+! Fix Title::metacriticRating()
+! Fix Title::creator()
+
+v8.1.0 (14.03.2023)
+-------------------
++ Add Psr/Log v2 to allowed versions in composer.json
+! Fix Title::aspect_ratio no longer returning anything
+
+v8.0.2 (21.02.2023)
+-------------------
+! Improved the documentation of Title::alsoknow()
+! Fixes Title::alsoknow() returning an 'original title' with a null name when your imdb display title is the original title
+- Deprecate PersonSearch::reset()
+
+v8.0.1 (14.02.2023)
+-------------------
++ Add setCount and setStart to TitleSearchAdvanced. setCount lets you change how many results you get,
+    and setStart lets you offset the start of the search results so you can get multiple pages
+! Fix Title::alsoknow() when country is not set. countryCode and languageCode will now be null if no language or country is set
+
+v8.0.0 (13.02.2023)
+-------------------
+! Title::plot() returns plain text utf-8 strings rather than html. It no longer contains the author at the end (You can get the author from Title::plot_split())
+! Title::plot_split() also has plain text utf-8 strings rather than html in its plot field
+! Title::releaseInfo() return has changed. The country strings have changed slightly, the dates are numbers rather than stringy numbers and month has been removed.
+    Was ['country' => 'USA', 'day' => '9', 'month' => 'June', 'mon' => '06', 'year' => '1993' ] now [ 'country' => 'United States', 'day' => 9, 'mon' => 6, 'year' => 1993, 'attributes' => [ 'Washington, D.C.', 'premiere' ] ]
+! Title::alsoknow() no longer returns a year or lang field (they were previously always an empty string). It no longer returns a comment of '$language title' for each aka.
+! Fixed these methods broken by site change: Title::releaseInfo(), Title::synopsis(), Title::alternateVersions(), Title::runtimes(), Title::distCompany(), Title::specialCompany(), Title::prodCompany(), Title::specialCompany(), Title::otherCompany(), Title::movie_recommendations(), Title::taglines(), Title::movieconnection(), Title::extReviews(), Title::officialSites(), Title::videosites()
++ Title::alsoknow() now returns a countryCode, language and languageCode for each AKA.
++ Title::runtimes() now returns a country and countryCode
++ Title::videosites() now returns a language, languageCode but not a type. Now ['url' => 'x', 'site' => FILM.TV, 'desc' => trailer, 'language' => German, 'languageCode' => de] was
+    ['url'=>'x', 'site' => 'FILM.TV', 'desc' => 'trailer', 'type' => '']
+
+
 v7.4.2 (07.01.2023)
 -------------------
 ! Remove visibility from const to support < PHP 7.1

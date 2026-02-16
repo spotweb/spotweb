@@ -67,7 +67,7 @@ class dbfts_pgsql extends dbfts_abs
             $o_parse->debug = false;
             $o_parse->upper_op_only = true;
             $o_parse->use_prepared_sql = false;
-            $o_parse->set_default_op('OR');
+            $o_parse->set_default_op('AND');
 
             /*
              * Do some preparation for the searchvalue, test cases:
@@ -96,9 +96,11 @@ class dbfts_pgsql extends dbfts_abs
                 } // if
 
                 if (!empty($o_parse->ilike)) {
-                    $re = '/(\'%\S+?)([ ])(\S+?%\')/';
-                    $ne = preg_replace($re, '$1_$3', $o_parse->ilike);
-                    $queryPart[] = $ne;
+                    $pattern = '/\'([^\']*)\'/';
+                    $replacement = function ($matches) {
+                        return '\''.str_replace(' ', '_', $matches[1]).'\'';
+                    };
+                    $queryPart[] = preg_replace_callback($pattern, $replacement, $o_parse->ilike);
                 } // if
 
                 /*

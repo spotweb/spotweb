@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace;
@@ -80,7 +80,7 @@ class ScopeIndentSniff implements Sniff
      * This is a cached copy of the public version of this var, which
      * can be set in a ruleset file, and some core ignored tokens.
      *
-     * @var int[]
+     * @var array<int|string, bool>
      */
     private $ignoreIndentation = [];
 
@@ -102,14 +102,10 @@ class ScopeIndentSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
-        if (defined('PHP_CODESNIFFER_IN_TESTS') === true) {
-            $this->debug = false;
-        }
-
         return [T_OPEN_TAG];
 
     }//end register()
@@ -161,7 +157,7 @@ class ScopeIndentSniff implements Sniff
 
         if ($this->debug === true) {
             $line = $tokens[$stackPtr]['line'];
-            echo "Start with token $stackPtr on line $line with indent $currentIndent".PHP_EOL;
+            echo PHP_EOL."Start with token $stackPtr on line $line with indent $currentIndent".PHP_EOL;
         }
 
         if (empty($this->ignoreIndentation) === true) {
@@ -644,7 +640,7 @@ class ScopeIndentSniff implements Sniff
                 }
 
                 $conditionToken = array_pop($openScopes);
-                if ($this->debug === true) {
+                if ($this->debug === true && $conditionToken !== null) {
                     $line = $tokens[$conditionToken]['line'];
                     $type = $tokens[$conditionToken]['type'];
                     echo "\t=> removed open scope $conditionToken ($type) on line $line".PHP_EOL;
@@ -1090,8 +1086,11 @@ class ScopeIndentSniff implements Sniff
             if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING
                 || $tokens[$i]['code'] === T_DOUBLE_QUOTED_STRING
             ) {
-                $i = $phpcsFile->findNext($tokens[$i]['code'], ($i + 1), null, true);
-                $i--;
+                $nextNonTextString = $phpcsFile->findNext($tokens[$i]['code'], ($i + 1), null, true);
+                if ($nextNonTextString !== false) {
+                    $i = ($nextNonTextString - 1);
+                }
+
                 continue;
             }
 

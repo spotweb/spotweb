@@ -402,3 +402,94 @@ class ReadOnlyProps
 
      private readonly string $variable;
 }
+
+class UnionTypes
+{
+    /**
+     * @var array|boolean
+     */
+    private array|bool $variableName = array();
+}
+
+class IntersectionTypes
+{
+    /**
+     * @var \Iterator|\Countable
+     */
+    private \Iterator&\Countable $variableName;
+}
+
+class StandaloneNullTrueFalseTypes
+{
+    /**
+     * @var null
+     */
+    public null $variableName = null;
+
+    /**
+     * @var true
+     */
+    protected true $variableName = true;
+
+    /**
+     * @var false
+     */
+    private false $variableName = false;
+}
+
+class MoreMissingButSupportedTypes
+{
+    /**
+     * @var parent
+     */
+    public parent $variableName;
+
+    /**
+     * @var self
+     */
+    protected self $variableName;
+
+    /**
+     * @var SomeClass
+     */
+    private namespace\SomeClass $variableName;
+}
+
+class DNFTypes
+{
+    /**
+     * @var mixed
+     */
+    private (\Iterator&namespace\Countable)|false|null $variableName;
+}
+
+class PHP84FinalProperties {
+    /**
+     * @var integer
+     */
+    final int $hasDocblock;
+}
+
+class AsymVisibility {
+    /**
+     * @var integer
+     */
+    public(set) int $hasDocblockA;
+
+    /**
+     * @var integer
+     */
+    public protected(set) int $hasDocblockB;
+
+    /**
+     * @var integer
+     */
+    private(set) protected int $hasDocblockC;
+}
+
+abstract class PHP84AbstractProperties {
+    /**
+     * @var Type
+     */
+    abstract Type $hasDocblock {get;}
+}

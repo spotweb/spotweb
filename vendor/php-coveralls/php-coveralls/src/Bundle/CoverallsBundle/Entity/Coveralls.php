@@ -18,7 +18,7 @@ abstract class Coveralls implements ArrayConvertable
     {
         $result = json_encode($this->toArray());
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (JSON_ERROR_NONE !== json_last_error()) {
             $this->onJsonError();
         }
 
@@ -27,7 +27,7 @@ abstract class Coveralls implements ArrayConvertable
 
     protected function onJsonError()
     {
-        throw new \UnexpectedValueException(sprintf(
+        throw new \UnexpectedValueException(\sprintf(
             'Can not encode to JSON, error: "%s". If you have non-UTF8 chars, consider migration to UTF8.',
             json_last_error_msg()
         ));

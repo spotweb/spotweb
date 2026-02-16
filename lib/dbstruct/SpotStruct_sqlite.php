@@ -51,7 +51,6 @@ class SpotStruct_sqlite extends SpotStruct_abs
     public function clearcache()
     {
         $this->_dbcon->rawExec('DELETE FROM cache');
-        $this->_dbcon->rawExec('VACUUM');
     }
 
     // clearcache https://www.tutorialspoint.com/sqlite/sqlite_truncate_table.htm
@@ -404,7 +403,7 @@ class SpotStruct_sqlite extends SpotStruct_abs
         $colInfo['NOTNULL'] = $q[$colIndex]['notnull'];
         $colInfo['COLUMN_TYPE'] = $this->nativeDtToSw($q[$colIndex]['type']);
         $colInfo['CHARACTER_SET_NAME'] = 'bin';
-        $colInfo['COLLATION_NAME'] = 'bin';
+        $colInfo['COLLATION_NAME'] = null;
 
         return $colInfo;
     }
@@ -434,6 +433,8 @@ class SpotStruct_sqlite extends SpotStruct_abs
         $isNotUnique = (strtolower($tmpAr[1]) != 'unique');
 
         // retrieve column list and definition
+        $q['sql'] = str_replace(["\r\n", "\n", "\r"], ' ', $q['sql']);
+        $q['sql'] = str_replace(['[', ']'], '', $q['sql']);
         preg_match_all("/\((.*)\)/", $q['sql'], $tmpAr);
         $colList = explode(',', $tmpAr[1][0]);
         $colList = array_map('trim', $colList);

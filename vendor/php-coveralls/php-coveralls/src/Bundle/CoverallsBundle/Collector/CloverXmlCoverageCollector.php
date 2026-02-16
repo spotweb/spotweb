@@ -15,7 +15,7 @@ class CloverXmlCoverageCollector
     /**
      * JsonFile.
      *
-     * @var \PhpCoveralls\Bundle\CoverallsBundle\Entity\JsonFile
+     * @var JsonFile
      */
     protected $jsonFile;
 
@@ -27,13 +27,13 @@ class CloverXmlCoverageCollector
      * @param \SimpleXMLElement $xml     clover XML object
      * @param string            $rootDir path to repository root directory
      *
-     * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\JsonFile
+     * @return JsonFile
      */
     public function collect(\SimpleXMLElement $xml, $rootDir)
     {
-        $root = rtrim($rootDir, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR;
+        $root = rtrim($rootDir, \DIRECTORY_SEPARATOR).\DIRECTORY_SEPARATOR;
 
-        if ($this->jsonFile === null) {
+        if (null === $this->jsonFile) {
             $this->jsonFile = new JsonFile();
         }
 
@@ -50,7 +50,7 @@ class CloverXmlCoverageCollector
             foreach ($xml->xpath($xpath) as $file) {
                 $srcFile = $this->collectFileCoverage($file, $root);
 
-                if ($srcFile !== null) {
+                if (null !== $srcFile) {
                     $this->jsonFile->addSourceFile($srcFile);
                 }
             }
@@ -64,7 +64,7 @@ class CloverXmlCoverageCollector
     /**
      * Return json file.
      *
-     * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\JsonFile
+     * @return JsonFile
      */
     public function getJsonFile()
     {
@@ -84,7 +84,7 @@ class CloverXmlCoverageCollector
     protected function collectRunAt(\SimpleXMLElement $xml, $format = 'Y-m-d H:i:s O')
     {
         $timestamp = $xml->project['timestamp'];
-        $runAt = new \DateTime('@' . $timestamp);
+        $runAt = new \DateTime('@'.$timestamp);
 
         return $runAt->format($format);
     }
@@ -95,19 +95,19 @@ class CloverXmlCoverageCollector
      * @param \SimpleXMLElement $file clover XML object of a file
      * @param string            $root path to src directory
      *
-     * @return null|\PhpCoveralls\Bundle\CoverallsBundle\Entity\SourceFile
+     * @return null|SourceFile
      */
     protected function collectFileCoverage(\SimpleXMLElement $file, $root)
     {
         $absolutePath = realpath((string) ($file['path'] ?: $file['name']));
 
-        if (strpos($absolutePath, $root) === false) {
+        if (false === strpos($absolutePath, $root)) {
             return;
         }
 
         $filename = $absolutePath;
 
-        if ($root !== \DIRECTORY_SEPARATOR) {
+        if (\DIRECTORY_SEPARATOR !== $root) {
             $filename = str_replace($root, '', $absolutePath);
         }
 
@@ -121,7 +121,7 @@ class CloverXmlCoverageCollector
      * @param string            $path     path to source file
      * @param string            $filename filename
      *
-     * @return \PhpCoveralls\Bundle\CoverallsBundle\Entity\SourceFile
+     * @return SourceFile
      */
     protected function collectCoverage(\SimpleXMLElement $file, $path, $filename)
     {
@@ -132,7 +132,7 @@ class CloverXmlCoverageCollector
         }
 
         foreach ($file->line as $line) {
-            if ((string) $line['type'] === 'stmt') {
+            if ('stmt' === (string) $line['type']) {
                 $lineNum = (int) $line['num'];
 
                 if ($lineNum > 0) {

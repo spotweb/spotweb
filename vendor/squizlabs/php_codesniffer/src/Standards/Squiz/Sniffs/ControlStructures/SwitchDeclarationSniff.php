@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Sniffs\ControlStructures;
@@ -37,7 +37,7 @@ class SwitchDeclarationSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -153,6 +153,7 @@ class SwitchDeclarationSniff implements Sniff
                 || $tokens[$nextBreak]['code'] === T_CONTINUE
                 || $tokens[$nextBreak]['code'] === T_THROW
                 || $tokens[$nextBreak]['code'] === T_EXIT
+                || $tokens[$nextBreak]['code'] === T_GOTO
             ) {
                 if ($tokens[$nextBreak]['scope_condition'] === $nextCase) {
                     // Only need to check a couple of things once, even if the

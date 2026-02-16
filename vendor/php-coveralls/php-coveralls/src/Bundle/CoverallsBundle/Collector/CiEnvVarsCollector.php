@@ -5,7 +5,7 @@ namespace PhpCoveralls\Bundle\CoverallsBundle\Collector;
 use PhpCoveralls\Bundle\CoverallsBundle\Config\Configuration;
 
 /**
- * Environment variables collector for CI envrionment.
+ * Environment variables collector for CI environment.
  *
  * @author Kitamura Satoshi <with.no.parachute@gmail.com>
  */
@@ -130,14 +130,14 @@ class CiEnvVarsCollector
         $githubEventName = $this->env['GITHUB_EVENT_NAME'];
         $githubRef = $this->env['GITHUB_REF'];
 
-        if (strpos($githubRef, 'refs/heads/') !== false) {
+        if (false !== strpos($githubRef, 'refs/heads/')) {
             $githubRef = str_replace('refs/heads/', '', $githubRef);
-        } elseif ($githubEventName === 'pull_request') {
+        } elseif ('pull_request' === $githubEventName) {
             $refParts = explode('/', $githubRef);
             $prNumber = $refParts[2];
             $this->env['CI_PULL_REQUEST'] = $prNumber;
             $this->readEnv['CI_PULL_REQUEST'] = $this->env['CI_PULL_REQUEST'];
-        } elseif (strpos($githubRef, 'refs/tags/') !== false) {
+        } elseif (false !== strpos($githubRef, 'refs/tags/')) {
             $githubRef = str_replace('refs/tags/', '', $githubRef);
         }
 

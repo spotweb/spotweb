@@ -1,4 +1,5 @@
 <?php
+
 /**
  * throw exceptions based on E_* error types.
  */

@@ -645,8 +645,8 @@ class Dao_Base_Spot implements Dao_Spot
                 ':title'     => [$fullSpot['title'], PDO::PARAM_STR],
                 ':tag'       => [$fullSpot['tag'], PDO::PARAM_STR],
                 ':subcata'   => [$fullSpot['subcata'], PDO::PARAM_STR],
-                ':subcatb'   => [$fullSpot['subcata'], PDO::PARAM_STR],
-                ':subcatc'   => [$fullSpot['subcatb'], PDO::PARAM_STR],
+                ':subcatb'   => [$fullSpot['subcatb'], PDO::PARAM_STR],
+                ':subcatc'   => [$fullSpot['subcatc'], PDO::PARAM_STR],
                 ':subcatd'   => [$fullSpot['subcatd'], PDO::PARAM_STR],
                 ':subcatz'   => [$fullSpot['subcatz'], PDO::PARAM_STR],
                 ':category'  => [$fullSpot['category'], PDO::PARAM_INT],
@@ -728,14 +728,16 @@ class Dao_Base_Spot implements Dao_Spot
     /**
      * Returns the amount of spots currently in the database.
      */
-    public function getSpotCount($sqlFilter)
+    // getSpotCount
+    public function getSpotCount($sqlFilter, $additionalTableList)
     {
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
         if (empty($sqlFilter)) {
             $query = 'SELECT COUNT(1) FROM spots AS s';
         } else {
-            $query = 'SELECT COUNT(1) FROM spots AS s
-						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+            $query = 'SELECT COUNT(1) FROM spots AS s '.
+                          $additionalTableList.
+                        ' LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
 						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
 						LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.ouruserid = -1) AND (bl.idtype = 1))
 						WHERE '.$sqlFilter.' AND (bl.spotterid IS NULL)';

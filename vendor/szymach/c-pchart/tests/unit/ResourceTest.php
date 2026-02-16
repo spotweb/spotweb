@@ -1,24 +1,24 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Exception;
+use Tests\CpChart\Support\UnitTester;
 
-class ResourceTest extends Unit
+final class ResourceTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testInvalidResourceLoading()
+    public function testInvalidResourceLoading(): void
     {
         $data = new Data();
         $this->tester->expectThrowable(
-            '\Exception',
+            Exception::class,
             function () use ($data) {
                 $data->loadPalette('nonExistantPalette');
             }
@@ -27,26 +27,26 @@ class ResourceTest extends Unit
         $image = new Image(700, 230, $data);
 
         $this->tester->expectThrowable(
-            '\Exception',
+            Exception::class,
             function () use ($image) {
                 $image->setResourcePath('nonExistantDirectory');
             }
         );
         $this->tester->expectThrowable(
-            '\Exception',
+            Exception::class,
             function () use ($image) {
                 $image->setFontProperties(['FontName' => 'nonExistantFont']);
             }
         );
         $this->tester->expectThrowable(
-            '\Exception',
+            Exception::class,
             function () use ($image) {
                 $image->getLegendSize(['Font' => 'nonExistantFont']);
             }
         );
     }
 
-    public function testValidPaletteLoading()
+    public function testValidPaletteLoading(): void
     {
         $data = new Data();
         $data->loadPalette(sprintf('%s/../_data/test_palette.txt', __DIR__), true);
@@ -60,13 +60,13 @@ class ResourceTest extends Unit
         $this->tester->seeFileFound($filename);
     }
 
-    public function testInvalidPaletteLoading()
+    public function testInvalidPaletteLoading(): void
     {
         $data = new Data();
         $this->tester->expectThrowable(
-            '\Exception',
+            Exception::class,
             function () use ($data) {
-                $data->loadPalette(sprintf('non_existant_palette', __DIR__), true);
+                $data->loadPalette(sprintf('%s/../_data/non_existant_palette', __DIR__), true);
             }
         );
     }

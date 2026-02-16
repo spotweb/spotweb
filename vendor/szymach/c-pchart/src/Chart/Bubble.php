@@ -5,19 +5,6 @@ namespace CpChart\Chart;
 use CpChart\Data;
 use CpChart\Image;
 
-/**
- *  Bubble - class to draw bubble charts
- *
- *  Version     : 2.1.4
- *  Made by     : Jean-Damien POGOLOTTI
- *  Last Update : 19/01/2014
- *
- *  This file can be distributed under the license you can find at :
- *
- *  http://www.pchart.net/license
- *
- *  You can find the whole class documentation on the pChart web site.
- */
 class Bubble
 {
     /**
@@ -30,10 +17,6 @@ class Bubble
      */
     public $pDataObject;
 
-    /**
-     * @param Image $pChartObject
-     * @param Data $pDataObject
-     */
     public function __construct(Image $pChartObject, Data $pDataObject)
     {
         $this->pChartObject = $pChartObject;
@@ -132,8 +115,6 @@ class Bubble
             }
         }
     }
-
-    /* Prepare the scale */
 
     public function drawBubbleChart($DataSeries, $WeightSeries, $Format = "")
     {
@@ -428,7 +409,8 @@ class Bubble
 
         $Data = $this->pDataObject->getData();
 
-        if (!isset($Data["Series"][$SerieName])
+        if (
+            !isset($Data["Series"][$SerieName])
             || !isset($Data["Series"][$SerieWeightName])
         ) {
             return(0);

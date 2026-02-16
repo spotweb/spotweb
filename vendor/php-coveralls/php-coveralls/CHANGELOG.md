@@ -1,6 +1,59 @@
 CHANGELOG
 =========
 
+## 2.9.0
+
+Maintenance release
+
+### Add support
+
+* Add support for Symfony 8 (#391)
+* Add support for PHP 8.4 (#392)
+* Add support for psr/log:^3 (#402)
+
+### Drop support
+
+* Drop support for PHP 7.0-7.3 (#393)
+* Drop support for legacy Symfomny 2-3-4 (#397)
+
+### Docs
+
+* docs: update Parallel Build Webhook URL (#374)
+* docs: update phpunit.xml.dist examples for coverage, to match modern PHPUnit versions (#401)
+
+### Miscellaneous
+
+* CD: build command (#388)
+* CI: recover accidentally dropped 8.3 job (#399)
+* Fix autoload warnings (#389)
+* chore: remove phpcpd as abandoned (#400)
+* chore: update PHPUnit dev-deps to support v9-10-11 (#394)
+* chore: update phpspec/prophecy-phpunit to 2.4 (#398)
+* deps: bump dev-tools (#396)
+* deps: upgrade PHP CS Fixer (#395)
+
+## 2.8.0
+
+### Miscellaneous
+
+* Add `.gitattributes` (#381)
+* Create SECURITY.md
+* Fix CI (#379)
+* Fix typos (#372)
+* Remove duplicated word "other" (#380)
+* Update SECURITY.md (#383)
+* chore: fix typo (#384)
+* chore: overcome prophecy warning (#386)
+* chore: upgrade SCA, run PHP CS Fixer (#385)
+* tests: update data provider to not use 'this' (#387)
+
+## 2.7.0
+
+### Miscellaneous
+
+* DX: allow Symfony ^7 (#369)
+* chore: drop PHP 5.x support (#371)
+
 ## 2.6.0
 
 ### Miscellaneous
@@ -276,7 +329,7 @@ Added compatibility with Symfony 6
 
 ### Bug fix
 
-- Fix bug: API reqest from local environment should be with repo_token
+- Fix bug: API request from local environment should be with repo_token
 - Fix bug: service_name in .coveralls.yml will not reflect to json_file
 
 ## 0.3.1 (2013-04-19)

@@ -16,6 +16,10 @@ $data->addPoints([8, 10, 12, 20, 30, 15], "ScoreB");
 $data->setSerieDescription("ScoreA", "Application A");
 $data->setSerieDescription("ScoreB", "Application B");
 
+/* Optionally define the symbol shape of each series (defaults to circle) */
+$myData->setSerieShape("ScoreA", SERIE_SHAPE_FILLEDTRIANGLE );
+$myData->setSerieShape("ScoreB", SERIE_SHAPE_FILLEDDIAMOND );
+
 /* Create the X serie */
 $data->addPoints(["Size", "Speed", "Reliability", "Functionalities", "Ease of use", "Weight"], "Labels");
 $data->setAbscissa("Labels");
@@ -90,8 +94,9 @@ $Options = ["Layout" => RADAR_LAYOUT_CIRCLE, "LabelPos" => RADAR_LABELS_HORIZONT
 $radarChart->drawRadar($image, $data, $Options);
 
 /* Write down the legend */
+/* Family property only required if series have defined shapes */
 $image->setFontProperties(["FontName" => "pf_arma_five.ttf", "FontSize" => 6]);
-$image->drawLegend(270, 205, ["Style" => LEGEND_BOX, "Mode" => LEGEND_HORIZONTAL]);
+$image->drawLegend(270, 205, ["Style" => LEGEND_BOX, "Mode" => LEGEND_HORIZONTAL, "Family" => LEGEND_FAMILY_ASDEFINED]);
 
 /* Render the picture */
 $image->render("drawRadar.png");

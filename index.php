@@ -21,7 +21,7 @@ try {
     /*
      * Enable debug logging mechanism if timing is enabled
      */
-    if ($settings->get('enable_timing')) {
+    if ($settings->get('enable_stacktrace')) {
         SpotDebug::enable(SpotDebug::TRACE);
     } // if
 

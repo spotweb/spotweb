@@ -1,6 +1,60 @@
 CHANGELOG
 =========
 
+7.3
+---
+
+ * Add `ExprBuilder::ifFalse()`
+ * Add support for info on `ArrayNodeDefinition::canBeEnabled()` and `ArrayNodeDefinition::canBeDisabled()`
+ * Allow using an enum FQCN with `EnumNode`
+ * Add `NodeDefinition::docUrl()`
+
+7.2
+---
+
+ * Add `#[WhenNot]` attribute to prevent service from being registered in a specific environment
+ * Generate a meta file in JSON format for resource tracking
+ * Add `SkippingResourceChecker`
+ * Add support for `defaultNull()` on `BooleanNode`
+ * Add `StringNode` and `StringNodeDefinition`
+ * Add `ArrayNodeDefinition::stringPrototype()` method
+ * Add `NodeBuilder::stringNode()` method
+
+7.1
+---
+
+ * Allow custom meta location in `ResourceCheckerConfigCache`
+ * Allow custom meta location in `ConfigCache`
+
+7.0
+---
+
+ * Require explicit argument when calling `NodeBuilder::setParent()`
+
+6.3
+---
+
+ * Allow enum values in `EnumNode`
+
+6.2
+---
+
+ * Deprecate calling `NodeBuilder::setParent()` without any arguments
+ * Add a more accurate typehint in generated PHP config
+
+6.1
+---
+
+ * Allow using environment variables in `EnumNode`
+ * Add Node's information in generated Config
+ * Add `DefinitionFileLoader` class to load a TreeBuilder definition from an external file
+ * Add `DefinitionConfigurator` helper
+
+6.0
+---
+
+ * Remove `BaseNode::getDeprecationMessage()`
+
 5.3.0
 -----
 

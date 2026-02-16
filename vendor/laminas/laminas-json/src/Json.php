@@ -1,15 +1,37 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-json for the canonical source repository
- * @copyright https://github.com/laminas/laminas-json/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-json/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Json;
 
 use Laminas\Json\Exception\RuntimeException;
 use SplQueue;
+
+use function array_pop;
+use function count;
+use function end;
+use function function_exists;
+use function is_array;
+use function is_int;
+use function is_object;
+use function json_decode;
+use function json_encode;
+use function json_last_error;
+use function method_exists;
+use function preg_match;
+use function sprintf;
+use function str_repeat;
+use function str_replace;
+use function strlen;
+use function trim;
+
+use const JSON_ERROR_CTRL_CHAR;
+use const JSON_ERROR_DEPTH;
+use const JSON_ERROR_NONE;
+use const JSON_ERROR_SYNTAX;
+use const JSON_HEX_AMP;
+use const JSON_HEX_APOS;
+use const JSON_HEX_QUOT;
+use const JSON_HEX_TAG;
+use const JSON_PRETTY_PRINT;
 
 /**
  * Class for encoding to and decoding from JSON.
@@ -22,8 +44,8 @@ class Json
      * TYPE_ARRAY is 1, which also conveniently evaluates to a boolean true
      * value, allowing it to be used with ext/json's functions.
      */
-    const TYPE_ARRAY  = 1;
-    const TYPE_OBJECT = 0;
+    public const TYPE_ARRAY  = 1;
+    public const TYPE_OBJECT = 0;
 
     /**
      * Whether or not to use the built-in PHP functions.
@@ -68,12 +90,11 @@ class Json
      *
      * @see Laminas\Json\Expr
      *
-     * @param  mixed $valueToEncode
      * @param  bool $cycleCheck Optional; whether or not to check for object recursion; off by default
      * @param  array $options Additional options used during encoding
      * @return string JSON encoded object
      */
-    public static function encode($valueToEncode, $cycleCheck = false, array $options = [])
+    public static function encode(mixed $valueToEncode, $cycleCheck = false, array $options = [])
     {
         if (is_object($valueToEncode)) {
             if (method_exists($valueToEncode, 'toJson')) {
@@ -87,14 +108,15 @@ class Json
 
         // Pre-process and replace javascript expressions with placeholders
         $javascriptExpressions = new SplQueue();
-        if (isset($options['enableJsonExprFinder'])
-           && $options['enableJsonExprFinder'] == true
+        if (
+            isset($options['enableJsonExprFinder'])
+            && $options['enableJsonExprFinder'] === true
         ) {
             $valueToEncode = static::recursiveJsonExprFinder($valueToEncode, $javascriptExpressions);
         }
 
         // Encoding
-        $prettyPrint = (isset($options['prettyPrint']) && ($options['prettyPrint'] === true));
+        $prettyPrint   = isset($options['prettyPrint']) && ($options['prettyPrint'] === true);
         $encodedResult = self::encodeValue($valueToEncode, $cycleCheck, $options, $prettyPrint);
 
         // Post-process to revert back any Laminas\Json\Expr instances.
@@ -114,23 +136,23 @@ class Json
      * NOTE: This method is used internally by the encode method.
      *
      * @see encode
+     *
      * @param mixed $value a string - object property to be encoded
-     * @param SplQueue $javascriptExpressions
      * @param null|string|int $currentKey
      * @return mixed
      */
     protected static function recursiveJsonExprFinder(
-        $value,
+        mixed $value,
         SplQueue $javascriptExpressions,
         $currentKey = null
     ) {
         if ($value instanceof Expr) {
             // TODO: Optimize with ascii keys, if performance is bad
-            $magicKey = "____" . $currentKey . "_" . (count($javascriptExpressions));
+            $magicKey = "____" . $currentKey . "_" . count($javascriptExpressions);
 
             $javascriptExpressions->enqueue([
                 // If currentKey is integer, encodeUnicodeString call is not required.
-                'magicKey' => (is_int($currentKey)) ? $magicKey : Encoder::encodeUnicodeString($magicKey),
+                'magicKey' => is_int($currentKey) ? $magicKey : Encoder::encodeUnicodeString($magicKey),
                 'value'    => $value,
             ]);
 
@@ -166,13 +188,13 @@ class Json
      */
     public static function prettyPrint($json, array $options = [])
     {
-        $indentString = isset($options['indent']) ? $options['indent'] : '    ';
+        $indentString = $options['indent'] ?? '    ';
 
-        $json = trim($json);
+        $json   = trim($json);
         $length = strlen($json);
-        $stack = [];
+        $stack  = [];
 
-        $result = '';
+        $result    = '';
         $inLiteral = false;
 
         for ($i = 0; $i < $length; ++$i) {
@@ -201,7 +223,8 @@ class Json
                     }
 
                     $last = end($stack);
-                    if (($last === '{' && $json[$i] === '}')
+                    if (
+                        ($last === '{' && $json[$i] === '}')
                         || ($last === '[' && $json[$i] === ']')
                     ) {
                         array_pop($stack);
@@ -223,7 +246,7 @@ class Json
                         $inLiteral = true;
                     } else {
                         $backslashes = 0;
-                        $n = $i;
+                        $n           = $i;
                         while ($json[--$n] === '\\') {
                             ++$backslashes;
                         }
@@ -313,13 +336,12 @@ class Json
      * Encoder component, based on availability of the built-in and/or whether
      * or not the component encoder is requested.
      *
-     * @param mixed $valueToEncode
      * @param bool $cycleCheck
      * @param array $options
      * @param bool $prettyPrint
      * @return string
      */
-    private static function encodeValue($valueToEncode, $cycleCheck, array $options, $prettyPrint)
+    private static function encodeValue(mixed $valueToEncode, $cycleCheck, array $options, $prettyPrint)
     {
         if (function_exists('json_encode') && static::$useBuiltinEncoderDecoder !== true) {
             return self::encodeViaPhpBuiltIn($valueToEncode, $prettyPrint);
@@ -340,12 +362,11 @@ class Json
      *
      * If $prettyPrint is boolean true, also uses JSON_PRETTY_PRINT.
      *
-     * @param mixed $valueToEncode
      * @param bool $prettyPrint
      * @return string|false Boolean false return value if json_encode is not
      *     available, or the $useBuiltinEncoderDecoder flag is enabled.
      */
-    private static function encodeViaPhpBuiltIn($valueToEncode, $prettyPrint = false)
+    private static function encodeViaPhpBuiltIn(mixed $valueToEncode, $prettyPrint = false)
     {
         if (! function_exists('json_encode') || static::$useBuiltinEncoderDecoder === true) {
             return false;
@@ -369,13 +390,12 @@ class Json
      * and, if so, returns the result of that operation, otherwise returning
      * the encoded value.
      *
-     * @param mixed $valueToEncode
      * @param bool $cycleCheck
      * @param array $options
      * @param bool $prettyPrint
      * @return string
      */
-    private static function encodeViaEncoder($valueToEncode, $cycleCheck, array $options, $prettyPrint)
+    private static function encodeViaEncoder(mixed $valueToEncode, $cycleCheck, array $options, $prettyPrint)
     {
         $encodedResult = Encoder::encode($valueToEncode, $cycleCheck, $options);
 
@@ -393,7 +413,6 @@ class Json
      * associated value.
      *
      * @param string $encodedValue
-     * @param SplQueue $javascriptExpressions
      * @return string
      */
     private static function injectJavascriptExpressions($encodedValue, SplQueue $javascriptExpressions)

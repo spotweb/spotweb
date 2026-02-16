@@ -1,24 +1,23 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const LEGEND_HORIZONTAL;
 use const LEGEND_NOBORDER;
 use const TEXT_ALIGN_BOTTOMMIDDLE;
 
-class BestFitTest extends Unit
+final class BestFitTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         for ($i = 0; $i <= 20; $i++) {

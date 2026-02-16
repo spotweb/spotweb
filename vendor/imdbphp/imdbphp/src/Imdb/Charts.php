@@ -87,13 +87,13 @@ class Charts extends MdbBase
             $moneyPattern = "/[\$£]([\d\.]+)(M|K)/";
             $matches1 = null;
             preg_match($moneyPattern, $page, $matches1, PREG_OFFSET_CAPTURE, $offset);
-            $title['weekend'] = $matches1[2][0] === 'M' ? $matches1[1][0] : $matches1[1][0] / 1000;
+            $title['weekend'] = $matches1[2][0] === 'M' ? $matches1[1][0] : intval($matches1[1][0], 10) / 1000;
             $offset = $matches1[1][1] + 10;
 
             //all
             $matches2 = null;
             preg_match($moneyPattern, $page, $matches2, PREG_OFFSET_CAPTURE, $offset);
-            $title['gross'] = $matches2[2][0] === 'M' ? $matches2[1][0] : $matches2[1][0] / 1000;
+            $title['gross'] = $matches2[2][0] === 'M' ? $matches2[1][0] : intval($matches2[1][0], 10) / 1000;
             $offset = $matches2[1][1] + 10;
 
             $chart[] = $title;

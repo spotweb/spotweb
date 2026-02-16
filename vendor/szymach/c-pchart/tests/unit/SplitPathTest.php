@@ -1,24 +1,23 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Chart\Split;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_VERTICAL;
 use const TEXT_POS_RIGHT;
 
-class SplitPathTest extends Unit
+final class SplitPathTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $image = new Image(700, 230);
         $settings = [

@@ -67,7 +67,7 @@ class Services_Providers_Http
     /*
      * constructor
      */
-    public function __construct(Dao_Cache $cacheDao = null)
+    public function __construct(?Dao_Cache $cacheDao = null)
     {
         $this->_cacheDao = $cacheDao;
     }
@@ -223,6 +223,10 @@ class Services_Providers_Http
         if ($this->getCookie() !== null) {
             curl_setopt($ch, CURLOPT_COOKIE, $this->getCookie());
         } // if
+        // Add Cache-Control header
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Cache-Control: max-age=10', // Change the duration as needed
+        ]);
 
         // Only use these curl options if no open base dir is set and php mode is off.
         $manualRedirect = false;
@@ -287,16 +291,16 @@ class Services_Providers_Http
             curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHttpHeaders());
         } // if
 
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'->'.__FUNCTION__.' Curl called for url : '.$url);
         $response = curl_exec($ch);
         $errorStr = curl_error($ch);
-
         /*
          * Curl returns false on some unspecified errors (eg: a timeout)
          */
         if ($response !== false) {
             $curl_info = curl_getinfo($ch);
+            SpotDebug::msg(SpotDebug::DEBUG, 'curl info', $curl_info);
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
             /*
              * Server responded with 304 (Resource not modified)
              */
@@ -411,6 +415,10 @@ class Services_Providers_Http
          * Is this URL stored in the cache and is it still valid?
          */
         $content = $this->_cacheDao->getCachedHttp($url_md5);
+
+        $stp = $content['stamp'] ?? 0; // Defaults to null if $content or 'stamp' doesn't exist
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'-> performCachedGet, content stamp='.$stp.' ttl='.$ttl.' time='.time().' diff='.time() - $stp);
+
         if ((!$content) || ((time() - (int) $content['stamp']) > $ttl)) {
             if (!$content) {
                 $content = ['stamp' => null];

@@ -1,0 +1,619 @@
+/* Modern filters (hyper-minimal accent panels) */
+
+div.filter {
+  --filter-card-bg: rgba(16, 22, 33, 0.68);
+  --filter-card-border: rgba(148, 163, 184, 0.18);
+  --filter-card-text: rgba(226, 232, 240, 0.94);
+  --filter-chip-bg: rgba(96, 165, 250, 0.85);
+  --filter-muted: rgba(148, 163, 184, 0.7);
+  --filter-backdrop: rgba(6, 9, 15, 0.78);
+  background: var(--filter-backdrop);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.26);
+  padding: 8px 8px;
+}
+
+html[data-theme="light"] div.filter {
+  --filter-card-bg: rgba(255, 255, 255, 0.94);
+  --filter-card-border: rgba(15, 23, 42, 0.08);
+  --filter-card-text: #0f172a;
+  --filter-chip-bg: rgba(37, 99, 235, 0.82);
+  --filter-muted: #475569;
+  --filter-backdrop: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.09);
+}
+
+div#filter,
+div.filter {
+  color: var(--filter-card-text, rgba(226, 232, 240, 0.9)) !important;
+}
+
+div.filter ul.filterlist li {
+  margin: 0;
+  --filter-accent: rgba(148, 163, 184, 0.5);
+  --filter-accent-soft: rgba(148, 163, 184, 0.15);
+}
+
+div.filter ul.filterlist li a.filter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 2px 28px 2px 10px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  background: var(--filter-card-bg) !important;
+  border: 1px solid var(--filter-card-border) !important;
+  color: var(--filter-card-text) !important;
+  text-decoration: none !important;
+  font-size: 0.75rem;
+  letter-spacing: 0.006em;
+  width: 180px;
+  box-sizing: border-box;
+  box-shadow: inset 4px 0 0 var(--filter-accent, rgba(148, 163, 184, 0.35)),
+              0 8px 18px var(--filter-accent-soft, rgba(15, 23, 42, 0.08));
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+div.filter ul.filterlist li a.filter::before {
+  content: "";
+  position: absolute;
+  inset: 12% auto 12% 10px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--filter-accent, rgba(148, 163, 184, 0.6));
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+div.filter ul.filterlist li a.filter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--filter-accent-soft, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+div.filter ul.filterlist li a.filter:hover,
+div.filter ul.filterlist li a.filter:focus-visible {
+  transform: translateX(1px);
+  border-color: var(--filter-accent, rgba(148, 163, 184, 0.6)) !important;
+}
+
+div.filter ul.filterlist li a.filter:hover::after,
+div.filter ul.filterlist li a.filter.selected::after {
+  opacity: 0.35;
+}
+
+div.filter ul.filterlist li a.filter.selected {
+  box-shadow: inset 4px 0 0 var(--filter-accent, rgba(148, 163, 184, 0.45)),
+              0 10px 22px var(--filter-accent-soft, rgba(15, 23, 42, 0.12));
+}
+
+div.filter ul.filterlist li a.filter .newspots {
+  background: var(--filter-chip-bg) !important;
+  color: #fff !important;
+  border-radius: 999px;
+  padding: 0 6px;
+  font-weight: 500;
+  font-size: 0.72rem;
+  margin-left: 8px;
+  order: 98;
+}
+
+div.filter ul.filterlist li {
+  position: relative;
+}
+
+div.filter ul.filterlist li span.toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  float: none;
+  margin: 0;
+  width: 20px !important;
+  height: 20px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+div#filter h4 {
+  color: var(--filter-card-text) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)) !important;
+  border-radius: 10px;
+  border: 1px solid var(--filter-card-border) !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  margin-bottom: 8px;
+}
+
+div#filter ul li {
+  color: inherit !important;
+}
+
+div#filter *,
+div.filter * {
+  color: inherit !important;
+  text-shadow: none !important;
+}
+
+div#filter a,
+div#filter ul li a,
+div#filter li a,
+div.filter a,
+.filter a {
+  color: inherit !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.005em;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+div#filter a:hover,
+div#filter ul li a:hover,
+div.filter a:hover,
+.filter a:hover {
+  color: var(--accent-color, #93c5fd) !important;
+  background-color: rgba(125, 211, 252, 0.06) !important;
+  text-decoration: none !important;
+}
+
+div.filter li,
+div#filter li,
+div#filter span,
+div.filter span {
+  color: inherit !important;
+  font-weight: 500 !important;
+}
+
+div#filter .count,
+div.filter .count,
+div#filter small,
+div.filter small {
+  color: rgba(226, 232, 240, 0.85) !important;
+  font-weight: 500 !important;
+}
+
+div#filter img,
+div.filter img,
+div#filter .icon,
+div.filter .icon,
+div#filter input,
+div.filter input {
+  filter: brightness(1.3) contrast(1.2) !important;
+  opacity: 1 !important;
+}
+
+div#filter .toggle,
+div.filter .toggle,
+div#filter .edit,
+div.filter .edit {
+  background: rgba(248, 250, 252, 0.08) !important;
+  color: inherit !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
+  filter: none !important;
+  border-radius: 6px !important;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+/* Accent palette per category */
+div.filter ul.filterlist li[class*="spotcat0"],
+div.filter ul.subfilterlist li[class*="spotcat0"] {
+  --filter-accent: #7db4ff;
+  --filter-accent-soft: rgba(125, 180, 255, 0.16);
+}
+
+div.filter ul.filterlist li[class*="spotcat1"],
+div.filter ul.subfilterlist li[class*="spotcat1"] {
+  --filter-accent: #f4c152;
+  --filter-accent-soft: rgba(244, 193, 82, 0.18);
+}
+
+div.filter ul.filterlist li[class*="spotcat2"],
+div.filter ul.subfilterlist li[class*="spotcat2"] {
+  --filter-accent: #4dd4b0;
+  --filter-accent-soft: rgba(77, 212, 176, 0.18);
+}
+
+div.filter ul.filterlist li[class*="spotcat3"],
+div.filter ul.subfilterlist li[class*="spotcat3"] {
+  --filter-accent: #ff8a8a;
+  --filter-accent-soft: rgba(255, 138, 138, 0.18);
+}
+
+div.filter ul.filterlist li[class*="spotcat4"],
+div.filter ul.subfilterlist li[class*="spotcat4"] {
+  --filter-accent: #f472b6;
+  --filter-accent-soft: rgba(244, 114, 182, 0.2);
+}
+
+div.filter ul.filterlist li[class*="spotcat5"],
+div.filter ul.subfilterlist li[class*="spotcat5"] {
+  --filter-accent: #7dd3fc;
+  --filter-accent-soft: rgba(125, 211, 252, 0.18);
+}
+
+div.filter ul.subfilterlist {
+  margin: 6px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--filter-accent, rgba(148, 163, 184, 0.4));
+  list-style: none;
+}
+
+div.filter ul.subfilterlist li {
+  margin: 3px 0;
+}
+
+div.filter ul.subfilterlist li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 4px 10px 4px 14px;
+  border-radius: 8px;
+  background: var(--filter-card-bg) !important;
+  border: 1px solid var(--filter-card-border) !important;
+  color: var(--filter-card-text) !important;
+  text-decoration: none !important;
+  font-size: 0.78rem;
+  position: relative;
+  box-shadow: inset 3px 0 0 var(--filter-accent, rgba(148, 163, 184, 0.4)),
+              0 4px 10px var(--filter-accent-soft, rgba(15, 23, 42, 0.07));
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+div.filter ul.subfilterlist li a:hover,
+div.filter ul.subfilterlist li a:focus-visible {
+  transform: translateX(1px);
+  border-color: var(--filter-accent, rgba(148, 163, 184, 0.5)) !important;
+}
+
+/* Quicklinks & maintenance states */
+div.filter ul.filterlist.quicklinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 2px 0 4px;
+}
+
+div.filter ul.filterlist.quicklinks li {
+  margin: 0;
+}
+
+div.filter ul.filterlist.quicklinks li a.filter {
+  width: 100%;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--filter-muted) !important;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  justify-content: flex-start;
+  gap: 6px;
+  box-shadow: none !important;
+}
+
+div.filter ul.filterlist.quicklinks li a.filter:hover,
+div.filter ul.filterlist.quicklinks li a.filter:focus-visible,
+div.filter ul.filterlist.quicklinks li a.filter.selected {
+  border-color: transparent !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--filter-card-text) !important;
+}
+
+div.filter ul.filterlist.quicklinks li a.filter::before,
+div.filter ul.filterlist.quicklinks li a.filter::after {
+  content: none !important;
+}
+
+div.filter ul.filterlist.quicklinks li a.filter .newspots {
+  display: none;
+}
+
+div.filter ul.filterlist.maintenancebox li a.filter {
+  border-style: solid;
+  border-color: rgba(248, 113, 113, 0.45) !important;
+  color: rgba(248, 113, 113, 0.9) !important;
+  box-shadow: none !important;
+}
+
+/* Erotica accent helpers */
+div.filter ul.filterlist li.spotcat4,
+div.filter ul.filterlist li[class*="spotcat4"],
+div.filter ul.subfilterlist li[class*="spotcat4"] {
+  --filter-accent: #f472b6;
+  --filter-accent-soft: rgba(244, 114, 182, 0.22);
+}
+
+div.filter ul.subfilterlist li.spotcat0:has(.spoticon-female),
+div.filter ul.subfilterlist li:has(.spoticon-female),
+div.filter ul.subfilterlist li a[href*="hetero"],
+div.filter ul.subfilterlist li a[href*="gay"],
+div.filter ul.subfilterlist li a[href*="bi"] {
+  --filter-accent: #f472b6;
+  --filter-accent-soft: rgba(244, 114, 182, 0.28);
+}
+
+[data-theme="dark"] span.spoticon,
+[data-theme="dark"] div.filter span.spoticon,
+[data-theme="dark"] ul.filterlist span.spoticon {
+  filter: invert(1) brightness(0.8) !important;
+}
+
+[data-theme="light"] span.spoticon,
+[data-theme="light"] div.filter span.spoticon,
+[data-theme="light"] ul.filterlist span.spoticon {
+  filter: none !important;
+}
+
+/* Advanced search overlay (solid background) */
+div.sidebarPanel.advancedSearch {
+  position: absolute;
+  top: calc(var(--sw-toolbar-offset, 42px) + 6px);
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  background: #ffffff !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  border-radius: 10px;
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.20);
+  padding: 10px 12px;
+  z-index: 320;
+  overflow-y: auto;
+  min-height: calc(100vh - var(--sw-toolbar-offset, 42px) - 12px);
+}
+
+body.fixed div#filter .sidebarPanel.advancedSearch {
+  position: fixed;
+  left: 0;
+  right: auto;
+}
+
+div.sidebarPanel.advancedSearch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+div.sidebarPanel.advancedSearch > * {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch::before {
+  background: #03050a !important;
+  border-color: rgba(15, 23, 42, 0.65) !important;
+  box-shadow: 0 24px 54px rgba(0,0,0,0.75);
+}
+div.sidebarPanel.advancedSearch h4,
+div.sidebarPanel.advancedSearch h4 a {
+  background: #f4f5f7 !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  color: var(--color-text) !important;
+  text-shadow: none !important;
+}
+
+div.sidebarPanel.advancedSearch div.search,
+div.sidebarPanel.advancedSearch ul.search li input+label,
+div.sidebarPanel.advancedSearch ul.search select,
+div.sidebarPanel.advancedSearch table.search tr,
+div.sidebarPanel.advancedSearch table.search th,
+div.sidebarPanel.advancedSearch table.search td,
+div.sidebarPanel.advancedSearch ul.dynatree-container,
+div.sidebarPanel.advancedSearch .ui-slider,
+div.sidebarPanel.advancedSearch .ui-slider-range,
+div.sidebarPanel.advancedSearch a.greyButton.addFilter {
+  background: #f9fafb !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  color: var(--color-text) !important;
+  text-shadow: none !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+div.sidebarPanel.advancedSearch ul.dynatree-container a,
+div.sidebarPanel.advancedSearch ul.dynatree-container span {
+  color: #111827 !important;
+}
+
+div.sidebarPanel.advancedSearch select {
+  background: #0f1622 !important;
+  border: 1px solid rgba(15, 23, 42, 0.6) !important;
+  color: #f8fafc !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+  appearance: none;
+}
+
+div.sidebarPanel.advancedSearch select option {
+  background: #0b1120 !important;
+  color: #f8fafc !important;
+}
+
+div.sidebarPanel.advancedSearch ul.search li input:checked + label,
+div.sidebarPanel.advancedSearch ul.search li input:focus + label,
+div.sidebarPanel.advancedSearch ul.search li input:hover + label {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+}
+
+div.sidebarPanel.advancedSearch div.search input.searchbox {
+  color: var(--color-text);
+}
+
+div.sidebarPanel.advancedSearch a.greyButton.addFilter {
+  color: #fff !important;
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.55);
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch h4,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch h4 a,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch div.search,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search li input+label,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search select,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch table.search tr,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch .ui-slider {
+  background: rgba(4, 6, 10, 0.95) !important;
+  border-color: rgba(8, 13, 22, 0.9) !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container a,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container span {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search li input:checked + label,
+html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search li input:hover + label {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch select {
+  background: rgba(4, 6, 10, 0.85) !important;
+  border-color: rgba(8, 13, 22, 0.78) !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch select option {
+  background: rgba(3, 5, 10, 0.95) !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] div.sidebarPanel.advancedSearch a.greyButton.addFilter {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+
+/* We1rdo-like filters (match classic layout) */
+div#filter,
+div.filter {
+  background: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+div#filter ul,
+div.filter ul {
+  margin: 0 0 5px !important;
+  padding: 0 0 0 5px !important;
+}
+
+div#filter ul ul,
+div.filter ul ul {
+  margin: 0 0 0 10px !important;
+  padding: 0 !important;
+}
+
+div#filter li,
+div.filter li {
+  list-style: none !important;
+  margin: 0 0 5px 0 !important;
+}
+
+div#filter li li,
+div.filter li li {
+  margin: 2px 0 0 !important;
+}
+
+div#filter ul.filterlist li a.filter,
+div#filter ul.subfilterlist li a,
+div#filter ul.filterlist.quicklinks li a.filter,
+div.filter ul.filterlist li a.filter,
+div.filter ul.subfilterlist li a,
+div.filter ul.filterlist.quicklinks li a.filter {
+  display: block !important;
+  width: 100% !important;
+  background-color: #ececec !important;
+  line-height: 20px !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  color: #000 !important;
+  font-weight: bold !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important;
+  padding: 0 6px !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+  transform: none !important;
+}
+
+div#filter > ul > li.spotcat0 a,
+div.filter > ul > li.spotcat0 a { background-color: #daecff !important; }
+div#filter > ul > li.spotcat1 a,
+div.filter > ul > li.spotcat1 a { background-color: #fffad3 !important; }
+div#filter > ul > li.spotcat2 a,
+div.filter > ul > li.spotcat2 a { background-color: #cbffcb !important; }
+div#filter > ul > li.spotcat3 a,
+div.filter > ul > li.spotcat3 a { background-color: #fedede !important; }
+
+div#filter a span.newspots,
+div.filter a span.newspots {
+  color: #333 !important;
+  margin: 0 3px 0 5px !important;
+  padding: 0 3px !important;
+  border-radius: 2px !important;
+  background: transparent !important;
+}
+
+div#filter li a.selected span.newspots,
+div.filter li a.selected span.newspots {
+  background-color: #222 !important;
+  color: #fff !important;
+}
+
+div#filter li span.toggle,
+div.filter li span.toggle {
+  display: block !important;
+  float: right !important;
+  width: 15px !important;
+  height: 14px !important;
+  margin: 2px !important;
+  border-radius: 4px !important;
+  background: url(../../we1rdo/img/sprite.png) no-repeat -77px -98px !important;
+  border: none !important;
+}
+
+div#filter li span.inclusive,
+div.filter li span.inclusive {
+  display: block !important;
+  float: right !important;
+  width: 15px !important;
+  line-height: 14px !important;
+  margin: 2px !important;
+}
+
+div#filter li.spotcat0 span.toggle,
+div.filter li.spotcat0 span.toggle { background-color: #62aefd !important; border: 1px solid #006cab !important; color: #006cab !important; }
+div#filter li.spotcat1 span.toggle,
+div.filter li.spotcat1 span.toggle { background-color: #f2d87c !important; border: 1px solid #cd9f00 !important; color: #cd9f00 !important; }
+div#filter li.spotcat2 span.toggle,
+div.filter li.spotcat2 span.toggle { background-color: #84f484 !important; border: 1px solid #00ab00 !important; color: #00ab00 !important; }
+div#filter li.spotcat3 span.toggle,
+div.filter li.spotcat3 span.toggle { background-color: #f99797 !important; border: 1px solid #ab1c00 !important; color: #ab1c00 !important; }
+

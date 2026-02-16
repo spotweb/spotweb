@@ -56,9 +56,12 @@ class Services_Providers_CommentImage
     private function getAvatarImage($md5, $size, $default, $rating)
     {
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
-        $url = 'http://www.gravatar.com/avatar/'.$md5.'?s='.$size.'&d='.$default.'&r='.$rating;
+        //$url = 'https://www.gravatar.com/avatar/'.$md5.'?s='.$size.'&d='.$default.'&r='.$rating.'&t='.time();
+        $url = 'https://www.gravatar.com/avatar/'.$md5.'?s='.$size.'&d='.$default.'&r='.$rating;
+        sleep(1);
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'-> GetAvatarImage, url='.$url);
 
-        list($return_code, $data) = $this->_serviceHttp->performCachedGet($url, true, 60 * 60);
+        list($return_code, $data) = $this->_serviceHttp->performCachedGet($url, true, 3600); //60 * 60
 
         $dimensions = $this->_svc_ImageUtil->getImageDimensions($data);
 

@@ -18,13 +18,13 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('Hayao Miyazaki', $person->name());
     }
 
-//    public function test_savephoto()
-//    {
-//        //@todo
-//        return;
-//        $person = $this->getimdb_person();
-//        $this->assertEquals('', $person->savephoto());
-//    }
+    // public function test_savephoto()
+    // {
+    //     //@todo
+    //     return;
+    //     $person = $this->getimdb_person();
+    //     $this->assertEquals('', $person->savephoto());
+    // }
 
     public function test_movies_all()
     {
@@ -69,9 +69,9 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('2010', $arrietty['year']);
         $this->assertEquals(Title::MOVIE, $arrietty['title_type']);
         //@TODO 'chname' as 'Producer' is surely wrong, it should be executive producer or nothing
-//    $this->assertEquals('', $result[0]['chid']);
-//    $this->assertEquals('', $result[0]['chname']);
-//    $this->assertEquals('', $result[0]['addons']);
+        // $this->assertEquals('', $result[0]['chid']);
+        // $this->assertEquals('', $result[0]['chname']);
+        // $this->assertEquals('', $result[0]['addons']);
 
         $houseHunting = $result[3];
         $this->assertEquals('0756260', $houseHunting['mid']);
@@ -159,7 +159,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $person = $this->getimdb_person();
         $result = $person->movies_thanx();
         $this->assertIsArray($result);
-        $this->assertCount(6, $result);
+        $this->assertCount(7, $result);
         $laLuna = array_find_item($result, 'mid', '1957945');
         $this->assertEquals('1957945', $laLuna['mid']);
         $this->assertEquals('Boy on the Moon', $laLuna['name']);
@@ -414,7 +414,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
     //@TODO Write proper tests for this method
     public function test_trademark()
     {
-        $person = $this->getimdb_person();
+        $person = $this->getimdb_person("nm0005132");
         $this->assertNotEmpty($person->trademark());
     }
 
@@ -515,7 +515,7 @@ class PersonTest extends PHPUnit\Framework\TestCase
         $config->imdbsite = 'www.imdb.com';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
-        $config->cache_expire = 3600;
+        $config->cache_expire = 86400;
 
         return new \Imdb\Person($id, $config);
     }

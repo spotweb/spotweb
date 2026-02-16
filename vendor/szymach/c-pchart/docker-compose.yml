@@ -1,9 +1,0 @@
----
-version: "3.4"
-
-services:
-    web:
-        image: fsiopen/docker-php-apache:alpine-8.1
-        container_name: c-pchart-php
-        volumes:
-            - ./:/var/www/application

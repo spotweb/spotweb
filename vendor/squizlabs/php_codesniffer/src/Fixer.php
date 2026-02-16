@@ -7,11 +7,13 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer;
 
+use InvalidArgumentException;
+use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Common;
 
@@ -70,7 +72,7 @@ class Fixer
      * If a token is being "fixed" back to its last value, the fix is
      * probably conflicting with another.
      *
-     * @var array<int, string>
+     * @var array<int, array<string, mixed>>
      */
     private $oldTokenValues = [];
 
@@ -80,7 +82,7 @@ class Fixer
      * All changes in changeset must be able to be applied, or else
      * the entire changeset is rejected.
      *
-     * @var array
+     * @var array<int, string>
      */
     private $changeset = [];
 
@@ -199,7 +201,7 @@ class Fixer
 
         $this->enabled = false;
 
-        if ($this->numFixes > 0) {
+        if ($this->numFixes > 0 || $this->inConflict === true) {
             if (PHP_CODESNIFFER_VERBOSITY > 1) {
                 if (ob_get_level() > 0) {
                     ob_end_clean();
@@ -220,12 +222,14 @@ class Fixer
     /**
      * Generates a text diff of the original file and the new content.
      *
-     * @param string  $filePath Optional file path to diff the file against.
-     *                          If not specified, the original version of the
-     *                          file will be used.
-     * @param boolean $colors   Print coloured output or not.
+     * @param string|null $filePath Optional file path to diff the file against.
+     *                              If not specified, the original version of the
+     *                              file will be used.
+     * @param boolean     $colors   Print coloured output or not.
      *
      * @return string
+     *
+     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException When the diff command fails.
      */
     public function generateDiff($filePath=null, $colors=true)
     {
@@ -246,19 +250,56 @@ class Fixer
         $fixedFile = fopen($tempName, 'w');
         fwrite($fixedFile, $contents);
 
-        // We must use something like shell_exec() because whitespace at the end
+        // We must use something like shell_exec() or proc_open() because whitespace at the end
         // of lines is critical to diff files.
+        // Using proc_open() instead of shell_exec improves performance on Windows significantly,
+        // while the results are the same (though more code is needed to get the results).
+        // This is specifically due to proc_open allowing to set the "bypass_shell" option.
         $filename = escapeshellarg($filename);
         $cmd      = "diff -u -L$filename -LPHP_CodeSniffer $filename \"$tempName\"";
 
-        $diff = shell_exec($cmd);
+        // Stream 0 = STDIN, 1 = STDOUT, 2 = STDERR.
+        $descriptorspec = [
+            0 => [
+                'pipe',
+                'r',
+            ],
+            1 => [
+                'pipe',
+                'w',
+            ],
+            2 => [
+                'pipe',
+                'w',
+            ],
+        ];
+
+        $options = null;
+        if (stripos(PHP_OS, 'WIN') === 0) {
+            $options = ['bypass_shell' => true];
+        }
+
+        $process = proc_open($cmd, $descriptorspec, $pipes, $cwd, null, $options);
+        if (is_resource($process) === false) {
+            throw new RuntimeException('Could not obtain a resource to execute the diff command.');
+        }
+
+        // We don't need these.
+        fclose($pipes[0]);
+        fclose($pipes[2]);
+
+        // Stdout will contain the actual diff.
+        $diff = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        proc_close($process);
 
         fclose($fixedFile);
         if (is_file($tempName) === true) {
             unlink($tempName);
         }
 
-        if ($diff === null) {
+        if ($diff === false || $diff === '') {
             return '';
         }
 
@@ -349,7 +390,7 @@ class Fixer
     /**
      * Start recording actions for a changeset.
      *
-     * @return void
+     * @return void|false
      */
     public function beginChangeset()
     {
@@ -362,7 +403,7 @@ class Fixer
             if ($bt[1]['class'] === __CLASS__) {
                 $sniff = 'Fixer';
             } else {
-                $sniff = Util\Common::getSniffCode($bt[1]['class']);
+                $sniff = $this->getSniffCodeForDebug($bt[1]['class']);
             }
 
             $line = $bt[0]['line'];
@@ -447,7 +488,7 @@ class Fixer
                     $line  = $bt[0]['line'];
                 }
 
-                $sniff = Util\Common::getSniffCode($sniff);
+                $sniff = $this->getSniffCodeForDebug($sniff);
 
                 $numChanges = count($this->changeset);
 
@@ -504,7 +545,7 @@ class Fixer
                 $line  = $bt[0]['line'];
             }
 
-            $sniff = Util\Common::getSniffCode($sniff);
+            $sniff = $this->getSniffCodeForDebug($sniff);
 
             $tokens     = $this->currentFile->getTokens();
             $type       = $tokens[$stackPtr]['type'];
@@ -619,7 +660,7 @@ class Fixer
                 $line  = $bt[0]['line'];
             }
 
-            $sniff = Util\Common::getSniffCode($sniff);
+            $sniff = $this->getSniffCodeForDebug($sniff);
 
             $tokens     = $this->currentFile->getTokens();
             $type       = $tokens[$stackPtr]['type'];
@@ -657,10 +698,10 @@ class Fixer
     /**
      * Replace the content of a token with a part of its current content.
      *
-     * @param int $stackPtr The position of the token in the token stack.
-     * @param int $start    The first character to keep.
-     * @param int $length   The number of characters to keep. If NULL, the content of
-     *                      the token from $start to the end of the content is kept.
+     * @param int      $stackPtr The position of the token in the token stack.
+     * @param int      $start    The first character to keep.
+     * @param int|null $length   The number of characters to keep. If NULL, the content of
+     *                           the token from $start to the end of the content is kept.
      *
      * @return bool If the change was accepted.
      */
@@ -801,6 +842,26 @@ class Fixer
         }
 
     }//end changeCodeBlockIndent()
+
+
+    /**
+     * Get the sniff code for the current sniff or the class name if the passed class is not a sniff.
+     *
+     * @param string $className Class name.
+     *
+     * @return string
+     */
+    private function getSniffCodeForDebug($className)
+    {
+        try {
+            $sniffCode = Common::getSniffCode($className);
+            return $sniffCode;
+        } catch (InvalidArgumentException $e) {
+            // Sniff code could not be determined. This may be an abstract sniff class or a helper class.
+            return $className;
+        }
+
+    }//end getSniffCodeForDebug()
 
 
 }//end class

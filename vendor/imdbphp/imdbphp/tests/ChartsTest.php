@@ -28,8 +28,8 @@ class ChartsTest extends PHPUnit\Framework\TestCase
 
         $this->assertIsArray($boxOffice);
         // Commented out while cinemas are closed
-//        $this->assertTrue(count($boxOffice) >= 9);
-//        $this->assertTrue(count($boxOffice) < 11);
+        // $this->assertTrue(count($boxOffice) >= 9);
+        // $this->assertTrue(count($boxOffice) < 11);
         foreach ($boxOffice as $film) {
             $this->assertIsArray($film);
             $this->assertCount(3, $film);
@@ -45,7 +45,7 @@ class ChartsTest extends PHPUnit\Framework\TestCase
         $config->imdbsite = 'www.imdb.com';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
-        $config->cache_expire = 3600;
+        $config->cache_expire = 86400;
 
         return new Charts($config);
     }

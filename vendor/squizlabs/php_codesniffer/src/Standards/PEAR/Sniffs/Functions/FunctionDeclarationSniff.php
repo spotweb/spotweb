@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions;
@@ -39,7 +39,7 @@ class FunctionDeclarationSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -66,8 +66,6 @@ class FunctionDeclarationSniff implements Sniff
 
         if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
             || isset($tokens[$stackPtr]['parenthesis_closer']) === false
-            || $tokens[$stackPtr]['parenthesis_opener'] === null
-            || $tokens[$stackPtr]['parenthesis_closer'] === null
         ) {
             return;
         }
@@ -103,10 +101,10 @@ class FunctionDeclarationSniff implements Sniff
         // enforced by the previous check because there is no content between the keywords
         // and the opening parenthesis.
         // Unfinished closures are tokenized as T_FUNCTION however, and can be excluded
-        // by checking for the scope_opener.
-        if ($tokens[$stackPtr]['code'] === T_FUNCTION
-            && (isset($tokens[$stackPtr]['scope_opener']) === true || $phpcsFile->getMethodProperties($stackPtr)['has_body'] === false)
-        ) {
+        // by checking if the function has a name.
+        $methodProps = $phpcsFile->getMethodProperties($stackPtr);
+        $methodName  = $phpcsFile->getDeclarationName($stackPtr);
+        if ($tokens[$stackPtr]['code'] === T_FUNCTION && $methodName !== null) {
             if ($tokens[($openBracket - 1)]['content'] === $phpcsFile->eolChar) {
                 $spaces = 'newline';
             } else if ($tokens[($openBracket - 1)]['code'] === T_WHITESPACE) {
@@ -125,25 +123,27 @@ class FunctionDeclarationSniff implements Sniff
             }
 
             // Must be no space before semicolon in abstract/interface methods.
-            if ($phpcsFile->getMethodProperties($stackPtr)['has_body'] === false) {
+            if ($methodProps['has_body'] === false) {
                 $end = $phpcsFile->findNext(T_SEMICOLON, $closeBracket);
-                if ($tokens[($end - 1)]['content'] === $phpcsFile->eolChar) {
-                    $spaces = 'newline';
-                } else if ($tokens[($end - 1)]['code'] === T_WHITESPACE) {
-                    $spaces = $tokens[($end - 1)]['length'];
-                } else {
-                    $spaces = 0;
-                }
+                if ($end !== false) {
+                    if ($tokens[($end - 1)]['content'] === $phpcsFile->eolChar) {
+                        $spaces = 'newline';
+                    } else if ($tokens[($end - 1)]['code'] === T_WHITESPACE) {
+                        $spaces = $tokens[($end - 1)]['length'];
+                    } else {
+                        $spaces = 0;
+                    }
 
-                if ($spaces !== 0) {
-                    $error = 'Expected 0 spaces before semicolon; %s found';
-                    $data  = [$spaces];
-                    $fix   = $phpcsFile->addFixableError($error, $end, 'SpaceBeforeSemicolon', $data);
-                    if ($fix === true) {
-                        $phpcsFile->fixer->replaceToken(($end - 1), '');
+                    if ($spaces !== 0) {
+                        $error = 'Expected 0 spaces before semicolon; %s found';
+                        $data  = [$spaces];
+                        $fix   = $phpcsFile->addFixableError($error, $end, 'SpaceBeforeSemicolon', $data);
+                        if ($fix === true) {
+                            $phpcsFile->fixer->replaceToken(($end - 1), '');
+                        }
                     }
                 }
-            }
+            }//end if
         }//end if
 
         // Must be one space before and after USE keyword for closures.
@@ -297,62 +297,73 @@ class FunctionDeclarationSniff implements Sniff
             return;
         }
 
-        // The opening brace needs to be one space away from the closing parenthesis.
+        // The opening brace needs to be on the same line as the closing parenthesis.
+        // There should only be one space between the closing parenthesis - or the end of the
+        // return type - and the opening brace.
         $opener = $tokens[$stackPtr]['scope_opener'];
         if ($tokens[$opener]['line'] !== $tokens[$closeBracket]['line']) {
             $error = 'The closing parenthesis and the opening brace of a multi-line function declaration must be on the same line';
-            $fix   = $phpcsFile->addFixableError($error, $opener, 'NewlineBeforeOpenBrace');
-            if ($fix === true) {
-                $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($opener - 1), $closeBracket, true);
-                $phpcsFile->fixer->beginChangeset();
-                $phpcsFile->fixer->addContent($prev, ' {');
+            $code  = 'NewlineBeforeOpenBrace';
 
-                // If the opener is on a line by itself, removing it will create
-                // an empty line, so just remove the entire line instead.
-                $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), $closeBracket, true);
-                $next = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true);
+            $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($opener - 1), $closeBracket, true);
+            if ($tokens[$prev]['line'] === $tokens[$opener]['line']) {
+                // End of the return type is not on the same line as the close parenthesis.
+                $phpcsFile->addError($error, $opener, $code);
+            } else {
+                $fix = $phpcsFile->addFixableError($error, $opener, $code);
+                if ($fix === true) {
+                    $phpcsFile->fixer->beginChangeset();
+                    $phpcsFile->fixer->addContent($prev, ' {');
 
-                if ($tokens[$prev]['line'] < $tokens[$opener]['line']
-                    && $tokens[$next]['line'] > $tokens[$opener]['line']
-                ) {
-                    // Clear the whole line.
-                    for ($i = ($prev + 1); $i < $next; $i++) {
-                        if ($tokens[$i]['line'] === $tokens[$opener]['line']) {
-                            $phpcsFile->fixer->replaceToken($i, '');
+                    // If the opener is on a line by itself, removing it will create
+                    // an empty line, so remove the entire line instead.
+                    $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), $closeBracket, true);
+                    $next = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true);
+
+                    if ($tokens[$prev]['line'] < $tokens[$opener]['line']
+                        && $tokens[$next]['line'] > $tokens[$opener]['line']
+                    ) {
+                        // Clear the whole line.
+                        for ($i = ($prev + 1); $i < $next; $i++) {
+                            if ($tokens[$i]['line'] === $tokens[$opener]['line']) {
+                                $phpcsFile->fixer->replaceToken($i, '');
+                            }
+                        }
+                    } else {
+                        // Just remove the opener.
+                        $phpcsFile->fixer->replaceToken($opener, '');
+                        if ($tokens[$next]['line'] === $tokens[$opener]['line']
+                            && ($opener + 1) !== $next
+                        ) {
+                            $phpcsFile->fixer->replaceToken(($opener + 1), '');
                         }
                     }
-                } else {
-                    // Just remove the opener.
-                    $phpcsFile->fixer->replaceToken($opener, '');
-                    if ($tokens[$next]['line'] === $tokens[$opener]['line']) {
-                        $phpcsFile->fixer->replaceToken(($opener + 1), '');
-                    }
-                }
 
-                $phpcsFile->fixer->endChangeset();
-            }//end if
-        } else {
-            $prev = $tokens[($opener - 1)];
-            if ($prev['code'] !== T_WHITESPACE) {
-                $length = 0;
-            } else {
-                $length = strlen($prev['content']);
-            }
-
-            if ($length !== 1) {
-                $error = 'There must be a single space between the closing parenthesis and the opening brace of a multi-line function declaration; found %s spaces';
-                $fix   = $phpcsFile->addFixableError($error, ($opener - 1), 'SpaceBeforeOpenBrace', [$length]);
-                if ($fix === true) {
-                    if ($length === 0) {
-                        $phpcsFile->fixer->addContentBefore($opener, ' ');
-                    } else {
-                        $phpcsFile->fixer->replaceToken(($opener - 1), ' ');
-                    }
-                }
+                    $phpcsFile->fixer->endChangeset();
+                }//end if
 
                 return;
             }//end if
         }//end if
+
+        $prev = $tokens[($opener - 1)];
+        if ($prev['code'] !== T_WHITESPACE) {
+            $length = 0;
+        } else {
+            $length = strlen($prev['content']);
+        }
+
+        if ($length !== 1) {
+            $error = 'There must be a single space between the closing parenthesis/return type and the opening brace of a multi-line function declaration; found %s spaces';
+            $fix   = $phpcsFile->addFixableError($error, ($opener - 1), 'SpaceBeforeOpenBrace', [$length]);
+            if ($fix === true) {
+                if ($length === 0) {
+                    $phpcsFile->fixer->addContentBefore($opener, ' ');
+                } else {
+                    $phpcsFile->fixer->replaceToken(($opener - 1), ' ');
+                }
+            }
+        }
 
     }//end processMultiLineDeclaration()
 
@@ -495,6 +506,19 @@ class FunctionDeclarationSniff implements Sniff
 
                 $lastLine = $tokens[$i]['line'];
             }//end if
+
+            if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS
+                && isset($tokens[$i]['parenthesis_closer']) === true
+            ) {
+                $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($i - 1), null, true);
+                if ($tokens[$prevNonEmpty]['code'] !== T_USE) {
+                    // Since PHP 8.1, a default value can contain a class instantiation.
+                    // Skip over these "function calls" as they have their own indentation rules.
+                    $i        = $tokens[$i]['parenthesis_closer'];
+                    $lastLine = $tokens[$i]['line'];
+                    continue;
+                }
+            }
 
             if ($tokens[$i]['code'] === T_ARRAY || $tokens[$i]['code'] === T_OPEN_SHORT_ARRAY) {
                 // Skip arrays as they have their own indentation rules.

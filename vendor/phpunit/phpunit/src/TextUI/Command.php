@@ -64,6 +64,7 @@ use PHPUnit\Util\XmlTestListRenderer;
 use ReflectionClass;
 use ReflectionException;
 use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Throwable;
 
 /**
@@ -187,7 +188,7 @@ class Command
     private $versionStringPrinted = false;
 
     /**
-     * @throws \PHPUnit\Framework\Exception
+     * @throws Exception
      */
     public static function main(bool $exit = true): int
     {
@@ -1142,17 +1143,31 @@ class Command
     {
         $this->printVersionString();
 
-        $latestVersion = file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit');
-        $isOutdated    = version_compare($latestVersion, Version::id(), '>');
+        $latestVersion           = file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit');
+        $latestCompatibleVersion = file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit-' . explode('.', Version::series())[0]);
 
-        if ($isOutdated) {
+        $notLatest           = version_compare($latestVersion, Version::id(), '>');
+        $notLatestCompatible = version_compare($latestCompatibleVersion, Version::id(), '>');
+
+        if ($notLatest || $notLatestCompatible) {
+            print 'You are not using the latest version of PHPUnit.' . PHP_EOL;
+        } else {
+            print 'You are using the latest version of PHPUnit.' . PHP_EOL;
+        }
+
+        if ($notLatestCompatible) {
             printf(
-                'You are not using the latest version of PHPUnit.' . PHP_EOL .
+                'The latest version compatible with PHPUnit %s is PHPUnit %s.' . PHP_EOL,
+                Version::id(),
+                $latestCompatibleVersion
+            );
+        }
+
+        if ($notLatest) {
+            printf(
                 'The latest version is PHPUnit %s.' . PHP_EOL,
                 $latestVersion
             );
-        } else {
-            print 'You are using the latest version of PHPUnit.' . PHP_EOL;
         }
 
         exit(TestRunner::SUCCESS_EXIT);
@@ -1265,7 +1280,7 @@ class Command
     }
 
     /**
-     * @throws \PHPUnit\Framework\Exception
+     * @throws Exception
      */
     private function handleListSuites(bool $exit): int
     {
@@ -1302,7 +1317,7 @@ class Command
     }
 
     /**
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function handleListTests(TestSuite $suite, bool $exit): int
     {
@@ -1329,7 +1344,7 @@ class Command
     }
 
     /**
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function handleListTestsXml(TestSuite $suite, string $target, bool $exit): int
     {

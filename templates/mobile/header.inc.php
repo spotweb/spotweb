@@ -14,6 +14,7 @@
 		<script src='https://code.jquery.com/jquery-1.8.2.js' type='text/javascript'></script>
 		<script src='js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.js' type='text/javascript'></script>
         <script src='templates/mobile/includes/js/spotdialogs.js' type='text/javascript'></script>
+        <script src='templates/mobile/includes/js/mobile-filters.js' type='text/javascript'></script>
 		<style>
 		    th{text-align:left;}
 		</style>

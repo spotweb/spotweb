@@ -1,42 +1,46 @@
 <?php
 
-namespace Test\CpChart\Helper;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Support\Helper;
 
 use Codeception\Module;
 use Codeception\Module\Filesystem;
 
-class Unit extends Module
+final class Unit extends Module
 {
-    public function _beforeSuite($settings = [])
+    /**
+     * @param array<string, mixed> $settings
+     */
+    public function _beforeSuite(array $settings = []): void
     {
         $chartDir = $this->getChartDirectoryPath();
-        if (!is_dir($chartDir)) {
+        if (is_dir($chartDir) === false) {
             mkdir($chartDir);
         }
 
         $this->clearOutputDirectory();
     }
 
-    public function _afterSuite($settings = [])
+    public function _afterSuite(): void
     {
         $this->clearOutputDirectory();
     }
 
-    private function clearOutputDirectory()
+    private function clearOutputDirectory(): void
     {
         $this->getFileSystem()->cleanDir($this->getChartDirectoryPath());
     }
 
-    private function getChartDirectoryPath()
+    private function getChartDirectoryPath(): string
     {
-        return sprintf(__DIR__."/../../_output/charts");
+        return sprintf(__DIR__ . '/../../_output/charts');
     }
 
-    /**
-     * @return Filesystem
-     */
-    private function getFileSystem()
+    private function getFileSystem(): Filesystem
     {
-        return $this->getModule('Filesystem');
+        /** @var Filesystem $module */
+        $module = $this->getModule('Filesystem');
+        return $module;
     }
 }

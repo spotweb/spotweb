@@ -4,14 +4,19 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-class FunctionSpacingUnitTest extends AbstractSniffUnitTest
+/**
+ * Unit test class for the FunctionSpacing sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\FunctionSpacingSniff
+ */
+final class FunctionSpacingUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -95,6 +100,17 @@ class FunctionSpacingUnitTest extends AbstractSniffUnitTest
                 553 => 1,
                 560 => 1,
                 566 => 1,
+                580 => 2,
+                583 => 4,
+                591 => 1,
+                627 => 1,
+                641 => 1,
+                672 => 1,
+                686 => 1,
+                714 => 1,
+                717 => 1,
+                727 => 1,
+                749 => 1,
             ];
 
         case 'FunctionSpacingUnitTest.2.inc':

@@ -1,11 +1,13 @@
 <?php
 
-namespace Test\CpChart;
+declare(strict_types=1);
+
+namespace Tests\CpChart\Unit;
 
 use Codeception\Test\Unit;
 use CpChart\Data;
 use CpChart\Image;
-use Test\CpChart\UnitTester;
+use Tests\CpChart\Support\UnitTester;
 
 use const DIRECTION_VERTICAL;
 use const DISPLAY_AUTO;
@@ -15,14 +17,11 @@ use const SCALE_POS_TOPBOTTOM;
 use const TEXT_ALIGN_BOTTOMMIDDLE;
 use const VOID;
 
-class FilledStepTest extends Unit
+final class FilledStepTest extends Unit
 {
-    /**
-     * @var UnitTester
-     */
-    protected $tester;
+    protected UnitTester $tester;
 
-    public function testChartRender()
+    public function testChartRender(): void
     {
         $data = new Data();
         $data->addPoints([-4, 2, VOID, 12, 8, 3], 'Probe 1');

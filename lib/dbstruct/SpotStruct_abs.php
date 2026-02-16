@@ -737,7 +737,7 @@ abstract class SpotStruct_abs
         $this->validateIndex('idx_spots_1', 'UNIQUE', 'spots', ['messageid']);
         $this->validateIndex('idx_spots_2', '', 'spots', ['stamp']);
         $this->validateIndex('idx_spots_3', '', 'spots', ['reversestamp']);
-        $this->validateIndex('idx_spots_4', '', 'spots', ['category', 'subcata', 'subcatb', 'subcatc', 'subcatd', 'subcatz']);
+        $this->validateIndex('idx_spots_4', '', 'spots', ['subcata', 'subcatb', 'subcatc', 'subcatd', 'subcatz']);
         $this->validateIndex('idx_spots_5', '', 'spots', ['spotterid']);
         $this->validateFts('idx_fts_spots', 'spots', [1 => 'poster',
             2                                           => 'title',

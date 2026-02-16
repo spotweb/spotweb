@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ToDo:
  *    Noubb tag handling

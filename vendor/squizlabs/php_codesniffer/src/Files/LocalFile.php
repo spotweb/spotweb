@@ -4,13 +4,13 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Files;
 
-use PHP_CodeSniffer\Ruleset;
 use PHP_CodeSniffer\Config;
+use PHP_CodeSniffer\Ruleset;
 use PHP_CodeSniffer\Util\Cache;
 use PHP_CodeSniffer\Util\Common;
 
@@ -160,8 +160,8 @@ class LocalFile extends File
      * and then errors and warnings to be reapplied with the new rules. This is
      * particularly useful while caching.
      *
-     * @param array $errors   The list of errors to replay.
-     * @param array $warnings The list of warnings to replay.
+     * @param array<int, array<int, array<string, mixed>>> $errors   The list of errors to replay.
+     * @param array<int, array<int, array<string, mixed>>> $warnings The list of warnings to replay.
      *
      * @return void
      */

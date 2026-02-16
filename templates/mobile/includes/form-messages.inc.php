@@ -4,7 +4,7 @@
  * Render the form results in the appropriate way, either
  * in JSON or HTML, depending on variables given by the system
  */
-function showResults(Dto_FormResult $result, array $data = null)
+function showResults(Dto_FormResult $result, ?array $data = null)
 {
     /*
      * First make sure the user actually tried
