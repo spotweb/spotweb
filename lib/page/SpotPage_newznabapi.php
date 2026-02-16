@@ -206,7 +206,12 @@ class SpotPage_newznabapi extends SpotPage_Abs
                         $searchParams['value'][] = 'Titel:=:OR:+"'.$title.'" +'.$seasonSearch.'*';
                     }
                 } else {
-                    $searchParams['value'][] = 'Titel:=:OR:+"'.$tvInfo->getTitle().'" +'.$episodeSearch;
+                    // Title only (no season/ep): use phrase only; do not append " +" when episodeSearch is empty (invalid FTS)
+                    if (!empty($episodeSearch)) {
+                        $searchParams['value'][] = 'Titel:=:OR:+"'.$tvInfo->getTitle().'" +'.$episodeSearch;
+                    } else {
+                        $searchParams['value'][] = 'Titel:=:OR:+"'.$tvInfo->getTitle().'"';
+                    }
                 }
             }
             if (empty($this->_params['cat'])) {
