@@ -33,7 +33,7 @@
 
     // View controls
     if (toolbar && !document.getElementById('viewCurrent')) {
-      var viewPref = localStorage.getItem('spotweb_view') || 'cards';
+      var viewPref = localStorage.getItem('spotweb_view') || 'table';
 
       var viewWrap = document.createElement('div');
       viewWrap.className = 'toolbarButton theme dropdown right';
@@ -65,7 +65,7 @@
       // Sync cookie from storage if missing
       try {
         if (!document.cookie.match(/(?:^|; )spotweb_view=/)) {
-          var prefView = localStorage.getItem('spotweb_view') || 'cards';
+          var prefView = localStorage.getItem('spotweb_view') || 'table';
           setViewCookie(prefView);
         }
       } catch(e){}

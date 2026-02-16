@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     SpotTiming::start('tpl:spotsinc-modern-cards');
 
-    // View mode: cards (default) or table (fallback to we1rdo table)
-    $viewMode = isset($_GET['view']) ? $_GET['view'] : (isset($_COOKIE['spotweb_view']) ? $_COOKIE['spotweb_view'] : 'cards');
+    // View mode: table (default for new users) or cards (fallback to we1rdo table for table view)
+    $viewMode = isset($_GET['view']) ? $_GET['view'] : (isset($_COOKIE['spotweb_view']) ? $_COOKIE['spotweb_view'] : 'table');
     if ($viewMode === 'table') {
         // Render only the table content from we1rdo without header/footer
         $data['spotsonly'] = true;
