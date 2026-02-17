@@ -137,6 +137,15 @@ div#filter h4 {
   margin-bottom: 8px;
 }
 
+/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) match sidebar, not white */
+html:not([data-theme="dark"]) div#filter a.viewState h4,
+html:not([data-theme="dark"]) div#filter h4 {
+  background: var(--color-surface-2) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+  text-shadow: none !important;
+}
+
 div#filter ul li {
   color: inherit !important;
 }
@@ -616,4 +625,31 @@ div#filter li.spotcat2 span.toggle,
 div.filter li.spotcat2 span.toggle { background-color: #84f484 !important; border: 1px solid #00ab00 !important; color: #00ab00 !important; }
 div#filter li.spotcat3 span.toggle,
 div.filter li.spotcat3 span.toggle { background-color: #f99797 !important; border: 1px solid #ab1c00 !important; color: #ab1c00 !important; }
+
+/* Dark mode: override We1rdo block so sidebar stays dark and readable */
+html[data-theme="dark"] div#filter ul.filterlist li a.filter,
+html[data-theme="dark"] div#filter ul.subfilterlist li a,
+html[data-theme="dark"] div#filter ul.filterlist.quicklinks li a.filter {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: var(--color-text) !important;
+  font-weight: 500 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html[data-theme="dark"] div#filter ul.filterlist li a.filter:hover,
+html[data-theme="dark"] div#filter ul.filterlist.quicklinks li a.filter:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f1f5f9 !important;
+}
+html[data-theme="dark"] div#filter > ul > li.spotcat0 a,
+html[data-theme="dark"] div.filter > ul > li.spotcat0 a { background-color: rgba(37, 99, 235, 0.2) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] div#filter > ul > li.spotcat1 a,
+html[data-theme="dark"] div.filter > ul > li.spotcat1 a { background-color: rgba(234, 179, 8, 0.2) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] div#filter > ul > li.spotcat2 a,
+html[data-theme="dark"] div.filter > ul > li.spotcat2 a { background-color: rgba(16, 185, 129, 0.2) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] div#filter > ul > li.spotcat3 a,
+html[data-theme="dark"] div.filter > ul > li.spotcat3 a { background-color: rgba(239, 68, 68, 0.2) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] div#filter a span.newspots,
+html[data-theme="dark"] div.filter a span.newspots { color: #e2e8f0 !important; }
+html[data-theme="dark"] div#filter li a.selected span.newspots,
+html[data-theme="dark"] div.filter li a.selected span.newspots { background-color: var(--color-accent) !important; color: #fff !important; }
 

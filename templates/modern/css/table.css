@@ -1,11 +1,11 @@
-﻿/* Modern table tweaks: thumbnails + readability */
+/* Modern table tweaks: thumbnails + readability */
 
 table.spots { width: 100% !important; border-spacing: 0 0; }
 table.spots tr { height: 20px; }
 table.spots tr.head th {
-  background: var(--color-surface-2) !important;
-  color: var(--color-text) !important;
-  text-shadow: none !important;
+  background: var(--sw-strip-gradient) !important;
+  color: var(--sw-strip-text) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
   height: 20px;
   line-height: 20px;
   padding: 0 0 0 5px;
@@ -33,11 +33,11 @@ table.spots td a,
 table.spots tr td a.spotlink { color: var(--color-text) !important; text-decoration: none; }
 table.spots tr:hover td a { color: var(--color-text) !important; }
 
-/* Dark theme: ensure strong contrast for table text */
+/* Dark theme: readable table text (softer white, medium weight) */
 html[data-theme="dark"] table.spots td,
 html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr:hover td a { color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr td a.spotlink { color: #e2e8f0 !important; font-weight: 500 !important; }
+html[data-theme="dark"] table.spots tr:hover td a { color: #f1f5f9 !important; }
 
 
 /* Watchlist icons (match cards view styling) */
@@ -102,12 +102,12 @@ table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; col
 table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.2) !important; color: #b91c1c !important; }
 table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.2) !important; color: #7c3aed !important; }
 
-/* Dark theme: reuse category accent backgrounds */
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.3) !important; color: #ffffff !important; }
+/* Dark theme: category accent backgrounds (softer tints for readability, see dark.css for color) */
+html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.2) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.22) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.22) !important; color: #e2e8f0 !important; }
 
 table.spots tr td.date,
 table.spots tr td.filesize { color: rgba(15, 23, 42, 0.78) !important; }
