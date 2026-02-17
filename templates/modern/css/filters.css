@@ -755,6 +755,15 @@ div.filter ul.maintenancebox {
   flex-direction: column !important;
   align-items: center !important;
 }
+div#filter ul.maintenancebox li.info,
+div.filter ul.maintenancebox li.info {
+  height: auto !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  margin: 5px 0 !important;
+  width: 100% !important;
+  font-size: 12px !important;
+}
 div#filter ul.maintenancebox li a.greyButton,
 div.filter ul.maintenancebox li a.greyButton {
   display: block !important;
@@ -763,6 +772,7 @@ div.filter ul.maintenancebox li a.greyButton {
   text-align: center !important;
   box-sizing: border-box !important;
   font-size: 12px !important;
+  color: #fff !important;
 }
 
 /* Dark mode: override We1rdo block so sidebar stays dark and readable; keep links bold */
