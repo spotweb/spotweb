@@ -14,12 +14,7 @@ html[data-theme="dark"] {
   --sw-strip-text: #f4f5f7;
 }
 
-html[data-theme="dark"] html, html[data-theme="dark"] body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+html[data-theme="dark"] html, html[data-theme="dark"] body { background: var(--color-bg); color: var(--color-text); }
 html[data-theme="dark"] div#toolbar { background: linear-gradient(180deg, #181c22, #12161c) !important; border-bottom: 1px solid #0d1014; }
 html[data-theme="dark"] .toolbarButton p { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.18) !important; }
 html[data-theme="dark"] div#filter { background: var(--color-surface); border-right: none !important; }
