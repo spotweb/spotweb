@@ -133,8 +133,8 @@ div.filter a.viewState h4 {
   color: var(--sw-strip-text) !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.75);
   border-bottom: 1px solid var(--sw-strip-border);
-  height: 24px;
-  line-height: 24px;
+  height: 26px;
+  line-height: 26px;
   margin: 0;
   border-radius: 0;
   font-size: 12px;
@@ -159,8 +159,8 @@ table.spots tr.head th {
   color: var(--sw-strip-text) !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.75) !important;
   border-bottom: 1px solid var(--sw-strip-border);
-  height: 25px;
-  line-height: 25px;
+  height: 26px;
+  line-height: 26px;
 }
 table.spots tr.head th a { color: inherit !important; }
 table.spots tr td { border-color: var(--color-border) !important; }

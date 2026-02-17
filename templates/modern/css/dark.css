@@ -22,7 +22,7 @@ html[data-theme="dark"] table.spots tr td { background: transparent; border-colo
 html[data-theme="dark"] table.spots tr:hover td { background: var(--color-surface) !important; }
 
 /* Dark sidebar: softer, clearer hierarchy */
-html[data-theme="dark"] div#filter { background: var(--color-surface-2) !important; border-right: 1px solid var(--color-border) !important; }
+html[data-theme="dark"] div#filter { background: var(--color-surface-2) !important; border-right: none !important; }
 html[data-theme="dark"] div#filter a.viewState h4,
 html[data-theme="dark"] div#filter h4 {
   background: var(--sw-strip-gradient) !important;
