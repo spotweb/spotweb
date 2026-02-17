@@ -14,7 +14,12 @@ html[data-theme="dark"] {
   --sw-strip-text: #f4f5f7;
 }
 
-html[data-theme="dark"] html, html[data-theme="dark"] body { background: var(--color-bg); color: var(--color-text); }
+html[data-theme="dark"] html, html[data-theme="dark"] body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 html[data-theme="dark"] div#toolbar { background: linear-gradient(180deg, #181c22, #12161c) !important; border-bottom: 1px solid #0d1014; }
 html[data-theme="dark"] .toolbarButton p { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.18) !important; }
 html[data-theme="dark"] div#filter { background: var(--color-surface); border-right: none !important; }
@@ -37,18 +42,18 @@ html[data-theme="dark"] div#filter ul.subfilterlist li a { background: rgba(255,
 html[data-theme="dark"] div#filter ul.filterlist li a.filter:hover,
 html[data-theme="dark"] div#filter ul.filterlist.quicklinks li a.filter:hover { background: rgba(255,255,255,0.08) !important; color: #f1f5f9 !important; }
 
-/* Dark tables: readable text – slightly softer white, normal weight (not too fat) */
+/* Dark tables: softer text color, normal weight; font-smoothing on body handles the "fat" look */
 html[data-theme="dark"] table.spots td,
 html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #e2e8f0 !important; font-weight: 500 !important; }
-html[data-theme="dark"] table.spots tr:hover td a { color: #f1f5f9 !important; }
+html[data-theme="dark"] table.spots tr td a.spotlink { color: #c8cdd3 !important; font-weight: 500 !important; }
+html[data-theme="dark"] table.spots tr:hover td a { color: #d8dde3 !important; }
 
 /* Category rows: toned-down tints so text stays readable */
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.2) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.22) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.22) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.2) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.22) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.22) !important; color: #c8cdd3 !important; }
 
 html[data-theme="dark"] .ui-icon { filter: brightness(1.4); }
 

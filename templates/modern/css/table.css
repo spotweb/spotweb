@@ -36,15 +36,15 @@ table.spots td a,
 table.spots tr td a.spotlink { color: var(--color-text) !important; text-decoration: none; }
 table.spots tr:hover td a { color: var(--color-text) !important; }
 
-/* Dark theme: readable table text (softer white, medium weight) */
+/* Dark theme: readable table text (softer color, font-smoothing handles the weight) */
 html[data-theme="dark"] table.spots td,
 html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #e2e8f0 !important; font-weight: 500 !important; }
-html[data-theme="dark"] table.spots tr:hover td a { color: #f1f5f9 !important; }
+html[data-theme="dark"] table.spots tr td a.spotlink { color: #c8cdd3 !important; font-weight: 500 !important; }
+html[data-theme="dark"] table.spots tr:hover td a { color: #d8dde3 !important; }
 
 /* NEW spots: bold title in both themes */
 table.spots tr td.title.new a.spotlink { font-weight: bold !important; }
-html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: 600 !important; color: #f1f5f9 !important; }
+html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: 600 !important; color: #cfd2d6 !important; }
 
 
 /* Watchlist icons (match cards view styling) */
@@ -113,16 +113,16 @@ table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.2) !important; colo
 table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.2) !important; color: #7c3aed !important; }
 
 /* Dark theme: category accent backgrounds (softer tints for readability, see dark.css for color) */
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.2) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.22) !important; color: #e2e8f0 !important; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.22) !important; color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.2) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.22) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.22) !important; color: #c8cdd3 !important; }
 
 table.spots tr td.date,
 table.spots tr td.filesize { color: rgba(15, 23, 42, 0.78) !important; }
 html[data-theme="dark"] table.spots tr td.date,
-html[data-theme="dark"] table.spots tr td.filesize { color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr td.filesize { color: #c8cdd3 !important; }
 table.spots tr td span.age,
 table.spots tr td span.filesize { color: inherit !important; }
 
