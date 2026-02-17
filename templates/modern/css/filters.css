@@ -611,13 +611,22 @@ div.filter li a.selected span.newspots {
   color: #fff !important;
 }
 
+div#filter ul.filterlist li a.filter,
+div.filter ul.filterlist li a.filter {
+  position: relative !important;
+}
+
 div#filter li span.toggle,
 div.filter li span.toggle {
   display: block !important;
-  float: right !important;
+  float: none !important;
+  position: absolute !important;
+  right: 6px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   width: 15px !important;
   height: 14px !important;
-  margin: 2px !important;
+  margin: 0 !important;
   border-radius: 4px !important;
   background: url(../../we1rdo/img/sprite.png) no-repeat -77px -98px !important;
   border: none !important;
@@ -640,6 +649,22 @@ div#filter li.spotcat2 span.toggle,
 div.filter li.spotcat2 span.toggle { background-color: #84f484 !important; border: 1px solid #00ab00 !important; color: #00ab00 !important; }
 div#filter li.spotcat3 span.toggle,
 div.filter li.spotcat3 span.toggle { background-color: #f99797 !important; border: 1px solid #ab1c00 !important; color: #ab1c00 !important; }
+
+/* Maintenance buttons: centered in sidebar */
+div#filter ul.maintenancebox,
+div.filter ul.maintenancebox {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+div#filter ul.maintenancebox li a.greyButton,
+div.filter ul.maintenancebox li a.greyButton {
+  display: block !important;
+  width: 200px !important;
+  max-width: 100% !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}
 
 /* Dark mode: override We1rdo block so sidebar stays dark and readable */
 html[data-theme="dark"] div#filter ul.filterlist li a.filter,
