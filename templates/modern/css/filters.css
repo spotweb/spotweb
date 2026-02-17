@@ -526,14 +526,16 @@ div.sidebarPanel.advancedSearch div.search input.searchbox {
   color: var(--color-text);
 }
 
-/* Override we1rdo: main search bar – no green focus line, readable spacing */
+/* Override we1rdo: main search bar – no sprite (green bar), no text-shadow */
 form#filterform div.search {
+  background: var(--color-surface-2, #e5e7eb) !important;
   box-shadow: none !important;
 }
 form#filterform div.search input.searchbox {
   font-size: 14px !important;
   outline: none !important;
   box-shadow: none !important;
+  text-shadow: none !important;
 }
 form#filterform div.search input.searchbox:focus {
   outline: none !important;
