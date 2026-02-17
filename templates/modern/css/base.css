@@ -12,11 +12,11 @@
 }
 
 html { background: var(--color-bg); }
-body { color: var(--color-text); font: 14px/1.6 -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+body { color: var(--color-text); font: 14px/1.6 -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
 
 /* Override we1rdo’s div.container: modern font stack without resetting font-weight */
 div.container {
-  font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif !important;
+  font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif !important;
   font-size: 14px !important;
   line-height: 1.6 !important;
 }
