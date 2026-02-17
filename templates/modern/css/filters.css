@@ -168,7 +168,6 @@ div#filter li a,
 div.filter a,
 .filter a {
   color: inherit !important;
-  font-weight: 500 !important;
   letter-spacing: 0.005em;
   border-radius: 6px;
   transition: color 0.15s ease, background 0.15s ease;
@@ -188,7 +187,6 @@ div#filter li,
 div#filter span,
 div.filter span {
   color: inherit !important;
-  font-weight: 500 !important;
 }
 
 div#filter .count,
@@ -196,7 +194,6 @@ div.filter .count,
 div#filter small,
 div.filter small {
   color: rgba(226, 232, 240, 0.85) !important;
-  font-weight: 500 !important;
 }
 
 div#filter img,

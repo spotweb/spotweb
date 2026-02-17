@@ -48,14 +48,18 @@ table.spots tr:hover td a { color: var(--color-text) !important; }
 /* Dark theme: readable table text (softer color, font-smoothing handles the weight) */
 html[data-theme="dark"] table.spots td,
 html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #c8cdd3 !important; font-weight: 500 !important; }
+html[data-theme="dark"] table.spots tr td a.spotlink { color: #c8cdd3 !important; }
 html[data-theme="dark"] table.spots tr:hover td a { color: #d8dde3 !important; }
 
-/* NEW spots: bold title in both themes (must override dark theme’s font-weight on spotlink) */
-table.spots tr td.title.new a.spotlink,
-table.spots tr td.new a.spotlink { font-weight: bold !important; }
-html[data-theme="dark"] table.spots tr td.title.new a.spotlink,
-html[data-theme="dark"] table.spots tr td.new a.spotlink { font-weight: 700 !important; color: #cfd2d6 !important; }
+/* NEW spots: bold in both themes - td, a, and spotlink all forced bold */
+table.spots tr td.new,
+table.spots tr td.title.new { font-weight: bold !important; }
+table.spots tr td.new a,
+table.spots tr td.title.new a,
+table.spots tr td.new a.spotlink,
+table.spots tr td.title.new a.spotlink { font-weight: bold !important; }
+html[data-theme="dark"] table.spots tr td.new a.spotlink,
+html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: bold !important; color: #cfd2d6 !important; }
 
 
 /* Watchlist icons (match cards view styling) */
