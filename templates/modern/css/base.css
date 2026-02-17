@@ -136,7 +136,7 @@ div.filter a.viewState h4 {
   height: 24px;
   line-height: 24px;
   margin: 0;
-  border-radius: 0 6px 6px 0;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
 }

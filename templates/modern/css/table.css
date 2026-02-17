@@ -43,7 +43,7 @@ html[data-theme="dark"] table.spots tr:hover td a { color: #f1f5f9 !important; }
 
 /* NEW spots: bold title in both themes */
 table.spots tr td.title.new a.spotlink { font-weight: bold !important; }
-html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: 700 !important; color: #f1f5f9 !important; }
+html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: 600 !important; color: #f1f5f9 !important; }
 
 
 /* Watchlist icons (match cards view styling) */

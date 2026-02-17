@@ -129,7 +129,7 @@ div.filter ul.filterlist li span.toggle {
 div#filter h4 {
   color: var(--filter-card-text) !important;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)) !important;
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 !important;
   border: 1px solid var(--filter-card-border) !important;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -144,7 +144,7 @@ html:not([data-theme="dark"]) div#filter h4 {
   color: var(--sw-strip-text) !important;
   border: 1px solid var(--sw-strip-border) !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
-  border-radius: 0 6px 6px 0 !important;
+  border-radius: 0 !important;
   height: 24px !important;
   line-height: 24px !important;
   font-size: 12px !important;
@@ -525,6 +525,12 @@ html[data-theme="dark"] div.sidebarPanel.advancedSearch a.greyButton.addFilter {
   border-color: var(--color-accent) !important;
 }
 
+/* Sidebar icons: move right to clear the category color bar */
+div#filter span.spoticon,
+div.filter span.spoticon {
+  margin-left: 10px !important;
+}
+
 /* We1rdo-like filters (match classic layout) */
 div#filter,
 div.filter {
@@ -551,7 +557,7 @@ div.filter ul ul {
 div#filter li,
 div.filter li {
   list-style: none !important;
-  margin: 0 0 5px 0 !important;
+  margin: 0 0 3px 0 !important;
 }
 
 div#filter li li,
