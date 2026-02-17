@@ -27,6 +27,9 @@ table.spots td {
   color: var(--color-text) !important;
   vertical-align: middle;
 }
+table.spots td.category {
+  border-radius: 4px 0 0 4px;
+}
 table.spots td a,
 table.spots td span,
 table.spots td label {
@@ -101,7 +104,7 @@ table.spots th.poster {
 }
 
 table.spots td.poster a {
-  display: inline-block;
+  display: block;
   min-width: 135px !important;
   width: 135px !important;
 }
