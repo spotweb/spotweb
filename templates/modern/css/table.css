@@ -1,6 +1,15 @@
 /* Modern table tweaks: thumbnails + readability */
 
-table.spots { width: 100% !important; border-spacing: 0 1px; }
+table.spots {
+  width: 100% !important;
+  border-spacing: 0 1px;
+  font-size: 12px;
+  font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+table.spots td,
+table.spots td a,
+table.spots td span,
+table.spots td label { font-size: 12px; }
 table.spots tr { height: 20px; }
 table.spots tr.head th {
   background: var(--sw-strip-gradient) !important;
