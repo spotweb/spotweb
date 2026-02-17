@@ -507,30 +507,6 @@ div.sidebarPanel.advancedSearch div.search input.searchbox {
   color: var(--color-text);
 }
 
-/* Main search bar: larger font, proper vertical alignment */
-form#filterform div.search {
-  display: flex !important;
-  align-items: center !important;
-  min-height: 36px !important;
-}
-form#filterform div.search input.searchbox {
-  font-size: 14px !important;
-  line-height: 1.4 !important;
-  padding: 6px 8px 6px 10px !important;
-  height: auto !important;
-  min-height: 24px !important;
-  box-sizing: border-box !important;
-  flex: 1 !important;
-  min-width: 0 !important;
-}
-form#filterform div.search input.filtersubmit {
-  font-size: 13px !important;
-  padding: 6px 8px !important;
-  line-height: 1 !important;
-  flex-shrink: 0 !important;
-  float: none !important;
-}
-
 div.sidebarPanel.advancedSearch a.greyButton.addFilter {
   color: #fff !important;
   background: var(--color-accent) !important;
