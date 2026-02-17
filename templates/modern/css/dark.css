@@ -8,8 +8,9 @@ html[data-theme="dark"] {
   --color-text: #eef1f4;
   --color-muted: #c3c9d2;
   --color-accent: #3b82f6;
-  --sw-strip-gradient: linear-gradient(180deg, #262b34 0%, #191d22 100%);
-  --sw-strip-border: #0d1016;
+  /* Strip (sidebar + table header) slightly lighter than navbar to differentiate */
+  --sw-strip-gradient: linear-gradient(180deg, #2e333c 0%, #22262d 100%);
+  --sw-strip-border: #1a1e24;
   --sw-strip-text: #f4f5f7;
 }
 

@@ -137,13 +137,13 @@ div#filter h4 {
   margin-bottom: 8px;
 }
 
-/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) match sidebar, not white */
+/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) darker, we1rdo-inspired */
 html:not([data-theme="dark"]) div#filter a.viewState h4,
 html:not([data-theme="dark"]) div#filter h4 {
-  background: var(--color-surface-2) !important;
-  color: var(--color-text) !important;
-  border: 1px solid var(--color-border) !important;
-  text-shadow: none !important;
+  background: var(--sw-strip-gradient) !important;
+  color: var(--sw-strip-text) !important;
+  border: 1px solid var(--sw-strip-border) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
 }
 
 div#filter ul li {
@@ -354,15 +354,18 @@ div.filter ul.subfilterlist li a[href*="bi"] {
   --filter-accent-soft: rgba(244, 114, 182, 0.28);
 }
 
-[data-theme="dark"] span.spoticon,
-[data-theme="dark"] div.filter span.spoticon,
-[data-theme="dark"] ul.filterlist span.spoticon {
-  filter: invert(1) brightness(0.8) !important;
+/* Dark mode: keep sidebar icons light so they stay readable on dark background */
+html[data-theme="dark"] span.spoticon,
+html[data-theme="dark"] div.filter span.spoticon,
+html[data-theme="dark"] ul.filterlist span.spoticon,
+html[data-theme="dark"] div#filter .icon,
+html[data-theme="dark"] div.filter .icon {
+  filter: invert(1) brightness(1.15) !important;
 }
 
-[data-theme="light"] span.spoticon,
-[data-theme="light"] div.filter span.spoticon,
-[data-theme="light"] ul.filterlist span.spoticon {
+html[data-theme="light"] span.spoticon,
+html[data-theme="light"] div.filter span.spoticon,
+html[data-theme="light"] ul.filterlist span.spoticon {
   filter: none !important;
 }
 
