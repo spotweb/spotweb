@@ -11,6 +11,7 @@ table.spots tr.head th {
   padding: 0 0 0 5px;
   font-size: 12px;
   font-weight: 600;
+  box-sizing: border-box;
 }
 table.spots td {
   background: transparent;

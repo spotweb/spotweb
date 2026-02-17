@@ -137,18 +137,19 @@ div#filter h4 {
   margin-bottom: 8px;
 }
 
-/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) darker, we1rdo-inspired; left square, right rounded; match table header height/font */
+/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) darker, no border so no line next to thead, same 26px height */
 html:not([data-theme="dark"]) div#filter a.viewState h4,
 html:not([data-theme="dark"]) div#filter h4 {
   background: var(--sw-strip-gradient) !important;
   color: var(--sw-strip-text) !important;
-  border: 1px solid var(--sw-strip-border) !important;
+  border: none !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
   border-radius: 0 !important;
   height: 26px !important;
   line-height: 26px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
+  box-sizing: border-box !important;
 }
 
 div#filter ul li {

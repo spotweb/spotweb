@@ -27,9 +27,10 @@ html[data-theme="dark"] div#filter a.viewState h4,
 html[data-theme="dark"] div#filter h4 {
   background: var(--sw-strip-gradient) !important;
   color: var(--sw-strip-text) !important;
-  border-color: var(--sw-strip-border) !important;
+  border: none !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.5) !important;
   border-radius: 0 !important;
+  box-sizing: border-box !important;
 }
 html[data-theme="dark"] div#filter ul.filterlist li a.filter,
 html[data-theme="dark"] div#filter ul.subfilterlist li a { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08) !important; color: var(--color-text) !important; }
