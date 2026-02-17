@@ -29,6 +29,7 @@ html[data-theme="dark"] div#filter h4 {
   color: var(--sw-strip-text) !important;
   border-color: var(--sw-strip-border) !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.5) !important;
+  border-radius: 0 6px 6px 0 !important;
 }
 html[data-theme="dark"] div#filter ul.filterlist li a.filter,
 html[data-theme="dark"] div#filter ul.subfilterlist li a { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08) !important; color: var(--color-text) !important; }

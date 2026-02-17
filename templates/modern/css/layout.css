@@ -65,7 +65,7 @@ html[data-theme="dark"] body.filters-open div#filter::after {
 }
 div.spots {
   margin-left: calc(var(--sw-sidebar-w) + var(--sw-gap));
-  padding: 0 10px 12px;
+  padding: 0 0 12px 10px;
 }
 
 table.spots {

@@ -129,7 +129,7 @@ div.filter ul.filterlist li span.toggle {
 div#filter h4 {
   color: var(--filter-card-text) !important;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)) !important;
-  border-radius: 10px;
+  border-radius: 0 6px 6px 0;
   border: 1px solid var(--filter-card-border) !important;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -137,13 +137,18 @@ div#filter h4 {
   margin-bottom: 8px;
 }
 
-/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) darker, we1rdo-inspired */
+/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) darker, we1rdo-inspired; left square, right rounded; match table header height/font */
 html:not([data-theme="dark"]) div#filter a.viewState h4,
 html:not([data-theme="dark"]) div#filter h4 {
   background: var(--sw-strip-gradient) !important;
   color: var(--sw-strip-text) !important;
   border: 1px solid var(--sw-strip-border) !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
+  border-radius: 0 6px 6px 0 !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
 }
 
 div#filter ul li {
@@ -354,13 +359,13 @@ div.filter ul.subfilterlist li a[href*="bi"] {
   --filter-accent-soft: rgba(244, 114, 182, 0.28);
 }
 
-/* Dark mode: keep sidebar icons light so they stay readable on dark background */
+/* Dark mode: use same icon style as light mode (no invert) */
 html[data-theme="dark"] span.spoticon,
 html[data-theme="dark"] div.filter span.spoticon,
 html[data-theme="dark"] ul.filterlist span.spoticon,
 html[data-theme="dark"] div#filter .icon,
 html[data-theme="dark"] div.filter .icon {
-  filter: invert(1) brightness(1.15) !important;
+  filter: none !important;
 }
 
 html[data-theme="light"] span.spoticon,
@@ -533,7 +538,8 @@ div.filter {
 div#filter ul,
 div.filter ul {
   margin: 0 0 5px !important;
-  padding: 0 0 0 5px !important;
+  padding: 0 6px !important;
+  box-sizing: border-box;
 }
 
 div#filter ul ul,

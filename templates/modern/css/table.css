@@ -1,14 +1,16 @@
 /* Modern table tweaks: thumbnails + readability */
 
-table.spots { width: 100% !important; border-spacing: 0 0; }
+table.spots { width: 100% !important; border-spacing: 0 1px; }
 table.spots tr { height: 20px; }
 table.spots tr.head th {
   background: var(--sw-strip-gradient) !important;
   color: var(--sw-strip-text) !important;
   text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
-  height: 20px;
-  line-height: 20px;
+  height: 24px;
+  line-height: 24px;
   padding: 0 0 0 5px;
+  font-size: 12px;
+  font-weight: 600;
 }
 table.spots td {
   background: transparent;
@@ -91,6 +93,9 @@ table.spots td.poster a {
 /* Thumbnail inside the title cell */
 /* thumbnails disabled */
 
+
+/* Buttons: lighter blue (override detail.css so Retrieve etc. use it) */
+.greyButton, .smallGreyButton { background: #6ba3e0 !important; color: #fff !important; }
 
 /* Table pager */
 .tablePager { display:flex; justify-content:center; gap:12px; margin:16px 0; }

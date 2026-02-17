@@ -137,11 +137,18 @@ div.filter a.viewState h4 {
   line-height: 24px;
   margin: 0;
   border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  font-weight: 600;
 }
 div.filter a.viewState h4 span { top: 6px !important; }
 
-/* Buttons */
-.greyButton, .smallGreyButton { background: var(--color-accent) !important; border: 0 !important; color: #fff !important; border-radius: 6px !important; }
+/* Buttons: lighter blue, readable text */
+.greyButton, .smallGreyButton {
+  background: #6ba3e0 !important;
+  border: 0 !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
 
 /* Links */
 a { color: #0f172a; }
