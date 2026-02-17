@@ -51,6 +51,14 @@ table.spots td a {
   overflow: hidden;
   white-space: nowrap;
 }
+
+/* Active row ">" badge: allow overflow so left border-radius isn’t clipped */
+table.spots tr.active td.title a.spotlink {
+  overflow: visible;
+}
+table.spots tr.active td.title a.spotlink::before {
+  border-radius: 4px !important;
+}
 table.spots tr:hover td { background: var(--color-surface) !important; }
 
 /* Ensure links are readable in dark/light */

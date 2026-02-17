@@ -447,15 +447,19 @@ div.sidebarPanel.advancedSearch h4 a {
   border: 1px solid rgba(209, 213, 219, 0.9) !important;
   color: var(--color-text) !important;
   text-shadow: none !important;
-  margin-top: 14px;
   margin-bottom: 8px;
   padding: 6px 10px;
 }
+div.sidebarPanel.advancedSearch h4:not(:first-child) {
+  margin-top: 14px;
+}
 div.sidebarPanel.advancedSearch h4:first-child {
   margin-top: 0;
+  display: flex !important;
+  align-items: center !important;
 }
 
-/* [x] close button: inline left inside the Search On header */
+/* [x] close button: left inside the Search On bar, vertically centered */
 div.sidebarPanel.advancedSearch h4 a.toggle {
   float: left !important;
   margin-right: 8px !important;
@@ -467,6 +471,7 @@ div.sidebarPanel.advancedSearch h4 a.toggle {
   filter: none !important;
   line-height: inherit !important;
   padding: 0 !important;
+  flex-shrink: 0;
 }
 
 div.sidebarPanel.advancedSearch div.search,
@@ -521,9 +526,18 @@ div.sidebarPanel.advancedSearch div.search input.searchbox {
   color: var(--color-text);
 }
 
-/* Override we1rdo 11px font on main search bar */
+/* Override we1rdo: main search bar – no green focus line, readable spacing */
+form#filterform div.search {
+  box-shadow: none !important;
+}
 form#filterform div.search input.searchbox {
   font-size: 14px !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+form#filterform div.search input.searchbox:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 form#filterform ul.search select {
   font-size: 14px !important;
@@ -751,6 +765,7 @@ div.filter ul.maintenancebox li a.greyButton {
   max-width: 100% !important;
   text-align: center !important;
   box-sizing: border-box !important;
+  font-size: 12px !important;
 }
 
 /* Dark mode: override We1rdo block so sidebar stays dark and readable; keep links bold */
