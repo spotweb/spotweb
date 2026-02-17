@@ -4,18 +4,21 @@ table.spots {
   width: 100% !important;
   border-spacing: 0 1px;
   font-size: 12px;
-  /* No Roboto: Roboto-Regular has no bold variant; Arial/Helvetica do */
-  font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
 }
 table.spots td,
 table.spots td a,
 table.spots td span,
-table.spots td label { font-size: 12px; }
-table.spots tr { height: 20px; }
+table.spots td label {
+  font-size: 12px;
+}
+table.spots tr {
+  height: 20px;
+}
 table.spots tr.head th {
   background: var(--sw-strip-gradient) !important;
   color: var(--sw-strip-text) !important;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) !important;
   height: 26px;
   line-height: 26px;
   padding: 0 0 0 5px;
@@ -32,6 +35,14 @@ table.spots td {
    We1rdo mistakenly rounds td:nth-child(2) (title); override to first-child (category). */
 table.spots td:first-child {
   border-radius: 4px 0 0 4px !important;
+}
+table.spots th.category {
+  width: 62px !important;
+  min-width: 62px !important;
+}
+table.spots tr td.category {
+  width: 57px !important;
+  min-width: 57px !important;
 }
 table.spots td:nth-child(2) {
   border-radius: 0 !important;
@@ -59,32 +70,34 @@ table.spots tr.active td.title a.spotlink {
 table.spots tr.active td.title a.spotlink::before {
   border-radius: 4px !important;
 }
-table.spots tr:hover td { background: var(--color-surface) !important; }
+table.spots tr:hover td {
+  background: var(--color-surface) !important;
+}
 
 /* Ensure links are readable in dark/light */
 table.spots td a,
-table.spots tr td a.spotlink { color: var(--color-text) !important; text-decoration: none; }
-table.spots tr:hover td a { color: var(--color-text) !important; }
+table.spots tr td a.spotlink {
+  color: var(--color-text) !important;
+  text-decoration: none;
+}
+table.spots tr:hover td a {
+  color: var(--color-text) !important;
+}
 
 /* Dark theme: readable table text (softer color, font-smoothing handles the weight) */
 html[data-theme="dark"] table.spots td,
 html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #c8cdd3 !important; }
-html[data-theme="dark"] table.spots tr:hover td a { color: #d8dde3 !important; }
-
-/* NEW spots: bold in both themes */
-table.spots tr td.new,
-table.spots tr td.title.new { font-weight: bold !important; }
-table.spots tr td.new a,
-table.spots tr td.title.new a,
-table.spots tr td.new a.spotlink,
-table.spots tr td.title.new a.spotlink { font-weight: bold !important; }
-html[data-theme="dark"] table.spots tr td.new a.spotlink,
-html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: bold !important; color: #cfd2d6 !important; }
-
+html[data-theme="dark"] table.spots tr td a.spotlink {
+  color: #c8cdd3 !important;
+}
+html[data-theme="dark"] table.spots tr:hover td a {
+  color: #d8dde3 !important;
+}
 
 /* Watchlist icons (match cards view styling) */
-table.spots td.watch { text-align: center; }
+table.spots td.watch {
+  text-align: center;
+}
 table.spots td.watch a {
   display: inline-flex;
   align-items: center;
@@ -97,12 +110,12 @@ table.spots td.watch a {
   transition: color 0.15s ease;
 }
 table.spots td.watch a::before {
-  content: '\2605';
+  content: "\2605";
   font-size: 16px;
   color: #fbbf24;
 }
 table.spots td.watch a.add::before {
-  content: '\2606';
+  content: "\2606";
   color: #f87171;
 }
 table.spots td.watch a.add:hover::before {
@@ -130,38 +143,168 @@ table.spots td.poster a {
 /* Thumbnail inside the title cell */
 /* thumbnails disabled */
 
-
 /* Buttons: see base.css (.greyButton, .smallGreyButton) */
 
 /* Table pager */
-.tablePager { display:flex; justify-content:center; gap:12px; margin:16px 0; }
-.tablePager a { display:inline-flex; align-items:center; justify-content:center; padding:6px 14px; border-radius:6px; border:1px solid var(--color-border); background:var(--color-surface-2); color:var(--color-text) !important; text-decoration:none; font-weight:600; transition:background 0.2s ease, color 0.2s ease, border 0.2s ease; }
-.tablePager a:hover { background:var(--color-surface); border-color:var(--color-accent); }
-.tablePager a:focus { outline:none; box-shadow:0 0 0 2px rgba(37,99,235,0.2); }
-.tablePager a.prev::before { content:'\00AB'; margin-right:6px; }
-.tablePager a.next::after { content:'\00BB'; margin-left:6px; }
-/* Per-category color accents */
-table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.18) !important; color: #1d4ed8 !important; }
-table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #b45309 !important; }
-table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #0f766e !important; }
-table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.2) !important; color: #b91c1c !important; }
-table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.2) !important; color: #7c3aed !important; }
+.tablePager {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+.tablePager a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text) !important;
+  text-decoration: none;
+  font-weight: 600;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border 0.2s ease;
+}
+.tablePager a:hover {
+  background: var(--color-surface);
+  border-color: var(--color-accent);
+}
+.tablePager a:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+.tablePager a.prev::before {
+  content: "\00AB";
+  margin-right: 6px;
+}
+.tablePager a.next::after {
+  content: "\00BB";
+  margin-left: 6px;
+}
+/* Per-category row tints */
+table.spots tr.spotcat0 td {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #1d4ed8 !important;
+}
+table.spots tr.spotcat1 td {
+  background: rgba(234, 179, 8, 0.22) !important;
+  color: #b45309 !important;
+}
+table.spots tr.spotcat2 td {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #0f766e !important;
+}
+table.spots tr.spotcat3 td {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #b91c1c !important;
+}
+table.spots tr.spotcat4 td {
+  background: rgba(168, 85, 247, 0.2) !important;
+  color: #7c3aed !important;
+}
 
-/* Dark theme: category accent backgrounds (softer tints for readability, see dark.css for color) */
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.2) !important; color: #c8cdd3 !important; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #c8cdd3 !important; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #c8cdd3 !important; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.22) !important; color: #c8cdd3 !important; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.22) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat0 td {
+  background: rgba(37, 99, 235, 0.2) !important;
+  color: #c8cdd3 !important;
+}
+html[data-theme="dark"] table.spots tr.spotcat1 td {
+  background: rgba(234, 179, 8, 0.22) !important;
+  color: #c8cdd3 !important;
+}
+html[data-theme="dark"] table.spots tr.spotcat2 td {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #c8cdd3 !important;
+}
+html[data-theme="dark"] table.spots tr.spotcat3 td {
+  background: rgba(239, 68, 68, 0.22) !important;
+  color: #c8cdd3 !important;
+}
+html[data-theme="dark"] table.spots tr.spotcat4 td {
+  background: rgba(168, 85, 247, 0.22) !important;
+  color: #c8cdd3 !important;
+}
+
+/* Category pills: pure CSS replaces sprite.png (colors/gradient match sprite) */
+table.spots tr td.category a {
+  background: none !important;
+  border-radius: 4px;
+  color: #fff !important;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+table.spots tr.spotcat0 td.category a {
+  background: linear-gradient(180deg, #2ba3ed 0%, #1796e4 50%, #1280c4 100%) !important;
+}
+table.spots tr.spotcat1 td.category a {
+  background: linear-gradient(180deg, #f0b429 0%, #e9a213 50%, #cd9f00 100%) !important;
+}
+table.spots tr.spotcat2 td.category a {
+  background: linear-gradient(180deg, #00ee00 0%, #00de00 50%, #00ab00 100%) !important;
+}
+table.spots tr.spotcat3 td.category a {
+  background: linear-gradient(180deg, #ef3525 0%, #de2500 50%, #ab1c00 100%) !important;
+}
+table.spots tr.spotcat4 td.category a {
+  background: linear-gradient(180deg, #9d6bf7 0%, #7c3aed 50%, #6d28d9 100%) !important;
+}
+
+/* Hover: light background (like we1rdo sprite -52px), text = darker accent for contrast */
+table.spots tr.spotcat0:hover td.category a {
+  background: #daecff !important;
+  color: #008edf !important;
+}
+table.spots tr.spotcat1:hover td.category a {
+  background: #fffad3 !important;
+  color: #cd9f00 !important;
+}
+table.spots tr.spotcat2:hover td.category a {
+  background: #cbffcb !important;
+  color: #00ab00 !important;
+}
+table.spots tr.spotcat3:hover td.category a {
+  background: #fedede !important;
+  color: #ab1c00 !important;
+}
+table.spots tr.spotcat4:hover td.category a {
+  background: #ede9fe !important;
+  color: #6d28d9 !important;
+}
+
+/* Detail panel: category badge (same sprite-accurate colors) */
+div.details table.spotheader th.category span {
+  background: none !important;
+  border-radius: 4px;
+  color: #fff !important;
+  font-weight: 700;
+}
+div.details.spotcat0 table.spotheader th.category span {
+  background: linear-gradient(180deg, #2ba3ed 0%, #1796e4 50%, #1280c4 100%) !important;
+}
+div.details.spotcat1 table.spotheader th.category span {
+  background: linear-gradient(180deg, #f0b429 0%, #e9a213 50%, #cd9f00 100%) !important;
+}
+div.details.spotcat2 table.spotheader th.category span {
+  background: linear-gradient(180deg, #00ee00 0%, #00de00 50%, #00ab00 100%) !important;
+}
+div.details.spotcat3 table.spotheader th.category span {
+  background: linear-gradient(180deg, #ef3525 0%, #de2500 50%, #ab1c00 100%) !important;
+}
 
 table.spots tr td.date,
-table.spots tr td.filesize { color: rgba(15, 23, 42, 0.78) !important; }
+table.spots tr td.filesize {
+  color: rgba(15, 23, 42, 0.78) !important;
+}
 html[data-theme="dark"] table.spots tr td.date,
-html[data-theme="dark"] table.spots tr td.filesize { color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr td.filesize {
+  color: #c8cdd3 !important;
+}
 table.spots tr td span.age,
-table.spots tr td span.filesize { color: inherit !important; }
-
-
-
+table.spots tr td span.filesize {
+  color: inherit !important;
+}
 
 /* End poster width overrides */

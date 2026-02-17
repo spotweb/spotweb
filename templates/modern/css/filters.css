@@ -142,7 +142,7 @@ div#filter h4 {
   margin-bottom: 8px;
 }
 
-/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) darker, no border so no line next to thead, same 26px height */
+/* Light mode: section headers (QUICK LINKS, FILTERS, MAINTENANCE) */
 html:not([data-theme="dark"]) div#filter a.viewState h4,
 html:not([data-theme="dark"]) div#filter h4 {
   background: var(--sw-strip-gradient) !important;
@@ -155,6 +155,10 @@ html:not([data-theme="dark"]) div#filter h4 {
   font-size: 12px !important;
   font-weight: 600 !important;
   box-sizing: border-box !important;
+  margin-right: 5px !important;
+}
+html:not([data-theme="dark"]) div#filter a.viewState:first-of-type h4 {
+  margin-right: 0 !important;
 }
 
 div#filter ul li {
@@ -774,6 +778,8 @@ div.filter ul.maintenancebox li a.greyButton {
   font-size: 12px !important;
   color: #fff !important;
 }
+div#filter ul.maintenancebox li a.greyButton:hover,
+div.filter ul.maintenancebox li a.greyButton:hover { background: #0af  !important; }
 
 /* Dark mode: override We1rdo block so sidebar stays dark and readable; keep links bold */
 html[data-theme="dark"] div#filter ul.filterlist li a.filter,
