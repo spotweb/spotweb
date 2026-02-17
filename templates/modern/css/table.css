@@ -5,6 +5,7 @@ table.spots {
   border-spacing: 0 1px;
   font-size: 12px;
   font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-synthesis: weight;
 }
 table.spots td,
 table.spots td a,
@@ -28,6 +29,10 @@ table.spots td {
   vertical-align: middle;
 }
 table.spots td.category {
+  border-radius: 4px;
+  overflow: hidden;
+}
+table.spots td.title {
   border-radius: 4px 0 0 4px;
 }
 table.spots td a,
@@ -54,13 +59,13 @@ html[data-theme="dark"] table.spots td a,
 html[data-theme="dark"] table.spots tr td a.spotlink { color: #c8cdd3 !important; }
 html[data-theme="dark"] table.spots tr:hover td a { color: #d8dde3 !important; }
 
-/* NEW spots: bold in both themes - td, a, and spotlink all forced bold */
+/* NEW spots: bold in both themes; font-synthesis allows synthetic bold when font lacks weight */
 table.spots tr td.new,
-table.spots tr td.title.new { font-weight: bold !important; }
+table.spots tr td.title.new { font-weight: bold !important; font-synthesis: weight; }
 table.spots tr td.new a,
 table.spots tr td.title.new a,
 table.spots tr td.new a.spotlink,
-table.spots tr td.title.new a.spotlink { font-weight: bold !important; }
+table.spots tr td.title.new a.spotlink { font-weight: bold !important; font-synthesis: weight; }
 html[data-theme="dark"] table.spots tr td.new a.spotlink,
 html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: bold !important; color: #cfd2d6 !important; }
 
