@@ -459,10 +459,11 @@ div.sidebarPanel.advancedSearch h4:first-child {
   align-items: center !important;
 }
 
-/* [x] close button: left inside the Search On bar, vertically centered */
+/* [x] close button: left inside the Search On bar, vertically centered – no margin/padding from h4 a */
 div.sidebarPanel.advancedSearch h4 a.toggle {
   float: left !important;
-  margin-right: 8px !important;
+  margin: 0 8px 0 0 !important;
+  padding: 0 !important;
   font-weight: bold;
   cursor: pointer;
   position: static !important;
@@ -470,7 +471,6 @@ div.sidebarPanel.advancedSearch h4 a.toggle {
   border: none !important;
   filter: none !important;
   line-height: inherit !important;
-  padding: 0 !important;
   flex-shrink: 0;
 }
 
@@ -526,9 +526,9 @@ div.sidebarPanel.advancedSearch div.search input.searchbox {
   color: var(--color-text);
 }
 
-/* Override we1rdo: main search bar – no sprite (green bar), no text-shadow */
+/* Override we1rdo: remove sprite background (green bar) */
 form#filterform div.search {
-  background: var(--color-surface-2, #e5e7eb) !important;
+  background: none !important;
   box-shadow: none !important;
 }
 form#filterform div.search input.searchbox {
