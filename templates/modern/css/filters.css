@@ -369,18 +369,13 @@ div.filter ul.subfilterlist li a[href*="bi"] {
   --filter-accent-soft: rgba(244, 114, 182, 0.28);
 }
 
-/* Dark mode: use same icon style as light mode (no invert) */
-html[data-theme="dark"] span.spoticon,
-html[data-theme="dark"] div.filter span.spoticon,
-html[data-theme="dark"] ul.filterlist span.spoticon,
-html[data-theme="dark"] div#filter .icon,
-html[data-theme="dark"] div.filter .icon {
-  filter: none !important;
-}
-
-html[data-theme="light"] span.spoticon,
-html[data-theme="light"] div.filter span.spoticon,
-html[data-theme="light"] ul.filterlist span.spoticon {
+/* Spoticons: no filter in either theme */
+span.spoticon,
+div.filter span.spoticon,
+div#filter span.spoticon,
+ul.filterlist span.spoticon,
+div#filter .icon,
+div.filter .icon {
   filter: none !important;
 }
 
@@ -434,7 +429,7 @@ div.sidebarPanel.advancedSearch #slider-reportcount {
 html[data-theme="dark"] div.sidebarPanel.advancedSearch,
 html[data-theme="dark"] div.sidebarPanel.advancedSearch::before {
   background: #03050a !important;
-  border-color: rgba(15, 23, 42, 0.65) !important;
+  border-color: rgba(148, 163, 184, 0.35) !important;
   box-shadow: 0 24px 54px rgba(0, 0, 0, 0.75);
 }
 div.sidebarPanel h4,
@@ -567,7 +562,7 @@ html[data-theme="dark"] div.sidebarPanel.advancedSearch table.search tr,
 html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container,
 html[data-theme="dark"] div.sidebarPanel.advancedSearch .ui-slider {
   background: rgba(4, 6, 10, 0.95) !important;
-  border-color: rgba(8, 13, 22, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
 }
 
 html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.dynatree-container a,
@@ -585,7 +580,7 @@ html[data-theme="dark"] div.sidebarPanel.advancedSearch ul.search li input:hover
 
 html[data-theme="dark"] div.sidebarPanel.advancedSearch select {
   background: rgba(4, 6, 10, 0.85) !important;
-  border-color: rgba(8, 13, 22, 0.78) !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
 }
 
 html[data-theme="dark"] div.sidebarPanel.advancedSearch select option {

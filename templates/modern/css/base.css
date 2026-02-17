@@ -161,19 +161,9 @@ div.filter a.viewState h4 span { top: 6px !important; }
 /* Links */
 a { color: #0f172a; }
 
-/* Spots table headers: 26px total height, match sidebar section headers */
-table.spots tr.head th {
-  background: var(--sw-strip-gradient) !important;
-  color: var(--sw-strip-text) !important;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.75) !important;
-  border-bottom: 1px solid var(--sw-strip-border);
-  height: 26px;
-  line-height: 26px;
-  box-sizing: border-box;
-}
+/* Spots table headers & rows: see table.css (loaded last) */
 table.spots tr.head th a { color: inherit !important; }
 table.spots tr td { border-color: var(--color-border) !important; }
-table.spots tr:hover td { background: var(--color-surface) !important; }
 
 /* Improve text contrast in general */
 .cardsGrid, .spotCard, .details, .sidebarPanel, .filterlist { color: var(--color-text); }

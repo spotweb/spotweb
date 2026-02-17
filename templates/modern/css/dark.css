@@ -17,7 +17,6 @@ html[data-theme="dark"] {
 html[data-theme="dark"] html, html[data-theme="dark"] body { background: var(--color-bg); color: var(--color-text); }
 html[data-theme="dark"] div#toolbar { background: linear-gradient(180deg, #181c22, #12161c) !important; border-bottom: 1px solid #0d1014; }
 html[data-theme="dark"] .toolbarButton p { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.18) !important; }
-html[data-theme="dark"] div#filter { background: var(--color-surface); border-right: none !important; }
 html[data-theme="dark"] table.spots tr td { background: transparent; border-color: var(--color-border) !important; }
 html[data-theme="dark"] table.spots tr:hover td { background: var(--color-surface) !important; }
 
@@ -32,10 +31,6 @@ html[data-theme="dark"] div#filter h4 {
   border-radius: 0 !important;
   box-sizing: border-box !important;
 }
-html[data-theme="dark"] div#filter ul.filterlist li a.filter,
-html[data-theme="dark"] div#filter ul.subfilterlist li a { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08) !important; color: var(--color-text) !important; }
-html[data-theme="dark"] div#filter ul.filterlist li a.filter:hover,
-html[data-theme="dark"] div#filter ul.filterlist.quicklinks li a.filter:hover { background: rgba(255,255,255,0.08) !important; color: #f1f5f9 !important; }
 
 /* Dark table rules consolidated in table.css (loaded last) */
 

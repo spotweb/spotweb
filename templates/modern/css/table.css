@@ -131,8 +131,7 @@ table.spots td.poster a {
 /* thumbnails disabled */
 
 
-/* Buttons: lighter blue (override detail.css so Retrieve etc. use it) */
-.greyButton, .smallGreyButton { background: #6ba3e0 !important; color: #fff !important; }
+/* Buttons: see base.css (.greyButton, .smallGreyButton) */
 
 /* Table pager */
 .tablePager { display:flex; justify-content:center; gap:12px; margin:16px 0; }
