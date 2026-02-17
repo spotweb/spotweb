@@ -455,6 +455,20 @@ div.sidebarPanel.advancedSearch h4:first-child {
   margin-top: 0;
 }
 
+/* [x] close button: inline left inside the Search On header */
+div.sidebarPanel.advancedSearch h4 a.toggle {
+  float: left !important;
+  margin-right: 8px !important;
+  font-weight: bold;
+  cursor: pointer;
+  position: static !important;
+  background: none !important;
+  border: none !important;
+  filter: none !important;
+  line-height: inherit !important;
+  padding: 0 !important;
+}
+
 div.sidebarPanel.advancedSearch div.search,
 div.sidebarPanel.advancedSearch ul.search li input + label,
 div.sidebarPanel.advancedSearch ul.search select,
@@ -505,6 +519,14 @@ div.sidebarPanel.advancedSearch ul.search li input:hover + label {
 
 div.sidebarPanel.advancedSearch div.search input.searchbox {
   color: var(--color-text);
+}
+
+/* Override we1rdo 11px font on main search bar */
+form#filterform div.search input.searchbox {
+  font-size: 14px !important;
+}
+form#filterform ul.search select {
+  font-size: 14px !important;
 }
 
 div.sidebarPanel.advancedSearch a.greyButton.addFilter {

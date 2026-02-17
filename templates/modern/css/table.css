@@ -28,7 +28,18 @@ table.spots td {
   color: var(--color-text) !important;
   vertical-align: middle;
 }
-/* No rounding on category/title so they connect flush */
+/* Fix row rounding: left-round on category (1st col), right-round on last col.
+   We1rdo mistakenly rounds td:nth-child(2) (title); override to first-child (category). */
+table.spots td:first-child {
+  border-radius: 4px 0 0 4px !important;
+}
+table.spots td:nth-child(2) {
+  border-radius: 0 !important;
+}
+table.spots td:last-child {
+  border-radius: 0 4px 4px 0 !important;
+}
+
 table.spots td a,
 table.spots td span,
 table.spots td label {
