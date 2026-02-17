@@ -1,20 +1,45 @@
-﻿/* Modern table tweaks: thumbnails + readability */
+/* Modern table tweaks: thumbnails + readability */
 
-table.spots { width: 100% !important; border-spacing: 0 0; }
+table.spots {
+  width: 100% !important;
+  border-spacing: 0 1px;
+  font-size: 12px;
+  /* No Roboto: Roboto-Regular has no bold variant; Arial/Helvetica do */
+  font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+}
+table.spots td,
+table.spots td a,
+table.spots td span,
+table.spots td label { font-size: 12px; }
 table.spots tr { height: 20px; }
 table.spots tr.head th {
-  background: var(--color-surface-2) !important;
-  color: var(--color-text) !important;
-  text-shadow: none !important;
-  height: 20px;
-  line-height: 20px;
+  background: var(--sw-strip-gradient) !important;
+  color: var(--sw-strip-text) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
+  height: 26px;
+  line-height: 26px;
   padding: 0 0 0 5px;
+  font-size: 12px;
+  font-weight: 600;
+  box-sizing: border-box;
 }
 table.spots td {
   background: transparent;
   color: var(--color-text) !important;
   vertical-align: middle;
 }
+/* Fix row rounding: left-round on category (1st col), right-round on last col.
+   We1rdo mistakenly rounds td:nth-child(2) (title); override to first-child (category). */
+table.spots td:first-child {
+  border-radius: 4px 0 0 4px !important;
+}
+table.spots td:nth-child(2) {
+  border-radius: 0 !important;
+}
+table.spots td:last-child {
+  border-radius: 0 4px 4px 0 !important;
+}
+
 table.spots td a,
 table.spots td span,
 table.spots td label {
@@ -26,6 +51,14 @@ table.spots td a {
   overflow: hidden;
   white-space: nowrap;
 }
+
+/* Active row ">" badge: allow overflow so left border-radius isn’t clipped */
+table.spots tr.active td.title a.spotlink {
+  overflow: visible;
+}
+table.spots tr.active td.title a.spotlink::before {
+  border-radius: 4px !important;
+}
 table.spots tr:hover td { background: var(--color-surface) !important; }
 
 /* Ensure links are readable in dark/light */
@@ -33,11 +66,21 @@ table.spots td a,
 table.spots tr td a.spotlink { color: var(--color-text) !important; text-decoration: none; }
 table.spots tr:hover td a { color: var(--color-text) !important; }
 
-/* Dark theme: ensure strong contrast for table text */
+/* Dark theme: readable table text (softer color, font-smoothing handles the weight) */
 html[data-theme="dark"] table.spots td,
 html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr:hover td a { color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr td a.spotlink { color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr:hover td a { color: #d8dde3 !important; }
+
+/* NEW spots: bold in both themes */
+table.spots tr td.new,
+table.spots tr td.title.new { font-weight: bold !important; }
+table.spots tr td.new a,
+table.spots tr td.title.new a,
+table.spots tr td.new a.spotlink,
+table.spots tr td.title.new a.spotlink { font-weight: bold !important; }
+html[data-theme="dark"] table.spots tr td.new a.spotlink,
+html[data-theme="dark"] table.spots tr td.title.new a.spotlink { font-weight: bold !important; color: #cfd2d6 !important; }
 
 
 /* Watchlist icons (match cards view styling) */
@@ -79,7 +122,7 @@ table.spots th.poster {
 }
 
 table.spots td.poster a {
-  display: inline-block;
+  display: block;
   min-width: 135px !important;
   width: 135px !important;
 }
@@ -87,6 +130,9 @@ table.spots td.poster a {
 /* Thumbnail inside the title cell */
 /* thumbnails disabled */
 
+
+/* Buttons: lighter blue (override detail.css so Retrieve etc. use it) */
+.greyButton, .smallGreyButton { background: #6ba3e0 !important; color: #fff !important; }
 
 /* Table pager */
 .tablePager { display:flex; justify-content:center; gap:12px; margin:16px 0; }
@@ -102,17 +148,17 @@ table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; col
 table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.2) !important; color: #b91c1c !important; }
 table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.2) !important; color: #7c3aed !important; }
 
-/* Dark theme: reuse category accent backgrounds */
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.3) !important; color: #ffffff !important; }
+/* Dark theme: category accent backgrounds (softer tints for readability, see dark.css for color) */
+html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.2) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.22) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.2) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.22) !important; color: #c8cdd3 !important; }
+html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.22) !important; color: #c8cdd3 !important; }
 
 table.spots tr td.date,
 table.spots tr td.filesize { color: rgba(15, 23, 42, 0.78) !important; }
 html[data-theme="dark"] table.spots tr td.date,
-html[data-theme="dark"] table.spots tr td.filesize { color: #e2e8f0 !important; }
+html[data-theme="dark"] table.spots tr td.filesize { color: #c8cdd3 !important; }
 table.spots tr td span.age,
 table.spots tr td span.filesize { color: inherit !important; }
 

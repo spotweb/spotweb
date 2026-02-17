@@ -1,8 +1,8 @@
 /* Modern layout and spacing */
 
 :root {
-  --sw-sidebar-w: 210px;
-  --sw-gap: 10px;
+  --sw-sidebar-w: 230px;
+  --sw-gap: 0px;
   --sw-toolbar-offset: 42px;
   --sw-header-offset: var(--sw-toolbar-offset);
   --sw-strip-gradient: linear-gradient(180deg, #5e626a 0%, #3d4046 100%);
@@ -14,7 +14,7 @@ div#filter {
   width: var(--sw-sidebar-w) !important;
   background: var(--color-surface);
   position: relative;
-  top: 0;
+  top: 1px;
   z-index: 40;
 }
 
@@ -65,7 +65,7 @@ html[data-theme="dark"] body.filters-open div#filter::after {
 }
 div.spots {
   margin-left: calc(var(--sw-sidebar-w) + var(--sw-gap));
-  padding: 0 10px 12px;
+  padding: 0 0 12px 0;
 }
 
 table.spots {
