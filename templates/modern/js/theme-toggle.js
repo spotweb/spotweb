@@ -13,15 +13,15 @@
     }
     return pref;
   }
-  function updateLabel(mode, pref) {
+  function updateLabel() {
     var el = document.getElementById("themeCurrent");
     if (!el) return;
-    el.textContent = pref === "auto" ? "Theme: Auto (" + humanize(mode) + ")" : "Theme: " + humanize(mode);
+    el.textContent = "Theme";
   }
   function apply(pref) {
     var mode = resolveMode(pref);
     document.documentElement.setAttribute("data-theme", mode);
-    updateLabel(mode, pref);
+    updateLabel();
   }
   function set(pref) {
     try {
