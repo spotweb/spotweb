@@ -672,13 +672,13 @@ div.filter ul.maintenancebox li a.greyButton {
   box-sizing: border-box !important;
 }
 
-/* Dark mode: override We1rdo block so sidebar stays dark and readable */
+/* Dark mode: override We1rdo block so sidebar stays dark and readable; keep links bold */
 html[data-theme="dark"] div#filter ul.filterlist li a.filter,
 html[data-theme="dark"] div#filter ul.subfilterlist li a,
 html[data-theme="dark"] div#filter ul.filterlist.quicklinks li a.filter {
   background-color: rgba(255, 255, 255, 0.06) !important;
   color: var(--color-text) !important;
-  font-weight: 500 !important;
+  font-weight: bold !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 html[data-theme="dark"] div#filter ul.filterlist li a.filter:hover,
