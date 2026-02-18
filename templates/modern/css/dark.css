@@ -8,29 +8,31 @@ html[data-theme="dark"] {
   --color-text: #eef1f4;
   --color-muted: #c3c9d2;
   --color-accent: #3b82f6;
-  --sw-strip-gradient: linear-gradient(180deg, #262b34 0%, #191d22 100%);
-  --sw-strip-border: #0d1016;
+  /* Strip (sidebar + table header) slightly lighter than navbar to differentiate */
+  --sw-strip-gradient: linear-gradient(180deg, #2e333c 0%, #22262d 100%);
+  --sw-strip-border: #1a1e24;
   --sw-strip-text: #f4f5f7;
 }
 
 html[data-theme="dark"] html, html[data-theme="dark"] body { background: var(--color-bg); color: var(--color-text); }
 html[data-theme="dark"] div#toolbar { background: linear-gradient(180deg, #181c22, #12161c) !important; border-bottom: 1px solid #0d1014; }
 html[data-theme="dark"] .toolbarButton p { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.18) !important; }
-html[data-theme="dark"] div#filter { background: var(--color-surface); border-right: none !important; }
 html[data-theme="dark"] table.spots tr td { background: transparent; border-color: var(--color-border) !important; }
 html[data-theme="dark"] table.spots tr:hover td { background: var(--color-surface) !important; }
 
-/* Dark tables: keep text high-contrast and reuse light-mode category colors */
-html[data-theme="dark"] table.spots td,
-html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr:hover td a { color: #ffffff !important; }
+/* Dark sidebar: softer, clearer hierarchy */
+html[data-theme="dark"] div#filter { background: var(--color-surface-2) !important; border-right: none !important; }
+html[data-theme="dark"] div#filter a.viewState h4,
+html[data-theme="dark"] div#filter h4 {
+  background: var(--sw-strip-gradient) !important;
+  color: var(--sw-strip-text) !important;
+  border: none !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.5) !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+}
 
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.3) !important; color: #ffffff !important; }
+/* Dark table rules consolidated in table.css (loaded last) */
 
 html[data-theme="dark"] .ui-icon { filter: brightness(1.4); }
 

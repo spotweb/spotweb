@@ -8,7 +8,7 @@ body.modern-config #usermanagementtabs {
   border-radius: 20px;
   box-shadow: 0 30px 70px rgba(15, 23, 42, 0.25);
   padding: 24px;
-  font: 14px/1.6 var(--font, 'Segoe UI', sans-serif);
+  font: 14px/1.6 var(--font-family);
 }
 
 /* Ensure management popups always float above the sticky toolbar */

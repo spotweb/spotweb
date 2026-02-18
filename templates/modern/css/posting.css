@@ -74,7 +74,7 @@
 
 .ui-dialog[aria-describedby="editdialogdiv"] form.postspotform,
 #editdialogdiv form.postspotform {
-  font: 14px/1.5 var(--font, 'Segoe UI', sans-serif);
+  font: 14px/1.5 var(--font-family);
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] form.postspotform label,
