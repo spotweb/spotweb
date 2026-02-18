@@ -326,10 +326,15 @@ class SpotPage_newznabapi extends SpotPage_Abs
         } // else
 
         if ((!empty($this->_params['offset'])) && is_numeric($this->_params['offset'])) {
-            $pageNr = $this->_params['offset'];
+            $offset = (int) $this->_params['offset'];
         } else {
-            $pageNr = 0;
+            $offset = 0;
         } // else
+
+        // Convert offset to page number for fetchSpotList
+        $pageNr = (int) floor($offset / $limit);
+        // Calculate actual offset used (aligned to page boundary)
+        $offset = $pageNr * $limit;
 
         /*
          * We get a bunch of query parameters, so now change this to the actual
@@ -360,7 +365,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $parsedSearch
         );
 
-        $this->showResults($spotsTmp, $pageNr * $limit, $outputtype);
+        $this->showResults($spotsTmp, $offset, $outputtype);
     }
 
     // search
