@@ -373,6 +373,12 @@ class SpotPage_newznabapi extends SpotPage_Abs
     {
         $nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
+        /*
+         * Calculate total using hasmore flag to avoid expensive COUNT query.
+         */
+        $pageCount = count($spots['list']);
+        $total = $offset + $pageCount + ($spots['hasmore'] ? 1 : 0);
+
         if ($outputtype == 'json') {
             $doc = [];
             foreach ($spots['list'] as $spot) {
@@ -400,7 +406,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 $data['category_ids'] = $cat;
 
                 if (empty($doc)) {
-                    $data['_totalrows'] = count($spots['list']);
+                    $data['_totalrows'] = $total;
                 }
 
                 $doc[] = $data;
@@ -442,7 +448,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
             $newznabResponse = $doc->createElement('newznab:response');
             $newznabResponse->setAttribute('offset', $offset);
-            $newznabResponse->setAttribute('total', count($spots['list']));
+            $newznabResponse->setAttribute('total', $total);
             $channel->appendChild($newznabResponse);
 
             foreach ($spots['list'] as $spot) {
