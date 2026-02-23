@@ -117,7 +117,7 @@ div#toolbar .toolbarButton.dropdown ul > li { list-style: none; padding: 0; posi
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  width: 110px !important;
+  width: 125px !important;
   gap: 6px;
 }
 
