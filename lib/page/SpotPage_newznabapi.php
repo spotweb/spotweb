@@ -352,7 +352,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
          */
         $additionalTableList = '';
         foreach ($parsedSearch['additionalTables'] as $additionalTable) {
-            $additionalTableList = ', ' . $additionalTable . $additionalTableList;
+            $additionalTableList = ', '.$additionalTable.$additionalTableList;
         }
         $total = $this->_daoFactory->getSpotDao()->getSpotCount(
             $parsedSearch['filter'],
