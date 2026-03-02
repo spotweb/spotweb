@@ -326,7 +326,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
         } // else
 
         if ((!empty($this->_params['offset'])) && is_numeric($this->_params['offset'])) {
-            $pageNr = $this->_params['offset'];
+            $pageNr = $this->_params['offset'] / $limit;
         } else {
             $pageNr = 0;
         } // else
@@ -347,7 +347,19 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $this->_currentSession,
             $svcUserFilter->getIndexFilter($this->_currentSession['user']['userid'])
         );
+        /*
+         * Calculate actual total count for newznab response
+         */
+        $additionalTableList = '';
+        foreach ($parsedSearch['additionalTables'] as $additionalTable) {
+            $additionalTableList = ', ' . $additionalTable . $additionalTableList;
+        }
+        $total = $this->_daoFactory->getSpotDao()->getSpotCount(
+            $parsedSearch['filter'],
+            $additionalTableList
+        );
 
+        //$this->showResults($spotsTmp, $offset, $outputtype, $total);
         /*
         * Actually fetch the spots, we always perform
         * this action even when the watchlist is editted
@@ -360,7 +372,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             $parsedSearch
         );
 
-        $this->showResults($spotsTmp, $pageNr * $limit, $outputtype);
+        $this->showResults($spotsTmp, $pageNr * $limit, $outputtype, $total);
     }
 
     // search
@@ -369,7 +381,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
      * Actually create the XML or JSON output from the search
      * results
      */
-    public function showResults($spots, $offset, $outputtype)
+    public function showResults($spots, $offset, $outputtype, $total)
     {
         $nzbhandling = $this->_currentSession['user']['prefs']['nzbhandling'];
 
@@ -400,7 +412,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 $data['category_ids'] = $cat;
 
                 if (empty($doc)) {
-                    $data['_totalrows'] = count($spots['list']);
+                    $data['_totalrows'] = $total;
                 }
 
                 $doc[] = $data;
@@ -442,7 +454,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
             $newznabResponse = $doc->createElement('newznab:response');
             $newznabResponse->setAttribute('offset', $offset);
-            $newznabResponse->setAttribute('total', count($spots['list']));
+            $newznabResponse->setAttribute('total', $total);
             $channel->appendChild($newznabResponse);
 
             foreach ($spots['list'] as $spot) {
