@@ -22,7 +22,7 @@ class Dao_Base_Spot implements Dao_Spot
     public function getSpots($ourUserId, $pageNr, $limit, $parsedSearch)
     {
         SpotTiming::start(__CLASS__.'::'.__FUNCTION__);
-        $offset = (int) $pageNr * (int) $limit;
+        (int) $offset = $pageNr * (int) $limit;
 
         /*
          * there are the basic search criteria (category, title, etc)

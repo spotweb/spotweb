@@ -67,6 +67,13 @@ class dbfts_sqlite extends dbfts_abs
             }
             $tempList[] = $term;
         }
+
+        if (count($tempList) > 1) {
+            $last = strtoupper($tempList[count($tempList) - 1]);
+            if (in_array($last, ['AND', 'OR', 'NOT'])) {
+                array_pop($tempList);
+            }
+        }
         $searchTerm = implode(' ', $tempList);
 
         return $searchTerm;
