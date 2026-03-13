@@ -193,7 +193,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
     if ($currentSession['user']['userid'] > 2) {
         echo "<li class='addComment'>";
         echo "<a class='togglePostComment' title='"._('Add comment (open/close windows)')."'>"._('Add comment').'<span></span></a><div><div></div>';
-        require __DIR__.'/../we1rdo/postcomment.inc.php';
+        require __DIR__.'/postcomment.inc.php';
         echo '</div></li>';
     }
 } ?>
@@ -204,7 +204,7 @@ if ($tplHelper->allowed(SpotSecurity::spotsec_post_comment, '')) {
 		
 		<input type="hidden" id="messageid" value="<?php echo $spot['messageid'] ?>" />
 <?php
-require_once __DIR__.'/../we1rdo/includes/footer.inc.php';
+require_once __DIR__.'/includes/footer.inc.php';
 ?>
 
 <script type="text/javascript">

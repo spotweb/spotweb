@@ -53,9 +53,6 @@ if (!$dialogembedded) { ?>
 	<?php if (!$dialogembedded) { ?>
 			<li><a href="?page=render&tplname=listfilters" title="<?php echo ('Filters'); ?>"><span><?php echo _('Filters'); ?></span></a></li>
 	<?php } ?>
-<!--
-			<li><a href="?page=render&tplname=cat2dlmapping" title="<?php echo ('Download categories'); ?>"><span><?php echo _('Download categories'); ?></span></a></li>
--->
 <?php } ?>
 <?php if ($tplHelper->allowed(SpotSecurity::spotsec_send_notifications_services, '') && $tplHelper->allowed(SpotSecurity::spotsec_send_notifications_types, '')) { ?>
 			<li><a href="#edituserpreftab-4"><span><?php echo _('Notifications'); ?></span></a></li>
@@ -87,6 +84,9 @@ if (!$dialogembedded) { ?>
 							<?php } ?> 
 						</select>
 					</dd>
+
+					<dt><label for="edituserprefsform[tmdb_api_key]"><?php echo _('TMDB API key'); ?></label></dt>
+					<dd><input type="text" name="edituserprefsform[tmdb_api_key]" value="<?php echo htmlspecialchars($edituserprefsform['tmdb_api_key'] ?? '', ENT_QUOTES); ?>"></dd>
 					
 					<dt><label for="edituserprefsform[perpage]"><?php echo _('Items per page?'); ?></label></dt>
 					<dd>

@@ -13,11 +13,11 @@ body.modern-config #usermanagementtabs {
 
 /* Ensure management popups always float above the sticky toolbar */
 body.modern-config .ui-dialog {
-  z-index: 5000 !important;
+  z-index: 5000;
 }
 
 body.modern-config .ui-widget-overlay {
-  z-index: 4000 !important;
+  z-index: 4000;
 }
 
 body.modern-config .closeeditsettings p a,
@@ -30,7 +30,7 @@ body.modern-config .closeusermanagement p a {
   border: 2px solid #22c55e;
   border-radius: 12px;
   padding: 8px 20px;
-  color: #edfff5 !important;
+  color: #edfff5;
   font-weight: 600;
   text-decoration: none;
 }
@@ -39,7 +39,7 @@ html[data-theme="dark"] body.modern-config .closeeditsettings p a,
 html[data-theme="dark"] body.modern-config .closeuserpreferences p a,
 html[data-theme="dark"] body.modern-config .closeusermanagement p a {
   background: transparent;
-  color: #22c55e !important;
+  color: #22c55e;
 }
 
 body.modern-config form.editsettingsform fieldset,
@@ -156,7 +156,7 @@ body.modern-config #usermanagementtabs .ui-tabs-nav li a {
   padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid rgba(15, 23, 42, 0.15);
-  color: #ffffff !important;
+  color: #ffffff;
   text-decoration: none;
   background: rgba(0, 0, 0, 0.692);
 }
@@ -165,7 +165,7 @@ body.modern-config form.editsettingsform .ui-tabs-nav li.ui-tabs-selected a,
 body.modern-config form.edituserprefsform .ui-tabs-nav li.ui-tabs-selected a,
 body.modern-config #usermanagementtabs .ui-tabs-nav li.ui-tabs-selected a {
   background: var(--color-accent);
-  color: #fff !important;
+  color: #fff;
   border-color: var(--color-accent);
   box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
 }
@@ -352,7 +352,7 @@ html[data-theme="dark"] body.modern-config #usermanagementtabs .ui-tabs-panel {
 html[data-theme="dark"] body.modern-config form.editsettingsform .ui-tabs-nav li a,
 html[data-theme="dark"] body.modern-config form.edituserprefsform .ui-tabs-nav li a,
 html[data-theme="dark"] body.modern-config #usermanagementtabs .ui-tabs-nav li a {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 html[data-theme="dark"] body.modern-config form.editsettingsform .ui-tabs-nav li.ui-tabs-selected a,
@@ -367,4 +367,4 @@ html[data-theme="dark"] body.modern-config input.greyButton[name*="submitcancel"
   color: #fecaca;
   border-color: #fca5a5;
 }
-body.modern-config .closeeditsettings p, body.modern-config .closeuserpreferences p, body.modern-config .closeusermanagement p { background: none !important; border: none !important; padding: 0; margin: 12px auto; text-align: left; }
+body.modern-config .closeeditsettings p, body.modern-config .closeuserpreferences p, body.modern-config .closeusermanagement p { background: none; border: none; padding: 0; margin: 12px auto; text-align: left; }

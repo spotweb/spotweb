@@ -1,36 +1,43 @@
 <?php
 
-class SpotTemplateHelper_Modern extends SpotTemplateHelper_We1rdo
+class SpotTemplateHelper_Modern extends SpotTemplateHelper
 {
-    public function getParentTemplates()
+    public function getThemeName()
     {
-        $parents = parent::getParentTemplates();
-        $parents[] = 'we1rdo';
-
-        return $parents;
+        return 'modern';
     }
 
-    public function getStaticFiles($type)
-    {
-        $list = parent::getStaticFiles($type);
+    // getThemeName
 
+    public function getTemplatePreferences()
+    {
+        return ['modern' => []];
+    }
+
+    protected function getThemePostingJsFile()
+    {
+        return $this->getThemePath().'/js/modernpost.js';
+    }
+
+    // getThemePostingJsFile
+
+    protected function getThemeExtraStaticFiles($type)
+    {
         switch ($type) {
             case 'css':
-                $list[] = 'templates/modern/css/base.css';
-                $list[] = 'templates/modern/css/dark.css';
-                $list[] = 'templates/modern/css/filters.css';
-                $list[] = 'templates/modern/css/layout.css';
-                $list[] = 'templates/modern/css/cards.css';
-                $list[] = 'templates/modern/css/detail.css';
-                $list[] = 'templates/modern/css/table.css';
+                return [
+                    $this->getThemePath().'/css/base.css',
+                    $this->getThemePath().'/css/dark.css',
+                    $this->getThemePath().'/css/filters.css',
+                    $this->getThemePath().'/css/layout.css',
+                    $this->getThemePath().'/css/cards.css',
+                    $this->getThemePath().'/css/detail.css',
+                    $this->getThemePath().'/css/table.css',
+                ];
+        } // switch
 
-                break;
-
-            case 'js':
-                // Load modern JS separately in header to avoid concat-side effects
-                break;
-        }
-
-        return $list;
+        return [];
     }
+
+    // getThemeExtraStaticFiles
 }

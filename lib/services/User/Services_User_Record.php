@@ -273,6 +273,7 @@ class Services_User_Record
         $anonSkel['show_nzbbutton'] = (isset($prefs['show_nzbbutton'])) ? true : false;
         $anonSkel['show_multinzb'] = (isset($prefs['show_multinzb'])) ? true : false;
         $anonSkel['show_avatars'] = (isset($prefs['show_avatars'])) ? true : false;
+        $anonSkel['tmdb_api_key'] = $anonSkel['tmdb_api_key'] ?? '';
 
         $notifProviders = Notifications_Factory::getActiveServices();
         foreach ($notifProviders as $notifProvider) {
@@ -335,6 +336,7 @@ class Services_User_Record
 
         // Check per page setting
         $prefs['perpage'] = (int) $prefs['perpage'];
+        $prefs['tmdb_api_key'] = trim((string) $prefs['tmdb_api_key']);
         if (($prefs['perpage'] < 2) || ($prefs['perpage'] > 250)) {
             $result->addError(_('Invalid preference value (perpage)'));
         } // if

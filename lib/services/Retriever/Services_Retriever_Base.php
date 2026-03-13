@@ -5,6 +5,7 @@ abstract class Services_Retriever_Base
     protected $_settings;
     protected $_force;
     protected $_retro;
+    protected $_holdsRetrieverLock = false;
 
     /**
      * @var Dao_Base_UsenetState
@@ -25,7 +26,7 @@ abstract class Services_Retriever_Base
     protected $_binServer;
     protected $_daoFactory;
 
-    private $_msgdata;
+    protected $_msgdata;
 
     /*
      * Returns the status in either xml or text format
@@ -103,6 +104,14 @@ abstract class Services_Retriever_Base
          * and notify the system we are running
          */
         $this->_usenetStateDao->setRetrieverRunning(true);
+        $this->_holdsRetrieverLock = true;
+
+        // Make sure stale locks are cleaned up when PHP aborts unexpectedly.
+        register_shutdown_function(function () {
+            if ($this->_holdsRetrieverLock) {
+                $this->_usenetStateDao->setRetrieverRunning(false);
+            } // if
+        });
 
         // and fireup the nntp connection
         if (!Services_Signing_Base::factory() instanceof Services_Signing_Openssl) {
@@ -132,7 +141,9 @@ abstract class Services_Retriever_Base
      */
     public function searchMessageId($lastArticleNr, $lastMessageId, $messageIdList)
     {
-        SpotDebug::msg(SpotDebug::TRACE, 'searchMessageId='.serialize($messageIdList));
+        if (SpotDebug::isEnabled(SpotDebug::TRACE)) {
+            SpotDebug::msg(SpotDebug::TRACE, __CLASS__.'::'.__FUNCTION__, ['messageIdCount' => count($messageIdList)]);
+        } // if
 
         /*
          * If no messageid's are stored in the database,
@@ -166,7 +177,9 @@ abstract class Services_Retriever_Base
 
             // get the list of headers (XHDR) from the usenet server
             $hdrList = $this->_svcNntpText->getMessageIdList($curArtNr - 1, $curArtNr + $decrement);
-            SpotDebug::msg(SpotDebug::TRACE, 'getMessageIdList returned='.serialize($hdrList));
+            if (SpotDebug::isEnabled(SpotDebug::TRACE)) {
+                SpotDebug::msg(SpotDebug::TRACE, __CLASS__.'::'.__FUNCTION__.':getMessageIdList', ['headerCount' => count($hdrList)]);
+            } // if
 
             // Show what we are doing
             $this->displayStatus('searchmsgidstatus', ($curArtNr - 1).' to '.($curArtNr + $decrement));
@@ -273,7 +286,10 @@ abstract class Services_Retriever_Base
     public function quit()
     {
         // notify the system we are not running anymore
-        $this->_usenetStateDao->setRetrieverRunning(false);
+        if ($this->_holdsRetrieverLock) {
+            $this->_usenetStateDao->setRetrieverRunning(false);
+            $this->_holdsRetrieverLock = false;
+        } // if
 
         // and disconnect
         if (!is_null($this->_svcNntpText)) {
@@ -288,6 +304,13 @@ abstract class Services_Retriever_Base
     }
 
     // quit()
+
+    protected function adjustInitialArticleNumber($curArtNr)
+    {
+        return $curArtNr;
+    }
+
+    // adjustInitialArticleNumber()
 
     public function perform()
     {
@@ -312,6 +335,8 @@ abstract class Services_Retriever_Base
              */
             $curArtNr = $this->getLastArticleNumber();
         } // if
+
+        $curArtNr = $this->adjustInitialArticleNumber($curArtNr);
 
         /*
          * If our database is empty, we just assume

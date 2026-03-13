@@ -24,6 +24,15 @@ html[data-theme="light"] div.filter {
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.09);
 }
 
+html[data-theme="dark"] div.filter {
+  --filter-card-bg: #3b3939;
+  --filter-card-border: #514f4f;
+  --filter-card-text: #f8fafc;
+  --filter-chip-bg: rgba(96, 165, 250, 0.9);
+  --filter-muted: #d4d4d8;
+  --filter-backdrop: rgba(28, 27, 27, 0.96);
+}
+
 div#filter,
 div.filter {
   color: var(--filter-card-text, rgba(226, 232, 240, 0.9)) !important;
@@ -321,11 +330,67 @@ div.filter ul.filterlist.quicklinks li a.filter .newspots {
   display: none;
 }
 
-div.filter ul.filterlist.maintenancebox li a.filter {
-  border-style: solid;
-  border-color: rgba(248, 113, 113, 0.45) !important;
-  color: rgba(248, 113, 113, 0.9) !important;
-  box-shadow: none !important;
+div.filter ul.filterlist.maintenancebox {
+  display: flex;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  margin: 4px 0 0 !important;
+  padding: 0 !important;
+  gap: 8px;
+}
+
+div.filter ul.filterlist.maintenancebox li {
+  display: block !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+  clear: both;
+  padding: 0 8px !important;
+  box-sizing: border-box !important;
+}
+
+div.filter ul.filterlist.maintenancebox li:last-child {
+  margin-bottom: 0;
+}
+
+div.filter ul.filterlist.maintenancebox li a.greyButton {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  line-height: 24px !important;
+  height: 24px !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  float: none !important;
+  background: var(--color-accent);
+  background-image: none;
+  color: #fff;
+  border: 0;
+  text-align: center;
+  text-shadow: none;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+  opacity: 1;
+}
+
+div.filter ul.filterlist.maintenancebox li a.greyButton:hover,
+div.filter ul.filterlist.maintenancebox li a.greyButton:focus-visible {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+div.filter ul.filterlist.maintenancebox li.info {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 16px;
+  line-height: 1.45;
+  margin: 6px 0 10px;
+  padding: 0 10px;
+  text-align: center;
+  color: var(--filter-card-text);
+  box-sizing: border-box;
 }
 
 /* Erotica accent helpers */
@@ -595,7 +660,7 @@ div.filter li span.toggle {
   height: 14px !important;
   margin: 2px !important;
   border-radius: 4px !important;
-  background: url(../../we1rdo/img/sprite.png) no-repeat -77px -98px !important;
+  background: url(../img/sprite.png) no-repeat -77px -98px !important;
   border: none !important;
 }
 
@@ -616,4 +681,56 @@ div#filter li.spotcat2 span.toggle,
 div.filter li.spotcat2 span.toggle { background-color: #84f484 !important; border: 1px solid #00ab00 !important; color: #00ab00 !important; }
 div#filter li.spotcat3 span.toggle,
 div.filter li.spotcat3 span.toggle { background-color: #f99797 !important; border: 1px solid #ab1c00 !important; color: #ab1c00 !important; }
+
+html[data-theme="dark"] div#filter ul.filterlist li a.filter,
+html[data-theme="dark"] div#filter ul.subfilterlist li a,
+html[data-theme="dark"] div#filter ul.filterlist.quicklinks li a.filter,
+html[data-theme="dark"] div.filter ul.filterlist li a.filter,
+html[data-theme="dark"] div.filter ul.subfilterlist li a,
+html[data-theme="dark"] div.filter ul.filterlist.quicklinks li a.filter {
+  background-color: #3b3939 !important;
+  border: 1px solid #514f4f !important;
+  color: #f8fafc !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] div#filter > ul > li.spotcat0 > a,
+html[data-theme="dark"] div.filter > ul > li.spotcat0 > a {
+  background-color: #3b3939 !important;
+  border-color: #2563eb !important;
+  color: #eff6ff !important;
+}
+
+html[data-theme="dark"] div#filter > ul > li.spotcat1 > a,
+html[data-theme="dark"] div.filter > ul > li.spotcat1 > a {
+  background-color: #3b3939 !important;
+  border-color: #d4a414 !important;
+  color: #fef3c7 !important;
+}
+
+html[data-theme="dark"] div#filter > ul > li.spotcat2 > a,
+html[data-theme="dark"] div.filter > ul > li.spotcat2 > a {
+  background-color: #3b3939 !important;
+  border-color: #10b981 !important;
+  color: #d1fae5 !important;
+}
+
+html[data-theme="dark"] div#filter > ul > li.spotcat3 > a,
+html[data-theme="dark"] div.filter > ul > li.spotcat3 > a {
+  background-color: #3b3939 !important;
+  border-color: #ef4444 !important;
+  color: #fee2e2 !important;
+}
+
+html[data-theme="dark"] div#filter a span.newspots,
+html[data-theme="dark"] div.filter a span.newspots {
+  color: #cbd5e1 !important;
+  background: transparent !important;
+}
+
+html[data-theme="dark"] div#filter li a.selected span.newspots,
+html[data-theme="dark"] div.filter li a.selected span.newspots {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
 

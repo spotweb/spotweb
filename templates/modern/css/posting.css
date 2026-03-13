@@ -4,24 +4,24 @@
 #editdialogdiv .ui-dialog,
 #editdialogdiv .ui-widget-content,
 #editdialogdiv .ui-widget {
-  background: var(--color-surface) !important;
-  color: var(--color-text) !important;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"],
 #editdialogdiv .ui-dialog {
-  border: 2px solid rgba(239, 68, 68, 0.7) !important;
-  border-radius: 18px !important;
+  border: 2px solid rgba(239, 68, 68, 0.7);
+  border-radius: 18px;
   box-shadow: 0 35px 80px rgba(15, 23, 42, 0.45);
-  background: radial-gradient(circle at top, rgba(255,255,255,0.95), var(--color-surface)) !important;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.95), var(--color-surface));
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] .ui-widget-header,
 #editdialogdiv .ui-widget-header {
-  background: var(--sw-strip-gradient) !important;
-  border: none !important;
-  border-radius: 16px 16px 0 0 !important;
-  color: var(--sw-strip-text) !important;
+  background: var(--sw-strip-gradient);
+  border: none;
+  border-radius: 16px 16px 0 0;
+  color: var(--sw-strip-text);
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] .ui-dialog-titlebar-close,
@@ -53,8 +53,8 @@
 #editdialogdiv .newspotdiv table,
 #editdialogdiv .newspotdiv th,
 #editdialogdiv .newspotdiv td {
-  color: var(--color-text) !important;
-  border-color: var(--color-border) !important;
+  color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv .categorydropdown select,
@@ -93,7 +93,7 @@
 .ui-dialog[aria-describedby="editdialogdiv"] form.postspotform button,
 #editdialogdiv form.postspotform input[type="submit"],
 #editdialogdiv form.postspotform button {
-  background: var(--color-accent) !important;
+  background: var(--color-accent);
   border: none;
   border-radius: 8px;
   color: #fff;
@@ -108,15 +108,15 @@ html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .ui-widget,
 html[data-theme="dark"] #editdialogdiv .ui-dialog,
 html[data-theme="dark"] #editdialogdiv .ui-widget-content,
 html[data-theme="dark"] #editdialogdiv .ui-widget {
-  background: #111926 !important;
-  color: #f4f5f7 !important;
+  background: #111926;
+  color: #f4f5f7;
 }
 
 html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"],
 html[data-theme="dark"] #editdialogdiv .ui-dialog {
-  border-color: rgba(239, 68, 68, 0.75) !important;
+  border-color: rgba(239, 68, 68, 0.75);
   box-shadow: 0 50px 90px rgba(0, 0, 0, 0.65);
-  background: radial-gradient(circle at top, rgba(30, 37, 51, 0.95), #0d111b) !important;
+  background: radial-gradient(circle at top, rgba(30, 37, 51, 0.95), #0d111b);
 }
 
 html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv,

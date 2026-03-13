@@ -144,6 +144,10 @@ class Services_Retriever_Spots extends Services_Retriever_Base
         switch ($cat) {
             case 'start': echo 'Retrieving new Spots from server '.$txt.'...'.PHP_EOL;
                 break;
+            case 'searchnewerthan': echo 'Looking for start article for configured retrieve date'.PHP_EOL;
+                break;
+            case 'searchnewerthanstatus': echo 'Checking articles '.$txt.PHP_EOL;
+                break;
             case 'lastretrieve': echo 'Last retrieve: '.date('Y-m-d H:i:s', $txt).PHP_EOL;
                 break;
             case 'done': echo 'Finished retrieving spots.'.PHP_EOL.PHP_EOL;
@@ -247,7 +251,9 @@ class Services_Retriever_Spots extends Services_Retriever_Base
             $retentionStamp = 0;
         } // else
         SpotDebug::msg(SpotDebug::DEBUG, 'retentionStamp='.$retentionStamp);
-        SpotDebug::msg(SpotDebug::TRACE, 'hdrList='.serialize($hdrList));
+        if (SpotDebug::isEnabled(SpotDebug::TRACE)) {
+            SpotDebug::msg(SpotDebug::TRACE, __CLASS__.'::'.__FUNCTION__.':hdrList', ['headerCount' => count($hdrList)]);
+        } // if
 
         /**
          * We ask the database to match our messageid's we just retrieved with
@@ -634,8 +640,12 @@ class Services_Retriever_Spots extends Services_Retriever_Base
          * number found
          */
         $this->_spotDao->addSpots($spotDbList, $fullSpotDbList);
-        SpotDebug::msg(SpotDebug::TRACE, 'added Spots, spotDbList='.serialize($spotDbList));
-        SpotDebug::msg(SpotDebug::TRACE, 'added Spots, fullSpotDbList='.serialize($fullSpotDbList));
+        if (SpotDebug::isEnabled(SpotDebug::TRACE)) {
+            SpotDebug::msg(SpotDebug::TRACE, __CLASS__.'::'.__FUNCTION__.':addSpots', [
+                'spotCount' => count($spotDbList),
+                'fullSpotCount' => count($fullSpotDbList),
+            ]);
+        } // if
 
         /*
          * Actually act on the moderation settings. We cannot process this inline
@@ -756,4 +766,57 @@ class Services_Retriever_Spots extends Services_Retriever_Base
     }
 
     // getRecentRetrievedMessageIdList
+
+    protected function adjustInitialArticleNumber($curArtNr)
+    {
+        $retrieveNewerThan = (int) $this->_settings->get('retrieve_newer_than');
+
+        if ($this->_retro || ($curArtNr != 0) || ($retrieveNewerThan <= 0)) {
+            return $curArtNr;
+        } // if
+
+        $this->displayStatus('searchnewerthan', '');
+
+        $groupInfo = $this->_msgdata;
+        $chunkSize = max((int) $this->_settings->get('retrieve_increment'), 5000);
+        $scanEnd = (int) $groupInfo['last'];
+
+        while ($scanEnd >= (int) $groupInfo['first']) {
+            set_time_limit(120);
+
+            $scanStart = max((int) $groupInfo['first'], $scanEnd - $chunkSize + 1);
+            $this->displayStatus('searchnewerthanstatus', $scanStart.' to '.$scanEnd);
+
+            $hdrList = $this->_svcNntpText->getOverview($scanStart, $scanEnd);
+            if (empty($hdrList)) {
+                $scanEnd = $scanStart - 1;
+                continue;
+            } // if
+
+            $firstStamp = strtotime($hdrList[0]['Date']);
+            $lastStamp = strtotime($hdrList[count($hdrList) - 1]['Date']);
+
+            if (($lastStamp !== false) && ($lastStamp < $retrieveNewerThan)) {
+                return (int) $groupInfo['last'] + 1;
+            } // if
+
+            if (($firstStamp !== false) && ($firstStamp >= $retrieveNewerThan)) {
+                $scanEnd = $scanStart - 1;
+                continue;
+            } // if
+
+            foreach ($hdrList as $header) {
+                $headerStamp = strtotime($header['Date']);
+                if (($headerStamp !== false) && ($headerStamp >= $retrieveNewerThan)) {
+                    return (int) $header['Number'];
+                } // if
+            } // foreach
+
+            $scanEnd = $scanStart - 1;
+        } // while
+
+        return (int) $groupInfo['first'];
+    }
+
+    // adjustInitialArticleNumber
 } // Services_Retriever_Spots

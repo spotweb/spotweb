@@ -51,6 +51,38 @@ class SpotTemplateHelper
     // getParentTemplates
 
     /*
+     * Returns the current themes' directory name.
+     *
+     * Themes extending another theme can override this to keep using
+     * the parent assets while only extending specific templates.
+     */
+    public function getThemeName()
+    {
+        $className = get_class($this);
+        $prefix = 'SpotTemplateHelper_';
+
+        if (stripos($className, $prefix) === 0) {
+            return strtolower(substr($className, strlen($prefix)));
+        } // if
+
+        return '';
+    }
+
+    // getThemeName
+
+    public function getThemePath()
+    {
+        $themeName = $this->getThemeName();
+        if (empty($themeName)) {
+            return '';
+        } // if
+
+        return 'templates/'.$themeName;
+    }
+
+    // getThemePath
+
+    /*
      * Set params - update the template list of parameters
      */
     public function setParams($params)
@@ -1102,12 +1134,137 @@ class SpotTemplateHelper
 
     // isModerated
 
+    public function cat2CssClass($spot)
+    {
+        $categoryCss = 'spotcat'.$spot['category'];
+        if (!empty($spot['subcatz'])) {
+            $categoryCss .= ' spotcat'.$spot['category'].'_'.substr($spot['subcatz'], 0, -1);
+        } // if
+
+        return $categoryCss;
+    }
+
+    // cat2CssClass
+
+    public function filter2cat($s)
+    {
+        if (stripos($s, 'cat0') !== false) {
+            return 'spotcat0';
+        } elseif (stripos($s, 'cat1') !== false) {
+            return 'spotcat1';
+        } elseif (stripos($s, 'cat2') !== false) {
+            return 'spotcat2';
+        } elseif (stripos($s, 'cat3') !== false) {
+            return 'spotcat3';
+        } // else
+
+        return 'N/A';
+    }
+
+    // filter2cat
+
+    public function getFilterIcons()
+    {
+        return [
+            'application' => _('Application'),
+            'bluray' => _('Blu-Ray'),
+            'book' => _('Book'),
+            'controller' => _('Game'),
+            'custom' => _('Plain'),
+            'divx' => _('DivX'),
+            'female' => _('Erotica'),
+            'film' => _('Movie'),
+            'hd' => _('HD'),
+            'ipod' => _('iPod'),
+            'linux' => _('Linux'),
+            'apple' => _('Apple'),
+            'mpg' => _('MPEG'),
+            'music' => _('Music'),
+            'nintendo_ds' => _('Nintendo DS'),
+            'nintendo_wii' => _('Nintendo Wii'),
+            'phone' => _('Phone'),
+            'picture' => _('Picture'),
+            'playstation' => _('Playstation'),
+            'tv' => _('TV'),
+            'vista' => _('Vista'),
+            'windows' => _('Windows'),
+            'wmv' => _('WMV'),
+            'xbox' => _('Xbox'),
+            'dvd' => _('DVD'),
+            'pda' => _('PDA'),
+        ];
+    }
+
+    // getFilterIcons
+
+    protected function getThemeSmileyNames()
+    {
+        return [
+            'biggrin',
+            'bloos',
+            'buigen',
+            'censored',
+            'clown',
+            'confused',
+            'cool',
+            'exactly',
+            'frown',
+            'grijns',
+            'heh',
+            'huh',
+            'klappen',
+            'knipoog',
+            'kwijl',
+            'lollig',
+            'maf',
+            'ogen',
+            'oops',
+            'pijl',
+            'redface',
+            'respekt',
+            'schater',
+            'shiny',
+            'sleephappy',
+            'smile',
+            'uitroepteken',
+            'vlag',
+            'vraagteken',
+            'wink',
+        ];
+    }
+
+    // getThemeSmileyNames
+
+    protected function getThemePostingJsFile()
+    {
+        return '';
+    }
+
+    // getThemePostingJsFile
+
+    protected function getThemeExtraStaticFiles($type)
+    {
+        return [];
+    }
+
+    // getThemeExtraStaticFiles
+
     /*
      * Geeft een lijst van mogelijke smilies terug
      */
     public function getSmileyList()
     {
-        return [];
+        $themePath = $this->getThemePath();
+        if (empty($themePath)) {
+            return [];
+        } // if
+
+        $smileyList = [];
+        foreach ($this->getThemeSmileyNames() as $smiley) {
+            $smileyList[$smiley] = $themePath.'/smileys/'.$smiley.'.gif';
+        } // foreach
+
+        return $smileyList;
     }
 
     // getSmileyList
@@ -1117,6 +1274,55 @@ class SpotTemplateHelper
     // dan geserved wordt als nooit meer veranderend.
     public function getStaticFiles($type)
     {
+        $themePath = $this->getThemePath();
+        switch ($type) {
+            case 'js':
+                if (empty($themePath)) {
+                    return [];
+                } // if
+
+                $jsFiles = ['js/jquery/jquery.min.js',
+                    'js/jquery/jquery-ui.custom.min.js',
+                    'js/jquery/jquery.cookie.js',
+                    'js/jquery/jquery.hotkeys.js',
+                    'js/jquery/jquery.form.js',
+                    'js/jquery-json/jquery.json-2.3.js',
+                    'js/sha1/jquery.sha1.js',
+                    $themePath.'/js/jquery.address.js',
+                    'js/posting/posting.js',
+                    'js/dynatree/jquery.dynatree.min.js',
+                    $themePath.'/js/scripts.js',
+                    $themePath.'/js/spotdialogs.js',
+                    $themePath.'/js/sabpanel.js', ];
+
+                $postingJsFile = $this->getThemePostingJsFile();
+                if (!empty($postingJsFile)) {
+                    $jsFiles[] = $postingJsFile;
+                } // if
+
+                $jsFiles[] = $themePath.'/js/treehelper.js';
+                $jsFiles[] = $themePath.'/js/jquery.ui.nestedSortable.js';
+                $jsFiles[] = $themePath.'/js/jquery.tipTip.minified.js';
+
+                return array_merge($jsFiles, $this->getThemeExtraStaticFiles($type));
+
+            case 'css':
+                if (empty($themePath)) {
+                    return [];
+                } // if
+
+                $cssFiles = ['js/dynatree/skin-vista/ui.dynatree.css',
+                    $themePath.'/css/jquery-ui-1.8.23.custom.css',
+                    $themePath.'/css/spoticons.css',
+                    $themePath.'/css/style.css',
+                    $themePath.'/css/tipTip.css', ];
+
+                return array_merge($cssFiles, $this->getThemeExtraStaticFiles($type));
+
+            case 'ico':
+                return ['images/favicon.ico'];
+        } // switch
+
         return [];
     }
 

@@ -11,7 +11,7 @@
 }
 
 div#filter {
-  width: var(--sw-sidebar-w) !important;
+  width: var(--sw-sidebar-w);
   background: var(--color-surface);
   position: relative;
   top: 0;
@@ -70,14 +70,14 @@ div.spots {
 
 table.spots {
   position: relative;
-  width: 100% !important;
-  margin: 0 !important;
+  width: 100%;
+  margin: 0;
 }
 
 table.spots tr.head {
-  position: sticky !important;
+  position: sticky;
   top: var(--sw-toolbar-offset);
-  z-index: 0 !important;
+  z-index: 0;
   background: var(--sw-strip-gradient);
   border-bottom: 1px solid var(--sw-strip-border);
 }
@@ -89,7 +89,7 @@ body.fixed #filter {
 }
 body.fixed table.spots tr.head {
   top: var(--sw-toolbar-offset);
-  z-index: 0 !important;
+  z-index: 0;
 }
 
 
@@ -131,7 +131,7 @@ body.fixed.spotinfo-page table.spots {
 body.spotinfo .container,
 body.spotinfo-page .container,
 body.fixed.spotinfo-page .container {
-  margin-left: 0 !important;
+  margin-left: 0;
 }
 
 body.spotinfo-page #spots,
