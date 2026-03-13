@@ -1,9 +1,10 @@
 <?php
 
-    /* Render header + filters (reuse we1rdo filters) */
-    if (!isset($data['spotsonly'])) {
+    $isSpotsOnly = !empty($data['spotsonly']);
+
+    if (!$isSpotsOnly) {
         require_once __DIR__.'/includes/header.inc.php';
-        require_once __DIR__.'/../we1rdo/includes/filters.inc.php';
+        require_once __DIR__.'/includes/filters.inc.php';
 
         $retrieveUrl = $tplHelper->makeRetrieveUrl();
         if (!empty($retrieveUrl)) {
@@ -35,26 +36,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     SpotTiming::start('tpl:spotsinc-modern-cards');
 
-    // View mode: cards (default) or table (fallback to we1rdo table)
     $viewMode = isset($_GET['view']) ? $_GET['view'] : (isset($_COOKIE['spotweb_view']) ? $_COOKIE['spotweb_view'] : 'cards');
     if ($viewMode === 'table') {
-        // Render only the table content from we1rdo without header/footer
         $data['spotsonly'] = true;
-        require __DIR__.'/../we1rdo/spots.inc.php';
-        if (!isset($data['spotsonly'])) { // keep contract similar to original
-            $data['spotsonly'] = null;
-        }
-        if (!isset($data['spotsonly']) || !$data['spotsonly']) {
-            require_once __DIR__.'/../we1rdo/includes/footer.inc.php';
-        } else {
-            require_once __DIR__.'/../we1rdo/includes/footer.inc.php';
+        require __DIR__.'/spots.table.inc.php';
+        if (!$isSpotsOnly) {
+            require_once __DIR__.'/includes/footer.inc.php';
         }
         SpotTiming::stop('tpl:spotsinc-modern-cards');
 
         return;
     }
 
-    // Settings shortcuts matching we1rdo implementation
     $can_use_watchlist = $tplHelper->allowed(SpotSecurity::spotsec_keep_own_watchlist, '');
     $pref_keep_watchlist = !empty($currentSession['user']['prefs']['keep_watchlist']);
     $show_watchlist_button = ($pref_keep_watchlist && $can_use_watchlist);
@@ -180,11 +173,37 @@ document.addEventListener("DOMContentLoaded", function() {
 
         echo "</div>\n<div class=\"clear\"></div>";
     } else {
-        echo "<div class='spots'><div class='cardsGrid'></div></div>"; // empty state keeps layout
+        $retrieveUrl = '';
+        if (
+            ($currentSession['user']['userid'] > SPOTWEB_ADMIN_USERID) &&
+            $tplHelper->allowed(SpotSecurity::spotsec_retrieve_spots, '') &&
+            $tplHelper->allowed(SpotSecurity::spotsec_consume_api, '')
+        ) {
+            $retrieveUrl = $tplHelper->makeRetrieveUrl();
+        } // if
+
+        echo "<div class='spots'>";
+        echo "  <div class='cardsEmptyState'>";
+        echo '      <h2>'._('No results found').'</h2>';
+        echo '      <p>'._('There are no spots visible yet. Usually this means your database is still empty or the current filter returns no results.').'</p>';
+        echo "      <div class='emptyActions'>";
+        if (!empty($retrieveUrl)) {
+            echo "      <a href='".$retrieveUrl."' onclick='return retrieveSpots(this)' class='greyButton retrievespots'>"._('Retrieve').'</a>';
+        } // if
+        echo "          <a href='".$tplHelper->makeBaseUrl('path')."' class='greyButton'>"._('Back to overview').'</a>';
+        if ($tplHelper->allowed(SpotSecurity::spotsec_edit_settings, '') || $tplHelper->allowed(SpotSecurity::spotsec_view_spotweb_updates, '')) {
+            echo "      <a href='?page=editsettings' class='greyButton'>"._('Settings').'</a>';
+        } // if
+        if ($tplHelper->allowed(SpotSecurity::spotsec_edit_own_userprefs, '')) {
+            echo "      <a href='".$tplHelper->makeEditUserPrefsUrl($currentSession['user']['userid'])."' class='greyButton'>"._('Change preferences').'</a>';
+        } // if
+        echo '      </div>';
+        echo '  </div>';
+        echo '</div>';
     }
 
-    if (!isset($data['spotsonly'])) {
-        require_once __DIR__.'/../we1rdo/includes/footer.inc.php';
+    if (!$isSpotsOnly) {
+        require_once __DIR__.'/includes/footer.inc.php';
     }
 
     SpotTiming::stop('tpl:spotsinc-modern-cards');

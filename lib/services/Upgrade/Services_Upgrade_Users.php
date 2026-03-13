@@ -280,6 +280,7 @@ class Services_Upgrade_Users
             $this->setSettingIfNot($user['prefs'], 'newspotdefault_tag', $user['username']);
             $this->setSettingIfNot($user['prefs'], 'newspotdefault_body', '');
             $this->setSettingIfNot($user['prefs'], 'user_language', 'en_US');
+            $this->setSettingIfNot($user['prefs'], 'tmdb_api_key', '');
             $this->setSettingIfNot($user['prefs'], 'show_avatars', true);
             $this->setSettingIfNot($user['prefs'], 'usemailaddress_for_gravatar', true);
 

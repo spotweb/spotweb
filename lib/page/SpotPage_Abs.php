@@ -140,13 +140,20 @@ abstract class SpotPage_Abs
         $this->sendContentTypeHeader('html');
 
         // and include the template
+        $templateFound = false;
         foreach ($this->_templatePaths as $tplPath) {
             $path = sprintf('%s%s.inc.php', $tplPath, $tpl);
             if (file_exists($path)) {
                 require_once $path;
+                $templateFound = true;
                 break;
             } // if
         } // foreach
+
+        if (!$templateFound) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo sprintf(_('Template "%s" can not be found'), htmlspecialchars($tpl));
+        } // if
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':'.$tpl, [$params]);
     }

@@ -48,7 +48,19 @@ class SpotPage_render extends SpotPage_Abs
 
         //- display stuff -#
         if (strlen($tplFile) > 0) {
-            $this->template($tplFile, $this->_params);
+            foreach ($this->_templatePaths as $tplPath) {
+                $path = sprintf('%s%s.inc.php', $tplPath, $tplFile);
+                if (file_exists($path)) {
+                    $this->template($tplFile, $this->_params);
+
+                    return;
+                } // if
+            } // foreach
+
+            header('HTTP/1.1 404 Not Found');
+            $this->sendExpireHeaders(true);
+            $this->sendContentTypeHeader('html');
+            echo sprintf(_('Template "%s" can not be found'), htmlspecialchars($tplFile));
         } // if
     }
 

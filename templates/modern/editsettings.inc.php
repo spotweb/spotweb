@@ -1,7 +1,7 @@
 <?php
 
 require __DIR__.'/includes/header.inc.php';
-require __DIR__.'/../we1rdo/includes/form-messages.inc.php';
+require __DIR__.'/includes/form-messages.inc.php';
 
 if ($result->isSubmitted()) {
     if ($result->isSuccess()) {
@@ -392,5 +392,5 @@ if ($result->isSubmitted()) {
 </form>
 <?php
     $toRunJsCode = 'initializeSettingsPage();';
-    require_once __DIR__.'/../we1rdo/includes/footer.inc.php';
+    require_once __DIR__.'/includes/footer.inc.php';
 

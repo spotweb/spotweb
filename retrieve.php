@@ -3,7 +3,9 @@
 error_reporting(2147483647);
 
 try {
+    @ini_set('memory_limit', '512M');
     require_once __DIR__.'/vendor/autoload.php';
+    set_time_limit(0);
 
     /*
      * Initialize the Spotweb base classes
@@ -38,6 +40,7 @@ try {
     $svcUserRecord = new Services_User_Record($daoFactory, $settings);
     $svcUserAuth = new Services_User_Authentication($daoFactory, $settings);
     if (!SpotCommandline::isCommandline()) {
+        ignore_user_abort(true);
         /*
          * An API key is required, so request it and try to
          * create a session with it which we can use to validate

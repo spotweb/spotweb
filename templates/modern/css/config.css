@@ -11,13 +11,285 @@ body.modern-config #usermanagementtabs {
   font: 14px/1.6 var(--font, 'Segoe UI', sans-serif);
 }
 
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform,
+#editdialogdiv form.createuserform,
+#editdialogdiv form.edituserform,
+#editdialogdiv form.editfilterform,
+#editdialogdiv form.editsecgroupform {
+  margin: 0;
+  padding: 8px 4px 4px;
+  font: 14px/1.6 var(--font, 'Segoe UI', sans-serif);
+  color: var(--color-text);
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform fieldset,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform fieldset,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform fieldset,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform fieldset,
+#editdialogdiv form.createuserform fieldset,
+#editdialogdiv form.edituserform fieldset,
+#editdialogdiv form.editfilterform fieldset,
+#editdialogdiv form.editsecgroupform fieldset {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin: 0;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform fieldset dl,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform fieldset dl,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform fieldset dl,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform fieldset dl,
+#editdialogdiv form.createuserform fieldset dl,
+#editdialogdiv form.edituserform fieldset dl,
+#editdialogdiv form.editfilterform fieldset dl,
+#editdialogdiv form.editsecgroupform fieldset dl {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 8px 18px;
+  margin: 0;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform dt,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform dt,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform dt,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform dt,
+#editdialogdiv form.createuserform dt,
+#editdialogdiv form.edituserform dt,
+#editdialogdiv form.editfilterform dt,
+#editdialogdiv form.editsecgroupform dt {
+  grid-column: 1;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform dt label,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform dt label,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform dt label,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform dt label,
+#editdialogdiv form.createuserform dt label,
+#editdialogdiv form.edituserform dt label,
+#editdialogdiv form.editfilterform dt label,
+#editdialogdiv form.editsecgroupform dt label {
+  color: inherit;
+  font-weight: 600;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform dd,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform dd,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform dd,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform dd,
+#editdialogdiv form.createuserform dd,
+#editdialogdiv form.edituserform dd,
+#editdialogdiv form.editfilterform dd,
+#editdialogdiv form.editsecgroupform dd {
+  grid-column: 2;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform select,
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform textarea,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform select,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform textarea,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform select,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform textarea,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform select,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform textarea,
+#editdialogdiv form.createuserform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+#editdialogdiv form.createuserform select,
+#editdialogdiv form.createuserform textarea,
+#editdialogdiv form.edituserform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+#editdialogdiv form.edituserform select,
+#editdialogdiv form.edituserform textarea,
+#editdialogdiv form.editfilterform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+#editdialogdiv form.editfilterform select,
+#editdialogdiv form.editfilterform textarea,
+#editdialogdiv form.editsecgroupform input:not([type="checkbox"]):not([type="hidden"]):not([type="submit"]):not([type="image"]),
+#editdialogdiv form.editsecgroupform select,
+#editdialogdiv form.editsecgroupform textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: var(--color-text);
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform input[type="checkbox"],
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform input[type="checkbox"],
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform input[type="checkbox"],
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform input[type="checkbox"],
+#editdialogdiv form.createuserform input[type="checkbox"],
+#editdialogdiv form.edituserform input[type="checkbox"],
+#editdialogdiv form.editfilterform input[type="checkbox"],
+#editdialogdiv form.editsecgroupform input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform table,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform table,
+#editdialogdiv form.edituserform table,
+#editdialogdiv form.editsecgroupform table {
+  grid-column: 1 / -1;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 16px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform table th,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform table td,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform table th,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform table td,
+#editdialogdiv form.edituserform table th,
+#editdialogdiv form.edituserform table td,
+#editdialogdiv form.editsecgroupform table th,
+#editdialogdiv form.editsecgroupform table td {
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] .formActions,
+#editdialogdiv .formActions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding-top: 8px;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] .formActions .greyButton,
+#editdialogdiv .formActions .greyButton {
+  min-width: 180px;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform input.greyButton,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform input.greyButton,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform input.greyButton,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform input.greyButton,
+#editdialogdiv form.createuserform input.greyButton,
+#editdialogdiv form.edituserform input.greyButton,
+#editdialogdiv form.editfilterform input.greyButton,
+#editdialogdiv form.editsecgroupform input.greyButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 180px;
+  padding: 11px 28px;
+  border-radius: 999px;
+  border: 2px solid rgba(244, 63, 94, 0.85);
+  background: linear-gradient(120deg, #2563eb, #7c3aed);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.35);
+  font: 600 14px/1.2 var(--font, 'Segoe UI', sans-serif);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  width: auto;
+  min-height: 46px;
+  height: auto;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: visible;
+  appearance: none;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.createuserform input.greyButton:hover,
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform input.greyButton:hover,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform input.greyButton:hover,
+.ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform input.greyButton:hover,
+#editdialogdiv form.createuserform input.greyButton:hover,
+#editdialogdiv form.edituserform input.greyButton:hover,
+#editdialogdiv form.editfilterform input.greyButton:hover,
+#editdialogdiv form.editsecgroupform input.greyButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 18px 32px rgba(37, 99, 235, 0.45);
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform input.greyButton[name*="submitdelete"],
+#editdialogdiv form.edituserform input.greyButton[name*="submitdelete"] {
+  background: transparent;
+  color: #f87171;
+  border-color: #f87171;
+  box-shadow: none;
+}
+
+.ui-dialog[aria-describedby="editdialogdiv"] form.edituserform input.greyButton[name*="submitdelete"]:hover,
+#editdialogdiv form.edituserform input.greyButton[name*="submitdelete"]:hover {
+  background: rgba(248, 113, 113, 0.12);
+  color: #fee2e2;
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .ui-dialog[aria-describedby="editdialogdiv"] form.createuserform fieldset dl,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.edituserform fieldset dl,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform fieldset dl,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform fieldset dl,
+  #editdialogdiv form.createuserform fieldset dl,
+  #editdialogdiv form.edituserform fieldset dl,
+  #editdialogdiv form.editfilterform fieldset dl,
+  #editdialogdiv form.editsecgroupform fieldset dl {
+    grid-template-columns: 1fr;
+    gap: 6px 0;
+  }
+
+  .ui-dialog[aria-describedby="editdialogdiv"] form.createuserform dt,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.edituserform dt,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform dt,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform dt,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.createuserform dd,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.edituserform dd,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.editfilterform dd,
+  .ui-dialog[aria-describedby="editdialogdiv"] form.editsecgroupform dd,
+  #editdialogdiv form.createuserform dt,
+  #editdialogdiv form.edituserform dt,
+  #editdialogdiv form.editfilterform dt,
+  #editdialogdiv form.editsecgroupform dt,
+  #editdialogdiv form.createuserform dd,
+  #editdialogdiv form.edituserform dd,
+  #editdialogdiv form.editfilterform dd,
+  #editdialogdiv form.editsecgroupform dd {
+    grid-column: 1;
+  }
+
+  .ui-dialog[aria-describedby="editdialogdiv"] .formActions .greyButton,
+  #editdialogdiv .formActions .greyButton {
+    width: 100%;
+  }
+}
+
 /* Ensure management popups always float above the sticky toolbar */
 body.modern-config .ui-dialog {
-  z-index: 5000 !important;
+  z-index: 5000;
 }
 
 body.modern-config .ui-widget-overlay {
-  z-index: 4000 !important;
+  z-index: 4000;
 }
 
 body.modern-config .closeeditsettings p a,
@@ -30,7 +302,7 @@ body.modern-config .closeusermanagement p a {
   border: 2px solid #22c55e;
   border-radius: 12px;
   padding: 8px 20px;
-  color: #edfff5 !important;
+  color: #edfff5;
   font-weight: 600;
   text-decoration: none;
 }
@@ -39,7 +311,7 @@ html[data-theme="dark"] body.modern-config .closeeditsettings p a,
 html[data-theme="dark"] body.modern-config .closeuserpreferences p a,
 html[data-theme="dark"] body.modern-config .closeusermanagement p a {
   background: transparent;
-  color: #22c55e !important;
+  color: #22c55e;
 }
 
 body.modern-config form.editsettingsform fieldset,
@@ -156,7 +428,7 @@ body.modern-config #usermanagementtabs .ui-tabs-nav li a {
   padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid rgba(15, 23, 42, 0.15);
-  color: #ffffff !important;
+  color: #ffffff;
   text-decoration: none;
   background: rgba(0, 0, 0, 0.692);
 }
@@ -165,7 +437,7 @@ body.modern-config form.editsettingsform .ui-tabs-nav li.ui-tabs-selected a,
 body.modern-config form.edituserprefsform .ui-tabs-nav li.ui-tabs-selected a,
 body.modern-config #usermanagementtabs .ui-tabs-nav li.ui-tabs-selected a {
   background: var(--color-accent);
-  color: #fff !important;
+  color: #fff;
   border-color: var(--color-accent);
   box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
 }
@@ -352,7 +624,7 @@ html[data-theme="dark"] body.modern-config #usermanagementtabs .ui-tabs-panel {
 html[data-theme="dark"] body.modern-config form.editsettingsform .ui-tabs-nav li a,
 html[data-theme="dark"] body.modern-config form.edituserprefsform .ui-tabs-nav li a,
 html[data-theme="dark"] body.modern-config #usermanagementtabs .ui-tabs-nav li a {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 html[data-theme="dark"] body.modern-config form.editsettingsform .ui-tabs-nav li.ui-tabs-selected a,
@@ -367,4 +639,4 @@ html[data-theme="dark"] body.modern-config input.greyButton[name*="submitcancel"
   color: #fecaca;
   border-color: #fca5a5;
 }
-body.modern-config .closeeditsettings p, body.modern-config .closeuserpreferences p, body.modern-config .closeusermanagement p { background: none !important; border: none !important; padding: 0; margin: 12px auto; text-align: left; }
+body.modern-config .closeeditsettings p, body.modern-config .closeuserpreferences p, body.modern-config .closeusermanagement p { background: none; border: none; padding: 0; margin: 12px auto; text-align: left; }

@@ -4,29 +4,86 @@
 #editdialogdiv .ui-dialog,
 #editdialogdiv .ui-widget-content,
 #editdialogdiv .ui-widget {
-  background: var(--color-surface) !important;
-  color: var(--color-text) !important;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"],
 #editdialogdiv .ui-dialog {
-  border: 2px solid rgba(239, 68, 68, 0.7) !important;
-  border-radius: 18px !important;
+  border: 2px solid rgba(239, 68, 68, 0.7);
+  border-radius: 18px;
   box-shadow: 0 35px 80px rgba(15, 23, 42, 0.45);
-  background: radial-gradient(circle at top, rgba(255,255,255,0.95), var(--color-surface)) !important;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.95), var(--color-surface));
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] .ui-widget-header,
 #editdialogdiv .ui-widget-header {
-  background: var(--sw-strip-gradient) !important;
-  border: none !important;
-  border-radius: 16px 16px 0 0 !important;
-  color: var(--sw-strip-text) !important;
+  background: var(--sw-strip-gradient);
+  border: none;
+  border-radius: 16px 16px 0 0;
+  color: var(--sw-strip-text);
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] .ui-dialog-titlebar-close,
 #editdialogdiv .ui-dialog-titlebar-close {
   filter: invert(100%);
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 52px 0 16px;
+  background: var(--sw-strip-gradient);
+  border: none;
+  border-radius: 16px 16px 0 0;
+  color: var(--sw-strip-text);
+}
+
+body.modern-theme .ui-dialog .ui-dialog-title {
+  float: none;
+  margin: 0;
+  color: inherit;
+  font: 600 14px/1.2 var(--font, 'Segoe UI', sans-serif);
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  pointer-events: auto;
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close span {
+  display: none;
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close::before {
+  content: '\00D7';
+  color: #f8fafc;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close:hover,
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close:focus-visible {
+  background: rgba(248, 113, 113, 0.16);
+  border-color: rgba(248, 113, 113, 0.65);
+  outline: none;
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv,
@@ -53,8 +110,8 @@
 #editdialogdiv .newspotdiv table,
 #editdialogdiv .newspotdiv th,
 #editdialogdiv .newspotdiv td {
-  color: var(--color-text) !important;
-  border-color: var(--color-border) !important;
+  color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv .categorydropdown select,
@@ -93,7 +150,7 @@
 .ui-dialog[aria-describedby="editdialogdiv"] form.postspotform button,
 #editdialogdiv form.postspotform input[type="submit"],
 #editdialogdiv form.postspotform button {
-  background: var(--color-accent) !important;
+  background: var(--color-accent);
   border: none;
   border-radius: 8px;
   color: #fff;
@@ -108,15 +165,15 @@ html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .ui-widget,
 html[data-theme="dark"] #editdialogdiv .ui-dialog,
 html[data-theme="dark"] #editdialogdiv .ui-widget-content,
 html[data-theme="dark"] #editdialogdiv .ui-widget {
-  background: #111926 !important;
-  color: #f4f5f7 !important;
+  background: #111926;
+  color: #f4f5f7;
 }
 
 html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"],
 html[data-theme="dark"] #editdialogdiv .ui-dialog {
-  border-color: rgba(239, 68, 68, 0.75) !important;
+  border-color: rgba(239, 68, 68, 0.75);
   box-shadow: 0 50px 90px rgba(0, 0, 0, 0.65);
-  background: radial-gradient(circle at top, rgba(30, 37, 51, 0.95), #0d111b) !important;
+  background: radial-gradient(circle at top, rgba(30, 37, 51, 0.95), #0d111b);
 }
 
 html[data-theme="dark"] .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv,

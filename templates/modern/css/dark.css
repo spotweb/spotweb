@@ -14,23 +14,23 @@ html[data-theme="dark"] {
 }
 
 html[data-theme="dark"] html, html[data-theme="dark"] body { background: var(--color-bg); color: var(--color-text); }
-html[data-theme="dark"] div#toolbar { background: linear-gradient(180deg, #181c22, #12161c) !important; border-bottom: 1px solid #0d1014; }
-html[data-theme="dark"] .toolbarButton p { background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.18) !important; }
-html[data-theme="dark"] div#filter { background: var(--color-surface); border-right: none !important; }
-html[data-theme="dark"] table.spots tr td { background: transparent; border-color: var(--color-border) !important; }
-html[data-theme="dark"] table.spots tr:hover td { background: var(--color-surface) !important; }
+html[data-theme="dark"] div#toolbar { background: linear-gradient(180deg, #181c22, #12161c); border-bottom: 1px solid #0d1014; }
+html[data-theme="dark"] div#toolbar .toolbarButton p { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
+html[data-theme="dark"] div#filter { background: var(--color-surface); border-right: none; }
+html[data-theme="dark"] table.spots tr td { background: transparent; border-color: var(--color-border); }
+html[data-theme="dark"] table.spots tr:hover td { background: var(--color-surface); }
 
 /* Dark tables: keep text high-contrast and reuse light-mode category colors */
 html[data-theme="dark"] table.spots td,
 html[data-theme="dark"] table.spots td a,
-html[data-theme="dark"] table.spots tr td a.spotlink { color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr:hover td a { color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr td a.spotlink { color: #ffffff; }
+html[data-theme="dark"] table.spots tr:hover td a { color: #ffffff; }
 
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.28) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.32) !important; color: #ffffff !important; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.3) !important; color: #ffffff !important; }
+html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.16); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.18); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.16); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.18); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.17); color: #ffffff; }
 
 html[data-theme="dark"] .ui-icon { filter: brightness(1.4); }
 

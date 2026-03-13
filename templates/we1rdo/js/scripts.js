@@ -898,13 +898,46 @@ function attachMaintenanceButtonsBehaviour() {
 } // attachMaintenanceButtionsBehaviour
 
 function retrieveSpots() {
-	var url = $("ul.maintenancebox a.retrievespots").attr("href");
+	var url = '';
+	if (arguments.length > 0 && arguments[0]) {
+		url = $(arguments[0]).attr("href") || '';
+	}
+	if (!url) {
+		url = $("ul.maintenancebox a.retrievespots").attr("href");
+	}
+	if (!url) {
+		return false;
+	}
 
 	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
-	$.get(url, function(data) {
-		setTimeout( function() { $("li.info").html("<t>New spots retrieved</t>") }, 1000);
-		setTimeout( function() { location.reload() }, 2000);
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "text",
+		timeout: 0,
+		success: function(data) {
+			var response = (data || "").toString();
+			var cleanResponse = $.trim(response.replace(/\s+/g, " "));
+
+			if (/already running/i.test(response)) {
+				$("li.info").text(cleanResponse || "Retriever is already running");
+				return;
+			}
+
+			if (/fatal error|crashed|exception|unable to connect/i.test(response)) {
+				$("li.info").text(cleanResponse || "Retrieve failed");
+				return;
+			}
+
+			setTimeout(function() { $("li.info").html("<t>New spots retrieved</t>") }, 1000);
+			setTimeout(function() { location.reload() }, 2000);
+		},
+		error: function(xhr, status) {
+			var message = status || "Retrieve failed";
+			$("li.info").text(message);
+		}
 	});
+	return false;
 }
 
 function eraseDownloads() {
