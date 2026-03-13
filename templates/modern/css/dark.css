@@ -26,11 +26,11 @@ html[data-theme="dark"] table.spots td a,
 html[data-theme="dark"] table.spots tr td a.spotlink { color: #ffffff; }
 html[data-theme="dark"] table.spots tr:hover td a { color: #ffffff; }
 
-html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.28); color: #ffffff; }
-html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.32); color: #ffffff; }
-html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.28); color: #ffffff; }
-html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.32); color: #ffffff; }
-html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.3); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat0 td { background: rgba(37, 99, 235, 0.16); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat1 td { background: rgba(234, 179, 8, 0.18); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat2 td { background: rgba(16, 185, 129, 0.16); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat3 td { background: rgba(239, 68, 68, 0.18); color: #ffffff; }
+html[data-theme="dark"] table.spots tr.spotcat4 td { background: rgba(168, 85, 247, 0.17); color: #ffffff; }
 
 html[data-theme="dark"] .ui-icon { filter: brightness(1.4); }
 

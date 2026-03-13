@@ -12,6 +12,24 @@
 function openDialog(divid, title, url, buttonClick, successAction, closeCb, openCb) {
     var $dialdiv = $("#" + divid);
 
+    function positionDialogAboveToolbar() {
+        var $dialog = $dialdiv.closest(".ui-dialog");
+        var toolbarHeight = $("#toolbar").outerHeight() || 0;
+        var scrollTop = $(window).scrollTop() || 0;
+        var minTop = scrollTop + toolbarHeight + 12;
+        var currentTop = parseInt($dialog.css("top"), 10);
+
+        if ($dialog.length) {
+            $dialog.css("z-index", 9000);
+
+            if (isNaN(currentTop) || currentTop < minTop) {
+                $dialog.css("top", minTop + "px");
+            }
+        }
+
+        $(".ui-widget-overlay").css("z-index", 8900);
+    }
+
     /*
      * Test whether we need to 'dialog'-ify the
      * dialog again, if not, we can just reshow the
@@ -141,6 +159,7 @@ function openDialog(divid, title, url, buttonClick, successAction, closeCb, open
 
                 // actually show the dialogs content
                 $dialdiv.dialog('open');
+                positionDialogAboveToolbar();
 
                 return false; // supress the default action of the link which opens this dialog
             } // success function

@@ -61,7 +61,7 @@ if (!showResults($result)) {
 			</table>
 <?php } ?>
 
-			<dd>
+			<dd class="formActions">
 				<input class="greyButton" type="submit" name="edituserform[submitedit]" value="<?php echo _('Change'); ?>">
 <?php if ($edituserform['userid'] > SPOTWEB_ADMIN_USERID && $tplHelper->allowed(SpotSecurity::spotsec_delete_user, '')) { ?>
 				<input class="greyButton" type="submit" name="edituserform[submitdelete]" value="<?php echo _('Delete user'); ?>">

@@ -80,3 +80,110 @@ div.details table.spotinfo th * { color: var(--color-text); }
 /* Improve readability in long descriptions */
 div.details div.description { line-height: 1.7; }
 div.details div.description p { margin: 0 0 10px 0; }
+
+/* Dark mode: override the legacy light detail/comment surfaces from style.css */
+html[data-theme="dark"] div#overlay,
+html[data-theme="dark"] div.details table.spotheader,
+html[data-theme="dark"] div.details table.spotinfo td,
+html[data-theme="dark"] div.details table.spotinfo td.break,
+html[data-theme="dark"] div.details div.spotimage,
+html[data-theme="dark"] div.details table.fullimage td,
+html[data-theme="dark"] div.details div.description pre,
+html[data-theme="dark"] div.details div.comments li.addComment div,
+html[data-theme="dark"] div.details form.postcommentform fieldset textarea {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"] a.closeDetails,
+html[data-theme="dark"] div.details table.spotheader th.title,
+html[data-theme="dark"] div.details table.spotinfo th,
+html[data-theme="dark"] div.details div.description h4,
+html[data-theme="dark"] div.details div.comments h4,
+html[data-theme="dark"] div.details div.comments li.addComment {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  text-shadow: none;
+}
+
+html[data-theme="dark"] div.details div.comments h4 span {
+  background: rgba(255,255,255,0.08);
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] div.details table.spotinfo a,
+html[data-theme="dark"] div.details div.comments a.spotterid,
+html[data-theme="dark"] div.details div.comments li a:not(.delete):not(.whitelist) {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"] div.details table.spotdetails td.img a.loading {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] div.details div.comments blockquote {
+  border-color: var(--color-border);
+  background: rgba(255,255,255,0.03);
+}
+
+html[data-theme="dark"] div.details div.comments li.addComment div div.loading {
+  background: rgba(15,17,21,0.78) url(../img/loading.gif) no-repeat 50% 50%;
+}
+
+html[data-theme="dark"] div.details.spotcat0 table.spotinfo th,
+html[data-theme="dark"] div.details.spotcat0 div.comments li {
+  background-color: rgba(37, 99, 235, 0.18);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+html[data-theme="dark"] div.details.spotcat1 table.spotinfo th,
+html[data-theme="dark"] div.details.spotcat1 div.comments li {
+  background-color: rgba(234, 179, 8, 0.18);
+  border-color: rgba(234, 179, 8, 0.28);
+}
+
+html[data-theme="dark"] div.details.spotcat2 table.spotinfo th,
+html[data-theme="dark"] div.details.spotcat2 div.comments li {
+  background-color: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+html[data-theme="dark"] div.details.spotcat3 table.spotinfo th,
+html[data-theme="dark"] div.details.spotcat3 div.comments li {
+  background-color: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+html[data-theme="dark"] div.details.spotcat4 table.spotinfo th,
+html[data-theme="dark"] div.details.spotcat4 div.comments li {
+  background-color: rgba(168, 85, 247, 0.18);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+html[data-theme="dark"] div.details.spotcat0 div.comments li.even {
+  background-color: rgba(37, 99, 235, 0.26);
+}
+
+html[data-theme="dark"] div.details.spotcat1 div.comments li.even {
+  background-color: rgba(234, 179, 8, 0.24);
+}
+
+html[data-theme="dark"] div.details.spotcat2 div.comments li.even {
+  background-color: rgba(16, 185, 129, 0.24);
+}
+
+html[data-theme="dark"] div.details.spotcat3 div.comments li.even {
+  background-color: rgba(239, 68, 68, 0.24);
+}
+
+html[data-theme="dark"] div.details.spotcat4 div.comments li.even {
+  background-color: rgba(168, 85, 247, 0.24);
+}
+
+html[data-theme="dark"] div.details div.comments li.addComment,
+html[data-theme="dark"] div.details div.comments li.nocomments {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+}

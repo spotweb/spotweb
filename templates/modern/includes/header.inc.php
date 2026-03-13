@@ -57,8 +57,21 @@
 		<script src="templates/modern/js/infinite.js" type="text/javascript" defer></script>
 		<script src="templates/modern/js/table-enhance.js" type="text/javascript" defer></script>
 		<script src="templates/modern/js/filter-overlay.js" type="text/javascript" defer></script>
+<?php
+    $pageName = strtolower((string) ($_GET['page'] ?? 'index'));
+    $tplName = strtolower((string) ($_GET['tplname'] ?? ''));
+    $bodyClasses = [
+        'modern-theme',
+        'modern-page-'.preg_replace('/[^a-z0-9_-]+/', '-', $pageName),
+    ];
+    $configPages = ['editsettings', 'edituserprefs', 'usermanagement'];
+    $configTemplates = ['usermanagement', 'listusers', 'listgroups', 'listfilters', 'editfilter'];
+    if (in_array($pageName, $configPages, true) || in_array($tplName, $configTemplates, true)) {
+        $bodyClasses[] = 'modern-config';
+    }
+?>
 	</head>
-	<body>
+	<body class="<?php echo htmlspecialchars(implode(' ', $bodyClasses), ENT_QUOTES, 'UTF-8'); ?>">
 		<div id='editdialogdiv'></div>
 		<div id="overlay"></div>
 		<div class="container" id="container">

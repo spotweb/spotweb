@@ -202,9 +202,11 @@ a.viewState h4 span.down {background:#333 url(../img/sprite.png) no-repeat -17px
 div.filter ul.quicklinks li {margin:0 0 2px 0;}
 div.filter ul.quicklinks li a {}
 /* Ensure quicklinks stay stacked vertically */
-div.filter ul.filterlist.quicklinks {display:block;}
-div.filter ul.filterlist.quicklinks li {display:block !important; float:none !important; width:100% !important;}
-div.filter ul.filterlist.quicklinks li a {display:block !important; float:none !important; width:100% !important;}
+div#filter > ul.filterlist.quicklinks {display:block; overflow:hidden; margin:0 0 5px 0; padding:0 0 0 5px;}
+div#filter > ul.filterlist.quicklinks li {display:block !important; float:none !important; clear:both !important; width:100% !important; margin:0 0 5px 0 !important;}
+div#filter > ul.filterlist.quicklinks li a.filter {display:flex !important; align-items:center; width:100% !important; min-height:20px; box-sizing:border-box;}
+div#filter > ul.filterlist.quicklinks li a.filter span.spoticon {float:none !important; flex:0 0 auto; margin:0 7px 0 7px;}
+div#filter > ul.filterlist.quicklinks li a.filter span.newspots {margin-left:auto;}
 
 /* FILTERS */
 div.filter ul {margin:0 0 5px; padding:0 0 0 5px;}

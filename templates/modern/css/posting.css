@@ -29,6 +29,63 @@
   filter: invert(100%);
 }
 
+body.modern-theme .ui-dialog .ui-dialog-titlebar {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 52px 0 16px;
+  background: var(--sw-strip-gradient);
+  border: none;
+  border-radius: 16px 16px 0 0;
+  color: var(--sw-strip-text);
+}
+
+body.modern-theme .ui-dialog .ui-dialog-title {
+  float: none;
+  margin: 0;
+  color: inherit;
+  font: 600 14px/1.2 var(--font, 'Segoe UI', sans-serif);
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  pointer-events: auto;
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close span {
+  display: none;
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close::before {
+  content: '\00D7';
+  color: #f8fafc;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close:hover,
+body.modern-theme .ui-dialog .ui-dialog-titlebar-close:focus-visible {
+  background: rgba(248, 113, 113, 0.16);
+  border-color: rgba(248, 113, 113, 0.65);
+  outline: none;
+}
+
 .ui-dialog[aria-describedby="editdialogdiv"] .newspotdiv,
 #editdialogdiv .newspotdiv {
   background: linear-gradient(145deg, rgba(248, 250, 252, 0.98), rgba(229, 234, 241, 0.9));

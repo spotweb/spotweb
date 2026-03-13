@@ -20,7 +20,6 @@ This file summarizes the main changes that were made during the local Spotweb wo
 ## Retrieval / Backend
 
 - Retrieval now gets a higher runtime memory limit in `retrieve.php`.
-- A memory-heavy debug serialization path in the spot retriever was removed.
 - The web retrieve button now shows real feedback for failures such as `already running` or fatal errors instead of always pretending the action succeeded.
 
 ## Modern Theme UI

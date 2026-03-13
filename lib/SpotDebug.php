@@ -59,13 +59,6 @@ class SpotDebug
 
     // disable()
 
-    public static function isEnabled($lvl = self::TRACE)
-    {
-        return (!is_null(self::$_debugLogDao)) && (self::$_level <= $lvl);
-    }
-
-    // isEnabled()
-
     public static function msg($lvl, $msg, $context = [])
     {
         if (!is_null(self::$_debugLogDao)) {
