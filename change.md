@@ -30,7 +30,17 @@ This file summarizes the main changes that were made during the local Spotweb wo
 - Cards view titles are now clamped so long titles no longer make cards uneven in height.
 - Dark mode filter blocks were corrected so they no longer stay light.
 - Dark filter background was tuned to `#3b3939`.
+- Spot detail pages were tightened up by removing spacer rows and skipping empty `Website` and `Tag` rows.
+- Dark mode spot detail and comment views were corrected so legacy light panels no longer bleed through.
+- User, preference and management dialogs now follow the modern theme styling instead of falling back to the old jQuery UI look.
+- Dialog buttons were enlarged for readability, the close button was made visible again, and dialogs are forced above the sticky toolbar.
+- Dark table category bars were toned down so the row colors are less aggressive.
 - A first cleanup pass removed many unnecessary `!important` rules from the modern override CSS.
+
+## We1rdo Theme UI
+
+- `Snelle toegang` / quick links were restacked vertically above the filters again.
+- The `Snelle toegang` block remains collapsible after the quick link layout fix.
 
 ## Notes
 
