@@ -44,7 +44,7 @@ class SpotPage_rss extends SpotPage_Abs
         /*
          * Actually fetch the spots
          */
-        $pageNr = $this->_params['page'];
+        $pageNr = intval($this->_params['page']);
         $svcProvSpotList = new Services_Providers_SpotList($this->_daoFactory->getSpotDao());
         $spotsTmp = $svcProvSpotList->fetchSpotList(
             $this->_currentSession['user']['userid'],

@@ -56,9 +56,9 @@
             'dev_requirement' => false,
         ),
         'imdbphp/imdbphp' => array(
-            'pretty_version' => 'v8.3.0',
-            'version' => '8.3.0.0',
-            'reference' => 'b007c383b416e714c7212516284c41d974beba43',
+            'pretty_version' => 'v8.3.2',
+            'version' => '8.3.2.0',
+            'reference' => '61fe9fac330914c3e61aa52ac27814c298d96cc6',
             'type' => 'library',
             'install_path' => __DIR__ . '/../imdbphp/imdbphp',
             'aliases' => array(),
