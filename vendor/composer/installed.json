@@ -460,17 +460,17 @@
         },
         {
             "name": "imdbphp/imdbphp",
-            "version": "v8.3.0",
-            "version_normalized": "8.3.0.0",
+            "version": "v8.3.2",
+            "version_normalized": "8.3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tboothman/imdbphp.git",
-                "reference": "b007c383b416e714c7212516284c41d974beba43"
+                "reference": "61fe9fac330914c3e61aa52ac27814c298d96cc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tboothman/imdbphp/zipball/b007c383b416e714c7212516284c41d974beba43",
-                "reference": "b007c383b416e714c7212516284c41d974beba43",
+                "url": "https://api.github.com/repos/tboothman/imdbphp/zipball/61fe9fac330914c3e61aa52ac27814c298d96cc6",
+                "reference": "61fe9fac330914c3e61aa52ac27814c298d96cc6",
                 "shasum": ""
             },
             "require": {
@@ -481,7 +481,7 @@
                 "ext-simplexml": "*",
                 "php": ">=5.6",
                 "psr/log": "^1.0 || ^2.0",
-                "psr/simple-cache": "^1.0"
+                "psr/simple-cache": "^1.0|^3.0"
             },
             "require-dev": {
                 "cache/array-adapter": "^1.2",
@@ -490,7 +490,7 @@
                 "phpstan/phpstan": "^2.1",
                 "phpunit/phpunit": "^9.6"
             },
-            "time": "2025-03-02T18:05:46+00:00",
+            "time": "2026-01-13T18:58:23+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -505,7 +505,7 @@
             "description": "Library for retrieving film and tv information from IMDb",
             "support": {
                 "issues": "https://github.com/tboothman/imdbphp/issues",
-                "source": "https://github.com/tboothman/imdbphp/tree/v8.3.0"
+                "source": "https://github.com/tboothman/imdbphp/tree/v8.3.2"
             },
             "install-path": "../imdbphp/imdbphp"
         },

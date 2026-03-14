@@ -157,7 +157,7 @@ class Config
      * Set the default user agent (if none is detected)
      * @var string
      */
-    public $default_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0';
+    public $default_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0';
 
     /**
      * Enforce the use of a special user agent

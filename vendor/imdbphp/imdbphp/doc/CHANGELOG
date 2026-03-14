@@ -2,6 +2,16 @@
 History for IMDBPHP
 ====================
 
+v8.3.2 (13.01.2025)
+-------------------
+! Update psr/simple-cache dependency to allow version 3 #339
+
+v8.3.1 (22.12.2025)
+-------------------
+! Fix TitleSearch
+! Fix TitleSearchAdvanced
+! Update useragent to latest FireFox
+
 v8.3.0 (02.03.2025)
 -------------------
 + Add Podcast Series & Music Video Support #333 by @CicerBro

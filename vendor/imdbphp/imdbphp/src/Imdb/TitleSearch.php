@@ -2,7 +2,7 @@
 
 namespace Imdb;
 
-class TitleSearch extends MdbBase
+class TitleSearch extends TitleSearchBase
 {
     const MOVIE = Title::MOVIE;
     const TV_SERIES = Title::TV_SERIES;
@@ -30,120 +30,71 @@ class TitleSearch extends MdbBase
     {
         $results = array();
         $resultsCounter = 0;
-        $page = $this->getPage($searchTerms);
 
         // Parse & filter results
-        if (preg_match_all(
-            '!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims',
-            $page,
-            $matches,
-            PREG_SET_ORDER
-        )) {
-            foreach ($matches as $match) {
-                $type = $this->parseTitleType($match['type']);
+        $xpath = $this->getXpathPage($searchTerms);
 
-                if (is_array($wantedTypes) && !in_array($type, $wantedTypes)) {
-                    continue;
-                }
+        $cells = $xpath->query("//section[@data-testid='find-results-section-title']//div[@class='ipc-metadata-list-summary-item__tc']");
 
-                $results[] = Title::fromSearchResult(
-                    $match['imdbid'],
-                    $match['title'],
-                    $match['year'],
-                    $type,
-                    $this->config,
-                    $this->logger,
-                    $this->cache
-                );
+        foreach ($cells as $key => $cell) {
+            $year = 0;
+            $type = '';
 
-                if (++$resultsCounter === $maxResults) {
-                    break;
+            $yearType = $xpath->query(".//div[contains(@class, 'cli-title-metadata')]", $cell);
+
+            if ($yearType->length > 0) {
+                if (preg_match('!^(?<year>\d{4})?(-(\d{4})?)?(?:s\d+\.e\d+)?(?<type>.*)!', $yearType->item(0)->nodeValue, $match)) {
+                    $year = (int) $match['year'];
+                    $type = $match['type'];
                 }
             }
-        } else {
-            $xpath = $this->getXpathPage($searchTerms);
 
-            $cells = $xpath->query("//section[@data-testid='find-results-section-title']//div[@class='ipc-metadata-list-summary-item__tc']");
+            $type = $this->parseTitleType($type);
 
-            foreach ($cells as $key => $cell) {
-                $year = 0;
-                $type = '';
+            if (is_array($wantedTypes) && !in_array($type, $wantedTypes)) {
+                continue;
+            }
 
-                $yearType = $xpath->query(".//ul[contains(@class, 'ipc-metadata-list-summary-item__tl')]", $cell);
+            $epTitleQuery = ".//div[contains(@class, 'cli-ep-title')]";
+            $epTitle = $xpath->query($epTitleQuery, $cell);
 
-                if ($yearType->length > 0) {
-                    if (preg_match('!^(?<year>\d{4})?(-(\d{4})?)?(?:s\d+\.e\d+)?(?<type>.*)!', $yearType->item(0)->nodeValue, $match)) {
+            if ($epTitle->length > 0) {
+                $linkAndTitle = $xpath->query($epTitleQuery . "//a[@class='ipc-title-link-wrapper']", $cell);
+                $epYear = $xpath->query(".//span[contains(@class, 'cli-ep-year')]", $cell);
+
+                if ($epYear->length > 0) {
+                    if (preg_match('!(?<year>\d{4})!', $epYear->item(0)->nodeValue, $match)) {
                         $year = (int) $match['year'];
-                        $type = $match['type'];
                     }
                 }
+            } else {
+                $linkAndTitle = $xpath->query(".//a[@class='ipc-title-link-wrapper']", $cell);
+            }
 
-                $type = $this->parseTitleType($type);
+            if ($linkAndTitle->length < 1 || !preg_match('!tt(?<imdbid>\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $href)) {
+                continue;
+            }
 
-                if (is_array($wantedTypes) && !in_array($type, $wantedTypes)) {
-                    continue;
-                }
+            $results[] = Title::fromSearchResult(
+                $href['imdbid'],
+                trim($linkAndTitle->item(0)->nodeValue),
+                $year,
+                $type,
+                $this->config,
+                $this->logger,
+                $this->cache
+            );
 
-                $linkAndTitle = $xpath->query(".//a[@class='ipc-metadata-list-summary-item__t']", $cell);
-
-                if ($linkAndTitle->length < 1 || !preg_match('!tt(?<imdbid>\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $href)) {
-                    continue;
-                }
-
-                $results[] = Title::fromSearchResult(
-                    $href['imdbid'],
-                    trim($linkAndTitle->item(0)->nodeValue),
-                    $year,
-                    $type,
-                    $this->config,
-                    $this->logger,
-                    $this->cache
-                );
-
-                if (++$resultsCounter === $maxResults) {
-                    break;
-                }
+            if (++$resultsCounter === $maxResults) {
+                break;
             }
         }
 
         return $results;
     }
 
-    protected function parseTitleType($string)
-    {
-        $string = strtoupper($string);
-
-        if (strpos($string, 'TV SERIES') !== false) {
-            return self::TV_SERIES;
-        } elseif (strpos($string, 'TV EPISODE') !== false) {
-            return self::TV_EPISODE;
-        } elseif (strpos($string, 'VIDEO GAME') !== false) {
-            return self::GAME;
-        } elseif (strpos($string, 'VIDEO') !== false) {
-            return self::VIDEO;
-        } elseif (strpos($string, 'MUSIC VIDEO') !== false) {
-            return self::MUSIC_VIDEO;
-        } elseif (strpos($string, 'SHORT') !== false) {
-            return self::SHORT;
-        } elseif (strpos($string, 'TV MINI SERIES') !== false) {
-            return self::TV_MINI_SERIES;
-        } elseif (strpos($string, 'TV MOVIE') !== false) {
-            return self::TV_MOVIE;
-        } elseif (strpos($string, 'TV SPECIAL') !== false) {
-            return self::TV_SPECIAL;
-        } elseif (strpos($string, 'TV SHORT') !== false) {
-            return self::TV_SHORT;
-        } elseif (strpos($string, 'PODCAST EPISODE') !== false) {
-            return self::PODCAST_EPISODE;
-        } elseif (strpos($string, 'PODCAST SERIES') !== false) {
-            return self::PODCAST_SERIES;
-        } else {
-            return self::MOVIE;
-        }
-    }
-
     protected function buildUrl($searchTerms = null)
     {
-        return "https://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
+        return "https://" . $this->imdbsite . "/find/?s=tt&q=" . urlencode($searchTerms);
     }
 }

@@ -12,7 +12,7 @@ class TitleSearchAdvancedTest extends PHPUnit\Framework\TestCase
         $search->setYear(2000);
         $list = $search->search();
         $this->assertIsArray($list);
-        $this->assertCount(50, $list);
+        $this->assertCount(25, $list);
     }
 
     public function test_episodes()
@@ -21,7 +21,7 @@ class TitleSearchAdvancedTest extends PHPUnit\Framework\TestCase
         $search->setTitleTypes(array(TitleSearchAdvanced::TV_EPISODE));
         $list = $search->search();
         $this->assertIsArray($list);
-        $this->assertCount(50, $list);
+        $this->assertCount(25, $list);
 
         foreach ($list as $result) {
             if ($result['imdbid'] === '12763776') {
@@ -45,7 +45,7 @@ class TitleSearchAdvancedTest extends PHPUnit\Framework\TestCase
         $list = $search->search();
 
         $this->assertIsArray($list);
-        $this->assertCount(50, $list);
+        $this->assertCount(25, $list);
 
         $trash = current(array_filter($list, function ($item) {
             return $item['episode_imdbid'] == '0579540';
