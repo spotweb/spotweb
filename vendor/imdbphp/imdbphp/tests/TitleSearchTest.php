@@ -194,7 +194,7 @@ class TitleSearchTest extends PHPUnit\Framework\TestCase
     protected function getimdbsearch()
     {
         $config = new Config();
-        $config->language = 'en';
+        $config->language = 'en-GB';
         $config->cachedir = realpath(dirname(__FILE__) . '/cache') . '/';
         $config->usezip = false;
         $config->cache_expire = 86400;
