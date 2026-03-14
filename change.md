@@ -2,7 +2,7 @@
 
 ## Scope
 
-This file summarizes the main changes that were made during the local Spotweb work on March 13, 2026.
+This file summarizes the main changes that were made during the local Spotweb work on March 13 and March 14, 2026.
 
 ## Core / Architecture
 
@@ -10,6 +10,16 @@ This file summarizes the main changes that were made during the local Spotweb wo
 - `modern` no longer depends on `templates/we1rdo/*` as a parent theme layer.
 - Generic theme helper behavior was moved into the shared core helper layer where needed.
 - Missing template handling was hardened so template failures no longer silently end in blank output.
+
+## Theme Architecture
+
+- Added a shared `SpotThemes` registry to centralize theme discovery, fallback handling and validation.
+- Theme lists now merge configured themes with discovered standalone themes from `templates/*/SpotTemplateHelper_*.php`.
+- Spotweb now falls back to an available theme, preferring `modern`, when a stored theme no longer exists on disk.
+- Added shared helper support for theme asset paths and extra header assets so themes no longer need hardcoded self-references.
+- `modern` and `we1rdo` JS loading indicators now use the active theme asset base instead of a hardcoded theme folder.
+- Added `bin/validate-theme.php` to validate whether a standalone theme contains the required files.
+- Added `handleiding.md` with instructions for creating and registering a new standalone theme.
 
 ## User Preferences / Settings
 

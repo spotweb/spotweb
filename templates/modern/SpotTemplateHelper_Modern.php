@@ -14,9 +14,36 @@ class SpotTemplateHelper_Modern extends SpotTemplateHelper
         return ['modern' => []];
     }
 
+    // getTemplatePreferences
+
+    public function getThemeHeaderCssFiles()
+    {
+        return [
+            $this->getThemeAssetPath('css/posting.css'),
+            $this->getThemeAssetPath('css/config.css'),
+        ];
+    }
+
+    // getThemeHeaderCssFiles
+
+    public function getThemeHeaderJsFiles()
+    {
+        return [
+            $this->getThemeAssetPath('js/theme-toggle.js'),
+            $this->getThemeAssetPath('js/back-fix.js'),
+            $this->getThemeAssetPath('js/open-spot-fix.js'),
+            $this->getThemeAssetPath('js/sticky-offset.js'),
+            $this->getThemeAssetPath('js/infinite.js'),
+            $this->getThemeAssetPath('js/table-enhance.js'),
+            $this->getThemeAssetPath('js/filter-overlay.js'),
+        ];
+    }
+
+    // getThemeHeaderJsFiles
+
     protected function getThemePostingJsFile()
     {
-        return $this->getThemePath().'/js/modernpost.js';
+        return $this->getThemeAssetPath('js/modernpost.js');
     }
 
     // getThemePostingJsFile
@@ -26,13 +53,13 @@ class SpotTemplateHelper_Modern extends SpotTemplateHelper
         switch ($type) {
             case 'css':
                 return [
-                    $this->getThemePath().'/css/base.css',
-                    $this->getThemePath().'/css/dark.css',
-                    $this->getThemePath().'/css/filters.css',
-                    $this->getThemePath().'/css/layout.css',
-                    $this->getThemePath().'/css/cards.css',
-                    $this->getThemePath().'/css/detail.css',
-                    $this->getThemePath().'/css/table.css',
+                    $this->getThemeAssetPath('css/base.css'),
+                    $this->getThemeAssetPath('css/dark.css'),
+                    $this->getThemeAssetPath('css/filters.css'),
+                    $this->getThemeAssetPath('css/layout.css'),
+                    $this->getThemeAssetPath('css/cards.css'),
+                    $this->getThemeAssetPath('css/detail.css'),
+                    $this->getThemeAssetPath('css/table.css'),
                 ];
         } // switch
 

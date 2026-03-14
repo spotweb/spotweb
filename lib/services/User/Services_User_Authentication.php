@@ -161,6 +161,7 @@ class Services_User_Authentication
             default: $userSession['active_tpl'] = $userSession['user']['prefs']['normal_template'];
                 break;
         } // switch
+        $userSession['active_tpl'] = SpotThemes::resolveThemeName($this->_settings, $userSession['active_tpl']);
 
         /*
          * And always update the cookie even if one already exists,
