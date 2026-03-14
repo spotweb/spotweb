@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__DIR__).'/SpotThemes.php';
+
 abstract class SpotPage_Abs
 {
     /**

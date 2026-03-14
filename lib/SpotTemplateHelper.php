@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/SpotThemes.php';
+
 // Utility class voor template functies, kan eventueel
 // door custom templates extended worden
 use function PHP81_BC\strftime;
