@@ -77,10 +77,22 @@ class SpotTemplateHelper
             return '';
         } // if
 
-        return 'templates/'.$themeName;
+        return SpotThemes::getThemePath($themeName);
     }
 
     // getThemePath
+
+    public function getThemeAssetPath($relativePath = '')
+    {
+        $themeName = $this->getThemeName();
+        if (empty($themeName)) {
+            return '';
+        } // if
+
+        return SpotThemes::getThemeAssetPath($themeName, $relativePath);
+    }
+
+    // getThemeAssetPath
 
     /*
      * Set params - update the template list of parameters
@@ -1249,6 +1261,20 @@ class SpotTemplateHelper
 
     // getThemeExtraStaticFiles
 
+    public function getThemeHeaderCssFiles()
+    {
+        return [];
+    }
+
+    // getThemeHeaderCssFiles
+
+    public function getThemeHeaderJsFiles()
+    {
+        return [];
+    }
+
+    // getThemeHeaderJsFiles
+
     /*
      * Geeft een lijst van mogelijke smilies terug
      */
@@ -1686,7 +1712,7 @@ class SpotTemplateHelper
      */
     public function getConfiguredTemplates()
     {
-        return $this->_settings->get('valid_templates');
+        return SpotThemes::getConfiguredThemes($this->_settings);
     }
 
     // getConfiguredTemplates

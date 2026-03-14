@@ -14,6 +14,7 @@
     echo 10;
 } ?>;
             var spotweb_nzbhandler_type = '<?php echo $tplHelper->getNzbHandlerType(); ?>';
+            var spotweb_theme_asset_base = '<?php echo $tplHelper->getThemeAssetPath(); ?>';
         </script>
         <script src='?page=statics&amp;type=js&amp;lang=<?php echo urlencode($currentSession['user']['prefs']['user_language']); ?>&amp;mod=<?php echo $tplHelper->getStaticModTime('js'); ?>' type='text/javascript'></script>
 

@@ -16,7 +16,10 @@ $.address.init(function() {
 		});
 
 var BaseURL = createBaseURL();
-var loading = '<img src="' + BaseURL + 'templates/we1rdo/img/loading.gif" height="16" width="16" />';
+var themeAssetBase = window.spotweb_theme_asset_base || 'templates/we1rdo';
+themeAssetBase = themeAssetBase.replace(/\/+$/, '');
+var themeAssetBaseAbsolute = BaseURL + themeAssetBase + '/';
+var loading = '<img src="' + themeAssetBaseAbsolute + 'img/loading.gif" height="16" width="16" />';
 
 function initSpotwebJs(BetweenText, AndText) {
 	//ready
@@ -573,11 +576,46 @@ function toggleScrolling(state) {
 }
 
 // Sidebar items in/uitklapbaar maken
+function getSidebarVisibleDisplay(panel) {
+	var $panel = $(panel);
+	var visibleDisplay = $panel.data("sidebarVisibleDisplay");
+	var previousInlineDisplay = null;
+
+	if (visibleDisplay) {
+		return visibleDisplay;
+	}
+
+	previousInlineDisplay = panel.style.display;
+	panel.style.display = "";
+	visibleDisplay = $panel.css("display");
+	panel.style.display = previousInlineDisplay;
+
+	if (!visibleDisplay || visibleDisplay == "none") {
+		visibleDisplay = "block";
+	}
+
+	$panel.data("sidebarVisibleDisplay", visibleDisplay);
+	return visibleDisplay;
+}
+
+function setSidebarItemState(panel, isVisible) {
+	var $panel = $(panel);
+
+	if (isVisible) {
+		$panel.css("display", getSidebarVisibleDisplay(panel));
+	} else {
+		$panel.css("display", "none");
+	}
+}
+
 function getSidebarState() {
 	var data = new Array();
 	$("div#filter > a.viewState").each(function(index) {
-		var state = $(this).next().css("display");
-		data.push({"count": index, "state": state});
+		var panel = $(this).next()[0];
+		var isVisible = $(panel).is(":visible");
+		var state = isVisible ? getSidebarVisibleDisplay(panel) : "none";
+
+		data.push({"count": index, "visible": isVisible, "state": state});
 	});	
 	$.cookie("sidebarVisibility", JSON.stringify(data), { path: '', expires: $COOKIE_EXPIRES, domain: '$COOKIE_HOST' });
 }
@@ -591,20 +629,30 @@ function attachSidebarVisibility() {
 		var data = jQuery.parseJSON($.cookie("sidebarVisibility"));
 	}
 	$.each(data, function(i, value) {
-		$("div#filter > a.viewState").eq(value.count).next().css("display", value.state);
-		if(value.state != "none") {
-			$("div#filter > a.viewState").eq(value.count).children("h4").children("span").removeClass("down").addClass("up");
+		var toggle = $("div#filter > a.viewState").eq(value.count);
+		var panel = toggle.next()[0];
+		var isVisible = (typeof value.visible != "undefined") ? value.visible : value.state != "none";
+
+		if (!panel) {
+			return true;
+		}
+
+		setSidebarItemState(panel, isVisible);
+		if(isVisible) {
+			toggle.children("h4").children("span").removeClass("down").addClass("up");
 		} else {
-			$("div#filter > a.viewState").eq(value.count).children("h4").children("span").removeClass("up").addClass("down");
+			toggle.children("h4").children("span").removeClass("up").addClass("down");
 		}
 	});
+
+	getSidebarState();
 // console.timeEnd("6th-ready");
 } // attachSidebarVisibility
 
 function toggleSidebarItem(id) {
 	var hide = $(id).next();
 	
-	$(hide).toggle();
+	setSidebarItemState(hide[0], !hide.is(":visible"));
 	$(id).children("h4").children("span").toggleClass("up down");
 
 	getSidebarState()
@@ -909,7 +957,7 @@ function retrieveSpots() {
 		return false;
 	}
 
-	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$("li.info").html("<img src='" + themeAssetBase + "/img/loading.gif' />");
 	$.ajax({
 		type: "GET",
 		url: url,
@@ -943,7 +991,7 @@ function retrieveSpots() {
 function eraseDownloads() {
     var url = $("ul.maintenancebox a.erasedownloads").attr("href");
 
-	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$("li.info").html("<img src='" + themeAssetBase + "/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("<t>Erased downloadhistory</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
@@ -953,7 +1001,7 @@ function eraseDownloads() {
 function markAsRead() {
 	var url = $("ul.maintenancebox a.markasread").attr("href");
 
-	$("li.info").html("<img src='templates/we1rdo/img/loading.gif' />");
+	$("li.info").html("<img src='" + themeAssetBase + "/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("<t>Marked everything as read</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);

@@ -16,8 +16,10 @@ $.address.init(function() {
 		});
 
 var BaseURL = createBaseURL();
-var themeAssetBase = BaseURL + 'templates/modern/';
-var loading = '<img src="' + themeAssetBase + 'img/loading.gif" height="16" width="16" />';
+var themeAssetBase = window.spotweb_theme_asset_base || 'templates/modern';
+themeAssetBase = themeAssetBase.replace(/\/+$/, '');
+var themeAssetBaseAbsolute = BaseURL + themeAssetBase + '/';
+var loading = '<img src="' + themeAssetBaseAbsolute + 'img/loading.gif" height="16" width="16" />';
 
 function initSpotwebJs(BetweenText, AndText) {
 	//ready
@@ -910,7 +912,7 @@ function retrieveSpots() {
 		return false;
 	}
 
-	$("li.info").html("<img src='templates/modern/img/loading.gif' />");
+	$("li.info").html("<img src='" + themeAssetBase + "/img/loading.gif' />");
 	$.ajax({
 		type: "GET",
 		url: url,
@@ -944,7 +946,7 @@ function retrieveSpots() {
 function eraseDownloads() {
     var url = $("ul.maintenancebox a.erasedownloads").attr("href");
 
-	$("li.info").html("<img src='templates/modern/img/loading.gif' />");
+	$("li.info").html("<img src='" + themeAssetBase + "/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("<t>Erased downloadhistory</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);
@@ -954,7 +956,7 @@ function eraseDownloads() {
 function markAsRead() {
 	var url = $("ul.maintenancebox a.markasread").attr("href");
 
-	$("li.info").html("<img src='templates/modern/img/loading.gif' />");
+	$("li.info").html("<img src='" + themeAssetBase + "/img/loading.gif' />");
 	$.get(url, function(data) {
 		setTimeout( function() { $("li.info").html("<t>Marked everything as read</t>") }, 1000);
 		setTimeout( function() { location.reload() }, 2000);

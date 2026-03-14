@@ -39,8 +39,9 @@
 		<link rel='stylesheet' type='text/css' href='?page=statics&amp;type=css&amp;mod=<?php echo $tplHelper->getStaticModTime('css'); ?>'>
 		<link rel='shortcut icon' href='?page=statics&amp;type=ico&amp;mod=<?php echo $tplHelper->getStaticModTime('ico'); ?>'>
 <?php } ?>
-		<link rel='stylesheet' type='text/css' href='templates/modern/css/posting.css'>
-		<link rel='stylesheet' type='text/css' href='templates/modern/css/config.css'>
+<?php foreach ($tplHelper->getThemeHeaderCssFiles() as $cssFile) { ?>
+		<link rel='stylesheet' type='text/css' href='<?php echo htmlspecialchars($cssFile, ENT_QUOTES, 'UTF-8'); ?>'>
+<?php } ?>
 		<style type="text/css" media="screen,handheld,projection">
 			<?php echo $settings->get('customcss'); ?>
 		</style>
@@ -50,13 +51,9 @@
 		</style>
 <?php } ?>
 		<!-- Modern JS (loaded separately to avoid statics concatenation issues) -->
-		<script src="templates/modern/js/theme-toggle.js" type="text/javascript" defer></script>
-		<script src="templates/modern/js/back-fix.js" type="text/javascript" defer></script>
-		<script src="templates/modern/js/open-spot-fix.js" type="text/javascript" defer></script>
-		<script src="templates/modern/js/sticky-offset.js" type="text/javascript" defer></script>
-		<script src="templates/modern/js/infinite.js" type="text/javascript" defer></script>
-		<script src="templates/modern/js/table-enhance.js" type="text/javascript" defer></script>
-		<script src="templates/modern/js/filter-overlay.js" type="text/javascript" defer></script>
+<?php foreach ($tplHelper->getThemeHeaderJsFiles() as $jsFile) { ?>
+		<script src="<?php echo htmlspecialchars($jsFile, ENT_QUOTES, 'UTF-8'); ?>" type="text/javascript" defer></script>
+<?php } ?>
 <?php
     $pageName = strtolower((string) ($_GET['page'] ?? 'index'));
     $tplName = strtolower((string) ($_GET['tplname'] ?? ''));

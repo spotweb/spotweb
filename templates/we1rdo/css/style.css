@@ -156,6 +156,14 @@ div.sidebarPanel a.viewState h4,
 div.filter a.viewState h4 {background:url(../img/sprite_x.png) repeat-x 0 -40px; color:#fff; font-size:11px; line-height:20px; text-align:center; margin:0 0 5px 0; position:relative; overflow:hidden; border-radius:0 4px 4px 0; -webkit-border-radius:0 4px 4px 0; border-radius:0 4px 4px 0; text-shadow:1px 1px #000;}
 body.spotinfo div.sidebarPanel:not(.advancedSearch) h4:first-child,
 body.spotinfo div.filter h4:first-child {border-radius:0 0 4px 0; -webkit-border-radius:0 0 4px 0; border-radius:0 0 4px 0;}
+/* Improve readability for the three main left-sidebar section headers without changing layout */
+div#filter > a.viewState > h4 {
+	color:#fafafa;
+	font-size:12px;
+	font-weight:bold;
+	letter-spacing:0.04em;
+	text-shadow:0 1px 0 #1b1b1b, 0 0 2px rgba(0, 0, 0, 0.65);
+}
 
 table.sabInfo td {padding:2px 10px 2px 5px;}
 table.sabInfo td a {cursor:pointer; text-decoration:underline;}

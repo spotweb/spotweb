@@ -38,6 +38,7 @@ abstract class SpotPage_Abs
         $this->_daoFactory = $daoFactory;
         $this->_settings = $settings;
         $this->_currentSession = $currentSession;
+        $this->_currentSession['active_tpl'] = SpotThemes::resolveThemeName($this->_settings, $this->_currentSession['active_tpl']);
 
         $this->_spotSec = $currentSession['security'];
         $this->_tplHelper = $this->getTplHelper([]);
@@ -46,9 +47,9 @@ abstract class SpotPage_Abs
          * Create a list of paths where to look for template files in
          * the correct (last template first) order
          */
-        $this->_templatePaths = ['templates/'.$currentSession['active_tpl'].'/'];
+        $this->_templatePaths = [SpotThemes::getThemePath($this->_currentSession['active_tpl']).'/'];
         foreach ($this->_tplHelper->getParentTemplates() as $parentTemplate) {
-            $this->_templatePaths[] = 'templates/'.$parentTemplate.'/';
+            $this->_templatePaths[] = SpotThemes::getThemePath($parentTemplate).'/';
         } // foreach
     }
 
@@ -108,7 +109,7 @@ abstract class SpotPage_Abs
     {
         $tplName = $this->_currentSession['active_tpl'];
 
-        $className = 'SpotTemplateHelper_'.ucfirst($tplName);
+        $className = SpotThemes::getThemeHelperClassName($tplName);
         $tplHelper = new $className($this->_settings, $this->_currentSession, $this->_daoFactory, $params);
 
         return $tplHelper;

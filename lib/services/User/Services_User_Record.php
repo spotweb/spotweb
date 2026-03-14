@@ -330,7 +330,7 @@ class Services_User_Record
 
         // Define several arrays with valid settings
         $validDateFormats = ['human', 'short', 'long'];
-        $validTemplates = array_keys($this->_settings->get('valid_templates'));
+        $validTemplates = SpotThemes::getConfiguredThemeNames($this->_settings);
         $validDefaultSorts = ['', 'stamp'];
         $validLanguages = array_keys($this->_settings->get('system_languages'));
 

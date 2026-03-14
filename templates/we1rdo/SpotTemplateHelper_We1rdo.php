@@ -28,7 +28,7 @@ class SpotTemplateHelper_We1rdo extends SpotTemplateHelper
     // getTemplatePreferences
     protected function getThemePostingJsFile()
     {
-        return $this->getThemePath().'/js/we1rdopost.js';
+        return $this->getThemeAssetPath('js/we1rdopost.js');
     }
 
     // getThemePostingJsFile
