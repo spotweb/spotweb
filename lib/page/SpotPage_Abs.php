@@ -180,7 +180,8 @@ abstract class SpotPage_Abs
         );
     }
 
-    public function GetCurrentSession(){
+    public function GetCurrentSession()
+    {
         return $this->_currentSession;
     }
     // permissionDenied

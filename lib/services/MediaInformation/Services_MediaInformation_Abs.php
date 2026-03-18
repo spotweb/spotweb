@@ -63,14 +63,15 @@ abstract class Services_MediaInformation_Abs
 
     // getSearchName
 
-    Public function getCurrentsession()
-    { 
-        return $this->_currentsession; 
+    public function getCurrentsession()
+    {
+        return $this->_currentsession;
     }
+
     public function setCurrentsession($settings)
-    { 
-        $this->_currentsession = $settings; 
-    } 
+    {
+        $this->_currentsession = $settings;
+    }
 
     /**
      * @return Dto_MediaInformation
