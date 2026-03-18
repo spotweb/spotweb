@@ -25,6 +25,8 @@ abstract class Services_MediaInformation_Abs
      */
     private $_searchid;
 
+    private $_currentsession;
+
     public function __construct(Dao_cache $cacheDao)
     {
         $this->_cacheDao = $cacheDao;
@@ -60,6 +62,15 @@ abstract class Services_MediaInformation_Abs
     }
 
     // getSearchName
+
+    Public function getCurrentsession()
+    { 
+        return $this->_currentsession; 
+    }
+    public function setCurrentsession($settings)
+    { 
+        $this->_currentsession = $settings; 
+    } 
 
     /**
      * @return Dto_MediaInformation
