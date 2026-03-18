@@ -1,9 +1,0 @@
-/tests/cache
-/tests/.phpunit.result.cache
-/vendor
-/cache
-/.idea
-/.vscode
-/demo/images
-/.php-cs-fixer.cache
-.DS_Store

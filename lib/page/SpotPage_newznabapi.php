@@ -235,9 +235,18 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 * Actually retrieve the information from imdb, based on the
                 * imdbid passed by the API
                 */
+
                 $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
                 $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
-                $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
+                $svcMediaInfoImdb->setCurrentsession($this->_currentSession);
+
+                try {
+                    $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
+                } catch (Throwable $e) {
+                    $this->ShowError(500, $e->getMessage());
+
+                    return;
+                }
 
                 if (!$imdbInfo->isValid()) {
                     $this->showApiError(301);
@@ -867,6 +876,20 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
     // Cat2NewznabCat
 
+    private function ShowError($errcode, $errtext)
+    {
+        $doc = new DOMDocument('1.0', 'utf-8');
+        $doc->formatOutput = true;
+
+        $error = $doc->createElement('error');
+        $error->setAttribute('code', $errcode);
+        $error->setAttribute('description', $errtext);
+        $doc->appendChild($error);
+
+        $this->sendContentTypeHeader('xml');
+        echo $doc->saveXML();
+    }
+
     public function showApiError($errcode = 42)
     {
         switch ($errcode) {
@@ -910,17 +933,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             default: $errtext = 'Unknown error';
                 break;
         } // switch
-
-        $doc = new DOMDocument('1.0', 'utf-8');
-        $doc->formatOutput = true;
-
-        $error = $doc->createElement('error');
-        $error->setAttribute('code', $errcode);
-        $error->setAttribute('description', $errtext);
-        $doc->appendChild($error);
-
-        $this->sendContentTypeHeader('xml');
-        echo $doc->saveXML();
+        $this->ShowError($errcode, $errtext);
     }
 
     // showApiError

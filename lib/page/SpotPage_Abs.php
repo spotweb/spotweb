@@ -180,5 +180,9 @@ abstract class SpotPage_Abs
         );
     }
 
+    public function GetCurrentSession()
+    {
+        return $this->_currentSession;
+    }
     // permissionDenied
 } // SpotPage_Abs

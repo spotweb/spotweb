@@ -55,15 +55,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'imdbphp/imdbphp' => array(
-            'pretty_version' => 'v8.3.2',
-            'version' => '8.3.2.0',
-            'reference' => '61fe9fac330914c3e61aa52ac27814c298d96cc6',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../imdbphp/imdbphp',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'laminas/laminas-json' => array(
             'pretty_version' => '3.7.1',
             'version' => '3.7.1.0',
@@ -304,15 +295,6 @@
                 0 => '1.0.0',
                 1 => '1.0|2.0|3.0',
             ),
-        ),
-        'psr/simple-cache' => array(
-            'pretty_version' => '1.0.1',
-            'version' => '1.0.1.0',
-            'reference' => '408d5eafb83c57f6365a3ca330ff23aa4a5fa39b',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../psr/simple-cache',
-            'aliases' => array(),
-            'dev_requirement' => false,
         ),
         'ralouphie/getallheaders' => array(
             'pretty_version' => '3.0.3',
