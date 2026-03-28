@@ -69,8 +69,10 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs
                 throw new Exception($statusmsg);
             }
             $title = $data['movie_results'][0]['title'] ?? null;
+            $original_title = $data['movie_results'][0]['original_title'] ?? null;
             if ($title) {
                 $mediaInfo->setTitle($title);
+                $mediaInfo->setAlternateTitle($original_title);
                 $mediaInfo->setValid(true);
             } else {
                 throw new Exception('no title found via tmdb');
