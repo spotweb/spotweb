@@ -1003,8 +1003,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
             case 2000: return 'cat0_z0';
             case 2010:
-            case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';  // Movies/SD
-            case 2040: return 'cat0_z0_a4,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9';              // Movies/HD
+            case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';  // Movies/SD - DIVX,WMV,MPG, DVD5, DVD9
+            case 2040: return 'cat0_z0_a4,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9,cat0_z0_a15';  // Movies/HD - HD ovr,HD dvd, WMV hd, X264, UHD
             case 2050: return 'cat0_z0_a6';                                               // Movies/BluRay
             case 2060: return 'cat0_z0_a14';                                              // Movies/3D
 
