@@ -790,7 +790,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
         $moviesearch = $doc->createElement('movie-search');
         $moviesearch->setAttribute('available', 'yes');
-        $moviesearch->setAttribute('supportedParams', 'q,imdbid');
+        $moviesearch->setAttribute('supportedParams', 'q');
         $searching->appendChild($moviesearch);
 
         $pcsearch = $doc->createElement('pc-search');
