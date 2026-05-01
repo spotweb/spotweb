@@ -267,35 +267,39 @@ try {
             } // foreach
         } // foreach
     } // if
-    $spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
+
+	$spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
 } catch (RetrieverRunningException $x) {
-    echo PHP_EOL.PHP_EOL;
-    echo "retriever.php is already running, pass '--force' to ignore this warning.".PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo "retriever.php is already running, pass '--force' to ignore this warning." . PHP_EOL;
 } catch (NntpException $x) {
-    echo 'SpotWeb v'.SPOTWEB_VERSION.' on PHP v'.PHP_VERSION.' crashed'.PHP_EOL.PHP_EOL;
-    echo 'Fatal error occured while connecting to the newsserver:'.PHP_EOL;
-    echo '  ('.$x->getCode().') '.$x->getMessage().PHP_EOL;
-    echo PHP_EOL.PHP_EOL;
-    echo $x->getTraceAsString();
-    echo PHP_EOL.PHP_EOL;
-    $retriever->quit();
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'Fatal error occured while connecting to the newsserver:' . PHP_EOL;
+	echo '  (' . $x->getCode() . ') ' . $x->getMessage() . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
+
+	if (isset($retriever) && is_object($retriever)) {
+		$retriever->quit();
+	}
 } catch (DatabaseConnectionException $x) {
-    echo 'Unable to connect to database: '.$x->getMessage().PHP_EOL;
-} // catch
+	echo 'Unable to connect to database: ' . $x->getMessage() . PHP_EOL;
+} catch (InvalidOwnSettingsSettingException $x) {
+	echo 'There is an error in your ownsettings.php' . PHP_EOL . PHP_EOL;
+	echo $x->getMessage() . PHP_EOL;
+} catch (Exception $x) {
+	echo PHP_EOL . PHP_EOL;
+	echo 'SpotWeb v' . SPOTWEB_VERSION . ' on PHP v' . PHP_VERSION . ' crashed' . PHP_EOL . PHP_EOL;
+	echo 'Fatal error occured during retrieve:' . PHP_EOL;
+	echo '  ' . $x->getMessage() . PHP_EOL . PHP_EOL;
+	echo PHP_EOL . PHP_EOL;
+	echo $x->getTraceAsString();
+	echo PHP_EOL . PHP_EOL;
 
-catch (InvalidOwnSettingsSettingException $x) {
-    echo 'There is an error in your ownsettings.php'.PHP_EOL.PHP_EOL;
-    echo $x->getMessage().PHP_EOL;
-} // InvalidOwnSettingsSetting
+	if (isset($retriever) && is_object($retriever)) {
+		$retriever->quit();
+	}
 
-catch (Exception $x) {
-    echo PHP_EOL.PHP_EOL;
-    echo 'SpotWeb v'.SPOTWEB_VERSION.' on PHP v'.PHP_VERSION.' crashed'.PHP_EOL.PHP_EOL;
-    echo 'Fatal error occured during retrieve:'.PHP_EOL;
-    echo '  '.$x->getMessage().PHP_EOL.PHP_EOL;
-    echo PHP_EOL.PHP_EOL;
-    echo $x->getTraceAsString();
-    echo PHP_EOL.PHP_EOL;
-    $retriever->quit();
-    exit;
+	exit;
 } // catch

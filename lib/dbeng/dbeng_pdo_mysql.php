@@ -16,29 +16,35 @@ class dbeng_pdo_mysql extends dbeng_pdo
         $this->_batchInsertChunks = 100;
     }
 
-    public function connect($host, $user, $pass, $db, $port, $schema)
-    {
-        if (!$this->_conn instanceof PDO) {
-            if ($host[0] === '/') {
-                $db_conn = 'unix_socket='.$host;
-            } else {
-                $db_conn = 'host='.$host.':'.$port;
-            }
+	public function connect($host, $user, $pass, $db, $port, $schema)
+	{
+		if (!$this->_conn instanceof PDO) {
+			if ($host[0] === '/') {
+				$db_conn = 'unix_socket=' . $host;
+			} else {
+				$db_conn = 'host=' . $host . ';port=' . $port;
+			}
 
-            try {
-                $this->_conn = new PDO(
-                    'mysql:'.$db_conn.';dbname='.$db.';charset=utf8',
-                    $user,
-                    $pass,
-                    [PDO::MYSQL_ATTR_FOUND_ROWS => true]
-                );
-            } catch (PDOException $e) {
-                throw new DatabaseConnectionException($e->getMessage(), -1);
-            }
+			$found_rows_attr = defined('\Pdo\Mysql::ATTR_FOUND_ROWS')
+				? \Pdo\Mysql::ATTR_FOUND_ROWS
+				: \PDO::MYSQL_ATTR_FOUND_ROWS;
 
-            $this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } // if
-    }
+			try {
+				$this->_conn = new PDO(
+					'mysql:' . $db_conn . ';dbname=' . $db . ';charset=utf8',
+					$user,
+					$pass,
+					[
+					$found_rows_attr => true,
+					]
+				);
+			} catch (PDOException $e) {
+				throw new DatabaseConnectionException($e->getMessage(), -1);
+			}
+
+			$this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		}
+	}
 
     // connect()
 
