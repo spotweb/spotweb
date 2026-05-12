@@ -228,7 +228,7 @@ class Dao_Base_UserFilterCount implements Dao_UserFilterCount
                 [
                     ':currentspotcount' => [$filter['currentspotcount'], PDO::PARAM_INT],
                     ':lastupdate'       => [$filter['lastupdate'], PDO::PARAM_INT],
-                    ':filterhash'       => [$filter['filterhash'], PDO::PARAM_INT],
+                    ':filterhash'       => [$filter['filterhash'], PDO::PARAM_STR],
                 ]
             );
         } // foreach
