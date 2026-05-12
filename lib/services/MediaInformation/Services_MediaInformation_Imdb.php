@@ -58,7 +58,10 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs
         $response = curl_exec($ch);
         $err = curl_error($ch);
 
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // deprecated code
+            curl_close($ch);
+        }
 
         if ($err) {
             throw new Exception($err);

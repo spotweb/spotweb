@@ -39,12 +39,13 @@ class dbfts_sqlite extends dbfts_abs
          * First + signs get incorrectly interpreted by the query
          * parser used for SQLite by us, so for now we strip those.
          */
-        if (strpos('+-~<>', $searchTerm[0]) !== false) {
+        if (strpos('-+~<>', $searchTerm[0]) !== false) {
             $searchTerm = substr($searchTerm, 1);
         } // if
+        $searchTerm = preg_replace('/(\s)-(\w+)/m', '$1NOT $2', $searchTerm);
         $searchTerm = str_replace(
-            ['-', '+'],
-            [' NOT ', ' AND '],
+            [' +'],
+            [' AND '],
             $searchTerm
         );
 

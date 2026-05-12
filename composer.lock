@@ -1452,16 +1452,16 @@
         },
         {
             "name": "spotweb/nntp",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mesa57/NNTP-Protocol.git",
-                "reference": "277162e27e811f56f955344db99a6c76436676b3"
+                "reference": "fa69f973588be43cb5e24db518d24a844aea0ae8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mesa57/NNTP-Protocol/zipball/277162e27e811f56f955344db99a6c76436676b3",
-                "reference": "277162e27e811f56f955344db99a6c76436676b3",
+                "url": "https://api.github.com/repos/mesa57/NNTP-Protocol/zipball/fa69f973588be43cb5e24db518d24a844aea0ae8",
+                "reference": "fa69f973588be43cb5e24db518d24a844aea0ae8",
                 "shasum": ""
             },
             "require": {
@@ -1505,9 +1505,9 @@
             "description": "A package that adds support for the NNTP protocol in PHP.",
             "homepage": "https://github.com/mesa57/NNTP-Protocol",
             "support": {
-                "source": "https://github.com/mesa57/NNTP-Protocol/tree/1.03"
+                "source": "https://github.com/mesa57/NNTP-Protocol/tree/1.0.4"
             },
-            "time": "2020-04-02T19:03:20+00:00"
+            "time": "2026-05-10T16:27:26+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
