@@ -62,7 +62,7 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs
             // deprecated code
             curl_close($ch);
         }
-        
+
         if ($err) {
             throw new Exception($err);
         } else {

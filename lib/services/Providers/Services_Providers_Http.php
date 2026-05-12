@@ -380,7 +380,6 @@ class Services_Providers_Http
             $data = '';
         } // else
 
-
         if (PHP_MAJOR_VERSION < 8) {
             // deprecated code
             curl_close($ch);
