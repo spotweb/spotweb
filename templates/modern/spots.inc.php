@@ -89,8 +89,9 @@ document.addEventListener("DOMContentLoaded", function() {
             $spotUrl = $tplHelper->makeSpotUrl($spot);
             $nzbUrl = $tplHelper->makeNzbUrl($spot);
             $thumbUrl = $tplHelper->makeImageUrl($spot, 175, 130);
+            $newSpotClass = $tplHelper->isSpotNew($spot) ? ' new' : '';
 
-            echo '<div class="spotCard '.$categoryCss.'">';
+            echo '<div class="spotCard '.$categoryCss.$newSpotClass.'">';
             // Optional thumbnail
             if (!empty($thumbUrl)) {
                 echo '  <div class="thumb"><a onclick="openSpot(this,\''.$spotUrl.'\')" class="spotlink" href="'.$spotUrl.'">'

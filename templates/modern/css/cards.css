@@ -12,6 +12,11 @@
   gap: 4px;
 }
 
+.spotCard.new {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
+}
+
 .spotCard .thumb img { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; display: block; }
 
 .spotCard .topRow { display: flex; align-items: flex-start; gap: 8px; }
