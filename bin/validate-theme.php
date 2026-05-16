@@ -4,6 +4,7 @@
 error_reporting(2147483647);
 
 require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/../lib/SpotThemes.php';
 
 if (php_sapi_name() !== 'cli') {
     exit('validate-theme.php can only be run from the console'.PHP_EOL);

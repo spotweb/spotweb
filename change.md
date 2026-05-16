@@ -10,6 +10,7 @@ This file summarizes the main changes that were made during the local Spotweb wo
 - `modern` no longer depends on `templates/we1rdo/*` as a parent theme layer.
 - Generic theme helper behavior was moved into the shared core helper layer where needed.
 - Missing template handling was hardened so template failures no longer silently end in blank output.
+- `SpotThemes` is now required explicitly by the core consumers that use it, so installs do not depend on a freshly regenerated Composer classmap to boot successfully.
 
 ## Theme Architecture
 
