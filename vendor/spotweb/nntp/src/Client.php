@@ -1053,8 +1053,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	switch (true) {
 
     	    // Expect one article
-    	    case is_null($range);
-    	    case is_int($range);
+    	    case is_null($range):
+    	    case is_int($range):
             case is_string($range) && $this->isDigit($range):
     	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
     	        if (count($overview) == 0) {
@@ -1151,8 +1151,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	switch (true) {
 
     	    // Expect one article
-    	    case is_null($range);
-    	    case is_int($range);
+    	    case is_null($range):
+    	    case is_int($range):
             case is_string($range) && $this->isDigit($range):
     	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
 
@@ -1277,8 +1277,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	switch (true) {
 
     	    // Expect one article
-    	    case is_null($range);
-    	    case is_int($range);
+    	    case is_null($range):
+    	    case is_int($range):
     	    case is_string($range) && $this->isDigit($range):
     	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
     	        if (count($references) == 0) {

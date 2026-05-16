@@ -380,7 +380,10 @@ class Services_Providers_Http
             $data = '';
         } // else
 
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // deprecated code
+            curl_close($ch);
+        }
 
         /*
          * Sometimes we get an HTTP error of 0 back, which

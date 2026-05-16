@@ -459,57 +459,6 @@
             "install-path": "../guzzlehttp/psr7"
         },
         {
-            "name": "imdbphp/imdbphp",
-            "version": "v8.3.2",
-            "version_normalized": "8.3.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tboothman/imdbphp.git",
-                "reference": "61fe9fac330914c3e61aa52ac27814c298d96cc6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tboothman/imdbphp/zipball/61fe9fac330914c3e61aa52ac27814c298d96cc6",
-                "reference": "61fe9fac330914c3e61aa52ac27814c298d96cc6",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-dom": "*",
-                "ext-json": "*",
-                "ext-libxml": "*",
-                "ext-simplexml": "*",
-                "php": ">=5.6",
-                "psr/log": "^1.0 || ^2.0",
-                "psr/simple-cache": "^1.0|^3.0"
-            },
-            "require-dev": {
-                "cache/array-adapter": "^1.2",
-                "mockery/mockery": "^1.6",
-                "php-cs-fixer/shim": "^3.9",
-                "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^9.6"
-            },
-            "time": "2026-01-13T18:58:23+00:00",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "Imdb\\": "src/Imdb"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "description": "Library for retrieving film and tv information from IMDb",
-            "support": {
-                "issues": "https://github.com/tboothman/imdbphp/issues",
-                "source": "https://github.com/tboothman/imdbphp/tree/v8.3.2"
-            },
-            "install-path": "../imdbphp/imdbphp"
-        },
-        {
             "name": "laminas/laminas-json",
             "version": "3.7.1",
             "version_normalized": "3.7.1.0",
@@ -2130,57 +2079,6 @@
             "install-path": "../psr/log"
         },
         {
-            "name": "psr/simple-cache",
-            "version": "1.0.1",
-            "version_normalized": "1.0.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/simple-cache.git",
-                "reference": "408d5eafb83c57f6365a3ca330ff23aa4a5fa39b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
-                "reference": "408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "time": "2017-10-23T01:57:42+00:00",
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "Psr\\SimpleCache\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interfaces for simple caching",
-            "keywords": [
-                "cache",
-                "caching",
-                "psr",
-                "psr-16",
-                "simple-cache"
-            ],
-            "install-path": "../psr/simple-cache"
-        },
-        {
             "name": "ralouphie/getallheaders",
             "version": "3.0.3",
             "version_normalized": "3.0.3.0",
@@ -3084,23 +2982,23 @@
         },
         {
             "name": "spotweb/nntp",
-            "version": "1.0.3",
-            "version_normalized": "1.0.3.0",
+            "version": "1.0.4",
+            "version_normalized": "1.0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mesa57/NNTP-Protocol.git",
-                "reference": "277162e27e811f56f955344db99a6c76436676b3"
+                "reference": "fa69f973588be43cb5e24db518d24a844aea0ae8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mesa57/NNTP-Protocol/zipball/277162e27e811f56f955344db99a6c76436676b3",
-                "reference": "277162e27e811f56f955344db99a6c76436676b3",
+                "url": "https://api.github.com/repos/mesa57/NNTP-Protocol/zipball/fa69f973588be43cb5e24db518d24a844aea0ae8",
+                "reference": "fa69f973588be43cb5e24db518d24a844aea0ae8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3"
             },
-            "time": "2020-04-02T19:03:20+00:00",
+            "time": "2026-05-10T16:27:26+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -3139,6 +3037,9 @@
             ],
             "description": "A package that adds support for the NNTP protocol in PHP.",
             "homepage": "https://github.com/mesa57/NNTP-Protocol",
+            "support": {
+                "source": "https://github.com/mesa57/NNTP-Protocol/tree/1.0.4"
+            },
             "install-path": "../spotweb/nntp"
         },
         {

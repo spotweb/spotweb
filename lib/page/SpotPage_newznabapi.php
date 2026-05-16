@@ -235,9 +235,18 @@ class SpotPage_newznabapi extends SpotPage_Abs
                 * Actually retrieve the information from imdb, based on the
                 * imdbid passed by the API
                 */
+
                 $svcMediaInfoImdb = new Services_MediaInformation_Imdb($this->_daoFactory->getCacheDao());
                 $svcMediaInfoImdb->setSearchid($this->_params['imdbid']);
-                $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
+                $svcMediaInfoImdb->setCurrentsession($this->_currentSession);
+
+                try {
+                    $imdbInfo = $svcMediaInfoImdb->retrieveInfo();
+                } catch (Throwable $e) {
+                    $this->ShowError(500, $e->getMessage());
+
+                    return;
+                }
 
                 if (!$imdbInfo->isValid()) {
                     $this->showApiError(301);
@@ -781,7 +790,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
         $moviesearch = $doc->createElement('movie-search');
         $moviesearch->setAttribute('available', 'yes');
-        $moviesearch->setAttribute('supportedParams', 'q,imdbid');
+        $moviesearch->setAttribute('supportedParams', 'q');
         $searching->appendChild($moviesearch);
 
         $pcsearch = $doc->createElement('pc-search');
@@ -867,6 +876,20 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
     // Cat2NewznabCat
 
+    private function ShowError($errcode, $errtext)
+    {
+        $doc = new DOMDocument('1.0', 'utf-8');
+        $doc->formatOutput = true;
+
+        $error = $doc->createElement('error');
+        $error->setAttribute('code', $errcode);
+        $error->setAttribute('description', $errtext);
+        $doc->appendChild($error);
+
+        $this->sendContentTypeHeader('xml');
+        echo $doc->saveXML();
+    }
+
     public function showApiError($errcode = 42)
     {
         switch ($errcode) {
@@ -910,17 +933,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
             default: $errtext = 'Unknown error';
                 break;
         } // switch
-
-        $doc = new DOMDocument('1.0', 'utf-8');
-        $doc->formatOutput = true;
-
-        $error = $doc->createElement('error');
-        $error->setAttribute('code', $errcode);
-        $error->setAttribute('description', $errtext);
-        $doc->appendChild($error);
-
-        $this->sendContentTypeHeader('xml');
-        echo $doc->saveXML();
+        $this->ShowError($errcode, $errtext);
     }
 
     // showApiError
@@ -990,8 +1003,8 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
             case 2000: return 'cat0_z0';
             case 2010:
-            case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';  // Movies/SD
-            case 2040: return 'cat0_z0_a4,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9';              // Movies/HD
+            case 2030: return 'cat0_z0_a0,cat0_z0_a1,cat0_z0_a2,cat0_z0_a3,cat0_z0_a10';  // Movies/SD - DIVX,WMV,MPG, DVD5, DVD9
+            case 2040: return 'cat0_z0_a4,cat0_z0_a7,cat0_z0_a8,cat0_z0_a9,cat0_z0_a15';  // Movies/HD - HD ovr,HD dvd, WMV hd, X264, UHD
             case 2050: return 'cat0_z0_a6';                                               // Movies/BluRay
             case 2060: return 'cat0_z0_a14';                                              // Movies/3D
 
