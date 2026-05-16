@@ -27,13 +27,14 @@ class dbeng_pdo_mysql extends dbeng_pdo
             $found_rows_attr = defined('\Pdo\Mysql::ATTR_FOUND_ROWS')
                 ? \Pdo\Mysql::ATTR_FOUND_ROWS
                 : \PDO::MYSQL_ATTR_FOUND_ROWS;
+
             try {
                 $this->_conn = new PDO(
                     'mysql:'.$db_conn.';dbname='.$db.';charset=utf8',
                     $user,
                     $pass,
                     [
-                    $found_rows_attr => true,
+                        $found_rows_attr => true,
                     ]
                 );
             } catch (PDOException $e) {
