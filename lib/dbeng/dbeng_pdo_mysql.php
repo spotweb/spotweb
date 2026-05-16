@@ -24,13 +24,17 @@ class dbeng_pdo_mysql extends dbeng_pdo
             } else {
                 $db_conn = 'host='.$host.':'.$port;
             }
-
+            $found_rows_attr = defined('\Pdo\Mysql::ATTR_FOUND_ROWS')
+                ? \Pdo\Mysql::ATTR_FOUND_ROWS
+                : \PDO::MYSQL_ATTR_FOUND_ROWS;
             try {
                 $this->_conn = new PDO(
                     'mysql:'.$db_conn.';dbname='.$db.';charset=utf8',
                     $user,
                     $pass,
-                    [Pdo\Mysql::ATTR_FOUND_ROWS => true]
+                    [
+                    $found_rows_attr => true,
+                    ]
                 );
             } catch (PDOException $e) {
                 throw new DatabaseConnectionException($e->getMessage(), -1);
