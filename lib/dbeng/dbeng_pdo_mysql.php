@@ -22,14 +22,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
             if ($host[0] === '/') {
                 $db_conn = 'unix_socket='.$host;
             } else {
-                $db_conn = 'host='.$host.';port='.$port;
-            }
-
-            $options = [];
-            if (defined('Pdo\Mysql::ATTR_FOUND_ROWS')) {
-                $options[\Pdo\Mysql::ATTR_FOUND_ROWS] = true;
-            } elseif (defined('PDO::MYSQL_ATTR_FOUND_ROWS')) {
-                $options[PDO::MYSQL_ATTR_FOUND_ROWS] = true;
+                $db_conn = 'host='.$host.':'.$port;
             }
 
             try {
@@ -37,7 +30,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
                     'mysql:'.$db_conn.';dbname='.$db.';charset=utf8',
                     $user,
                     $pass,
-                    $options
+                    [\Pdo\Mysql::ATTR_FOUND_ROWS => true]
                 );
             } catch (PDOException $e) {
                 throw new DatabaseConnectionException($e->getMessage(), -1);
