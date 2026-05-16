@@ -30,7 +30,7 @@ class dbeng_pdo_mysql extends dbeng_pdo
                     'mysql:'.$db_conn.';dbname='.$db.';charset=utf8',
                     $user,
                     $pass,
-                    [\Pdo\Mysql::ATTR_FOUND_ROWS => true]
+                    [Pdo\Mysql::ATTR_FOUND_ROWS => true]
                 );
             } catch (PDOException $e) {
                 throw new DatabaseConnectionException($e->getMessage(), -1);
