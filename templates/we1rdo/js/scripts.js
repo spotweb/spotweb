@@ -894,6 +894,21 @@ function downloadMultiNZB(dltype) {
 	}
 }
 
+function promptNzbHandlerSetup(event, preferencesUrl) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    var message = "<t>No download client is configured. Configure NZB handling in your preferences first.</t>";
+    var openPreferences = "<t>Open preferences now?</t>";
+
+    if (window.confirm(message + "\n\n" + openPreferences) && preferencesUrl) {
+        window.location.href = preferencesUrl;
+    }
+
+    return false;
+}
+
 // Toggle filter visibility
 function attachFilterVisibility() {
 // console.time("9th-ready");

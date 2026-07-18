@@ -16,6 +16,8 @@
     $allow_whiteList = (($tplHelper->allowed(SpotSecurity::spotsec_blacklist_spotter, '')) && ($allowedToPost) && (!$isBlacklisted) && (!$isWhitelisted) && (!empty($spot['spotterid'])));
     $show_spot_edit = $tplHelper->allowed(SpotSecurity::spotsec_show_spot_was_edited, '');
     $show_editor = $tplHelper->allowed(SpotSecurity::spotsec_view_spot_editor, '');
+    $nzbHandlerPrefsUrl = $tplHelper->makeEditUserPrefsUrl($currentSession['user']['userid']);
+    $configureNzbHandlerTitle = htmlspecialchars(_('Configure NZB handling before sending this spot to a download client'), ENT_QUOTES);
 
     /* Determine minimal width of the image, we cannot set it in the CSS because we cannot calculate it there */
     $imgMinWidth = 260;
@@ -83,11 +85,13 @@
     echo " title='"._('Place in watchlist (w)')."'> </a>";
     echo '</th>';
 } ?>
-<?php if ((!empty($spot['nzb'])) && (!empty($spot['sabnzbdurl']))) { ?>
-<?php if ($spot['hasbeendownloaded']) { ?>
+<?php if ($show_nzb_button) { ?>
+<?php if (!empty($spot['sabnzbdurl']) && $spot['hasbeendownloaded']) { ?>
 						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."'"; ?>)" class="<?php echo 'sab_'.$spot['id'].''; ?> sabnzbd-button succes" title="<?php echo _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)'); ?>"> </a></th>
-<?php } else { ?>
+<?php } elseif (!empty($spot['sabnzbdurl'])) { ?>
 						<th class="sabnzbd"><a onclick="downloadSabnzbd(<?php echo "'".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."'"; ?>)" class="<?php echo 'sab_'.$spot['id'].''; ?> sabnzbd-button" title="<?php echo _('Add NZB to SABnzbd queue (s)'); ?>"> </a></th>
+<?php } else { ?>
+						<th class="sabnzbd"><a href="<?php echo $nzbHandlerPrefsUrl; ?>" onclick="return promptNzbHandlerSetup(event, this.href)" class="sabnzbd-button unconfigured" title="<?php echo $configureNzbHandlerTitle; ?>" aria-label="<?php echo $configureNzbHandlerTitle; ?>"> </a></th>
 <?php } } ?>
 					</tr>
 				</tbody>

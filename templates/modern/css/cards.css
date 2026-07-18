@@ -56,6 +56,13 @@
 .spotCard .actions { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
 .spotCard .actions a.nzb { background: var(--color-accent); color: #fff; border-radius: 6px; padding: 4px 8px; text-decoration: none; font-weight: 600; }
 .spotCard .actions a.nzb.downloaded { opacity: 0.75; }
+.spotCard .actions a.sabnzbd-button { display: inline-block; width: 20px; height: 17px; cursor: pointer; margin: 0 2px 1px 0; background: url(../img/sprite.png) no-repeat 0 -94px; }
+.spotCard .actions a.sabnzbd-button.loading { background: url(../img/loading.gif) no-repeat center center; }
+.spotCard .actions a.sabnzbd-button.succes { background-position: -20px -94px; }
+.spotCard .actions a.sabnzbd-button.failure { background-position: 0 -182px; }
+.spotCard .actions a.sabnzbd-button.unconfigured { opacity: 0.5; filter: grayscale(1); }
+.spotCard .actions a.sabnzbd-button.unconfigured:hover,
+.spotCard .actions a.sabnzbd-button.unconfigured:focus { opacity: 0.85; }
 
 .spotCard .footerRow { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
 .spotCard .comments { font-weight: 700; color: var(--color-accent); text-decoration: none; }

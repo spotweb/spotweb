@@ -16,7 +16,10 @@
     $minimum_spamreports = $currentSession['user']['prefs']['minimum_reportcount'];
     $show_nzb_button = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_nzbbutton']));
     $show_multinzb_checkbox = ($tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '') && ($currentSession['user']['prefs']['show_multinzb']));
+    $show_nzbhandler_button = $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '');
     $show_mouseover_subcats = ($currentSession['user']['prefs']['mouseover_subcats']);
+    $nzbHandlerPrefsUrl = $tplHelper->makeEditUserPrefsUrl($currentSession['user']['userid']);
+    $configureNzbHandlerTitle = htmlspecialchars(_('Configure NZB handling before sending this spot to a download client'), ENT_QUOTES);
     $newCommentCount = [];
     $noResults = (count($spots) == 0);
     $show_editspot_button = ($tplHelper->allowed(SpotSecurity::spotsec_view_spotdetail, '') && $tplHelper->allowed(SpotSecurity::spotsec_edit_spotdetail, ''));
@@ -64,8 +67,14 @@
 							</th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
-if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
-							<th class='sabnzbd'><a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo sprintf(_('Open "%s" panel'), $tplHelper->getNzbHandlerName()); ?>'></a></th>
+if ($show_nzbhandler_button) { ?>
+							<th class='sabnzbd'>
+<?php if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlingTmp['action'])) && ($nzbHandlingTmp['action'] != 'disable')) { ?>
+								<a class="toggle" onclick="toggleSidebarPanel('.sabnzbdPanel')" title='<?php echo sprintf(_('Open "%s" panel'), $tplHelper->getNzbHandlerName()); ?>'></a>
+<?php } else { ?>
+								<a class="unconfigured" href="<?php echo $nzbHandlerPrefsUrl; ?>" onclick="return promptNzbHandlerSetup(event, this.href)" title="<?php echo $configureNzbHandlerTitle; ?>"></a>
+<?php } ?>
+							</th>
 <?php } ?>						
 						</tr>
 					</thead>
@@ -92,7 +101,7 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
         if ($show_watchlist_button) {
             $colSpan++;
         }
-        if ($nzbHandlingTmp['action'] != 'disable') {
+        if ($show_nzbhandler_button) {
             $colSpan++;
         }
 
@@ -239,13 +248,21 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
                     echo '</td>';
                 } // if
 
-                // display the SABnzbd button
-                if (!empty($spot['sabnzbdurl'])) {
+                // display the configured NZB handler, or link to its preferences
+                if ($show_nzbhandler_button) {
                     if ($spot['hasbeendownloaded']) {
-                        echo "<td class='sabnzbd ".'hg1'.' '.$newSpotClass.' '.$tipTipClass."'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='"._('Add NZB to SABnzbd queue (you already downloaded this spot) (s)')."'> </a></td>";
+                        $downloadedClass = ' succes';
                     } else {
-                        echo "<td class='sabnzbd ".'hg1'.' '.$newSpotClass.' '.$tipTipClass."'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."')\" class='sab_".$spot['id']." sabnzbd-button' title='"._('Add NZB to SABnzbd queue (s)')."'> </a></td>";
-                    } // else
+                        $downloadedClass = '';
+                    }
+                    echo "<td class='sabnzbd ".'hg1'.' '.$newSpotClass.' '.$tipTipClass."'>";
+                    if (!empty($spot['sabnzbdurl'])) {
+                        $sabTitle = $spot['hasbeendownloaded'] ? _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') : _('Add NZB to SABnzbd queue (s)');
+                        echo "<a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."')\" class='sab_".$spot['id']." sabnzbd-button".$downloadedClass."' title='".$sabTitle."'> </a>";
+                    } else {
+                        echo "<a href='".$nzbHandlerPrefsUrl."' onclick=\"return promptNzbHandlerSetup(event, this.href)\" class='sabnzbd-button unconfigured' title='".$configureNzbHandlerTitle."' aria-label='".$configureNzbHandlerTitle."'> </a>";
+                    }
+                    echo '</td>';
                 } // if
             } else {
                 if ($show_nzb_button) {
@@ -257,8 +274,8 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
                     echo "<td class='multinzb ".'hg1'.' '.$newSpotClass.' '.$tipTipClass."'> &nbsp; </td>";
                 }
 
-                // display the sabnzbd button
-                if (!empty($spot['sabnzbdurl'])) {
+                // keep the NZB handler column aligned for spots without an NZB
+                if ($show_nzbhandler_button) {
                     echo "<td class='sabnzbd ".'hg1'.' '.$newSpotClass.' '.$tipTipClass."'> &nbsp; </td>";
                 } // if
             } // else
@@ -325,13 +342,21 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
                     echo '</td>';
                 } // if
 
-                // display the SABnzbd button
-                if (!empty($spot['sabnzbdurl'])) {
+                // display the configured NZB handler, or link to its preferences
+                if ($show_nzbhandler_button) {
                     if ($spot['hasbeendownloaded']) {
-                        echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."')\" class='sab_".$spot['id']." sabnzbd-button succes' title='"._('Add NZB to SABnzbd queue (you already downloaded this spot) (s)')."'> </a></td>";
+                        $downloadedClass = ' succes';
                     } else {
-                        echo "<td class='sabnzbd'><a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."')\" class='sab_".$spot['id']." sabnzbd-button' title='"._('Add NZB to SABnzbd queue (s)')."'> </a></td>";
-                    } // else
+                        $downloadedClass = '';
+                    }
+                    echo "<td class='sabnzbd'>";
+                    if (!empty($spot['sabnzbdurl'])) {
+                        $sabTitle = $spot['hasbeendownloaded'] ? _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') : _('Add NZB to SABnzbd queue (s)');
+                        echo "<a onclick=\"downloadSabnzbd('".$spot['id']."','".$spot['sabnzbdurl']."','".$spot['nzbhandlertype']."')\" class='sab_".$spot['id']." sabnzbd-button".$downloadedClass."' title='".$sabTitle."'> </a>";
+                    } else {
+                        echo "<a href='".$nzbHandlerPrefsUrl."' onclick=\"return promptNzbHandlerSetup(event, this.href)\" class='sabnzbd-button unconfigured' title='".$configureNzbHandlerTitle."' aria-label='".$configureNzbHandlerTitle."'> </a>";
+                    }
+                    echo '</td>';
                 } // if
             } else {
                 if ($show_nzb_button) {
@@ -343,8 +368,8 @@ if (($tplHelper->allowed(SpotSecurity::spotsec_download_integration, $nzbHandlin
                     echo "<td class='multinzb'> &nbsp; </td>";
                 }
 
-                // display the sabnzbd button
-                if (!empty($spot['sabnzbdurl'])) {
+                // keep the NZB handler column aligned for spots without an NZB
+                if ($show_nzbhandler_button) {
                     echo "<td class='sabnzbd'> &nbsp; </td>";
                 } // if
             } // else
