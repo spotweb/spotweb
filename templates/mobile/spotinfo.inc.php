@@ -8,11 +8,17 @@
     // fix the sabnzbdurl and searchurl
     $spot['sabnzbdurl'] = $tplHelper->makeSabnzbdUrl($spot);
     $spot['searchurl'] = $tplHelper->makeSearchUrl($spot);
+    $showNzbHandlerButton = (
+        !empty($spot['nzb']) &&
+        ($spot['stamp'] > 1290578400) &&
+        $tplHelper->allowed(SpotSecurity::spotsec_retrieve_nzb, '')
+    );
+    $nzbHandlerPrefsUrl = $tplHelper->makeEditUserPrefsUrl($currentSession['user']['userid']);
 ?>
 <div data-role="page" id="spots"> 
 	<div data-role="header" data-backbtn="false">
 	<h1>Spot info</h1>
-        <?php if (!empty($spot['sabnzbdurl']) and $spot['nzbhandlertype'] != 'save') { ?>
+        <?php if ($showNzbHandlerButton && !empty($spot['sabnzbdurl']) && $spot['nzbhandlertype'] != 'save') { ?>
         <script type="text/javascript">
             $("#loadnzb").on( "click", function(e) {
                                                     $("#loadnzb") .html("Wait..")
@@ -33,8 +39,22 @@
                                                    })
         </script>
         <a href="<?php echo $spot['sabnzbdurl']; ?>" id="loadnzb"   data-transition='fade' data-rel="dialog" data-icon="plus" class="ui-btn-right">Push NZB</a></th>
-<?php } else { ?>
-        <a href="<?php echo $setpath ?>index.php?page=getnzb&amp;messageid=<?php echo $spot['messageid']; ?>" data-ajax="false" data-transition='fade' data-icon="arrow-d" data-rel="dialog" class="ui-btn-right">NZB</a>
+<?php } elseif ($showNzbHandlerButton) { ?>
+        <script type="text/javascript">
+            function promptMobileNzbHandlerSetup(event, preferencesUrl) {
+                if (event) {
+                    event.preventDefault();
+                }
+
+                var message = <?php echo json_encode(_('No download client is configured. Configure NZB handling in your preferences first.'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+                var openPreferences = <?php echo json_encode(_('Open preferences now?'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+                if (window.confirm(message + "\n\n" + openPreferences) && preferencesUrl) {
+                    window.location.href = preferencesUrl;
+                }
+                return false;
+            }
+        </script>
+        <a href="<?php echo $nzbHandlerPrefsUrl; ?>" onclick="return promptMobileNzbHandlerSetup(event, this.href)" data-ajax="false" data-icon="plus" class="ui-btn-right">Push NZB</a>
 <?php } ?>
 	
 	</div>

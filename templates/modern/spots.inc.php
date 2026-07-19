@@ -122,6 +122,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 $sabTitle = $spot['hasbeendownloaded'] ? _('Add NZB to SABnzbd queue (you already downloaded this spot) (s)') : _('Add NZB to SABnzbd queue (s)');
                 $sabClass = 'sab_'.$spot['id'].' sabnzbd-button'.($spot['hasbeendownloaded'] ? ' succes' : '');
                 echo '    <a onclick="downloadSabnzbd(\''.$spot['id'].'\',\''.$spot['sabnzbdurl'].'\',\''.$spot['nzbhandlertype'].'\')" class="'.$sabClass.'" title="'.$sabTitle.'"> </a>';
+            } else {
+                $prefsUrl = $tplHelper->makeEditUserPrefsUrl($currentSession['user']['userid']);
+                $configureTitle = _('Configure NZB handling before sending this spot to a download client');
+                $configureTitle = htmlspecialchars($configureTitle, ENT_QUOTES);
+                echo '    <a href="'.$prefsUrl.'" onclick="return promptNzbHandlerSetup(event, this.href)" class="sabnzbd-button unconfigured" title="'.$configureTitle.'" aria-label="'.$configureTitle.'"> </a>';
             }
             echo '  </div>';
 
