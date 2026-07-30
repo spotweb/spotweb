@@ -277,7 +277,7 @@ try {
         'size of your cache this can take a very long time.'.PHP_EOL.PHP_EOL.
         "Please run the 'bin/migrate-cache.php' script because attempting to run 'upgrade-db.php' again will erase your cache completely".PHP_EOL);
 } catch (CacheMustBeMigrated2Exception $x) {
-    exit('Apologies for the inconvience, but Spotweb has once again changed the way we store files for cache. This '.PHP_EOL.
+    exit('Apologies for the inconvenience, but Spotweb has once again changed the way we store files for cache. This '.PHP_EOL.
         "means you need to run the script 'migrate-cache2.php' again.  ".PHP_EOL.
         'Depending on the size of your cache this can take a very long time.'.PHP_EOL.PHP_EOL.
         "Please run the 'bin/migrate-cache.php2' script again");
