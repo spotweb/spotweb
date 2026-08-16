@@ -97,7 +97,7 @@ class Dao_Base_UsenetState implements Dao_UsenetState
     {
         $nowRunning = $this->_conn->singleQuery("SELECT nowrunning FROM usenetstate WHERE infotype = 'Base'");
 
-        return (!empty($nowRunning)) && ($nowRunning > (time() - 900));
+        return !empty($nowRunning);
     }
 
     // isRetrieverRunning
