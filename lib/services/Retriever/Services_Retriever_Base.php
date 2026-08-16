@@ -94,16 +94,6 @@ abstract class Services_Retriever_Base
 
     public function connect(array $groupList)
     {
-        // if an retriever instance is already running, stop this one
-        if ((!$this->_force) && $this->_usenetStateDao->isRetrieverRunning()) {
-            throw new RetrieverRunningException();
-        } // if
-
-        /*
-         * and notify the system we are running
-         */
-        $this->_usenetStateDao->setRetrieverRunning(true);
-
         // and fireup the nntp connection
         if (!Services_Signing_Base::factory() instanceof Services_Signing_Openssl) {
             $this->displayStatus('slowphprsa', '');
@@ -242,10 +232,6 @@ abstract class Services_Retriever_Base
             $headersProcessed += $processOutput['headercount'];
             $highestMessageId = $processOutput['lastmsgid'];
 
-            // reset the start time to prevent a another retriever from starting
-            // during the intial retrieve which can take many hours
-            $this->_usenetStateDao->setRetrieverRunning(true);
-
             /*
              * Make sure if we run with timing on, we do not fetch too many
              * spots as that would make us run out of memory
@@ -272,9 +258,6 @@ abstract class Services_Retriever_Base
 
     public function quit()
     {
-        // notify the system we are not running anymore
-        $this->_usenetStateDao->setRetrieverRunning(false);
-
         // and disconnect
         if (!is_null($this->_svcNntpText)) {
             $this->_svcNntpText->quit();

@@ -5,6 +5,7 @@ error_reporting(2147483647);
 try {
     @ini_set('memory_limit', '512M');
     require_once __DIR__.'/vendor/autoload.php';
+    require_once __DIR__.'/lib/services/Retriever/Services_Retriever_CommandLock.php';
     set_time_limit(0);
 
     /*
@@ -92,185 +93,205 @@ try {
     /*
      * Retro mode will allow os to start from the beginning and retrieve
      * all spots starting from scratch
-     */
+    */
     $retroMode = SpotCommandline::get('retro');
 
-    /*
-     * Retention cleanup. Basically when we ask for Spotweb to only
-     * keep spots for 'xx' days (eg: 30 days), we either have to delete
-     * everyting older than 'xx' days, or delete all 'full' resources
-     * older than the specified time period.
-     *
-     * The full resources are everything beyond the bare minimum to
-     * display the spots, so we delete nzb's, images, comments, etc.
-     */
-    if (($settings->get('retention') > 0) && (!$retroMode)) {
-        echo 'Removing Spot information which is beyond retention period,';
-
-        $spotDao = $daoFactory->getSpotDao();
-        $cacheDao = $daoFactory->getCacheDao();
-        $commentDao = $daoFactory->getCommentDao();
-
-        switch ($settings->get('retentiontype')) {
-            case 'everything':
-                $spotDao->deleteSpotsRetention($settings->get('retention'));
-                $cacheDao->expireCache($settings->get('retention'));
-                // case everything
-
-            case 'fullonly':
-                $cacheDao->expireCache($settings->get('retention'));
-                $commentDao->expireCommentsFull($settings->get('retention'));
-                $spotDao->expireSpotsFull($settings->get('retention'));
-             // case fullonly
-        } // switch
-
-        echo ', done'.PHP_EOL;
+    $retrieveLock = new Services_Retriever_CommandLock($daoFactory->getConnection(), Services_Retriever_CommandLock::LockName, __DIR__);
+    if (!$retrieveLock->acquire()) {
+        throw new RetrieverRunningException();
     } // if
-
-    $newSpotCount = 0;
-    $newCommentCount = 0;
-    $newReportCount = 0;
-    $retriever = null;
-
-    //# Spots
-    /*
-     * Actually retrieve spots from the server
-     */
-    $retriever = new Services_Retriever_Spots(
-        $daoFactory,
-        $settings,
-        $forceMode,
-        $retroMode
-    );
-    $newSpotCount = $retriever->perform();
-
-    // Show the cumulative timings of the spotsretrieval
-    if ($showTiming) {
-        SpotTiming::displayCumul();
-        SpotTiming::clear();
-    } // if
-
-    //# Creating filter counts
-    if ($newSpotCount > 0) {
-        $svcPrv_cacheSpotCount = new Services_Actions_CacheNewSpotCount(
-            $daoFactory->getUserFilterCountDao(),
-            $daoFactory->getUserFilterDao(),
-            $daoFactory->getSpotDao(),
-            new Services_Search_QueryParser($daoFactory->getConnection())
-        );
-        echo 'Calculating how many spots are new';
-        $notifyNewArray = $svcPrv_cacheSpotCount->cacheNewSpotCount();
-        echo ', done.'.PHP_EOL;
-
-        // Show the cumulative timings of the caching of these spots
-        if ($showTiming) {
-            SpotTiming::displayCumul();
-            SpotTiming::clear();
-        } // if
-    } // if
-
-    /*
-     * Should we retrieve comments?
-     */
-    if ($settings->get('retrieve_comments')) {
-        $retriever = new Services_Retriever_Comments(
-            $daoFactory,
-            $settings,
-            $forceMode,
-            $retroMode
-        );
-        $newCommentCount = $retriever->perform();
-
-        // Show the cumulative timings of the caching of these comments
-        if ($showTiming) {
-            SpotTiming::displayCumul();
-            SpotTiming::clear();
-        } // if
-    } // if
-
-    /*
-     * Retrieval of reports
-     */
-    if ($settings->get('retrieve_reports') && !$retroMode) {
-        $retriever = new Services_Retriever_Reports(
-            $daoFactory,
-            $settings,
-            $forceMode,
-            $retroMode
-        );
-        $newReportCount = $retriever->perform();
-
-        // Show the cumulative timings of the caching of these reports
-        if ($showTiming) {
-            SpotTiming::displayCumul();
-            SpotTiming::clear();
-        } // if
-    } // if
-
-    /*
-     * SpotStateList cleanup
-     */
-    $daoFactory->getSpotStateListDao()->cleanSpotStateList();
 
     try {
-        //# External blacklist
-        if ($settings->get('external_blacklist')) {
-            $svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
-            $bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
-            if ($bwResult === false) {
-                echo 'Blacklist not modified, no need to update'.PHP_EOL;
-            } else {
-                echo 'Finished updating blacklist. Added '.$bwResult['added'].', removed '.$bwResult['removed'].', skipped '.$bwResult['skipped'].' of '.$bwResult['total'].' lines.'.PHP_EOL;
-            } // else
+        $daoFactory->getUsenetStateDao()->initialize();
+        $daoFactory->getUsenetStateDao()->setRetrieverRunning(true);
+
+        /*
+         * Retention cleanup. Basically when we ask for Spotweb to only
+         * keep spots for 'xx' days (eg: 30 days), we either have to delete
+         * everyting older than 'xx' days, or delete all 'full' resources
+         * older than the specified time period.
+         *
+         * The full resources are everything beyond the bare minimum to
+         * display the spots, so we delete nzb's, images, comments, etc.
+         */
+        if (($settings->get('retention') > 0) && (!$retroMode)) {
+            echo 'Removing Spot information which is beyond retention period,';
+
+            $spotDao = $daoFactory->getSpotDao();
+            $cacheDao = $daoFactory->getCacheDao();
+            $commentDao = $daoFactory->getCommentDao();
+
+            switch ($settings->get('retentiontype')) {
+                case 'everything':
+                    $spotDao->deleteSpotsRetention($settings->get('retention'));
+                    $cacheDao->expireCache($settings->get('retention'));
+                    // case everything
+
+                case 'fullonly':
+                    $cacheDao->expireCache($settings->get('retention'));
+                    $commentDao->expireCommentsFull($settings->get('retention'));
+                    $spotDao->expireSpotsFull($settings->get('retention'));
+                 // case fullonly
+            } // switch
+
+            echo ', done'.PHP_EOL;
         } // if
 
-        //# External whitelist
-        if ($settings->get('external_whitelist')) {
-            $bwResult = $svcBwListRetriever->retrieveWhiteList($settings->get('whitelist_url'));
-            if ($bwResult === false) {
-                echo 'Whitelist not modified, no need to update'.PHP_EOL;
-            } else {
-                echo 'Finished updating whitelist. Added '.$bwResult['added'].', removed '.$bwResult['removed'].', skipped '.$bwResult['skipped'].' of '.$bwResult['total'].' lines.'.PHP_EOL;
-            } // else
-        } // if
-    } catch (CorruptBWListException $e) {
-        echo PHP_EOL.'Non-fatal: Updating black/whitelist failed, most likely unreachable!';
-    }
+        $newSpotCount = 0;
+        $newCommentCount = 0;
+        $newReportCount = 0;
+        $retriever = null;
 
-    //# Statistics
-    if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
-        if (extension_loaded('gd') || extension_loaded('gd2')) {
-            $settings_nntp_hdr = $settings->get('nntp_hdr');
-            $svcPrv_Stats = new Services_Providers_Statistics(
+        //# Spots
+        /*
+         * Actually retrieve spots from the server
+         */
+        $retriever = new Services_Retriever_Spots(
+            $daoFactory,
+            $settings,
+            $forceMode,
+            $retroMode
+        );
+        $newSpotCount = $retriever->perform();
+
+        // Show the cumulative timings of the spotsretrieval
+        if ($showTiming) {
+            SpotTiming::displayCumul();
+            SpotTiming::clear();
+        } // if
+
+        //# Creating filter counts
+        if ($newSpotCount > 0) {
+            $svcPrv_cacheSpotCount = new Services_Actions_CacheNewSpotCount(
+                $daoFactory->getUserFilterCountDao(),
+                $daoFactory->getUserFilterDao(),
                 $daoFactory->getSpotDao(),
-                $daoFactory->getCachedao(),
-                $daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots)
+                new Services_Search_QueryParser($daoFactory->getConnection())
             );
+            echo 'Calculating how many spots are new';
+            $notifyNewArray = $svcPrv_cacheSpotCount->cacheNewSpotCount();
+            echo ', done.'.PHP_EOL;
 
-            echo 'Starting to create statistics '.PHP_EOL;
-            $svcPrv_Stats->createAllStatistics();
-            echo 'Finished creating statistics '.PHP_EOL;
-            echo PHP_EOL;
-        } else {
-            echo 'GD extension not loaded, not creating statistics'.PHP_EOL;
-        } // else
-    } // if
+            // Show the cumulative timings of the caching of these spots
+            if ($showTiming) {
+                SpotTiming::displayCumul();
+                SpotTiming::clear();
+            } // if
+        } // if
 
-    // Verstuur notificaties
-    $spotsNotifications = new SpotNotifications($daoFactory, $settings, $userSession);
-    if (!empty($notifyNewArray)) {
-        foreach ($notifyNewArray as $userId => $newSpotInfo) {
-            foreach ($newSpotInfo as $filterInfo) {
-                if (($filterInfo['newcount'] > 0) && $filterInfo['enablenotify']) {
-                    $spotsNotifications->sendNewSpotsForFilter($userId, $filterInfo['title'], $filterInfo['newcount']);
-                } // if
+        /*
+         * Should we retrieve comments?
+         */
+        if ($settings->get('retrieve_comments')) {
+            $retriever = new Services_Retriever_Comments(
+                $daoFactory,
+                $settings,
+                $forceMode,
+                $retroMode
+            );
+            $newCommentCount = $retriever->perform();
+
+            // Show the cumulative timings of the caching of these comments
+            if ($showTiming) {
+                SpotTiming::displayCumul();
+                SpotTiming::clear();
+            } // if
+        } // if
+
+        /*
+         * Retrieval of reports
+         */
+        if ($settings->get('retrieve_reports') && !$retroMode) {
+            $retriever = new Services_Retriever_Reports(
+                $daoFactory,
+                $settings,
+                $forceMode,
+                $retroMode
+            );
+            $newReportCount = $retriever->perform();
+
+            // Show the cumulative timings of the caching of these reports
+            if ($showTiming) {
+                SpotTiming::displayCumul();
+                SpotTiming::clear();
+            } // if
+        } // if
+
+        /*
+         * SpotStateList cleanup
+         */
+        $daoFactory->getSpotStateListDao()->cleanSpotStateList();
+
+        try {
+            //# External blacklist
+            if ($settings->get('external_blacklist')) {
+                $svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
+                $bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
+                if ($bwResult === false) {
+                    echo 'Blacklist not modified, no need to update'.PHP_EOL;
+                } else {
+                    echo 'Finished updating blacklist. Added '.$bwResult['added'].', removed '.$bwResult['removed'].', skipped '.$bwResult['skipped'].' of '.$bwResult['total'].' lines.'.PHP_EOL;
+                } // else
+            } // if
+
+            //# External whitelist
+            if ($settings->get('external_whitelist')) {
+                $bwResult = $svcBwListRetriever->retrieveWhiteList($settings->get('whitelist_url'));
+                if ($bwResult === false) {
+                    echo 'Whitelist not modified, no need to update'.PHP_EOL;
+                } else {
+                    echo 'Finished updating whitelist. Added '.$bwResult['added'].', removed '.$bwResult['removed'].', skipped '.$bwResult['skipped'].' of '.$bwResult['total'].' lines.'.PHP_EOL;
+                } // else
+            } // if
+        } catch (CorruptBWListException $e) {
+            echo PHP_EOL.'Non-fatal: Updating black/whitelist failed, most likely unreachable!';
+        }
+
+        //# Statistics
+        if ($settings->get('prepare_statistics') && $newSpotCount > 0) {
+            if (extension_loaded('gd') || extension_loaded('gd2')) {
+                $settings_nntp_hdr = $settings->get('nntp_hdr');
+                $svcPrv_Stats = new Services_Providers_Statistics(
+                    $daoFactory->getSpotDao(),
+                    $daoFactory->getCachedao(),
+                    $daoFactory->getUsenetStateDao()->getLastUpdate(Dao_UsenetState::State_Spots)
+                );
+
+                echo 'Starting to create statistics '.PHP_EOL;
+                $svcPrv_Stats->createAllStatistics();
+                echo 'Finished creating statistics '.PHP_EOL;
+                echo PHP_EOL;
+            } else {
+                echo 'GD extension not loaded, not creating statistics'.PHP_EOL;
+            } // else
+        } // if
+
+        // Verstuur notificaties
+        $spotsNotifications = new SpotNotifications($daoFactory, $settings, $userSession);
+        if (!empty($notifyNewArray)) {
+            foreach ($notifyNewArray as $userId => $newSpotInfo) {
+                foreach ($newSpotInfo as $filterInfo) {
+                    if (($filterInfo['newcount'] > 0) && $filterInfo['enablenotify']) {
+                        $spotsNotifications->sendNewSpotsForFilter($userId, $filterInfo['title'], $filterInfo['newcount']);
+                    } // if
+                } // foreach
             } // foreach
-        } // foreach
-    } // if
-    $spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
+        } // if
+        $spotsNotifications->sendRetrieverFinished($newSpotCount, $newCommentCount, $newReportCount);
+    } finally {
+        if ($retrieveLock->isAcquired()) {
+            try {
+                $daoFactory->getUsenetStateDao()->setRetrieverRunning(false);
+            } catch (Exception $x) {
+                SpotDebug::msg(SpotDebug::DEBUG, 'Unable to clear retriever running status: '.$x->getMessage());
+            } // catch
+
+            $retrieveLock->release();
+        } // if
+    } // finally
 } catch (RetrieverRunningException $x) {
     echo PHP_EOL.PHP_EOL;
-    echo "retriever.php is already running, pass '--force' to ignore this warning.".PHP_EOL;
+    echo 'retrieve.php is already running.'.PHP_EOL;
 } catch (NntpException $x) {
     echo 'SpotWeb v'.SPOTWEB_VERSION.' on PHP v'.PHP_VERSION.' crashed'.PHP_EOL.PHP_EOL;
     echo 'Fatal error occured while connecting to the newsserver:'.PHP_EOL;
