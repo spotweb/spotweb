@@ -21,15 +21,15 @@ class ServicesSettingsBaseTest extends TestCase
         }
     }
 
-    public function testSchemaVersionIsBumpedForSpotsfullColumnUpgrade()
+    public function testSchemaVersionIsBumpedForInnoDbConversion()
     {
-        $this->assertSame('0.70', SPOTDB_SCHEMA_VERSION);
+        $this->assertSame('0.71', SPOTDB_SCHEMA_VERSION);
     }
 
     public function testSchemaVersionGateRequiresCurrentSchema()
     {
         $settingsContainer = new Services_Settings_Container();
-        $settingsContainer->addSource(new ServicesSettingsBaseTestSource(['schemaversion' => '0.69']));
+        $settingsContainer->addSource(new ServicesSettingsBaseTestSource(['schemaversion' => '0.70']));
         $settingsBase = new Services_Settings_Base($settingsContainer, new ServicesSettingsBaseTestBlackWhiteListDao());
 
         $this->assertFalse($settingsBase->schemaValid());
