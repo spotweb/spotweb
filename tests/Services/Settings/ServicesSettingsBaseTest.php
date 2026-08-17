@@ -60,6 +60,23 @@ class ServicesSettingsBaseTestBlackWhiteListDao implements Dao_BlackWhiteList
 
 class ServicesSettingsBaseTest extends TestCase
 {
+    public function testSchemaVersionIsBumpedForSpotsfullColumnUpgrade()
+    {
+        $this->assertSame('0.71', SPOTDB_SCHEMA_VERSION);
+    }
+
+    public function testSchemaVersionGateRequiresUpgradeFromUtf8mb4Schema()
+    {
+        $settings = new Services_Settings_Container();
+        $settings->addSource(new ServicesSettingsBaseTestContainer([
+            'schemaversion' => '0.70',
+        ]));
+
+        $service = new Services_Settings_Base($settings, new ServicesSettingsBaseTestBlackWhiteListDao());
+
+        $this->assertFalse($service->schemaValid());
+    }
+
     public function testSchemaVersionBumpRequiresUpgradeFromPreviousSchema()
     {
         $settings = new Services_Settings_Container();
@@ -69,7 +86,7 @@ class ServicesSettingsBaseTest extends TestCase
 
         $service = new Services_Settings_Base($settings, new ServicesSettingsBaseTestBlackWhiteListDao());
 
-        $this->assertSame('0.70', SPOTDB_SCHEMA_VERSION);
+        $this->assertSame('0.71', SPOTDB_SCHEMA_VERSION);
         $this->assertFalse($service->schemaValid());
 
         $settings->set('schemaversion', SPOTDB_SCHEMA_VERSION);
