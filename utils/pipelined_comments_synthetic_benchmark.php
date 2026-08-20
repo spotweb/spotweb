@@ -2,6 +2,10 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_PipelinedArticleResult.php';
+require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_PipelinedFetchException.php';
+require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_PipelinedFetchOutcome.php';
+require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_PipelinedRecovery.php';
+require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_PipelinedTransport.php';
 
 /*

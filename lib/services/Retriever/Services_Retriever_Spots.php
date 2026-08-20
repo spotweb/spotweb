@@ -1,5 +1,9 @@
 <?php
 
+require_once __DIR__.'/../../exceptions/PipelinedRetrieverDeferredException.php';
+require_once __DIR__.'/Services_Retriever_PipelinedArticleBatch.php';
+require_once __DIR__.'/Services_Retriever_SpotsArticleParser.php';
+
 class Services_Retriever_Spots extends Services_Retriever_Base
 {
     /**
@@ -39,6 +43,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
      * @var Services_Format_Parsing
      */
     private $_svcSpotParser;
+    private $_svcFullSpotArticleParser;
 
     /**
      * @var Dao_Base_Spot
@@ -75,6 +80,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
         $this->_cacheDao = $daoFactory->getCacheDao();
         $this->_modListDao = $daoFactory->getModeratedRingBufferDao();
         $this->_svcSpotParser = new Services_Format_Parsing();
+        $this->_svcFullSpotArticleParser = new Services_Retriever_SpotsArticleParser();
 
         // if we need to fetch images or nzb files, we need several service objects
         if ($this->_retrieveFull || $this->_prefetch_image || $this->_prefetch_nzb) {
@@ -183,6 +189,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base
             case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
                 break;
             case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable the PHP OpenSSL extension whenever possible'.PHP_EOL;
+                break;
+            case 'pipelineddeferred': echo 'WARNING: Pipelined spots deferred unresolved ARTICLE tail: '.$txt.PHP_EOL;
                 break;
             case '': echo PHP_EOL;
                 break;
@@ -438,7 +446,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
                     try {
                         $fullsRetrieved++;
                         SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getFullSpot, start. msgId= '.$msgId);
-                        $fullSpot = $this->_svcNntpTextReading->readFullSpot($msgId);
+                        $fullSpot = $this->readFullSpotPipelined($msgId);
                         SpotDebug::msg(SpotDebug::TRACE, 'foreach-loop, getFullSpot, done. msgId= '.$msgId);
 
                         // did we fail to parse the spot? if so, skip this one
@@ -683,6 +691,34 @@ class Services_Retriever_Spots extends Services_Retriever_Base
     }
 
     // process()
+
+    private function readFullSpotPipelined($msgId)
+    {
+        $items = [[
+            'messageid'      => $msgId,
+            'articlenr'      => 0,
+            'need_article'   => true,
+            'terminal'       => false,
+            'fullspot'       => null,
+            'article_status' => null,
+        ]];
+
+        $batch = new Services_Retriever_PipelinedArticleBatch($this->articlePipelineRecovery());
+        $outcome = $batch->apply(
+            $items,
+            $this->articlePipelineWindow(),
+            $this->_svcFullSpotArticleParser,
+            'fullspot',
+            'malformed spot payload'
+        );
+
+        if ($outcome->hasUnresolved()) {
+            $this->displayStatus('pipelineddeferred', json_encode($outcome->toArray()));
+            throw new PipelinedRetrieverDeferredException('spots', $outcome);
+        }
+
+        return $items[0]['fullspot'];
+    }
 
     /*
      * Remove invalid disposes from list

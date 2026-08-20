@@ -9,13 +9,13 @@ class Services_Retriever_CommentsPipelined
     private $_commentDao;
     private $_usenetStateDao;
     private $_transport;
+    private $_recovery;
     private $_sink;
     private $_parser;
     private $_statusTarget;
     private $_textServer;
     private $_msgdata;
     private $_pipelineWindow = Services_Nntp_PipelinedTransport::DEFAULT_PIPELINE_WINDOW;
-    private $_fallbackWarned = false;
 
     public function __construct(
         Dao_Factory $daoFactory,
@@ -33,10 +33,12 @@ class Services_Retriever_CommentsPipelined
         $this->_commentDao = $daoFactory->getCommentDao();
         $this->_usenetStateDao = $daoFactory->getUsenetStateDao();
         $this->_transport = $transport;
+        $this->_recovery = new Services_Nntp_PipelinedRecovery($transport);
         $this->_sink = $sink;
         $this->_parser = new Services_Retriever_CommentsArticleParser();
         $this->_statusTarget = $statusTarget;
         $this->_textServer = $settings->get('nntp_hdr');
+        $this->_pipelineWindow = $this->serverPipelineDepth($this->_textServer);
     }
 
     public function perform()
@@ -189,10 +191,7 @@ class Services_Retriever_CommentsPipelined
     {
         $this->displayStatus('progress', $curArtNr.' till '.$increment);
 
-        $lastProcessedId = '';
-        $lastProcessedArtNr = 0;
-        $commentDbList = [];
-        $fullCommentDbList = [];
+        $items = [];
         $articleQueue = [];
 
         if ($this->_settings->get('retention') > 0) {
@@ -202,9 +201,6 @@ class Services_Retriever_CommentsPipelined
         }
 
         $dbIdList = $this->_sink->matchCommentMessageIds($hdrList);
-        $spotMsgIdList = [];
-        $spotMsgIdRatingList = [];
-
         foreach ($hdrList as $msgheader) {
             SpotDebug::msg(SpotDebug::DEBUG, 'pipelined foreach-loop: iter-start');
             set_time_limit(120);
@@ -213,6 +209,17 @@ class Services_Retriever_CommentsPipelined
             $artNr = $msgheader['Number'];
             $header_isInDb = isset($dbIdList['comment'][$commentId]);
             $fullcomment_isInDb = isset($dbIdList['fullcomment'][$commentId]);
+            $item = [
+                'messageid'          => $commentId,
+                'articlenr'          => $artNr,
+                'comment'            => null,
+                'spotref'            => null,
+                'ratingspotref'      => null,
+                'need_article'       => false,
+                'terminal'           => true,
+                'fullcomment'        => null,
+                'article_status'     => null,
+            ];
 
             if (!$header_isInDb || (!$fullcomment_isInDb && $this->_settings->get('retrieve_full_comments'))) {
                 $msgIdParts = explode('.', $commentId);
@@ -221,10 +228,12 @@ class Services_Retriever_CommentsPipelined
                 $msgheader['Subject'] = mb_convert_encoding($msgheader['Subject'], 'ASCII', 'ASCII');
 
                 if (($retentionStamp > 0) && ($msgheader['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
+                    $items[] = $item;
                     continue;
                 }
 
                 if ($msgheader['stamp'] < $this->_settings->get('retrieve_newer_than')) {
+                    $items[] = $item;
                     continue;
                 }
 
@@ -238,7 +247,7 @@ class Services_Retriever_CommentsPipelined
                 }
 
                 if (!$header_isInDb) {
-                    $commentDbList[] = [
+                    $item['comment'] = [
                         'messageid' => $commentId,
                         'nntpref'   => $msgheader['References'],
                         'stamp'     => $msgheader['stamp'],
@@ -246,35 +255,36 @@ class Services_Retriever_CommentsPipelined
                     ];
 
                     $dbIdList['comment'][$commentId] = 1;
-                    $spotMsgIdList[$msgheader['References']] = 1;
+                    $item['spotref'] = $msgheader['References'];
                     if ($msgheader['rating'] >= 1 && $msgheader['rating'] <= 10) {
-                        $spotMsgIdRatingList[$msgheader['References']] = 1;
+                        $item['ratingspotref'] = $msgheader['References'];
                     }
 
                     $header_isInDb = true;
-                    $lastProcessedId = $commentId;
-                    $lastProcessedArtNr = $artNr;
                 }
-            } else {
-                $lastProcessedId = $commentId;
-                $lastProcessedArtNr = $artNr;
             }
 
             if ($header_isInDb && (!$fullcomment_isInDb)) {
                 if (($retentionStamp > 0) && (strtotime($msgheader['Date']) < $retentionStamp)) {
+                    $items[] = $item;
                     continue;
                 }
 
                 if ($this->_settings->get('retrieve_full_comments')) {
+                    $item['need_article'] = true;
+                    $item['terminal'] = false;
                     $articleQueue[$commentId] = $commentId;
                 }
             }
 
+            $items[] = $item;
             SpotDebug::msg(SpotDebug::DEBUG, 'pipelined foreach-loop: iter-stop');
         }
 
+        $outcome = new Services_Nntp_PipelinedFetchOutcome();
         if (!empty($articleQueue)) {
-            $fullCommentDbList = $this->readFullComments(array_values($articleQueue));
+            $outcome = $this->_recovery->fetchArticles(array_values($articleQueue), $this->_pipelineWindow);
+            $this->applyArticleOutcome($items, $outcome);
         }
 
         if (count($hdrList) > 0) {
@@ -284,54 +294,114 @@ class Services_Retriever_CommentsPipelined
         }
         $this->displayStatus('timer', round(microtime(true) - $timer, 2));
 
+        $commit = $this->buildContiguousCommit($items);
+
         $this->_sink->commitBatch(
-            $commentDbList,
-            $fullCommentDbList,
-            $spotMsgIdList,
-            $spotMsgIdRatingList,
-            $lastProcessedArtNr,
-            $lastProcessedId
+            $commit['comments'],
+            $commit['fullcomments'],
+            $commit['spotrefs'],
+            $commit['ratingspotrefs'],
+            $commit['last_articlenr'],
+            $commit['last_messageid']
         );
 
-        return ['count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId];
-    }
-
-    private function readFullComments(array $messageIds)
-    {
-        try {
-            $results = $this->_transport->fetchArticlesPipelined($messageIds, $this->_pipelineWindow);
-        } catch (Exception $x) {
-            if ($this->_pipelineWindow > 1) {
-                $this->_pipelineWindow = 1;
-                if (!$this->_fallbackWarned) {
-                    $this->displayStatus('pipelinedfallback', 'Pipelined ARTICLE failed; retrying comments retrieval with window 1 for this run.');
-                    $this->_fallbackWarned = true;
-                }
-                $this->_transport->withFreshConnection();
-                $results = $this->_transport->fetchArticlesPipelined($messageIds, $this->_pipelineWindow);
-            } else {
-                throw $x;
-            }
+        if ($outcome->hasUnresolved()) {
+            $this->displayStatus('pipelineddeferred', json_encode($outcome->toArray()));
+            throw new PipelinedCommentsDeferredException($outcome);
         }
 
-        $comments = [];
-        foreach ($results as $result) {
+        return ['count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $commit['last_messageid']];
+    }
+
+    private function applyArticleOutcome(array &$items, Services_Nntp_PipelinedFetchOutcome $outcome)
+    {
+        $results = [];
+        foreach ($outcome->terminalResults() as $result) {
+            $results[$result->messageId] = $result;
+        }
+
+        $unresolved = array_fill_keys($outcome->unresolvedMessageIds(), true);
+
+        foreach ($items as &$item) {
+            if (!$item['need_article']) {
+                continue;
+            }
+
+            if (isset($unresolved[$item['messageid']])) {
+                $item['terminal'] = false;
+                continue;
+            }
+
+            if (!isset($results[$item['messageid']])) {
+                $item['terminal'] = false;
+                continue;
+            }
+
+            $result = $results[$item['messageid']];
+            $item['terminal'] = true;
+            $item['article_status'] = ['code' => $result->code, 'message' => $result->message];
             $this->_sink->recordArticleStatus($result->messageId, $result->code, $result->message);
+
             if (!$result->found()) {
                 continue;
             }
 
             try {
-                $comments[] = $this->_parser->parse($result->messageId, $result->article());
+                $item['fullcomment'] = $this->_parser->parse($result->messageId, $result->article());
             } catch (Exception $x) {
-                /*
-                 * Keep legacy behaviour from Services_Nntp_SpotReading::readComments():
-                 * malformed/invalid individual comments are ignored, not fatal.
-                 */
+                $item['article_status'] = ['code' => 0, 'message' => 'malformed comment payload'];
+                $this->_sink->recordArticleStatus($result->messageId, 0, 'malformed comment payload');
             }
         }
+    }
 
-        return $comments;
+    private function buildContiguousCommit(array $items)
+    {
+        $comments = [];
+        $fullComments = [];
+        $spotMsgIdList = [];
+        $spotMsgIdRatingList = [];
+        $lastProcessedId = '';
+        $lastProcessedArtNr = 0;
+
+        foreach ($items as $item) {
+            if (!$item['terminal']) {
+                break;
+            }
+
+            if ($item['comment'] !== null) {
+                $comments[] = $item['comment'];
+            }
+            if ($item['fullcomment'] !== null) {
+                $fullComments[] = $item['fullcomment'];
+            }
+            if ($item['spotref'] !== null) {
+                $spotMsgIdList[$item['spotref']] = 1;
+            }
+            if ($item['ratingspotref'] !== null) {
+                $spotMsgIdRatingList[$item['ratingspotref']] = 1;
+            }
+            $lastProcessedId = $item['messageid'];
+            $lastProcessedArtNr = $item['articlenr'];
+        }
+
+        return [
+            'comments'       => $comments,
+            'fullcomments'   => $fullComments,
+            'spotrefs'       => $spotMsgIdList,
+            'ratingspotrefs' => $spotMsgIdRatingList,
+            'last_articlenr' => $lastProcessedArtNr,
+            'last_messageid' => $lastProcessedId,
+        ];
+    }
+
+    private function serverPipelineDepth(array $server)
+    {
+        if (!isset($server['article_pipeline_depth'])) {
+            return Services_Nntp_PipelinedTransport::DEFAULT_PIPELINE_WINDOW;
+        }
+
+        return Services_Nntp_PipelineDepth::serverValue($server);
     }
 
     public function removeTooNewRecords($highestMessageId)

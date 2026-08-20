@@ -1,7 +1,7 @@
-# Private pipelined comments retriever
+# Private scheduled retriever pipelining
 
-This branch is private development work for the scheduled Spotweb comments
-retriever. Do not open an upstream pull request for this feature until it has
+This branch is private development work for the scheduled Spotweb bulk
+retrievers. Do not open an upstream pull request for this feature until it has
 been tested against a real provider and the remaining risks have been closed.
 
 ## Integration base
@@ -20,35 +20,46 @@ branches unchanged.
 
 ## Scope
 
-Only `Services_Retriever_Comments::perform()` is routed to the new flow. The
-legacy PEAR-derived NNTP engine remains in place for spots, reports, posting,
-page reads, NZB/image access, and every non-comment path.
+Scheduled `Services_Retriever_Spots`, `Services_Retriever_Comments`, and
+`Services_Retriever_Reports` share the modern text NNTP transport below
+`Services_Retriever_Base` for `GROUP`, cursor recovery (`XHDR Message-ID`), and
+the normal 1,000-header `XOVER` loop. Request-driven page reads, NZB/image
+access and posting keep using the existing PEAR-derived engine in this
+iteration.
 
-The new comments flow uses:
+The scheduled bulk flow uses:
 
 - `Services_Nntp_PipelinedTransport`: one reusable NNTP stream with
   plain/implicit TLS/STARTTLS, auth, `GROUP`, `XOVER`, `XHDR Message-ID`, and a
   bounded FIFO `ARTICLE` pipeline.
-- `Services_Retriever_CommentsPipelined`: comments-specific orchestration,
-  retention/duplicate logic, parsing, DAO writes, and cursor checkpoint.
-- `Services_Retriever_CommentsDaoSink`: production-compatible DAO writes.
-- `Services_Retriever_CommentsCaptureSink`: DB-free capture/parity sink.
+- `Services_Nntp_PipelinedRecovery`: shared FIFO-aware recovery and retry
+  policy for terminal/unresolved `ARTICLE` outcomes.
+- `Services_Retriever_PipelinedArticleBatch`: content-independent ARTICLE
+  outcome application and contiguous-prefix selection.
+- Stream-specific scheduled code supplies only group/cursor adapters,
+  parser/validator behavior, and DAO persistence/linking rules.
+- `Services_Retriever_CommentsCaptureSink`: DB-free capture/parity sink for
+  comments fixtures and benchmarks.
 
-The internal pipeline window defaults to 16. It is not exposed as a user
-setting. If a pipelined batch fails with a window greater than 1, the current
-run falls back to window 1 and re-fetches the batch before any DAO/cursor
-commit.
+The administrator-selected per-NNTP-server article pipeline depth defaults to
+32 and is bounded to 1-128. Depth 1 disables pipelining. Recovery first retries
+only unresolved IDs at the configured depth, then retries remaining unresolved
+IDs at window 1. Terminal completed responses and terminal `430` results are
+not repeated merely because a later FIFO request failed.
 
-## Attribution
+## Provenance
 
-The transport is an internal Spotweb adapter for the private rvdv/nntp-based
-work. Upstream reference:
+The transport is original internal Spotweb code. The branch previously cited
+`robinvdvleuten/php-nntp` as if it were vendored/adapted, but audit showed the
+implementation is a raw PHP stream transport and does not import that package.
+The docs/notices now reflect that honestly.
+
+The evaluated reference remains recorded only as design context:
 
 - https://github.com/robinvdvleuten/php-nntp
-- pinned commit `d5c59c90f02a82ca09609f9a6e912f9d78f0faeb`
-- MIT licence, retained in `lib/thirdparty/rvdv-nntp/LICENSE`
+- evaluated commit `d5c59c90f02a82ca09609f9a6e912f9d78f0faeb`
 
-See `THIRD_PARTY_NOTICES.md`.
+No third-party NNTP source is bundled. See `THIRD_PARTY_NOTICES.md`.
 
 ## Validation commands
 
@@ -62,7 +73,7 @@ docker run --rm \
   -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
   -w /work \
   --entrypoint sh spotweb:server01-fixes-20260816-r2 \
-  -lc 'for f in lib/services/Nntp/Services_Nntp_PipelinedArticleResult.php lib/services/Nntp/Services_Nntp_PipelinedTransport.php lib/services/Retriever/Services_Retriever_CommentsArticleParser.php lib/services/Retriever/Services_Retriever_CommentsSink.php lib/services/Retriever/Services_Retriever_CommentsDaoSink.php lib/services/Retriever/Services_Retriever_CommentsCaptureSink.php lib/services/Retriever/Services_Retriever_CommentsPipelined.php lib/services/Retriever/Services_Retriever_Comments.php utils/pipelined_comments_capture.php utils/pipelined_comments_synthetic_benchmark.php tests/Services/Nntp/ServicesNntpPipelinedTransportTest.php tests/Services/Retriever/ServicesRetrieverCommentsPipelinedTest.php; do php -l "$f" || exit 1; done'
+  -lc 'for f in lib/services/Nntp/Services_Nntp_PipelinedArticleResult.php lib/services/Nntp/Services_Nntp_PipelinedTransport.php lib/services/Retriever/Services_Retriever_PipelinedArticleBatch.php lib/services/Retriever/Services_Retriever_CommentsArticleParser.php lib/services/Retriever/Services_Retriever_SpotsArticleParser.php lib/services/Retriever/Services_Retriever_Comments.php utils/pipelined_comments_benchmark.php utils/pipelined_comments_synthetic_benchmark.php tests/Services/Nntp/ServicesNntpPipelinedTransportTest.php tests/Services/Nntp/ServicesNntpPipelinedRecoveryTest.php tests/Services/Retriever/ServicesRetrieverPipelinedArticleBatchTest.php tests/Services/Retriever/ServicesRetrieverCommentsPipelinedTest.php; do php -l "$f" || exit 1; done'
 ```
 
 Focused tests:
@@ -78,28 +89,41 @@ docker run --rm \
   tests/Services/Retriever/ServicesRetrieverCommentsPipelinedTest.php
 ```
 
-Synthetic benchmark, no provider and no DB:
+Fixture benchmark, no provider and no DB:
 
 ```sh
 docker run --rm \
   -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
   -w /work \
   --entrypoint php spotweb:server01-fixes-20260816-r2 \
-  utils/pipelined_comments_synthetic_benchmark.php 1000
+  utils/pipelined_comments_benchmark.php --read-only --fixture --group free.pt \
+  --first 100 --count 1000 --windows 1,4,8,16,32 --samples 2 --sweep --seed 123
 ```
 
 ## Real-provider gate
 
 Do not run provider benchmarks while the production comments catch-up is active.
-After the catch-up finishes, use a read-only range and compare window 1, 4, 8,
-16, and 32 with:
+After the catch-up finishes, use a read-only range and compare windows with:
 
 ```sh
-php utils/pipelined_comments_capture.php --use-bootstrap-settings --group <comment-group> --first <first> --last <last> --window <n>
+docker run --rm \
+  --entrypoint php \
+  -v /datastore_01/dockerdata/spotweb/config:/var/www/html/config:ro \
+  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -w /work \
+  spotweb:server01-fixes-20260816-r2 \
+  utils/pipelined_comments_benchmark.php --read-only --use-bootstrap-settings \
+  --group <comment-group> --first <first> --count 1000 \
+  --windows 1,8,16,32,64,128 --samples 10 --sweep --random-range <first-last> \
+  --seed <seed> --jsonl /tmp/spotweb-pipeline-live.jsonl
 ```
 
-That launcher reads `nntp_hdr` through normal Bootstrap/settings, keeps the
-credentials in memory, and emits only counts/status/canonical capture output.
+That launcher reads `nntp_hdr` through normal Bootstrap/settings, keeps
+credentials in memory, and emits only JSONL counts/status/timing/error data.
+It bypasses the image entrypoint and mounts configuration read-only.
+
+The 2026-08-20 sanitized benchmark evidence and selected default are documented
+in `docs/benchmarks/pipelined-comments-20260820.md`.
 
 ## Remaining risks before deployment
 

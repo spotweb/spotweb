@@ -3,6 +3,8 @@
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedArticleResult.php';
+require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedFetchException.php';
+require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedTransport.php';
 
 class ServicesNntpPipelinedTransportTest extends TestCase
@@ -23,7 +25,7 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         }
 
         $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
-        $server = $this->startFixtureServer($commandLog, false);
+        $server = $this->startFixtureServer($commandLog, 'normal');
 
         $transport = new Services_Nntp_PipelinedTransport([
             'host'       => $server['host'],
@@ -69,14 +71,14 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         ], $articleCommands);
     }
 
-    public function testDisconnectDuringPipelinedArticleRaisesTransportError()
+    public function testDisconnectBeforeResponseReportsUnresolvedTail()
     {
         if (!function_exists('pcntl_fork')) {
             $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
         }
 
         $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
-        $server = $this->startFixtureServer($commandLog, true);
+        $server = $this->startFixtureServer($commandLog, 'disconnect-before-response');
 
         $transport = new Services_Nntp_PipelinedTransport([
             'host'       => $server['host'],
@@ -90,8 +92,52 @@ class ServicesNntpPipelinedTransportTest extends TestCase
 
         $transport->selectGroup('free.pt');
 
-        $this->expectException('NntpException');
-        $transport->fetchArticlesPipelined(['comment.1.1.1.1@example.invalid'], 1);
+        try {
+            $transport->fetchArticlesPipelined(['comment.1.1.1.1@example.invalid'], 1);
+            $this->fail('Expected transport exception');
+        } catch (Services_Nntp_PipelinedFetchException $x) {
+            $this->assertSame([], $x->terminalResults());
+            $this->assertSame(['comment.1.1.1.1@example.invalid'], $x->unresolvedMessageIds());
+        }
+    }
+
+    public function testDisconnectDuringMultilineBodyPreservesCompletedAndUnresolvedTail()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'disconnect-mid-body');
+
+        $transport = new Services_Nntp_PipelinedTransport([
+            'host'       => $server['host'],
+            'port'       => $server['port'],
+            'enc'        => false,
+            'user'       => '',
+            'pass'       => '',
+            'verifyname' => false,
+            'buggy'      => false,
+        ], 5);
+
+        $transport->selectGroup('free.pt');
+
+        try {
+            $transport->fetchArticlesPipelined([
+                'comment.1.1.1.1@example.invalid',
+                'comment.2.1.1.1@example.invalid',
+                'comment.3.1.1.1@example.invalid',
+            ], 3);
+            $this->fail('Expected transport exception');
+        } catch (Services_Nntp_PipelinedFetchException $x) {
+            $this->assertSame(['comment.1.1.1.1@example.invalid'], array_map(function ($result) {
+                return $result->messageId;
+            }, $x->terminalResults()));
+            $this->assertSame([
+                'comment.2.1.1.1@example.invalid',
+                'comment.3.1.1.1@example.invalid',
+            ], $x->unresolvedMessageIds());
+        }
     }
 
     public function testInvalidEncryptionConfigurationIsRejected()
@@ -110,7 +156,7 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         $transport->connect();
     }
 
-    private function startFixtureServer($commandLog, $disconnectOnArticle)
+    private function startFixtureServer($commandLog, $mode)
     {
         $server = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
         $this->assertTrue(is_resource($server), $errstr);
@@ -142,13 +188,20 @@ class ServicesNntpPipelinedTransportTest extends TestCase
                     fwrite($conn, "1 <comment.1.1.1.1@example.invalid>\r\n");
                     fwrite($conn, ".\r\n");
                 } elseif (strpos($line, 'ARTICLE ') === 0) {
-                    if ($disconnectOnArticle) {
+                    if ($mode === 'disconnect-before-response') {
                         fclose($conn);
                         exit(0);
                     }
                     $articleCommands[] = $line;
                     if (count($articleCommands) === 3) {
                         $this->writeFixtureArticle($conn, 1);
+                        if ($mode === 'disconnect-mid-body') {
+                            fwrite($conn, "220 2 <comment.2.1.1.1@example.invalid> article follows\r\n");
+                            fwrite($conn, "From: Sender <s@example>\r\n");
+                            fwrite($conn, "\r\npartial body");
+                            fclose($conn);
+                            exit(0);
+                        }
                         fwrite($conn, "430 no such article\r\n");
                         $this->writeFixtureArticle($conn, 3);
                     }

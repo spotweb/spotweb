@@ -1,21 +1,17 @@
 <?php
 
 /*
- * Spotweb adapter for the private rvdv/nntp-based comments pipeline.
+ * Internal Spotweb NNTP pipeline transport.
  *
- * Upstream reference: https://github.com/robinvdvleuten/php-nntp
- * Copyright: Robin van der Vleuten <robin@webstronauts.com>
- * Licence: MIT, retained in lib/thirdparty/rvdv-nntp/LICENSE.
- *
- * The upstream package API is blocking. This class is Spotweb's private
- * non-blocking stream extension for one bounded ARTICLE pipeline. It is
- * intentionally protocol-oriented and contains no comments/DAO knowledge.
+ * This file contains original Spotweb stream/framing code. It does not copy
+ * source from external NNTP packages. It is intentionally protocol-oriented
+ * and contains no comments/DAO knowledge.
  */
 
 class Services_Nntp_PipelinedTransport
 {
     const DEFAULT_TIMEOUT = 10;
-    const DEFAULT_PIPELINE_WINDOW = 16;
+    const DEFAULT_PIPELINE_WINDOW = Services_Nntp_PipelineDepth::DefaultDepth;
 
     private $_server;
     private $_stream = null;
@@ -185,6 +181,11 @@ class Services_Nntp_PipelinedTransport
         return $ids;
     }
 
+    public function sendNoop()
+    {
+        $this->simpleCommand('NOOP', [200]);
+    }
+
     public function fetchArticlesPipelined(array $messageIds, $window = self::DEFAULT_PIPELINE_WINDOW)
     {
         $this->connect();
@@ -196,83 +197,93 @@ class Services_Nntp_PipelinedTransport
         $currentArticle = null;
         $expected = count($pending);
 
-        while (count($results) < $expected) {
-            while ((count($inFlight) < $window) && !empty($pending)) {
-                $messageId = array_shift($pending);
-                $this->_writeBuffer .= 'ARTICLE '.$this->formatMessageId($messageId)."\r\n";
-                $inFlight[] = $messageId;
-            }
-
-            $read = [ $this->_stream ];
-            $write = ($this->_writeBuffer !== '') ? [ $this->_stream ] : null;
-            $except = null;
-
-            $selected = @stream_select($read, $write, $except, $this->_timeout, 0);
-            if ($selected === false) {
-                throw new NntpException('NNTP stream_select failed', -1);
-            }
-            if ($selected === 0) {
-                throw new NntpException('NNTP timed out while waiting for pipelined ARTICLE responses', -1);
-            }
-
-            if (!empty($write)) {
-                $this->flushWriteBuffer();
-            }
-
-            if (!empty($read)) {
-                $chunk = @fread($this->_stream, 8192);
-                if ($chunk === false) {
-                    throw new NntpException('NNTP read failed', -1);
+        try {
+            while (count($results) < $expected) {
+                while ((count($inFlight) < $window) && !empty($pending)) {
+                    $messageId = array_shift($pending);
+                    $this->_writeBuffer .= 'ARTICLE '.$this->formatMessageId($messageId)."\r\n";
+                    $inFlight[] = $messageId;
                 }
-                if (($chunk === '') && feof($this->_stream)) {
-                    throw new NntpException('NNTP connection closed during pipelined ARTICLE retrieval', -1);
+
+                $read = [ $this->_stream ];
+                $write = ($this->_writeBuffer !== '') ? [ $this->_stream ] : null;
+                $except = null;
+
+                $selected = @stream_select($read, $write, $except, $this->_timeout, 0);
+                if ($selected === false) {
+                    throw new NntpException('NNTP stream_select failed', -1);
                 }
-                $this->_inputBuffer .= $chunk;
+                if ($selected === 0) {
+                    throw new NntpException('NNTP timed out while waiting for pipelined ARTICLE responses', -1);
+                }
 
-                while (($line = $this->shiftLine()) !== null) {
-                    if ($currentArticle === null) {
-                        if (empty($inFlight)) {
-                            throw new NntpException('NNTP returned an ARTICLE response without a pending request', -1);
-                        }
+                if (!empty($write)) {
+                    $this->flushWriteBuffer();
+                }
 
-                        $messageId = array_shift($inFlight);
-                        $code = (int) substr($line, 0, 3);
-                        if ($code === 220) {
-                            $currentArticle = [
-                                'messageid' => $messageId,
-                                'code'      => $code,
-                                'message'   => substr($line, 4),
-                                'lines'     => [],
-                            ];
-                        } elseif ($code === 430) {
-                            $results[] = new Services_Nntp_PipelinedArticleResult(
-                                $this->stripMessageId($messageId),
-                                $code,
-                                substr($line, 4)
-                            );
-                        } else {
-                            throw new NntpException('Unexpected ARTICLE response: '.$line, $code);
-                        }
-                    } else {
-                        if ($line === '.') {
-                            $article = $this->splitArticleLines($currentArticle['lines']);
-                            $results[] = new Services_Nntp_PipelinedArticleResult(
-                                $this->stripMessageId($currentArticle['messageid']),
-                                $currentArticle['code'],
-                                $currentArticle['message'],
-                                $article['header'],
-                                $article['body']
-                            );
-                            $currentArticle = null;
-                        } else {
-                            if (strpos($line, '..') === 0) {
-                                $line = substr($line, 1);
+                if (!empty($read)) {
+                    $chunk = @fread($this->_stream, 8192);
+                    if ($chunk === false) {
+                        throw new NntpException('NNTP read failed', -1);
+                    }
+                    if (($chunk === '') && feof($this->_stream)) {
+                        throw new NntpException('NNTP connection closed during pipelined ARTICLE retrieval', -1);
+                    }
+                    $this->_inputBuffer .= $chunk;
+
+                    while (($line = $this->shiftLine()) !== null) {
+                        if ($currentArticle === null) {
+                            if (empty($inFlight)) {
+                                throw new NntpException('NNTP returned an ARTICLE response without a pending request', -1);
                             }
-                            $currentArticle['lines'][] = $line;
+
+                            $messageId = array_shift($inFlight);
+                            $code = (int) substr($line, 0, 3);
+                            if ($code === 220) {
+                                $currentArticle = [
+                                    'messageid' => $messageId,
+                                    'code'      => $code,
+                                    'message'   => substr($line, 4),
+                                    'lines'     => [],
+                                ];
+                            } elseif ($code === 430) {
+                                $results[] = new Services_Nntp_PipelinedArticleResult(
+                                    $this->stripMessageId($messageId),
+                                    $code,
+                                    substr($line, 4)
+                                );
+                            } else {
+                                throw new NntpException('Unexpected ARTICLE response: '.$line, $code);
+                            }
+                        } else {
+                            if ($line === '.') {
+                                $article = $this->splitArticleLines($currentArticle['lines']);
+                                $results[] = new Services_Nntp_PipelinedArticleResult(
+                                    $this->stripMessageId($currentArticle['messageid']),
+                                    $currentArticle['code'],
+                                    $currentArticle['message'],
+                                    $article['header'],
+                                    $article['body']
+                                );
+                                $currentArticle = null;
+                            } else {
+                                if (strpos($line, '..') === 0) {
+                                    $line = substr($line, 1);
+                                }
+                                $currentArticle['lines'][] = $line;
+                            }
                         }
                     }
                 }
             }
+        } catch (Exception $x) {
+            throw new Services_Nntp_PipelinedFetchException(
+                $x->getMessage(),
+                $x->getCode(),
+                $results,
+                $this->unresolvedMessageIds($currentArticle, $inFlight, $pending),
+                'transport'
+            );
         }
 
         return $results;
@@ -452,6 +463,24 @@ class Services_Nntp_PipelinedTransport
             'header' => $header,
             'body'   => $body,
         ];
+    }
+
+    private function unresolvedMessageIds($currentArticle, array $inFlight, array $pending)
+    {
+        $unresolved = [];
+        if ($currentArticle !== null) {
+            $unresolved[] = $this->stripMessageId($currentArticle['messageid']);
+        }
+
+        foreach ($inFlight as $messageId) {
+            $unresolved[] = $this->stripMessageId($messageId);
+        }
+
+        foreach ($pending as $messageId) {
+            $unresolved[] = $this->stripMessageId($messageId);
+        }
+
+        return $unresolved;
     }
 
     private function formatMessageId($messageId)

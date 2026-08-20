@@ -1,12 +1,18 @@
 <?php
 
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedArticleResult.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedFetchException.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedFetchOutcome.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedRecovery.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedTransport.php';
+require_once __DIR__.'/../../exceptions/PipelinedRetrieverDeferredException.php';
+require_once __DIR__.'/../../exceptions/PipelinedCommentsDeferredException.php';
 require_once __DIR__.'/Services_Retriever_CommentsArticleParser.php';
 require_once __DIR__.'/Services_Retriever_CommentsSink.php';
 require_once __DIR__.'/Services_Retriever_CommentsDaoSink.php';
 require_once __DIR__.'/Services_Retriever_CommentsCaptureSink.php';
-require_once __DIR__.'/Services_Retriever_CommentsPipelined.php';
+require_once __DIR__.'/Services_Retriever_PipelinedArticleBatch.php';
 
 class Services_Retriever_Comments extends Services_Retriever_Base
 {
@@ -14,6 +20,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base
     protected $_commentDao;
     private $_svcNntpTextReading;
     private $_retrieveFull;
+    private $_parser;
 
     /**
      * Server is the server array we are expecting to connect to
@@ -28,6 +35,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base
 
         $this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
         $this->_retrieveFull = $this->_settings->get('retrieve_full_comments');
+        $this->_parser = new Services_Retriever_CommentsArticleParser();
     }
 
     // ctor
@@ -66,6 +74,8 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                 break;
             case 'pipelinedfallback': echo 'WARNING: '.$txt.PHP_EOL;
                 break;
+            case 'pipelineddeferred': echo 'WARNING: Pipelined comments deferred unresolved ARTICLE tail: '.$txt.PHP_EOL;
+                break;
             case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible';
                 break;
             case '': echo PHP_EOL;
@@ -79,24 +89,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base
 
     public function perform()
     {
-        $transport = new Services_Nntp_PipelinedTransport($this->_textServer);
-        $sink = new Services_Retriever_CommentsDaoSink(
-            $this->_commentDao,
-            $this->_spotDao,
-            $this->_usenetStateDao
-        );
-
-        $retriever = new Services_Retriever_CommentsPipelined(
-            $this->_daoFactory,
-            $this->_settings,
-            $this->_force,
-            $this->_retro,
-            $transport,
-            $sink,
-            $this
-        );
-
-        return $retriever->perform();
+        return parent::perform();
     }
 
     // perform
@@ -130,8 +123,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base
 
         $lastProcessedId = '';
         $lastProcessedArtNr = 0;
-        $commentDbList = [];
-        $fullCommentDbList = [];
+        $items = [];
 
         /*
          * Determine the cutoff date (unixtimestamp) from whereon we do not want to
@@ -161,14 +153,10 @@ class Services_Retriever_Comments extends Services_Retriever_Base
          */
         $spotMsgIdRatingList = [];
 
-        // Process each header
         foreach ($hdrList as $msgheader) {
             SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-start');
-
-            // Reset timelimit
             set_time_limit(120);
 
-            // strip the <>'s from the reference
             $commentId = $msgheader['Message-ID'];
             $artNr = $msgheader['Number'];
 
@@ -185,6 +173,18 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                                     (int) $header_isInDb.', fullComment='.
                                     (int) $fullcomment_isInDb.', retrieveFull= '.
                                     (int) $this->_retrieveFull);
+
+            $item = [
+                'messageid'      => $commentId,
+                'articlenr'      => $artNr,
+                'comment'        => null,
+                'spotref'        => null,
+                'ratingspotref'  => null,
+                'need_article'   => false,
+                'terminal'       => true,
+                'fullcomment'    => null,
+                'article_status' => null,
+            ];
 
             /*
              * Do we have the comment in the database already? If not, lets process it
@@ -205,10 +205,12 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                  * Don't add older comments than specified for the retention stamp
                  */
                 if (($retentionStamp > 0) && ($msgheader['stamp'] < $retentionStamp) && ($this->_settings->get('retentiontype') == 'everything')) {
+                    $items[] = $item;
                     continue;
                 } // if
 
                 if ($msgheader['stamp'] < $this->_settings->get('retrieve_newer_than')) {
+                    $items[] = $item;
                     continue;
                 } // if
 
@@ -236,7 +238,7 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                  * and extract the required fields
                  */
                 if (!$header_isInDb) {
-                    $commentDbList[] = ['messageid' => $commentId,
+                    $item['comment'] = ['messageid' => $commentId,
                         'nntpref'                   => $msgheader['References'],
                         'stamp'                     => $msgheader['stamp'],
                         'rating'                    => $msgheader['rating'], ];
@@ -248,24 +250,18 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                      * to be added to the database
                      */
                     $dbIdList['comment'][$commentId] = 1;
-                    $spotMsgIdList[$msgheader['References']] = 1;
+                    $item['spotref'] = $msgheader['References'];
 
                     /*
                      * If this comment contains a rating, mark the spot to
                      * have it's rating be recalculated
                      */
                     if ($msgheader['rating'] >= 1 && $msgheader['rating'] <= 10) {
-                        $spotMsgIdRatingList[$msgheader['References']] = 1;
+                        $item['ratingspotref'] = $msgheader['References'];
                     } // if
 
                     $header_isInDb = true;
-                    $lastProcessedId = $commentId;
-                    $lastProcessedArtNr = $artNr;
-                    $didFetchHeader = true;
                 } // if
-            } else {
-                $lastProcessedId = $commentId;
-                $lastProcessedArtNr = $artNr;
             } // else
 
             /*
@@ -282,53 +278,30 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                  * Don't add older fullcomments than specified for the retention stamp
                  */
                 if (($retentionStamp > 0) && (strtotime($msgheader['Date']) < $retentionStamp)) {
+                    $items[] = $item;
                     continue;
                 } // if
 
                 if ($this->_retrieveFull) {
-                    try {
-                        SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: readFullComment start:'.$commentId);
-                        $fullComment = $this->_svcNntpTextReading->readComments([['messageid' => $commentId]]);
-                        SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: readFullComment finished:'.$commentId);
-
-                        // Add this comment to the datbase and mark it as such
-                        $fullCommentDbList[] = $fullComment;
-                        $fullcomment_isInDb = true;
-
-                        /*
-                         * Some buggy NNTP servers give us the same messageid
-                         * in one XOVER statement, hence we update the list of
-                         * messageid's we already have retrieved and are ready
-                         * to be added to the database
-                         */
-                        $dbIdList['fullcomment'][$commentId] = 1;
-                    } catch (ParseSpotXmlException $x) {
-                        // swallow error
-                    } catch (Exception $x) {
-                        /**
-                         * Sometimes we get an 'No such article' error for a header we just retrieved,
-                         * if we want to retrieve the full article. This is messed up, but let's just
-                         * swallow the error.
-                         */
-                        if ($x->getCode() == 430) {
-                            /*
-                             * Reset error count, so other errors are actually re-tried
-                             */
-                            $this->_svcNntpText->resetErrorCount();
-                            $this->_svcNntpBin->resetErrorCount();
-                        }
-                        // if the XML is unparseable, don't bother complaining about it
-                        elseif ($x->getMessage() == 'String could not be parsed as XML') {
-                        } else {
-                            throw $x;
-                        } // else
-                    } // catch
+                    $item['need_article'] = true;
+                    $item['terminal'] = false;
+                    $dbIdList['fullcomment'][$commentId] = 1;
                 } // if retrievefull
             } // if fullcomment is not in db yet
 
+            $items[] = $item;
             SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: iter-stop');
         } // foreach
         SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop: done');
+
+        $batch = new Services_Retriever_PipelinedArticleBatch($this->articlePipelineRecovery());
+        $outcome = $batch->apply(
+            $items,
+            $this->articlePipelineWindow(),
+            $this->_parser,
+            'fullcomment',
+            'malformed comment payload'
+        );
 
         if (count($hdrList) > 0) {
             $this->displayStatus('loopcount', count($hdrList));
@@ -341,10 +314,29 @@ class Services_Retriever_Comments extends Services_Retriever_Base
          * Add the comments to the database and update the last article
          * number found
          */
+        $commentDbList = [];
         $fullComments = [];
-        while ($fullComment = array_shift($fullCommentDbList)) {
-            $fullComments = array_merge($fullComments, $fullComment);
-        } // while
+        $spotMsgIdList = [];
+        $spotMsgIdRatingList = [];
+        $lastProcessedId = '';
+        $lastProcessedArtNr = 0;
+
+        foreach ($batch->contiguousPrefix($items) as $item) {
+            if ($item['comment'] !== null) {
+                $commentDbList[] = $item['comment'];
+            }
+            if ($item['fullcomment'] !== null) {
+                $fullComments[] = $item['fullcomment'];
+            }
+            if ($item['spotref'] !== null) {
+                $spotMsgIdList[$item['spotref']] = 1;
+            }
+            if ($item['ratingspotref'] !== null) {
+                $spotMsgIdRatingList[$item['ratingspotref']] = 1;
+            }
+            $lastProcessedId = $item['messageid'];
+            $lastProcessedArtNr = $item['articlenr'];
+        }
 
         $this->_commentDao->addComments($commentDbList, $fullComments);
 
@@ -359,6 +351,11 @@ class Services_Retriever_Comments extends Services_Retriever_Base
          */
         $this->_spotDao->updateSpotRating($spotMsgIdRatingList);
         $this->_spotDao->updateSpotCommentCount($spotMsgIdList);
+
+        if ($outcome->hasUnresolved()) {
+            $this->displayStatus('pipelineddeferred', json_encode($outcome->toArray()));
+            throw new PipelinedCommentsDeferredException($outcome);
+        }
 
         return ['count' => count($hdrList), 'headercount' => count($hdrList), 'lastmsgid' => $lastProcessedId];
     }

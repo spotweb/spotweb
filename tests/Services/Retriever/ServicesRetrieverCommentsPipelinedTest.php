@@ -3,7 +3,12 @@
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedArticleResult.php';
+require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedFetchException.php';
+require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedFetchOutcome.php';
+require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedRecovery.php';
+require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedTransport.php';
+require_once __DIR__.'/../../../lib/exceptions/PipelinedCommentsDeferredException.php';
 require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_CommentsArticleParser.php';
 require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_CommentsSink.php';
 require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_CommentsCaptureSink.php';
@@ -51,6 +56,7 @@ class ServicesRetrieverCommentsPipelinedStatusTarget
 class ServicesRetrieverCommentsPipelinedTransport extends Services_Nntp_PipelinedTransport
 {
     public $requestedWindows = [];
+    public $script = null;
 
     public function __construct()
     {
@@ -60,12 +66,31 @@ class ServicesRetrieverCommentsPipelinedTransport extends Services_Nntp_Pipeline
     public function fetchArticlesPipelined(array $messageIds, $window = self::DEFAULT_PIPELINE_WINDOW)
     {
         $this->requestedWindows[] = (int) $window;
+        if (is_array($this->script)) {
+            $step = array_shift($this->script);
+            if ($step['type'] === 'return') {
+                return $step['results'];
+            }
+
+            throw new Services_Nntp_PipelinedFetchException(
+                $step['message'],
+                isset($step['code']) ? $step['code'] : -1,
+                isset($step['terminal']) ? $step['terminal'] : [],
+                isset($step['unresolved']) ? $step['unresolved'] : $messageIds,
+                'transport'
+            );
+        }
+
         $results = [];
         foreach ($messageIds as $messageId) {
             $results[] = new Services_Nntp_PipelinedArticleResult($messageId, 430, 'fixture missing');
         }
 
         return $results;
+    }
+
+    public function withFreshConnection()
+    {
     }
 }
 
@@ -74,6 +99,14 @@ class ServicesRetrieverCommentsPipelinedFailingSink extends Services_Retriever_C
     public function commitBatch(array $comments, array $fullComments, array $spotMsgIdList, array $spotMsgIdRatingList, $lastProcessedArtNr, $lastProcessedId)
     {
         throw new Exception('fixture database failure');
+    }
+}
+
+class ServicesRetrieverCommentsPipelinedThrowingParser
+{
+    public function parse($messageId, array $article)
+    {
+        throw new ParseSpotXmlException('fixture malformed payload');
     }
 }
 
@@ -114,7 +147,7 @@ class ServicesRetrieverCommentsPipelinedTest extends TestCase
         $this->assertCount(1, array_filter($result['batches'][0]['comments'], function ($comment) {
             return $comment['messageid'] === 'comment.1.5.1.1@example.invalid';
         }));
-        $this->assertCount(3, $result['article_statuses']);
+        $this->assertSame([32], $transport->requestedWindows);
     }
 
     public function testCommitFailureDoesNotProduceCaptureCheckpoint()
@@ -131,6 +164,52 @@ class ServicesRetrieverCommentsPipelinedTest extends TestCase
         }
 
         $this->assertSame([], $capture->getCanonicalResult()['batches']);
+    }
+
+    public function testMalformedArticlePayloadIsTerminalAndNonFatal()
+    {
+        $capture = new Services_Retriever_CommentsCaptureSink();
+        $transport = new ServicesRetrieverCommentsPipelinedTransport();
+        $transport->script = [
+            ['type' => 'return', 'results' => [
+                new Services_Nntp_PipelinedArticleResult('comment.1.5.1.1@example.invalid', 220, 'article follows', [], []),
+            ]],
+        ];
+        $runner = $this->newRunner($transport, $capture);
+        $this->setParser($runner, new ServicesRetrieverCommentsPipelinedThrowingParser());
+
+        $runner->process([$this->headers()[0]], 1, 2, microtime(true));
+
+        $result = $capture->getCanonicalResult();
+        $this->assertSame(['articlenr' => 1, 'messageid' => 'comment.1.5.1.1@example.invalid'], $result['batches'][0]['cursor']);
+        $this->assertSame(0, $result['article_statuses'][1]['code']);
+        $this->assertSame([], $result['batches'][0]['fullcomments']);
+    }
+
+    public function testCursorStopsBeforeUnresolvedEarlierArticle()
+    {
+        $capture = new Services_Retriever_CommentsCaptureSink();
+        $transport = new ServicesRetrieverCommentsPipelinedTransport();
+        $transport->script = [
+            ['type' => 'throw', 'message' => 'fixture disconnect', 'terminal' => [
+                new Services_Nntp_PipelinedArticleResult('comment.1.5.1.1@example.invalid', 430, 'missing'),
+                new Services_Nntp_PipelinedArticleResult('comment.3.11.1.1@example.invalid', 430, 'missing'),
+            ], 'unresolved' => ['comment.2.0.1.1@example.invalid']],
+            ['type' => 'throw', 'message' => 'fixture retry failed', 'unresolved' => ['comment.2.0.1.1@example.invalid']],
+            ['type' => 'throw', 'message' => 'fixture window one failed', 'unresolved' => ['comment.2.0.1.1@example.invalid']],
+        ];
+        $runner = $this->newRunner($transport, $capture);
+
+        try {
+            $runner->process($this->headers(), 1, 4, microtime(true));
+            $this->fail('Expected unresolved tail deferral');
+        } catch (PipelinedCommentsDeferredException $x) {
+            $this->assertSame(['comment.2.0.1.1@example.invalid'], $x->outcome()->unresolvedMessageIds());
+        }
+
+        $result = $capture->getCanonicalResult();
+        $this->assertSame(['articlenr' => 1, 'messageid' => 'comment.1.5.1.1@example.invalid'], $result['batches'][0]['cursor']);
+        $this->assertCount(1, $result['batches'][0]['comments']);
     }
 
     private function newRunner(Services_Nntp_PipelinedTransport $transport, Services_Retriever_CommentsSink $sink)
@@ -166,6 +245,13 @@ class ServicesRetrieverCommentsPipelinedTest extends TestCase
         $property = new ReflectionProperty('Services_Retriever_CommentsPipelined', '_pipelineWindow');
         $property->setAccessible(true);
         $property->setValue($runner, $window);
+    }
+
+    private function setParser($runner, $parser)
+    {
+        $property = new ReflectionProperty('Services_Retriever_CommentsPipelined', '_parser');
+        $property->setAccessible(true);
+        $property->setValue($runner, $parser);
     }
 
     private function headers()
