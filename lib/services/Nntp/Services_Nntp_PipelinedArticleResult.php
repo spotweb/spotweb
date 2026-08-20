@@ -1,11 +1,10 @@
 <?php
 
 /*
- * Spotweb adapter for the private rvdv/nntp-based comments pipeline.
+ * Internal Spotweb NNTP pipeline transport.
  *
- * Upstream reference: https://github.com/robinvdvleuten/php-nntp
- * Copyright: Robin van der Vleuten <robin@webstronauts.com>
- * Licence: MIT, retained in lib/thirdparty/rvdv-nntp/LICENSE.
+ * This file contains original Spotweb transport/result code. It does not copy
+ * source from external NNTP packages.
  */
 
 class Services_Nntp_PipelinedArticleResult
