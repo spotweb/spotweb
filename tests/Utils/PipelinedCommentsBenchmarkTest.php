@@ -37,4 +37,33 @@ class PipelinedCommentsBenchmarkTest extends TestCase
 
         $this->assertSame(2, $exitCode);
     }
+
+    public function testSpotwebRootConfigDiscoveryUsesExplicitReadOnlyRoot()
+    {
+        $root = sys_get_temp_dir().'/spotweb-root-'.getmypid().'-'.bin2hex(random_bytes(4));
+        mkdir($root);
+        file_put_contents($root.'/dbsettings.inc.php', "<?php\n\$dbsettings = ['engine' => 'pdo_mysql'];\n");
+        file_put_contents($root.'/settings.php', "<?php\n\$settings = [];\n");
+
+        $cmd = escapeshellarg(PHP_BINARY).' '.
+            escapeshellarg(__DIR__.'/../../utils/pipelined_comments_benchmark.php').
+            ' --read-only --config-discovery-check --spotweb-root '.escapeshellarg($root);
+
+        exec($cmd, $output, $exitCode);
+
+        unlink($root.'/dbsettings.inc.php');
+        unlink($root.'/settings.php');
+        rmdir($root);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertCount(1, $output);
+        $row = json_decode($output[0], true);
+        $this->assertSame('config-discovery-check', $row['mode']);
+        $this->assertTrue($row['ok']);
+        $this->assertTrue($row['dbsettings_present']);
+        $this->assertTrue($row['settings_present']);
+        $this->assertArrayNotHasKey('host', $row);
+        $this->assertArrayNotHasKey('user', $row);
+        $this->assertArrayNotHasKey('pass', $row);
+    }
 }
