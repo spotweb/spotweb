@@ -27,6 +27,17 @@ the normal 1,000-header `XOVER` loop. Request-driven page reads, NZB/image
 access and posting keep using the existing PEAR-derived engine in this
 iteration.
 
+ARTICLE handling is intentionally stream-specific:
+
+- Scheduled comments use shared bulk ARTICLE recovery for the full-comment
+  body path.
+- Scheduled spots use the same shared recovery and parser model for full-spot
+  text ARTICLE retrieval, but the current legacy spots flow still calls it
+  one-by-one via `readFullSpotPipelined()` because image/NZB prefetch and
+  fullspot persistence are interleaved with per-spot processing.
+- Scheduled reports have no separate full ARTICLE body path; their conversion
+  in this iteration is the shared Base `GROUP`/`XHDR`/`XOVER` text transport.
+
 The scheduled bulk flow uses:
 
 - `Services_Nntp_PipelinedTransport`: one reusable NNTP stream with

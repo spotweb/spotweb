@@ -12,6 +12,7 @@ require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_Pipeli
 
 class ServicesRetrieverPipelinedArticleBatchTransport extends Services_Nntp_PipelinedTransport
 {
+    public $reconnectScript = [];
     private $_script;
 
     public function __construct(array $script)
@@ -38,6 +39,12 @@ class ServicesRetrieverPipelinedArticleBatchTransport extends Services_Nntp_Pipe
 
     public function withFreshConnection()
     {
+        if (!empty($this->reconnectScript)) {
+            $step = array_shift($this->reconnectScript);
+            if ($step['type'] === 'throw') {
+                throw new NntpException($step['message'], isset($step['code']) ? $step['code'] : -1);
+            }
+        }
     }
 }
 
@@ -117,6 +124,29 @@ class ServicesRetrieverPipelinedArticleBatchTest extends TestCase
         $this->assertSame(['report-b'], $outcome->unresolvedMessageIds());
         $this->assertSame([$items[0]], $batch->contiguousPrefix($items));
         $this->assertSame(['messageid' => 'report-c', 'body' => 'c'], $items[2]['payload']);
+    }
+
+    public function testReconnectFailureDoesNotAdvanceCursorPastUnresolvedTail()
+    {
+        $items = [$this->item('comment-a'), $this->item('comment-b'), $this->item('comment-c')];
+        $transport = new ServicesRetrieverPipelinedArticleBatchTransport([
+            ['type' => 'throw', 'message' => 'disconnect mid body', 'terminal' => [
+                new Services_Nntp_PipelinedArticleResult('comment-a', 220, 'article follows', [], ['a']),
+            ], 'unresolved' => ['comment-b', 'comment-c']],
+        ]);
+        $transport->reconnectScript = [
+            ['type' => 'throw', 'message' => 'Error while connecting to server: refused'],
+            ['type' => 'throw', 'message' => 'Error while connecting to server: refused'],
+        ];
+        $batch = new Services_Retriever_PipelinedArticleBatch(new Services_Nntp_PipelinedRecovery($transport));
+
+        $outcome = $batch->apply($items, 32, new ServicesRetrieverPipelinedArticleBatchParser(), 'payload', 'malformed comment payload');
+
+        $this->assertSame(['comment-b', 'comment-c'], $outcome->unresolvedMessageIds());
+        $this->assertSame([$items[0]], $batch->contiguousPrefix($items));
+        $this->assertSame(['messageid' => 'comment-a', 'body' => 'a'], $items[0]['payload']);
+        $this->assertFalse($items[1]['terminal']);
+        $this->assertFalse($items[2]['terminal']);
     }
 
     private function item($messageId)

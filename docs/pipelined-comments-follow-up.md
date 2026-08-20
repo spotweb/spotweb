@@ -5,6 +5,10 @@ The implementation now targets scheduled spots, comments and reports below
 `Services_Retriever_Base`; request-driven reads and posting remain out of
 scope for this iteration.
 
+Current limitation: comments use bulk ARTICLE recovery; spots use the shared
+recovery layer one full spot at a time from the legacy spots flow; reports do
+not have a full ARTICLE body path in scheduled retrieval.
+
 ## 1. Failure hardening: retry only unresolved articles
 
 The shared recovery layer must reconnect and repeat only unresolved `ARTICLE`

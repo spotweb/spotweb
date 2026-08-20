@@ -32,8 +32,8 @@ abstract class Services_Retriever_Base
      * Shared modern text NNTP transport for scheduled bulk retrieval.
      *
      * Request-driven reads and posting keep using the existing PEAR engine in
-     * this iteration; scheduled GROUP/XHDR/XOVER and bulk ARTICLE reads use
-     * this transport.
+     * this iteration; scheduled GROUP/XHDR/XOVER and ARTICLE-capable recovery
+     * use this transport.
      *
      * @var Services_Nntp_PipelinedTransport
      */
