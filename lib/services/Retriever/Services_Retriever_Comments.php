@@ -1,5 +1,13 @@
 <?php
 
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedArticleResult.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedTransport.php';
+require_once __DIR__.'/Services_Retriever_CommentsArticleParser.php';
+require_once __DIR__.'/Services_Retriever_CommentsSink.php';
+require_once __DIR__.'/Services_Retriever_CommentsDaoSink.php';
+require_once __DIR__.'/Services_Retriever_CommentsCaptureSink.php';
+require_once __DIR__.'/Services_Retriever_CommentsPipelined.php';
+
 class Services_Retriever_Comments extends Services_Retriever_Base
 {
     protected $_spotDao;
@@ -56,6 +64,8 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                 break;
             case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
                 break;
+            case 'pipelinedfallback': echo 'WARNING: '.$txt.PHP_EOL;
+                break;
             case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible';
                 break;
             case '': echo PHP_EOL;
@@ -66,6 +76,30 @@ class Services_Retriever_Comments extends Services_Retriever_Base
     }
 
     // displayStatus
+
+    public function perform()
+    {
+        $transport = new Services_Nntp_PipelinedTransport($this->_textServer);
+        $sink = new Services_Retriever_CommentsDaoSink(
+            $this->_commentDao,
+            $this->_spotDao,
+            $this->_usenetStateDao
+        );
+
+        $retriever = new Services_Retriever_CommentsPipelined(
+            $this->_daoFactory,
+            $this->_settings,
+            $this->_force,
+            $this->_retro,
+            $transport,
+            $sink,
+            $this
+        );
+
+        return $retriever->perform();
+    }
+
+    // perform
 
     /*
      * Remove any extraneous reports from the database because we assume
