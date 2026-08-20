@@ -36,14 +36,18 @@ class Services_Nntp_PipelinedRecovery
         for ($i = 0; $i < self::CONFIGURED_WINDOW_RETRIES && !empty($remaining); $i++) {
             $attempt++;
             $outcome->incrementRetryCount();
-            $this->_transport->withFreshConnection();
+            if (!$this->attemptReconnect($remaining, $configuredWindow, $attempt, $outcome)) {
+                continue;
+            }
             $remaining = $this->attemptFetch($remaining, $configuredWindow, $attempt, $outcome);
         }
 
         for ($i = 0; $i < self::WINDOW_ONE_RETRIES && !empty($remaining); $i++) {
             $attempt++;
             $outcome->incrementRetryCount();
-            $this->_transport->withFreshConnection();
+            if (!$this->attemptReconnect($remaining, 1, $attempt, $outcome)) {
+                continue;
+            }
             $remaining = $this->attemptFetch($remaining, 1, $attempt, $outcome);
         }
 
@@ -70,9 +74,34 @@ class Services_Nntp_PipelinedRecovery
 
             return $x->unresolvedMessageIds();
         } catch (Exception $x) {
-            $outcome->addError($x, $window, $attempt);
+            $outcome->addError(new Services_Nntp_PipelinedFetchException(
+                $x->getMessage(),
+                $x->getCode(),
+                [],
+                $messageIds,
+                Services_Nntp_PipelinedFetchException::classify($x, 'transport')
+            ), $window, $attempt);
 
             return $messageIds;
+        }
+    }
+
+    private function attemptReconnect(array $messageIds, $window, $attempt, Services_Nntp_PipelinedFetchOutcome $outcome)
+    {
+        try {
+            $this->_transport->withFreshConnection();
+
+            return true;
+        } catch (Exception $x) {
+            $outcome->addError(new Services_Nntp_PipelinedFetchException(
+                $x->getMessage(),
+                $x->getCode(),
+                [],
+                $messageIds,
+                Services_Nntp_PipelinedFetchException::classify($x, 'reconnect')
+            ), $window, $attempt);
+
+            return false;
         }
     }
 }

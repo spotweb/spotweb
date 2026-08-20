@@ -13,6 +13,7 @@ class ServicesNntpPipelinedRecoveryFixtureTransport extends Services_Nntp_Pipeli
 {
     public $calls = [];
     public $freshConnections = 0;
+    public $reconnectScript = [];
     private $_script;
 
     public function __construct(array $script)
@@ -42,6 +43,12 @@ class ServicesNntpPipelinedRecoveryFixtureTransport extends Services_Nntp_Pipeli
     public function withFreshConnection()
     {
         $this->freshConnections++;
+        if (!empty($this->reconnectScript)) {
+            $step = array_shift($this->reconnectScript);
+            if ($step['type'] === 'throw') {
+                throw new NntpException($step['message'], isset($step['code']) ? $step['code'] : -1);
+            }
+        }
     }
 }
 
@@ -124,6 +131,42 @@ class ServicesNntpPipelinedRecoveryTest extends TestCase
         $this->assertSame([32, 32, 1], array_map(function ($call) {
             return $call['window'];
         }, $transport->calls));
+    }
+
+    public function testReconnectFailurePreservesCompletedAndUnresolvedTail()
+    {
+        $transport = new ServicesNntpPipelinedRecoveryFixtureTransport([
+            ['type' => 'throw', 'message' => 'disconnect mid body', 'class' => 'transport.disconnect', 'terminal' => [$this->article('a')], 'unresolved' => ['b', 'c']],
+        ]);
+        $transport->reconnectScript = [
+            ['type' => 'throw', 'message' => 'Error while connecting to server: refused'],
+            ['type' => 'throw', 'message' => 'Error while connecting to server: refused'],
+        ];
+
+        $outcome = (new Services_Nntp_PipelinedRecovery($transport))->fetchArticles(['a', 'b', 'c'], 32);
+
+        $this->assertSame(['a'], $this->messageIds($outcome->terminalResults()));
+        $this->assertSame(['b', 'c'], $outcome->unresolvedMessageIds());
+        $this->assertSame(2, $transport->freshConnections);
+        $this->assertSame([['ids' => ['a', 'b', 'c'], 'window' => 32]], $transport->calls);
+        $this->assertSame(['transport.disconnect', 'reconnect.connect', 'reconnect.connect'], array_map(function ($error) {
+            return $error['class'];
+        }, $outcome->errors()));
+    }
+
+    public function testUnexpectedArticleProtocolFailureRetriesDequeuedIdAndFollowingTail()
+    {
+        $transport = new ServicesNntpPipelinedRecoveryFixtureTransport([
+            ['type' => 'throw', 'message' => 'Unexpected ARTICLE response: 423 no such article number', 'code' => 423, 'class' => 'transport.protocol', 'terminal' => [$this->article('a')], 'unresolved' => ['b', 'c']],
+            ['type' => 'return', 'results' => [$this->article('b'), $this->article('c')]],
+        ]);
+
+        $outcome = (new Services_Nntp_PipelinedRecovery($transport))->fetchArticles(['a', 'b', 'c'], 32);
+
+        $this->assertSame([['ids' => ['a', 'b', 'c'], 'window' => 32], ['ids' => ['b', 'c'], 'window' => 32]], $transport->calls);
+        $this->assertSame(['a', 'b', 'c'], $this->messageIds($outcome->terminalResults()));
+        $this->assertSame([], $outcome->unresolvedMessageIds());
+        $this->assertSame('transport.protocol', $outcome->errors()[0]['class']);
     }
 
     private function article($messageId)

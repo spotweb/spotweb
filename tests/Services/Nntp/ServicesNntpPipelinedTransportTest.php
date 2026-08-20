@@ -140,6 +140,77 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         }
     }
 
+    public function testUnexpectedArticleResponseReportsDequeuedIdAndFollowingTail()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'unexpected-response');
+
+        $transport = new Services_Nntp_PipelinedTransport([
+            'host'       => $server['host'],
+            'port'       => $server['port'],
+            'enc'        => false,
+            'user'       => '',
+            'pass'       => '',
+            'verifyname' => false,
+            'buggy'      => false,
+        ], 5);
+
+        $transport->selectGroup('free.pt');
+
+        try {
+            $transport->fetchArticlesPipelined([
+                'comment.1.1.1.1@example.invalid',
+                'comment.2.1.1.1@example.invalid',
+                'comment.3.1.1.1@example.invalid',
+            ], 3);
+            $this->fail('Expected protocol exception');
+        } catch (Services_Nntp_PipelinedFetchException $x) {
+            $this->assertSame(['comment.1.1.1.1@example.invalid'], array_map(function ($result) {
+                return $result->messageId;
+            }, $x->terminalResults()));
+            $this->assertSame([
+                'comment.2.1.1.1@example.invalid',
+                'comment.3.1.1.1@example.invalid',
+            ], $x->unresolvedMessageIds());
+            $this->assertSame('transport.protocol', $x->errorClass());
+        }
+    }
+
+    public function testUnexpectedFinalArticleResponseReportsDequeuedFinalId()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'unexpected-final-response');
+
+        $transport = new Services_Nntp_PipelinedTransport([
+            'host'       => $server['host'],
+            'port'       => $server['port'],
+            'enc'        => false,
+            'user'       => '',
+            'pass'       => '',
+            'verifyname' => false,
+            'buggy'      => false,
+        ], 5);
+
+        $transport->selectGroup('free.pt');
+
+        try {
+            $transport->fetchArticlesPipelined(['comment.1.1.1.1@example.invalid'], 1);
+            $this->fail('Expected protocol exception');
+        } catch (Services_Nntp_PipelinedFetchException $x) {
+            $this->assertSame([], $x->terminalResults());
+            $this->assertSame(['comment.1.1.1.1@example.invalid'], $x->unresolvedMessageIds());
+            $this->assertSame('transport.protocol', $x->errorClass());
+        }
+    }
+
     public function testInvalidEncryptionConfigurationIsRejected()
     {
         $transport = new Services_Nntp_PipelinedTransport([
@@ -193,8 +264,18 @@ class ServicesNntpPipelinedTransportTest extends TestCase
                         exit(0);
                     }
                     $articleCommands[] = $line;
+                    if (($mode === 'unexpected-final-response') && (count($articleCommands) === 1)) {
+                        fwrite($conn, "500 fixture protocol failure\r\n");
+                        fclose($conn);
+                        exit(0);
+                    }
                     if (count($articleCommands) === 3) {
                         $this->writeFixtureArticle($conn, 1);
+                        if ($mode === 'unexpected-response') {
+                            fwrite($conn, "423 no such article number\r\n");
+                            fclose($conn);
+                            exit(0);
+                        }
                         if ($mode === 'disconnect-mid-body') {
                             fwrite($conn, "220 2 <comment.2.1.1.1@example.invalid> article follows\r\n");
                             fwrite($conn, "From: Sender <s@example>\r\n");

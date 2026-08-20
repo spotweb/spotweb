@@ -195,6 +195,7 @@ class Services_Nntp_PipelinedTransport
         $inFlight = [];
         $results = [];
         $currentArticle = null;
+        $currentResponseMessageId = null;
         $expected = count($pending);
 
         try {
@@ -238,6 +239,7 @@ class Services_Nntp_PipelinedTransport
                             }
 
                             $messageId = array_shift($inFlight);
+                            $currentResponseMessageId = $messageId;
                             $code = (int) substr($line, 0, 3);
                             if ($code === 220) {
                                 $currentArticle = [
@@ -246,12 +248,14 @@ class Services_Nntp_PipelinedTransport
                                     'message'   => substr($line, 4),
                                     'lines'     => [],
                                 ];
+                                $currentResponseMessageId = null;
                             } elseif ($code === 430) {
                                 $results[] = new Services_Nntp_PipelinedArticleResult(
                                     $this->stripMessageId($messageId),
                                     $code,
                                     substr($line, 4)
                                 );
+                                $currentResponseMessageId = null;
                             } else {
                                 throw new NntpException('Unexpected ARTICLE response: '.$line, $code);
                             }
@@ -281,8 +285,8 @@ class Services_Nntp_PipelinedTransport
                 $x->getMessage(),
                 $x->getCode(),
                 $results,
-                $this->unresolvedMessageIds($currentArticle, $inFlight, $pending),
-                'transport'
+                $this->unresolvedMessageIds($currentArticle, $currentResponseMessageId, $inFlight, $pending),
+                Services_Nntp_PipelinedFetchException::classify($x, 'transport')
             );
         }
 
@@ -465,11 +469,14 @@ class Services_Nntp_PipelinedTransport
         ];
     }
 
-    private function unresolvedMessageIds($currentArticle, array $inFlight, array $pending)
+    private function unresolvedMessageIds($currentArticle, $currentResponseMessageId, array $inFlight, array $pending)
     {
         $unresolved = [];
         if ($currentArticle !== null) {
             $unresolved[] = $this->stripMessageId($currentArticle['messageid']);
+        }
+        if ($currentResponseMessageId !== null) {
+            $unresolved[] = $this->stripMessageId($currentResponseMessageId);
         }
 
         foreach ($inFlight as $messageId) {
