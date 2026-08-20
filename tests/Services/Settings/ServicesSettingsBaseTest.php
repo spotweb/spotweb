@@ -2,6 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__.'/../../../lib/Bootstrap.php';
+
 class ServicesSettingsBaseTestContainer implements Services_Settings_IContainer
 {
     private $settings;
