@@ -17,7 +17,8 @@ require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_PipelinedRecovery.php'
 
 function pcb_usage()
 {
-    echo 'Usage: php utils/pipelined_comments_benchmark.php --read-only --use-bootstrap-settings --stream comments|spots|reports [--group GROUP] --first N --count N [--window N|--windows A,B,C] [--samples N] [--sweep] [--random-range FIRST-LAST] [--seed N] [--jsonl FILE]'.PHP_EOL;
+    echo 'Usage: php utils/pipelined_comments_benchmark.php --read-only --use-bootstrap-settings [--spotweb-root ROOT] --stream comments|spots|reports [--group GROUP] --first N --count N [--window N|--windows A,B,C] [--samples N] [--sweep] [--random-range FIRST-LAST] [--seed N] [--jsonl FILE]'.PHP_EOL;
+    echo 'Config discovery check: php utils/pipelined_comments_benchmark.php --read-only --config-discovery-check --spotweb-root ROOT'.PHP_EOL;
     echo 'Fixture mode: php utils/pipelined_comments_benchmark.php --read-only --fixture --stream comments --group GROUP --first N --count N --windows 1,32 --samples 2 --sweep'.PHP_EOL;
 }
 
@@ -97,6 +98,97 @@ function pcb_default_group_for_stream($settings, $stream)
     throw new InvalidArgumentException('Invalid stream; expected spots, comments, or reports');
 }
 
+function pcb_spotweb_root($spotwebRoot)
+{
+    if (($spotwebRoot === null) || ($spotwebRoot === '')) {
+        throw new InvalidArgumentException('Missing --spotweb-root');
+    }
+
+    $root = realpath($spotwebRoot);
+    if (($root === false) || (!is_dir($root))) {
+        throw new InvalidArgumentException('Invalid --spotweb-root');
+    }
+
+    return $root;
+}
+
+function pcb_readable_spotweb_config_files($spotwebRoot)
+{
+    $root = pcb_spotweb_root($spotwebRoot);
+    $files = [
+        'dbsettings' => $root.'/dbsettings.inc.php',
+        'settings'   => $root.'/settings.php',
+    ];
+
+    foreach ($files as $file) {
+        if (!is_readable($file)) {
+            throw new InvalidArgumentException('Spotweb root is missing readable '.basename($file));
+        }
+    }
+
+    return [$root, $files];
+}
+
+function pcb_load_settings_from_spotweb_root($spotwebRoot)
+{
+    list($root, $files) = pcb_readable_spotweb_config_files($spotwebRoot);
+
+    $dbsettings = [];
+    require $files['dbsettings'];
+    if ((!isset($dbsettings)) || (!is_array($dbsettings)) || empty($dbsettings['engine'])) {
+        throw new InvalidArgumentException('Invalid Spotweb dbsettings.inc.php');
+    }
+
+    if (($dbsettings['engine'] === 'mysql') || ($dbsettings['engine'] === 'pdo_mysql')) {
+        if (!isset($dbsettings['port'])) {
+            $dbsettings['port'] = '3306';
+        }
+        if (!isset($dbsettings['schema'])) {
+            $dbsettings['schema'] = '';
+        }
+    } elseif ($dbsettings['engine'] === 'pdo_pgsql') {
+        if (!isset($dbsettings['port'])) {
+            $dbsettings['port'] = '5432';
+        }
+        if (!isset($dbsettings['schema'])) {
+            $dbsettings['schema'] = 'public';
+        }
+    } else {
+        if (!isset($dbsettings['port'])) {
+            $dbsettings['port'] = '';
+        }
+        if (!isset($dbsettings['schema'])) {
+            $dbsettings['schema'] = '';
+        }
+    }
+
+    $dbCon = dbeng_abs::getDbFactory($dbsettings['engine']);
+    $dbCon->connect(
+        $dbsettings['host'],
+        $dbsettings['user'],
+        $dbsettings['pass'],
+        $dbsettings['dbname'],
+        $dbsettings['port'],
+        $dbsettings['schema']
+    );
+
+    $daoFactory = Dao_Factory::getDAOFactory($dbsettings['engine']);
+    $daoFactory->setConnection($dbCon);
+
+    $settingsContainer = new Services_Settings_Container();
+    $dbSource = new Services_Settings_DbContainer();
+    $dbSource->initialize(['dao' => $daoFactory->getSettingDao()]);
+    $settingsContainer->addSource($dbSource);
+
+    $settings = [];
+    require $files['settings'];
+    $fileSource = new Services_Settings_FileContainer();
+    $fileSource->initialize($settings);
+    $settingsContainer->addSource($fileSource);
+
+    return [$settingsContainer, $daoFactory, $root];
+}
+
 class PipelinedCommentsBenchmarkFixtureTransport extends Services_Nntp_PipelinedTransport
 {
     public function __construct()
@@ -150,6 +242,18 @@ if (!pcb_has('read-only')) {
 }
 
 try {
+    if (pcb_has('config-discovery-check')) {
+        list($root, $files) = pcb_readable_spotweb_config_files(pcb_arg('spotweb-root', null));
+        echo json_encode([
+            'mode' => 'config-discovery-check',
+            'ok' => true,
+            'spotweb_root' => $root,
+            'dbsettings_present' => is_readable($files['dbsettings']),
+            'settings_present' => is_readable($files['settings']),
+        ]).PHP_EOL;
+        exit(0);
+    }
+
     $fixture = pcb_has('fixture');
     $first = (int) pcb_arg('first', 0);
     $count = (int) pcb_arg('count', 0);
@@ -175,8 +279,13 @@ try {
             $group = 'fixture.'.$stream;
         }
     } elseif (pcb_has('use-bootstrap-settings')) {
-        $bootstrap = new Bootstrap();
-        list($settings, $daoFactory, $req) = $bootstrap->boot();
+        $spotwebRoot = pcb_arg('spotweb-root', null);
+        if ($spotwebRoot !== null) {
+            list($settings, $daoFactory, $loadedSpotwebRoot) = pcb_load_settings_from_spotweb_root($spotwebRoot);
+        } else {
+            $bootstrap = new Bootstrap();
+            list($settings, $daoFactory, $req) = $bootstrap->boot();
+        }
         $server = $settings->get('nntp_hdr');
         if ($group === '') {
             $group = pcb_default_group_for_stream($settings, $stream);

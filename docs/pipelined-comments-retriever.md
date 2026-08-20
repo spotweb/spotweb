@@ -111,27 +111,50 @@ docker run --rm \
   --first 100 --count 1000 --windows 1,4,8,16,32 --samples 2 --sweep --seed 123
 ```
 
-## Real-provider gate
-
-Do not run provider benchmarks while the production comments catch-up is active.
-After the catch-up finishes, use a read-only range and compare windows with:
+Config discovery check for a read-only mounted Spotweb root:
 
 ```sh
 docker run --rm \
   --entrypoint php \
-  -v /datastore_01/dockerdata/spotweb/config:/var/www/html/config:ro \
   -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v <host-spotweb-root-containing-dbsettings-and-settings>:/var/www/spotweb:ro \
+  -w /work \
+  spotweb:server01-fixes-20260816-r2 \
+  utils/pipelined_comments_benchmark.php --read-only --config-discovery-check \
+  --spotweb-root /var/www/spotweb
+```
+
+## Real-provider gate
+
+Do not run provider benchmarks while the production comments catch-up is active.
+After the catch-up finishes, mount the production Spotweb root read-only and
+use a read-only range. The checkout remains mounted at `/work`; configuration
+is discovered from `--spotweb-root`, so `dbsettings.inc.php` is not copied or
+written into `/work`.
+
+```sh
+docker run --rm \
+  --entrypoint php \
+  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v <host-spotweb-root-containing-dbsettings-and-settings>:/var/www/spotweb:ro \
   -w /work \
   spotweb:server01-fixes-20260816-r2 \
   utils/pipelined_comments_benchmark.php --read-only --use-bootstrap-settings \
+  --spotweb-root /var/www/spotweb \
   --group <comment-group> --first <first> --count 1000 \
   --windows 1,8,16,32,64,128 --samples 10 --sweep --random-range <first-last> \
   --seed <seed> --jsonl /tmp/spotweb-pipeline-live.jsonl
 ```
 
-That launcher reads `nntp_hdr` through normal Bootstrap/settings, keeps
-credentials in memory, and emits only JSONL counts/status/timing/error data.
-It bypasses the image entrypoint and mounts configuration read-only.
+That launcher reads `nntp_hdr` through normal Spotweb DB/file settings loaded
+from the explicit read-only root, keeps credentials in memory, and emits only
+JSONL counts/status/timing/error data. It bypasses the image entrypoint and
+mounts configuration read-only.
+
+Safe live smoke checks have been performed for transport receive/drop-in only:
+spots group `free.pt` and reports group `free.willey` each returned 10 XOVER
+headers, 10 terminal ARTICLE results, 0 unresolved, and 0 retries/errors. These
+checks do not prove full parser/DAO integration performance.
 
 The 2026-08-20 sanitized benchmark evidence and selected default are documented
 in `docs/benchmarks/pipelined-comments-20260820.md`.
