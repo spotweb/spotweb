@@ -12,6 +12,8 @@ class Services_Nntp_PipelinedTransport
 {
     const DEFAULT_TIMEOUT = 10;
     const DEFAULT_PIPELINE_WINDOW = Services_Nntp_PipelineDepth::DefaultDepth;
+    const IDEMPOTENT_RETRY_LIMIT = 3;
+    const IDEMPOTENT_RETRY_BACKOFF_USEC = 100000;
 
     private $_server;
     private $_stream = null;
@@ -85,7 +87,7 @@ class Services_Nntp_PipelinedTransport
         $this->readStatusLine([200, 201]);
 
         if ($enc === 'tls') {
-            $this->simpleCommand('STARTTLS', [382]);
+            $this->simpleCommandRaw('STARTTLS', [382]);
             $enabled = @stream_socket_enable_crypto($this->_stream, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
             if ($enabled !== true) {
                 $this->disconnect();
@@ -94,9 +96,9 @@ class Services_Nntp_PipelinedTransport
         }
 
         if (!empty($this->_server['user'])) {
-            $authUser = $this->simpleCommand('AUTHINFO USER '.$this->_server['user'], [281, 381]);
+            $authUser = $this->simpleCommandRaw('AUTHINFO USER '.$this->_server['user'], [281, 381]);
             if ($authUser['code'] === 381) {
-                $this->simpleCommand('AUTHINFO PASS '.$this->_server['pass'], [281]);
+                $this->simpleCommandRaw('AUTHINFO PASS '.$this->_server['pass'], [281]);
             }
             $this->log(SpotDebug::TRACE, 'nntp.auth', ['operation' => 'auth']);
         }
@@ -125,7 +127,7 @@ class Services_Nntp_PipelinedTransport
         }
 
         try {
-            $this->simpleCommand('QUIT', [205]);
+            $this->simpleCommandRaw('QUIT', [205]);
         } catch (Exception $x) {
             /* Best effort only during shutdown. */
         }
@@ -135,22 +137,17 @@ class Services_Nntp_PipelinedTransport
 
     public function selectGroup($group)
     {
-        $response = $this->simpleCommand('GROUP '.$group, [211]);
-        $parts = preg_split('/\s+/', trim($response['message']));
-        $this->_currentGroup = $group;
-        $this->log(SpotDebug::TRACE, 'nntp.group', ['operation' => 'group', 'group' => $group, 'status' => $response['code']]);
-
-        return [
-            'count' => isset($parts[0]) ? (int) $parts[0] : 0,
-            'first' => isset($parts[1]) ? (int) $parts[1] : 0,
-            'last'  => isset($parts[2]) ? (int) $parts[2] : 0,
-        ];
+        return $this->executeIdempotent('group', function () use ($group) {
+            return $this->selectGroupRaw($group);
+        });
     }
 
     public function getOverview($first, $last)
     {
         $started = microtime(true);
-        $response = $this->multiLineCommand('XOVER '.(int) $first.'-'.(int) $last, [224]);
+        $response = $this->executeIdempotent('xover', function () use ($first, $last) {
+            return $this->multiLineCommandRaw('XOVER '.(int) $first.'-'.(int) $last, [224]);
+        });
         $overview = [];
 
         foreach ($response['lines'] as $line) {
@@ -178,7 +175,9 @@ class Services_Nntp_PipelinedTransport
     public function getMessageIdList($first, $last)
     {
         $started = microtime(true);
-        $response = $this->multiLineCommand('XHDR Message-ID '.(int) $first.'-'.(int) $last, [221]);
+        $response = $this->executeIdempotent('xhdr', function () use ($first, $last) {
+            return $this->multiLineCommandRaw('XHDR Message-ID '.(int) $first.'-'.(int) $last, [221]);
+        });
         $ids = [];
 
         foreach ($response['lines'] as $line) {
@@ -195,7 +194,9 @@ class Services_Nntp_PipelinedTransport
 
     public function sendNoop()
     {
-        $this->simpleCommand('NOOP', [200]);
+        $this->executeIdempotent('noop', function () {
+            return $this->simpleCommandRaw('NOOP', [200]);
+        });
     }
 
     public function resetErrorCount()
@@ -206,7 +207,7 @@ class Services_Nntp_PipelinedTransport
     public function getHeader($messageId)
     {
         $started = microtime(true);
-        $response = $this->multiLineCommand('HEAD '.$this->formatMessageId($messageId), [221]);
+        $response = $this->directArticleReadCommand('head', 'HEAD '.$this->formatMessageId($messageId), [221]);
         $this->log(SpotDebug::TRACE, 'nntp.head', ['operation' => 'head', 'status' => $response['code'], 'line_count' => count($response['lines']), 'elapsed_ms' => $this->elapsedMs($started)]);
 
         return $response['lines'];
@@ -215,7 +216,7 @@ class Services_Nntp_PipelinedTransport
     public function getBody($messageId)
     {
         $started = microtime(true);
-        $response = $this->multiLineCommand('BODY '.$this->formatMessageId($messageId), [222]);
+        $response = $this->directArticleReadCommand('body', 'BODY '.$this->formatMessageId($messageId), [222]);
         $this->log(SpotDebug::TRACE, 'nntp.body', ['operation' => 'body', 'status' => $response['code'], 'line_count' => count($response['lines']), 'elapsed_ms' => $this->elapsedMs($started)]);
 
         return $response['lines'];
@@ -224,7 +225,7 @@ class Services_Nntp_PipelinedTransport
     public function getArticle($messageId)
     {
         $started = microtime(true);
-        $response = $this->multiLineCommand('ARTICLE '.$this->formatMessageId($messageId), [220]);
+        $response = $this->directArticleReadCommand('article', 'ARTICLE '.$this->formatMessageId($messageId), [220]);
         $article = $this->splitArticleLines($response['lines']);
         $this->log(SpotDebug::TRACE, 'nntp.article', ['operation' => 'article', 'status' => $response['code'], 'header_count' => count($article['header']), 'body_count' => count($article['body']), 'elapsed_ms' => $this->elapsedMs($started)]);
 
@@ -238,10 +239,15 @@ class Services_Nntp_PipelinedTransport
         }
 
         $started = microtime(true);
-        $this->simpleCommand('POST', [340]);
-        $this->writeMultilinePayload($article[0]."\r\n\r\n".$article[1]);
-        $response = $this->readStatusLine([240]);
-        $this->log(SpotDebug::DEBUG, 'nntp.post', ['operation' => 'post', 'status' => $response['code'], 'elapsed_ms' => $this->elapsedMs($started)]);
+        try {
+            $this->simpleCommandRaw('POST', [340]);
+            $this->writeMultilinePayload($this->buildPostPayload($article[0], $article[1]));
+            $response = $this->readStatusLine([240]);
+            $this->log(SpotDebug::DEBUG, 'nntp.post', ['operation' => 'post', 'status' => $response['code'], 'elapsed_ms' => $this->elapsedMs($started)]);
+        } catch (Exception $x) {
+            $this->logFailure('post', $x, 0, $started, false);
+            throw $x;
+        }
 
         return true;
     }
@@ -368,11 +374,11 @@ class Services_Nntp_PipelinedTransport
         $this->disconnect();
         $this->connect();
         if ($group !== '') {
-            $this->selectGroup($group);
+            $this->selectGroupRaw($group);
         }
     }
 
-    private function simpleCommand($command, array $expectedCodes)
+    private function simpleCommandRaw($command, array $expectedCodes)
     {
         $this->connect();
         $this->writeLine($command);
@@ -380,12 +386,101 @@ class Services_Nntp_PipelinedTransport
         return $this->readStatusLine($expectedCodes);
     }
 
-    private function multiLineCommand($command, array $expectedCodes)
+    private function multiLineCommandRaw($command, array $expectedCodes)
     {
-        $response = $this->simpleCommand($command, $expectedCodes);
+        $response = $this->simpleCommandRaw($command, $expectedCodes);
         $response['lines'] = $this->readMultilineBlock();
 
         return $response;
+    }
+
+    private function directArticleReadCommand($operation, $command, array $expectedCodes)
+    {
+        $response = $this->executeIdempotent($operation, function () use ($command, $expectedCodes) {
+            $response = $this->simpleCommandRaw($command, array_merge($expectedCodes, [430]));
+            if ($response['code'] === 430) {
+                return [
+                    'code' => 430,
+                    'message' => $response['message'],
+                    'lines' => [],
+                ];
+            }
+
+            $response['lines'] = $this->readMultilineBlock();
+
+            return $response;
+        });
+
+        if ($response['code'] === 430) {
+            $x = new NntpException('NNTP article unavailable: '.$response['message'], 430);
+            $this->logFailure($operation, $x, 0, microtime(true), true);
+            throw $x;
+        }
+
+        return $response;
+    }
+
+    private function selectGroupRaw($group)
+    {
+        $response = $this->simpleCommandRaw('GROUP '.$group, [211]);
+        $parts = preg_split('/\s+/', trim($response['message']));
+        $this->_currentGroup = $group;
+        $this->log(SpotDebug::TRACE, 'nntp.group', ['operation' => 'group', 'group' => $group, 'status' => $response['code']]);
+
+        return [
+            'count' => isset($parts[0]) ? (int) $parts[0] : 0,
+            'first' => isset($parts[1]) ? (int) $parts[1] : 0,
+            'last'  => isset($parts[2]) ? (int) $parts[2] : 0,
+        ];
+    }
+
+    private function executeIdempotent($operation, $callback)
+    {
+        $started = microtime(true);
+        $attempt = 0;
+        $groupForRetry = $this->_currentGroup;
+
+        while (true) {
+            try {
+                $result = $callback();
+                if (($attempt > 0) && is_array($result)) {
+                    $this->log(SpotDebug::DEBUG, 'nntp.read.recovered', ['operation' => $operation, 'attempt' => $attempt, 'elapsed_ms' => $this->elapsedMs($started)]);
+                }
+
+                return $result;
+            } catch (Exception $x) {
+                $terminal = ((int) $x->getCode() === 430);
+                $this->logFailure($operation, $x, $attempt, $started, $terminal);
+                if ($terminal) {
+                    throw $x;
+                }
+
+                if ($attempt >= self::IDEMPOTENT_RETRY_LIMIT) {
+                    throw $x;
+                }
+
+                $attempt++;
+                usleep(self::IDEMPOTENT_RETRY_BACKOFF_USEC * $attempt);
+
+                try {
+                    $this->reconnectForRetry($groupForRetry);
+                } catch (Exception $reconnectFailure) {
+                    $this->logFailure('reconnect', $reconnectFailure, $attempt, $started, false);
+                    if ($attempt >= self::IDEMPOTENT_RETRY_LIMIT) {
+                        throw $reconnectFailure;
+                    }
+                }
+            }
+        }
+    }
+
+    private function reconnectForRetry($group)
+    {
+        $this->disconnect();
+        $this->connect();
+        if ($group !== '') {
+            $this->selectGroupRaw($group);
+        }
     }
 
     private function readStatusLine(array $expectedCodes)
@@ -446,6 +541,11 @@ class Services_Nntp_PipelinedTransport
             $this->writeLine($line);
         }
         $this->writeLine('.');
+    }
+
+    private function buildPostPayload($headers, $body)
+    {
+        return rtrim((string) $headers, "\r\n")."\r\n\r\n".(string) $body;
     }
 
     private function flushWriteBuffer()
@@ -600,12 +700,32 @@ class Services_Nntp_PipelinedTransport
 
     private function log($level, $message, array $context = [])
     {
-        $context = array_merge([
+        $context = $this->sanitizeLogContext(array_merge([
             'role' => $this->_role,
             'group' => $this->_currentGroup,
-        ], $context);
-        unset($context['user'], $context['pass'], $context['auth'], $context['payload'], $context['body']);
+        ], $context));
         SpotDebug::msg($level, $message, $context);
+    }
+
+    private function logFailure($operation, Exception $exception, $attempt, $started, $terminal)
+    {
+        $this->log($terminal ? SpotDebug::DEBUG : SpotDebug::WARN, 'nntp.read.failure', [
+            'operation' => $operation,
+            'attempt' => (int) $attempt,
+            'terminal' => (bool) $terminal,
+            'error_class' => Services_Nntp_PipelinedFetchException::classify($exception, 'transport'),
+            'code' => (int) $exception->getCode(),
+            'elapsed_ms' => $this->elapsedMs($started),
+        ]);
+    }
+
+    private function sanitizeLogContext(array $context)
+    {
+        foreach (['user', 'username', 'pass', 'password', 'auth', 'command', 'payload', 'body', 'headers', 'article', 'content', 'nzb'] as $key) {
+            unset($context[$key]);
+        }
+
+        return $context;
     }
 
     private function elapsedMs($started)

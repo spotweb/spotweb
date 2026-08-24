@@ -250,8 +250,146 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         $this->assertContains('BODY <comment.1.1.1.1@example.invalid>', $commands);
         $this->assertContains('ARTICLE <comment.1.1.1.1@example.invalid>', $commands);
         $this->assertContains('POST', $commands);
-        $this->assertContains('POST-DATA ..starts-with-dot', $commands);
-        $this->assertContains('POST-DATA .', $commands);
+        $postData = array_values(array_filter($commands, function ($line) {
+            return strpos($line, 'POST-DATA ') === 0;
+        }));
+        $this->assertSame([
+            'POST-DATA Subject: Fixture',
+            'POST-DATA Newsgroups: free.pt',
+            'POST-DATA ',
+            'POST-DATA first body line',
+            'POST-DATA ..starts-with-dot',
+            'POST-DATA .',
+        ], $postData);
+    }
+
+    public function testDirectHeaderReconnectsAfterDisconnectAndReselectsGroup()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'direct-head-disconnect-once');
+        $transport = $this->newFixtureTransport($server);
+
+        $transport->selectGroup('free.pt');
+        $this->assertSame(['From: Sender <s@example>', 'Date: Tue, 18 Aug 2026 10:01:00 +0000'], $transport->getHeader('comment.1.1.1.1@example.invalid'));
+        $transport->quit();
+
+        $commands = file($commandLog, FILE_IGNORE_NEW_LINES);
+        $this->assertSame(2, count(array_filter($commands, function ($line) {
+            return $line === 'GROUP free.pt';
+        })));
+        $this->assertSame(2, count(array_filter($commands, function ($line) {
+            return $line === 'HEAD <comment.1.1.1.1@example.invalid>';
+        })));
+    }
+
+    public function testDirectBodyReconnectsAfterDisconnectAndReselectsGroup()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'direct-body-disconnect-once');
+        $transport = $this->newFixtureTransport($server);
+
+        $transport->selectGroup('free.pt');
+        $this->assertSame(['body 1', '.dot stuffed'], $transport->getBody('comment.1.1.1.1@example.invalid'));
+        $transport->quit();
+
+        $commands = file($commandLog, FILE_IGNORE_NEW_LINES);
+        $this->assertSame(2, count(array_filter($commands, function ($line) {
+            return $line === 'GROUP free.pt';
+        })));
+        $this->assertSame(2, count(array_filter($commands, function ($line) {
+            return $line === 'BODY <comment.1.1.1.1@example.invalid>';
+        })));
+    }
+
+    public function testDirectArticleReconnectsAfterDisconnectAndReselectsGroup()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'direct-article-disconnect-once');
+        $transport = $this->newFixtureTransport($server);
+
+        $transport->selectGroup('free.pt');
+        $article = $transport->getArticle('comment.1.1.1.1@example.invalid');
+        $transport->quit();
+
+        $this->assertSame(['body 1', '.dot stuffed'], $article['body']);
+        $commands = file($commandLog, FILE_IGNORE_NEW_LINES);
+        $this->assertSame(2, count(array_filter($commands, function ($line) {
+            return $line === 'GROUP free.pt';
+        })));
+        $this->assertSame(2, count(array_filter($commands, function ($line) {
+            return $line === 'ARTICLE <comment.1.1.1.1@example.invalid>';
+        })));
+    }
+
+    public function testDirectArticle430IsTerminalAndNotRetried()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'direct-read-430');
+        $transport = $this->newFixtureTransport($server);
+
+        $transport->selectGroup('free.pt');
+
+        try {
+            $transport->getArticle('comment.1.1.1.1@example.invalid');
+            $this->fail('Expected terminal 430 exception');
+        } catch (NntpException $x) {
+            $this->assertSame(430, $x->getCode());
+        }
+        $transport->quit();
+
+        $commands = file($commandLog, FILE_IGNORE_NEW_LINES);
+        $this->assertSame(1, count(array_filter($commands, function ($line) {
+            return $line === 'ARTICLE <comment.1.1.1.1@example.invalid>';
+        })));
+    }
+
+    public function testSensitiveDiagnosticContextIsRedacted()
+    {
+        $transport = new Services_Nntp_PipelinedTransport([
+            'host'       => '127.0.0.1',
+            'port'       => 119,
+            'enc'        => false,
+            'user'       => 'secret-user',
+            'pass'       => 'secret-pass',
+            'verifyname' => false,
+            'buggy'      => false,
+        ], 1);
+
+        $method = new ReflectionMethod('Services_Nntp_PipelinedTransport', 'sanitizeLogContext');
+        $method->setAccessible(true);
+        $context = $method->invoke($transport, [
+            'operation' => 'auth',
+            'user' => 'secret-user',
+            'pass' => 'secret-pass',
+            'command' => 'AUTHINFO PASS secret-pass',
+            'body' => 'private article body',
+            'headers' => 'Subject: private',
+            'safe' => 'kept',
+        ]);
+
+        $encoded = json_encode($context);
+        $this->assertSame('kept', $context['safe']);
+        $this->assertStringNotContainsString('secret-user', $encoded);
+        $this->assertStringNotContainsString('secret-pass', $encoded);
+        $this->assertStringNotContainsString('AUTHINFO', $encoded);
+        $this->assertStringNotContainsString('private article body', $encoded);
+        $this->assertStringNotContainsString('Subject: private', $encoded);
     }
 
     public function testInvalidEncryptionConfigurationIsRejected()
@@ -276,5 +414,18 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         $this->_childPids[] = $server['pid'];
 
         return $server;
+    }
+
+    private function newFixtureTransport(array $server)
+    {
+        return new Services_Nntp_PipelinedTransport([
+            'host'       => $server['host'],
+            'port'       => $server['port'],
+            'enc'        => false,
+            'user'       => '',
+            'pass'       => '',
+            'verifyname' => false,
+            'buggy'      => false,
+        ], 5);
     }
 }
