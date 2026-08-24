@@ -1,8 +1,8 @@
 # Internal NNTP migration architecture
 
-This private branch replaces the remaining PEAR-derived NNTP stack with a
-single internal Spotweb NNTP layer. It is not an upstream PR and is not a
-production deployment approval.
+This branch replaces the remaining PEAR-derived NNTP stack with a single
+internal Spotweb NNTP layer. It is structured for upstream review and keeps
+all protocol handling in one reusable implementation.
 
 ## Dependency map
 
@@ -103,9 +103,10 @@ without automatic replay.
   transport and recovery paths covered by the existing pipelined retriever
   tests. Spots scheduled full spot retrieval remains functionally one-by-one
   inside the legacy orchestration, but the NNTP transport under it is central.
-- Read-only live smoke status from the previous audit: configured spots and
-  reports groups proved receive/drop-in transport only. This was not parser/DAO
-  integration and not a performance claim.
+- Manual live integration validation covered scheduled delta retrieval,
+  full-spot reads, image reads, NZB reads and hand-off, plus repeated
+  cursor/lock checks. These checks complement the deterministic fixtures; they
+  are not a substitute for independent maintainer and provider testing.
 - Not live-tested: posting. Live NNTP POST is intentionally forbidden for this
   branch; only deterministic fixture POST framing is tested, and POST is not
   auto-retried because it is non-idempotent.
