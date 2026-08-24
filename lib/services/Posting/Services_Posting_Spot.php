@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__.'/../Nntp/Services_Nntp_ClientPool.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_SpotPoster.php';
+
 class Services_Posting_Spot
 {
     private $_daoFactory;
@@ -12,8 +15,8 @@ class Services_Posting_Spot
     {
         $this->_daoFactory = $daoFactory;
         $this->_settings = $settings;
-        $this->_nntp_post = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'post'));
-        $this->_nntp_hdr = new Services_Nntp_SpotPosting(Services_Nntp_EnginePool::pool($settings, 'hdr'));
+        $this->_nntp_post = new Services_Nntp_SpotPoster(Services_Nntp_ClientPool::pool($settings, 'post'));
+        $this->_nntp_hdr = new Services_Nntp_SpotPoster(Services_Nntp_ClientPool::pool($settings, 'hdr'));
 
         $this->_spotValidator = new Services_Posting_Validator();
     }

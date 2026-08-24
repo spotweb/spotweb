@@ -1,9 +1,10 @@
 # Scheduled retriever pipelining — follow-up implementation tasks
 
-These items track hardening work for the private scheduled retriever pipeline.
-The implementation now targets scheduled spots, comments and reports below
-`Services_Retriever_Base`; request-driven reads and posting remain out of
-scope for this iteration.
+These items tracked hardening work for the private scheduled retriever
+pipeline. The later internal NNTP migration phase supersedes the original
+scheduled-only boundary; request-driven reads and posting are now migrated
+through the same central internal NNTP layer. See
+`docs/internal-nntp-migration.md`.
 
 Current limitation: comments use bulk ARTICLE recovery; spots use the shared
 recovery layer one full spot at a time from the legacy spots flow; reports do

@@ -20,11 +20,13 @@ class Services_Nntp_PipelinedTransport
     private $_writeBuffer = '';
     private $_timeout;
     private $_openedConnections = 0;
+    private $_role;
 
-    public function __construct(array $server, $timeout = self::DEFAULT_TIMEOUT)
+    public function __construct(array $server, $timeout = self::DEFAULT_TIMEOUT, $role = 'direct')
     {
         $this->_server = $server;
         $this->_timeout = $timeout;
+        $this->_role = $role;
     }
 
     public function getOpenedConnectionCount()
@@ -78,6 +80,7 @@ class Services_Nntp_PipelinedTransport
         $this->_inputBuffer = '';
         $this->_writeBuffer = '';
         $this->_openedConnections++;
+        $this->log(SpotDebug::DEBUG, 'nntp.connect', ['operation' => 'connect']);
 
         $this->readStatusLine([200, 201]);
 
@@ -95,6 +98,7 @@ class Services_Nntp_PipelinedTransport
             if ($authUser['code'] === 381) {
                 $this->simpleCommand('AUTHINFO PASS '.$this->_server['pass'], [281]);
             }
+            $this->log(SpotDebug::TRACE, 'nntp.auth', ['operation' => 'auth']);
         }
     }
 
@@ -111,6 +115,7 @@ class Services_Nntp_PipelinedTransport
         $this->_writeBuffer = '';
 
         @fclose($stream);
+        $this->log(SpotDebug::DEBUG, 'nntp.disconnect', ['operation' => 'disconnect']);
     }
 
     public function quit()
@@ -133,6 +138,7 @@ class Services_Nntp_PipelinedTransport
         $response = $this->simpleCommand('GROUP '.$group, [211]);
         $parts = preg_split('/\s+/', trim($response['message']));
         $this->_currentGroup = $group;
+        $this->log(SpotDebug::TRACE, 'nntp.group', ['operation' => 'group', 'group' => $group, 'status' => $response['code']]);
 
         return [
             'count' => isset($parts[0]) ? (int) $parts[0] : 0,
@@ -143,6 +149,7 @@ class Services_Nntp_PipelinedTransport
 
     public function getOverview($first, $last)
     {
+        $started = microtime(true);
         $response = $this->multiLineCommand('XOVER '.(int) $first.'-'.(int) $last, [224]);
         $overview = [];
 
@@ -152,6 +159,8 @@ class Services_Nntp_PipelinedTransport
                 $overview[] = $parsed;
             }
         }
+
+        $this->log(SpotDebug::TRACE, 'nntp.xover', ['operation' => 'xover', 'first' => (int) $first, 'last' => (int) $last, 'count' => count($overview), 'elapsed_ms' => $this->elapsedMs($started)]);
 
         return $overview;
     }
@@ -168,6 +177,7 @@ class Services_Nntp_PipelinedTransport
 
     public function getMessageIdList($first, $last)
     {
+        $started = microtime(true);
         $response = $this->multiLineCommand('XHDR Message-ID '.(int) $first.'-'.(int) $last, [221]);
         $ids = [];
 
@@ -178,6 +188,8 @@ class Services_Nntp_PipelinedTransport
             }
         }
 
+        $this->log(SpotDebug::TRACE, 'nntp.xhdr', ['operation' => 'xhdr', 'field' => 'Message-ID', 'first' => (int) $first, 'last' => (int) $last, 'count' => count($ids), 'elapsed_ms' => $this->elapsedMs($started)]);
+
         return $ids;
     }
 
@@ -186,10 +198,65 @@ class Services_Nntp_PipelinedTransport
         $this->simpleCommand('NOOP', [200]);
     }
 
+    public function resetErrorCount()
+    {
+        /* Central transport recovery is handled by Services_Nntp_PipelinedRecovery. */
+    }
+
+    public function getHeader($messageId)
+    {
+        $started = microtime(true);
+        $response = $this->multiLineCommand('HEAD '.$this->formatMessageId($messageId), [221]);
+        $this->log(SpotDebug::TRACE, 'nntp.head', ['operation' => 'head', 'status' => $response['code'], 'line_count' => count($response['lines']), 'elapsed_ms' => $this->elapsedMs($started)]);
+
+        return $response['lines'];
+    }
+
+    public function getBody($messageId)
+    {
+        $started = microtime(true);
+        $response = $this->multiLineCommand('BODY '.$this->formatMessageId($messageId), [222]);
+        $this->log(SpotDebug::TRACE, 'nntp.body', ['operation' => 'body', 'status' => $response['code'], 'line_count' => count($response['lines']), 'elapsed_ms' => $this->elapsedMs($started)]);
+
+        return $response['lines'];
+    }
+
+    public function getArticle($messageId)
+    {
+        $started = microtime(true);
+        $response = $this->multiLineCommand('ARTICLE '.$this->formatMessageId($messageId), [220]);
+        $article = $this->splitArticleLines($response['lines']);
+        $this->log(SpotDebug::TRACE, 'nntp.article', ['operation' => 'article', 'status' => $response['code'], 'header_count' => count($article['header']), 'body_count' => count($article['body']), 'elapsed_ms' => $this->elapsedMs($started)]);
+
+        return $article;
+    }
+
+    public function post(array $article)
+    {
+        if (count($article) !== 2) {
+            throw new NntpException('POST expects [headers, body]', -1);
+        }
+
+        $started = microtime(true);
+        $this->simpleCommand('POST', [340]);
+        $this->writeMultilinePayload($article[0]."\r\n\r\n".$article[1]);
+        $response = $this->readStatusLine([240]);
+        $this->log(SpotDebug::DEBUG, 'nntp.post', ['operation' => 'post', 'status' => $response['code'], 'elapsed_ms' => $this->elapsedMs($started)]);
+
+        return true;
+    }
+
+    public function validateServer($group = 'free.pt')
+    {
+        $this->selectGroup($group);
+        $this->quit();
+    }
+
     public function fetchArticlesPipelined(array $messageIds, $window = self::DEFAULT_PIPELINE_WINDOW)
     {
         $this->connect();
 
+        $started = microtime(true);
         $window = max(1, (int) $window);
         $pending = array_values($messageIds);
         $inFlight = [];
@@ -290,6 +357,8 @@ class Services_Nntp_PipelinedTransport
             );
         }
 
+        $this->log(SpotDebug::TRACE, 'nntp.article.pipeline', ['operation' => 'article-pipeline', 'window' => $window, 'requested' => $expected, 'terminal' => count($results), 'elapsed_ms' => $this->elapsedMs($started)]);
+
         return $results;
     }
 
@@ -365,6 +434,18 @@ class Services_Nntp_PipelinedTransport
             }
             $this->flushWriteBuffer();
         }
+    }
+
+    private function writeMultilinePayload($payload)
+    {
+        $lines = preg_split('/\r\n|\r|\n/', $payload);
+        foreach ($lines as $line) {
+            if (strpos($line, '.') === 0) {
+                $line = '.'.$line;
+            }
+            $this->writeLine($line);
+        }
+        $this->writeLine('.');
     }
 
     private function flushWriteBuffer()
@@ -515,5 +596,20 @@ class Services_Nntp_PipelinedTransport
         }
 
         return $messageId;
+    }
+
+    private function log($level, $message, array $context = [])
+    {
+        $context = array_merge([
+            'role' => $this->_role,
+            'group' => $this->_currentGroup,
+        ], $context);
+        unset($context['user'], $context['pass'], $context['auth'], $context['payload'], $context['body']);
+        SpotDebug::msg($level, $message, $context);
+    }
+
+    private function elapsedMs($started)
+    {
+        return (int) round((microtime(true) - $started) * 1000);
     }
 }

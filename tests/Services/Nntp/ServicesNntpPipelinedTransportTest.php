@@ -6,6 +6,7 @@ require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedArticle
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedFetchException.php';
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedTransport.php';
+require_once __DIR__.'/../../Support/NntpFixtureServer.php';
 
 class ServicesNntpPipelinedTransportTest extends TestCase
 {
@@ -211,6 +212,48 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         }
     }
 
+    public function testSingleArticleHeadBodyAndPostUseSharedFixture()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'single-commands');
+
+        $transport = new Services_Nntp_PipelinedTransport([
+            'host'       => $server['host'],
+            'port'       => $server['port'],
+            'enc'        => false,
+            'user'       => '',
+            'pass'       => '',
+            'verifyname' => false,
+            'buggy'      => false,
+        ], 5);
+
+        $transport->selectGroup('free.pt');
+        $this->assertSame(['From: Sender <s@example>', 'Date: Tue, 18 Aug 2026 10:01:00 +0000'], $transport->getHeader('comment.1.1.1.1@example.invalid'));
+        $this->assertSame(['body 1', '.dot stuffed'], $transport->getBody('comment.1.1.1.1@example.invalid'));
+
+        $article = $transport->getArticle('comment.1.1.1.1@example.invalid');
+        $this->assertSame(['From: Sender <s@example>', 'Date: Tue, 18 Aug 2026 10:01:00 +0000'], $article['header']);
+        $this->assertSame(['body 1', '.dot stuffed'], $article['body']);
+
+        $this->assertTrue($transport->post([
+            "Subject: Fixture\r\nNewsgroups: free.pt",
+            "first body line\r\n.starts-with-dot",
+        ]));
+        $transport->quit();
+
+        $commands = file($commandLog, FILE_IGNORE_NEW_LINES);
+        $this->assertContains('HEAD <comment.1.1.1.1@example.invalid>', $commands);
+        $this->assertContains('BODY <comment.1.1.1.1@example.invalid>', $commands);
+        $this->assertContains('ARTICLE <comment.1.1.1.1@example.invalid>', $commands);
+        $this->assertContains('POST', $commands);
+        $this->assertContains('POST-DATA ..starts-with-dot', $commands);
+        $this->assertContains('POST-DATA .', $commands);
+    }
+
     public function testInvalidEncryptionConfigurationIsRejected()
     {
         $transport = new Services_Nntp_PipelinedTransport([
@@ -229,94 +272,9 @@ class ServicesNntpPipelinedTransportTest extends TestCase
 
     private function startFixtureServer($commandLog, $mode)
     {
-        $server = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
-        $this->assertTrue(is_resource($server), $errstr);
-        $name = stream_socket_get_name($server, false);
-        list($host, $port) = explode(':', $name);
+        $server = NntpFixtureServer::start($commandLog, $mode);
+        $this->_childPids[] = $server['pid'];
 
-        $pid = pcntl_fork();
-        if ($pid === 0) {
-            $conn = stream_socket_accept($server, 10);
-            if (!is_resource($conn)) {
-                exit(1);
-            }
-            fwrite($conn, "200 fixture ready\r\n");
-            $articleCommands = [];
-            while (($line = fgets($conn)) !== false) {
-                $line = rtrim($line, "\r\n");
-                file_put_contents($commandLog, $line.PHP_EOL, FILE_APPEND);
-
-                if ($line === 'GROUP free.pt') {
-                    fwrite($conn, "211 3 1 3 free.pt\r\n");
-                } elseif ($line === 'XOVER 1-3') {
-                    fwrite($conn, "224 Overview follows\r\n");
-                    fwrite($conn, "1\tSubject 1\tSender <s@example>\tTue, 18 Aug 2026 10:00:00 +0000\t<comment.1.1.1.1@example.invalid>\t<spot.1@example.invalid>\t100\t4\r\n");
-                    fwrite($conn, "2\tSubject 2\tSender <s@example>\tTue, 18 Aug 2026 10:01:00 +0000\t<comment.2.1.1.1@example.invalid>\t<spot.2@example.invalid>\t100\t4\r\n");
-                    fwrite($conn, "3\tSubject 3\tSender <s@example>\tTue, 18 Aug 2026 10:02:00 +0000\t<comment.3.1.1.1@example.invalid>\t<spot.3@example.invalid>\t100\t4\r\n");
-                    fwrite($conn, ".\r\n");
-                } elseif ($line === 'XHDR Message-ID 1-1') {
-                    fwrite($conn, "221 Header follows\r\n");
-                    fwrite($conn, "1 <comment.1.1.1.1@example.invalid>\r\n");
-                    fwrite($conn, ".\r\n");
-                } elseif (strpos($line, 'ARTICLE ') === 0) {
-                    if ($mode === 'disconnect-before-response') {
-                        fclose($conn);
-                        exit(0);
-                    }
-                    $articleCommands[] = $line;
-                    if (($mode === 'unexpected-final-response') && (count($articleCommands) === 1)) {
-                        fwrite($conn, "500 fixture protocol failure\r\n");
-                        fclose($conn);
-                        exit(0);
-                    }
-                    if (count($articleCommands) === 3) {
-                        $this->writeFixtureArticle($conn, 1);
-                        if ($mode === 'unexpected-response') {
-                            fwrite($conn, "423 no such article number\r\n");
-                            fclose($conn);
-                            exit(0);
-                        }
-                        if ($mode === 'disconnect-mid-body') {
-                            fwrite($conn, "220 2 <comment.2.1.1.1@example.invalid> article follows\r\n");
-                            fwrite($conn, "From: Sender <s@example>\r\n");
-                            fwrite($conn, "\r\npartial body");
-                            fclose($conn);
-                            exit(0);
-                        }
-                        fwrite($conn, "430 no such article\r\n");
-                        $this->writeFixtureArticle($conn, 3);
-                    }
-                } elseif ($line === 'QUIT') {
-                    fwrite($conn, "205 goodbye\r\n");
-                    fclose($conn);
-                    exit(0);
-                }
-            }
-            exit(0);
-        }
-
-        $this->_childPids[] = $pid;
-        fclose($server);
-
-        return [
-            'host' => $host,
-            'port' => (int) $port,
-        ];
-    }
-
-    private function writeFixtureArticle($conn, $number)
-    {
-        $payload = "220 ".$number." <comment.".$number.".1.1.1@example.invalid> article follows\r\n".
-            "From: Sender <s@example>\r\n".
-            "Date: Tue, 18 Aug 2026 10:0".$number.":00 +0000\r\n".
-            "\r\n".
-            "body ".$number."\r\n".
-            "..dot stuffed\r\n".
-            ".\r\n";
-
-        foreach (str_split($payload, 7) as $part) {
-            fwrite($conn, $part);
-            usleep(1000);
-        }
+        return $server;
     }
 }

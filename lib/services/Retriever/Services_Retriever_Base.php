@@ -6,6 +6,7 @@ require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedFetchOutcome.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedRecovery.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedTransport.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_ClientPool.php';
 
 abstract class Services_Retriever_Base
 {
@@ -19,21 +20,18 @@ abstract class Services_Retriever_Base
     protected $_usenetStateDao;
 
     /**
-     * @var Services_Nntp_Engine
+     * @var Services_Nntp_PipelinedTransport
      */
     protected $_svcNntpText = null;
 
     /**
-     * @var Services_Nntp_Engine
+     * @var Services_Nntp_PipelinedTransport
      */
     protected $_svcNntpBin = null;
 
     /**
-     * Shared modern text NNTP transport for scheduled bulk retrieval.
-     *
-     * Request-driven reads and posting keep using the existing PEAR engine in
-     * this iteration; scheduled GROUP/XHDR/XOVER and ARTICLE-capable recovery
-     * use this transport.
+     * Backward-compatible alias for scheduled retriever code that was migrated
+     * before the full NNTP surface moved to the shared client pool.
      *
      * @var Services_Nntp_PipelinedTransport
      */
@@ -100,13 +98,13 @@ abstract class Services_Retriever_Base
         $this->_usenetStateDao = $daoFactory->getUsenetStateDao();
         $this->_usenetStateDao->initialize();
         /*
-         * Create the service objects for both the NNTP binary group and the
-         * textnews group. We only create a basic NNTP_Engine object, but we
-         * don't create any higher level objects
+         * Create the shared NNTP clients for both text and binary roles. All
+         * protocol operations go through Services_Nntp_ClientPool and
+         * Services_Nntp_PipelinedTransport.
          */
-        $this->_svcNntpText = Services_Nntp_EnginePool::pool($this->_settings, 'hdr');
-        $this->_svcNntpBin = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
-        $this->_svcNntpTextPipelined = new Services_Nntp_PipelinedTransport($this->_textServer);
+        $this->_svcNntpText = Services_Nntp_ClientPool::pool($this->_settings, 'hdr');
+        $this->_svcNntpBin = Services_Nntp_ClientPool::pool($this->_settings, 'bin');
+        $this->_svcNntpTextPipelined = $this->_svcNntpText;
     }
 
     // ctor
@@ -278,15 +276,11 @@ abstract class Services_Retriever_Base
     public function quit()
     {
         // and disconnect
-        if (!is_null($this->_svcNntpText)) {
-            $this->_svcNntpText->quit();
-        } // if
-
         if (!is_null($this->_svcNntpTextPipelined)) {
             $this->_svcNntpTextPipelined->quit();
         } // if
 
-        if (!is_null($this->_svcNntpBin)) {
+        if ((!is_null($this->_svcNntpBin)) && ($this->_svcNntpBin !== $this->_svcNntpTextPipelined)) {
             $this->_svcNntpBin->quit();
         } // if
 

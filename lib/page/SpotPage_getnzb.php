@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__.'/../services/Nntp/Services_Nntp_ClientPool.php';
+require_once __DIR__.'/../services/Nntp/Services_Nntp_SpotReader.php';
+
 class SpotPage_getnzb extends SpotPage_Abs
 {
     private $_messageid;
@@ -30,8 +33,8 @@ class SpotPage_getnzb extends SpotPage_Abs
         /*
          * Create the different NNTP components
          */
-        $svcBinSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'bin'));
-        $svcTextSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
+        $svcBinSpotReading = new Services_Nntp_SpotReader(Services_Nntp_ClientPool::pool($this->_settings, 'bin'));
+        $svcTextSpotReading = new Services_Nntp_SpotReader(Services_Nntp_ClientPool::pool($this->_settings, 'hdr'));
         $svcProvNzb = new Services_Providers_Nzb($this->_daoFactory->getCacheDao(), $svcBinSpotReading);
         $svcProvSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $svcTextSpotReading);
 
