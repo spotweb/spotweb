@@ -1,8 +1,9 @@
-# Private scheduled retriever pipelining
+# Scheduled retriever pipelining
 
-This branch is private development work for the scheduled Spotweb bulk
-retrievers. Do not open an upstream pull request for this feature until it has
-been tested against a real provider and the remaining risks have been closed.
+This branch updates the scheduled Spotweb bulk retrievers after fixture,
+live read-only, performance, and recovery audits. It is designed for upstream
+review; deployments should still follow the normal backup and rollback
+procedure.
 
 ## Integration base
 
