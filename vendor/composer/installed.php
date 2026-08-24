@@ -422,15 +422,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'spotweb/nntp' => array(
-            'pretty_version' => '1.0.4',
-            'version' => '1.0.4.0',
-            'reference' => 'fa69f973588be43cb5e24db518d24a844aea0ae8',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../spotweb/nntp',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'spotweb/spotweb' => array(
             'pretty_version' => '1.0.0+no-version-set',
             'version' => '1.0.0.0',

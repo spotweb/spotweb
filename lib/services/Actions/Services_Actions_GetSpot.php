@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__.'/../Nntp/Services_Nntp_ClientPool.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_SpotReader.php';
+
 class Services_Actions_GetSpot
 {
     private $_settings;
@@ -23,7 +26,7 @@ class Services_Actions_GetSpot
         // Make sure user has access to the spot
         $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_spotdetail, '');
 
-        $svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
+        $svcNntpSpotReading = new Services_Nntp_SpotReader(Services_Nntp_ClientPool::pool($this->_settings, 'hdr'));
         $svcProvFullSpot = new Services_Providers_FullSpot($this->_daoFactory->getSpotDao(), $svcNntpSpotReading);
         $fullSpot = $svcProvFullSpot->fetchFullSpot($msgId, $currentSession['user']['userid']);
 

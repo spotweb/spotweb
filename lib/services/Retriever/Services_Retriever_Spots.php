@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__.'/../../exceptions/PipelinedRetrieverDeferredException.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_SpotReader.php';
 require_once __DIR__.'/Services_Retriever_PipelinedArticleBatch.php';
 require_once __DIR__.'/Services_Retriever_SpotsArticleParser.php';
 
@@ -24,11 +25,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base
     private $_prefetch_nzb;
 
     /**
-     * @var Services_Nntp_SpotReading
+     * @var Services_Nntp_SpotReader
      */
     private $_svcNntpTextReading;
     /**
-     * @var Services_Nntp_SpotReading
+     * @var Services_Nntp_SpotReader
      */
     private $_svcNntpBinReading;
     /**
@@ -87,8 +88,8 @@ class Services_Retriever_Spots extends Services_Retriever_Base
             /*
              * NNTP Spot Reading engine
              */
-            $this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
-            $this->_svcNntpBinReading = new Services_Nntp_SpotReading($this->_svcNntpBin);
+            $this->_svcNntpTextReading = new Services_Nntp_SpotReader($this->_svcNntpText);
+            $this->_svcNntpBinReading = new Services_Nntp_SpotReader($this->_svcNntpBin);
 
             $this->_svcProvNzb = new Services_Providers_Nzb(
                 $this->_cacheDao,

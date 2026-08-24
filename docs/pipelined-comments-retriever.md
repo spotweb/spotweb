@@ -23,11 +23,16 @@ branches unchanged.
 Scheduled `Services_Retriever_Spots`, `Services_Retriever_Comments`, and
 `Services_Retriever_Reports` share the modern text NNTP transport below
 `Services_Retriever_Base` for `GROUP`, cursor recovery (`XHDR Message-ID`), and
-the normal 1,000-header `XOVER` loop. Request-driven page reads, NZB/image
-access and posting keep using the existing PEAR-derived engine in this
-iteration.
+the normal 1,000-header `XOVER` loop.
 
-ARTICLE handling is intentionally stream-specific:
+The later internal NNTP migration phase supersedes the original
+scheduled-only boundary: request-driven full spot/comment/NZB/image reads,
+cache checking, install/config tests, and posting adapters now also use the
+same central internal NNTP transport. See
+`docs/internal-nntp-migration.md` for the current architecture gate and
+deployment/test matrix.
+
+Scheduled ARTICLE handling remains stream-specific:
 
 - Scheduled comments use shared bulk ARTICLE recovery for the full-comment
   body path.
@@ -35,8 +40,8 @@ ARTICLE handling is intentionally stream-specific:
   text ARTICLE retrieval, but the current legacy spots flow still calls it
   one-by-one via `readFullSpotPipelined()` because image/NZB prefetch and
   fullspot persistence are interleaved with per-spot processing.
-- Scheduled reports have no separate full ARTICLE body path; their conversion
-  in this iteration is the shared Base `GROUP`/`XHDR`/`XOVER` text transport.
+- Scheduled reports have no separate full ARTICLE body path; their scheduled
+  retrieval uses the shared Base `GROUP`/`XHDR`/`XOVER` text transport.
 
 The scheduled bulk flow uses:
 

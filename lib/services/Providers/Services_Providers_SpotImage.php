@@ -11,7 +11,7 @@ class Services_Providers_SpotImage
      */
     public function __construct(
         Services_Providers_Http $serviceHttp,
-        Services_Nntp_SpotReading $nntpSpotReading,
+        Services_Nntp_SpotReader $nntpSpotReading,
         Dao_Cache $cacheDao
     ) {
         $this->_serviceHttp = $serviceHttp;

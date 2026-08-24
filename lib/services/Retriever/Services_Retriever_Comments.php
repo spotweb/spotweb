@@ -18,7 +18,6 @@ class Services_Retriever_Comments extends Services_Retriever_Base
 {
     protected $_spotDao;
     protected $_commentDao;
-    private $_svcNntpTextReading;
     private $_retrieveFull;
     private $_parser;
 
@@ -33,7 +32,6 @@ class Services_Retriever_Comments extends Services_Retriever_Base
         $this->_spotDao = $daoFactory->getSpotDao();
         $this->_commentDao = $daoFactory->getCommentDao();
 
-        $this->_svcNntpTextReading = new Services_Nntp_SpotReading($this->_svcNntpText);
         $this->_retrieveFull = $this->_settings->get('retrieve_full_comments');
         $this->_parser = new Services_Retriever_CommentsArticleParser();
     }

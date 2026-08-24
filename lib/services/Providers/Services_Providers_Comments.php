@@ -8,7 +8,7 @@ class Services_Providers_Comments
     /*
      * constructor
      */
-    public function __construct(Dao_Comment $commentDao, Services_Nntp_SpotReading $nntpSpotReading)
+    public function __construct(Dao_Comment $commentDao, Services_Nntp_SpotReader $nntpSpotReading)
     {
         $this->_commentDao = $commentDao;
         $this->_nntpSpotReading = $nntpSpotReading;
