@@ -32,6 +32,10 @@ class NntpFixtureServer
         $connectionNumber = 0;
         while (($conn = stream_socket_accept($server, 10)) !== false) {
             $connectionNumber++;
+            if ($mode === 'close-before-greeting') {
+                fclose($conn);
+                exit(0);
+            }
             $keepServing = self::handleConnection($conn, $commandLog, $mode, $connectionNumber);
             if (!$keepServing) {
                 exit(0);

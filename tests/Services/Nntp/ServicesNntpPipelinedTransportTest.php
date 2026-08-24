@@ -8,6 +8,20 @@ require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelineDepth.ph
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedTransport.php';
 require_once __DIR__.'/../../Support/NntpFixtureServer.php';
 
+class ServicesNntpPipelinedTransportLogCollector
+{
+    public $records = [];
+
+    public function addRecord($level, $message, array $context = [])
+    {
+        $this->records[] = [
+            'level' => $level,
+            'message' => $message,
+            'context' => $context,
+        ];
+    }
+}
+
 class ServicesNntpPipelinedTransportTest extends TestCase
 {
     private $_childPids = [];
@@ -100,6 +114,81 @@ class ServicesNntpPipelinedTransportTest extends TestCase
             $this->assertSame([], $x->terminalResults());
             $this->assertSame(['comment.1.1.1.1@example.invalid'], $x->unresolvedMessageIds());
         }
+    }
+
+    public function testInitialPipelineConnectionFailureIsConvertedAndLoggedSafely()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'close-before-greeting');
+        $transport = new Services_Nntp_PipelinedTransport([
+            'host'       => $server['host'],
+            'port'       => $server['port'],
+            'enc'        => false,
+            'user'       => 'secret-user',
+            'pass'       => 'secret-pass',
+            'verifyname' => false,
+            'buggy'      => false,
+        ], 5, 'hdr');
+
+        $collector = $this->captureSpotDebug(function () use ($transport) {
+            try {
+                $transport->fetchArticlesPipelined(['secret.message-id@example.invalid'], 4);
+                $this->fail('Expected pipelined fetch exception');
+            } catch (Services_Nntp_PipelinedFetchException $x) {
+                $this->assertSame(['secret.message-id@example.invalid'], $x->unresolvedMessageIds());
+                $this->assertSame('transport.disconnect', $x->errorClass());
+            }
+        });
+
+        $event = $this->firstLogEvent($collector, 'nntp.article.pipeline.failure');
+        $this->assertNotNull($event);
+        $this->assertSame('hdr', $event['context']['role']);
+        $this->assertSame('', $event['context']['group']);
+        $this->assertSame('article-pipeline', $event['context']['operation']);
+        $this->assertSame(4, $event['context']['window']);
+        $this->assertSame(1, $event['context']['requested']);
+        $this->assertSame(0, $event['context']['terminal_count']);
+        $this->assertSame(1, $event['context']['unresolved_count']);
+        $this->assertSame('transport.disconnect', $event['context']['error_class']);
+        $this->assertPipelineLogIsSafe($collector);
+    }
+
+    public function testPipelineArticleFailureEmitsSafeOperationalFailureEvent()
+    {
+        if (!function_exists('pcntl_fork')) {
+            $this->markTestSkipped('pcntl is required for the local NNTP fixture server');
+        }
+
+        $commandLog = tempnam(sys_get_temp_dir(), 'spotweb-nntp-commands.');
+        $server = $this->startFixtureServer($commandLog, 'disconnect-before-response');
+        $transport = $this->newFixtureTransport($server);
+        $transport->selectGroup('free.pt');
+
+        $collector = $this->captureSpotDebug(function () use ($transport) {
+            try {
+                $transport->fetchArticlesPipelined(['comment.1.1.1.1@example.invalid'], 1);
+                $this->fail('Expected pipelined fetch exception');
+            } catch (Services_Nntp_PipelinedFetchException $x) {
+                $this->assertSame(['comment.1.1.1.1@example.invalid'], $x->unresolvedMessageIds());
+            }
+        });
+
+        $event = $this->firstLogEvent($collector, 'nntp.article.pipeline.failure');
+        $this->assertNotNull($event);
+        $this->assertSame('direct', $event['context']['role']);
+        $this->assertSame('free.pt', $event['context']['group']);
+        $this->assertSame('article-pipeline', $event['context']['operation']);
+        $this->assertSame(1, $event['context']['window']);
+        $this->assertSame(1, $event['context']['requested']);
+        $this->assertSame(0, $event['context']['terminal_count']);
+        $this->assertSame(1, $event['context']['unresolved_count']);
+        $this->assertSame(1, $event['context']['inflight_count']);
+        $this->assertSame('transport.disconnect', $event['context']['error_class']);
+        $this->assertPipelineLogIsSafe($collector);
     }
 
     public function testDisconnectDuringMultilineBodyPreservesCompletedAndUnresolvedTail()
@@ -427,5 +516,47 @@ class ServicesNntpPipelinedTransportTest extends TestCase
             'verifyname' => false,
             'buggy'      => false,
         ], 5);
+    }
+
+    private function captureSpotDebug($callback)
+    {
+        $reflection = new ReflectionClass('SpotDebug');
+        $property = $reflection->getProperty('_debugLogDao');
+        $property->setAccessible(true);
+        $previous = $property->getValue();
+        $collector = new ServicesNntpPipelinedTransportLogCollector();
+        $property->setValue(null, $collector);
+
+        try {
+            $callback();
+        } finally {
+            $property->setValue(null, $previous);
+        }
+
+        return $collector;
+    }
+
+    private function firstLogEvent(ServicesNntpPipelinedTransportLogCollector $collector, $message)
+    {
+        foreach ($collector->records as $record) {
+            if ($record['message'] === $message) {
+                return $record;
+            }
+        }
+
+        return null;
+    }
+
+    private function assertPipelineLogIsSafe(ServicesNntpPipelinedTransportLogCollector $collector)
+    {
+        $encoded = json_encode($collector->records);
+        $this->assertStringNotContainsString('secret-user', $encoded);
+        $this->assertStringNotContainsString('secret-pass', $encoded);
+        $this->assertStringNotContainsString('secret.message-id@example.invalid', $encoded);
+        $this->assertStringNotContainsString('comment.1.1.1.1@example.invalid', $encoded);
+        $this->assertStringNotContainsString('AUTHINFO', $encoded);
+        $this->assertStringNotContainsString('ARTICLE <', $encoded);
+        $this->assertStringNotContainsString('body 1', $encoded);
+        $this->assertStringNotContainsString('POST-DATA', $encoded);
     }
 }

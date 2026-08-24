@@ -260,8 +260,6 @@ class Services_Nntp_PipelinedTransport
 
     public function fetchArticlesPipelined(array $messageIds, $window = self::DEFAULT_PIPELINE_WINDOW)
     {
-        $this->connect();
-
         $started = microtime(true);
         $window = max(1, (int) $window);
         $pending = array_values($messageIds);
@@ -272,6 +270,8 @@ class Services_Nntp_PipelinedTransport
         $expected = count($pending);
 
         try {
+            $this->connect();
+
             while (count($results) < $expected) {
                 while ((count($inFlight) < $window) && !empty($pending)) {
                     $messageId = array_shift($pending);
@@ -354,12 +354,27 @@ class Services_Nntp_PipelinedTransport
                 }
             }
         } catch (Exception $x) {
+            $unresolved = $this->unresolvedMessageIds($currentArticle, $currentResponseMessageId, $inFlight, $pending);
+            $errorClass = Services_Nntp_PipelinedFetchException::classify($x, 'transport');
+            $this->logPipelineFailure(
+                $x,
+                $started,
+                $window,
+                $expected,
+                count($results),
+                count($unresolved),
+                count($inFlight),
+                count($pending),
+                $currentArticle !== null,
+                $errorClass
+            );
+
             throw new Services_Nntp_PipelinedFetchException(
                 $x->getMessage(),
                 $x->getCode(),
                 $results,
-                $this->unresolvedMessageIds($currentArticle, $currentResponseMessageId, $inFlight, $pending),
-                Services_Nntp_PipelinedFetchException::classify($x, 'transport')
+                $unresolved,
+                $errorClass
             );
         }
 
@@ -714,6 +729,23 @@ class Services_Nntp_PipelinedTransport
             'attempt' => (int) $attempt,
             'terminal' => (bool) $terminal,
             'error_class' => Services_Nntp_PipelinedFetchException::classify($exception, 'transport'),
+            'code' => (int) $exception->getCode(),
+            'elapsed_ms' => $this->elapsedMs($started),
+        ]);
+    }
+
+    private function logPipelineFailure(Exception $exception, $started, $window, $requested, $terminalCount, $unresolvedCount, $inFlightCount, $pendingCount, $activeArticle, $errorClass)
+    {
+        $this->log(SpotDebug::WARN, 'nntp.article.pipeline.failure', [
+            'operation' => 'article-pipeline',
+            'window' => (int) $window,
+            'requested' => (int) $requested,
+            'terminal_count' => (int) $terminalCount,
+            'unresolved_count' => (int) $unresolvedCount,
+            'inflight_count' => (int) $inFlightCount,
+            'pending_count' => (int) $pendingCount,
+            'active_article' => (bool) $activeArticle,
+            'error_class' => $errorClass,
             'code' => (int) $exception->getCode(),
             'elapsed_ms' => $this->elapsedMs($started),
         ]);

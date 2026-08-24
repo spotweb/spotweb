@@ -78,6 +78,13 @@ disconnects, reconnects, reselects the previous group, backs off briefly, and
 retries within the fixed retry budget. Terminal `430 no such article` is not
 retried.
 
+Bulk ARTICLE pipelining emits one sanitized operational failure event when a
+pipeline attempt fails, including failures during the initial connect/auth/TLS
+phase before any request is sent. The event records role, group, operation,
+window, requested/terminal/unresolved/in-flight/pending counts, error class,
+code, and timing. It does not include message IDs, credentials, AUTH commands,
+wire commands, article bodies, NZB/image payloads, or posted content.
+
 `POST` is deliberately outside that idempotent retry wrapper. Once the server
 has accepted message data, retrying can create a duplicate post. POST failures
 are logged centrally with sanitized context, but the caller receives the error
@@ -89,7 +96,9 @@ without automatic replay.
   single `ARTICLE`, pipelined `ARTICLE`, direct `HEAD`/`BODY`/`ARTICLE`
   disconnect-then-reconnect success, terminal `430` no-retry, exact `POST`
   header/body separator framing and dot-stuffing, disconnect/protocol recovery,
-  sanitized diagnostic context, and static architecture guards.
+  initial pipeline connect failure conversion/logging, pipeline ARTICLE failure
+  operational logging, sanitized diagnostic context, and static architecture
+  guards.
 - Scheduled retriever tests: comments/spots/reports share the central
   transport and recovery paths covered by the existing pipelined retriever
   tests. Spots scheduled full spot retrieval remains functionally one-by-one
