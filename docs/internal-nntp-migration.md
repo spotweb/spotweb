@@ -37,7 +37,8 @@ Install/config checks
 - `Services_Nntp_PipelinedTransport` owns the wire protocol: socket lifecycle,
   TLS/STARTTLS, authentication, NNTP command framing, multiline parsing,
   dot-stuffing, `GROUP`, `XOVER`, `XHDR`, `HEAD`, `BODY`, `ARTICLE`, `POST`,
-  `QUIT`, and per-operation debug events.
+  `QUIT`, idempotent direct-read retry/reconnect, and per-operation debug
+  events.
 - `Services_Nntp_ClientPool` owns request/process-local role selection for
   `hdr`, `bin`, and `post` servers and applies the shared pipeline-depth
   setting.
@@ -68,11 +69,27 @@ content must not be logged. Message IDs are kept out of normal operation logs;
 they may only be added later at explicit trace/debug level for a focused
 diagnostic.
 
+## Direct-read recovery and POST boundary
+
+Direct idempotent reads preserve the old engine's bounded reconnect behavior:
+`GROUP`, `XOVER`, `XHDR`, `HEAD`, `BODY`, `ARTICLE`, and `NOOP` run through one
+central retry wrapper. After a classified transport failure, the transport
+disconnects, reconnects, reselects the previous group, backs off briefly, and
+retries within the fixed retry budget. Terminal `430 no such article` is not
+retried.
+
+`POST` is deliberately outside that idempotent retry wrapper. Once the server
+has accepted message data, retrying can create a duplicate post. POST failures
+are logged centrally with sanitized context, but the caller receives the error
+without automatic replay.
+
 ## Verification status
 
 - Fixture-tested: central transport `GROUP`, `XOVER`, `XHDR`, `HEAD`, `BODY`,
-  single `ARTICLE`, pipelined `ARTICLE`, `POST` command framing and
-  dot-stuffing, disconnect/protocol recovery, and static architecture guards.
+  single `ARTICLE`, pipelined `ARTICLE`, direct `HEAD`/`BODY`/`ARTICLE`
+  disconnect-then-reconnect success, terminal `430` no-retry, exact `POST`
+  header/body separator framing and dot-stuffing, disconnect/protocol recovery,
+  sanitized diagnostic context, and static architecture guards.
 - Scheduled retriever tests: comments/spots/reports share the central
   transport and recovery paths covered by the existing pipelined retriever
   tests. Spots scheduled full spot retrieval remains functionally one-by-one
@@ -81,7 +98,8 @@ diagnostic.
   reports groups proved receive/drop-in transport only. This was not parser/DAO
   integration and not a performance claim.
 - Not live-tested: posting. Live NNTP POST is intentionally forbidden for this
-  branch; only deterministic fixture POST framing is tested.
+  branch; only deterministic fixture POST framing is tested, and POST is not
+  auto-retried because it is non-idempotent.
 
 ## Safe test commands
 
