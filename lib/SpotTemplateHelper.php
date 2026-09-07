@@ -1316,6 +1316,7 @@ class SpotTemplateHelper
                     'js/jquery/jquery.form.js',
                     'js/jquery-json/jquery.json-2.3.js',
                     'js/sha1/jquery.sha1.js',
+                    'js/multinzb.js',
                     $themePath.'/js/jquery.address.js',
                     'js/posting/posting.js',
                     'js/dynatree/jquery.dynatree.min.js',

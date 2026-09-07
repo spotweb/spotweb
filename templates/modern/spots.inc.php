@@ -60,12 +60,6 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!$noResults) {
         echo "\t\t\t<div class=\"spots\">".PHP_EOL;
 
-        // Wrap MultiNZB checkboxes in a single form (compatible with existing JS)
-        if ($show_multinzb_checkbox) {
-            echo '<form action="" method="GET" id="checkboxget" name="checkboxget">';
-            echo "<input type='hidden' name='page' value='getnzb'>";
-        }
-
         if (!$pref_keep_watchlist && $can_use_watchlist) {
             echo '<div class="cardsNotice watchlistNotice">';
             echo '<strong>'._('Tip').':</strong> '._('Enable "Keep watchlist" in your user preferences to use favorites.');
@@ -166,10 +160,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 echo '<a class="next" href="?direction=next&amp;pagenr='.$nextPage.$tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams().'">'._('Next').'</a>';
             }
             echo '</div>';
-        }
-
-        if ($show_multinzb_checkbox) {
-            echo '</form>';
         }
 
         // Hidden inputs used by existing JS
