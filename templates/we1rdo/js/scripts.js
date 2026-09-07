@@ -800,7 +800,7 @@ function toggleWatchSpot(spot,action,spot_id) {
 
 // MultiNZB download knop
 function multinzb() {
-	var count = $('td.multinzb input[type="checkbox"]:checked').length;
+	var count = $(spotwebMultiNzb.selectedCheckboxSelector).length;
 	if(count == 0) {
 		$('div.notifications').fadeOut();
 	} else {
@@ -811,6 +811,11 @@ function multinzb() {
 			$('span.count').html('<t>Download %1 spots</t>'.replace('%1', count));
 		}
 	}
+}
+
+function uncheckMultiNZB() {
+    spotwebMultiNzb.clearSelection($);
+    multinzb();
 }
 
 function checkMultiNZB() {
@@ -837,20 +842,19 @@ function toggleAllMultiNzb() {
 
 
 function downloadMultiNZB(dltype) {
-	var count = $('td.multinzb input[type="checkbox"]:checked').length;
+	var messageIds = spotwebMultiNzb.collectMessageIds($);
+	var count = messageIds.length;
 	if(count > 0) {
+        if (!spotwebMultiNzb.isSelectionAllowed(messageIds)) {
+            alert(spotwebMultiNzb.selectionLimitMessage());
+            return;
+        } // if
+
         /*
          * with client-sabnzbd we override to display as we cannot send
          * multiple NZB files to the server just yet
          */
-        if (dltype == 'client-sabnzbd' || dltype == 'disable') {
-            dltype = 'display';
-        } // if
-
-		var url = '?page=getnzb&action=' + dltype;
-		$('td.multinzb input[type=checkbox]:checked').each(function() {
-			url += '&messageid%5B%5D='+$(this).val();
-		});
+        dltype = spotwebMultiNzb.normalizeAction(dltype);
 
         /*
          * Add loading to all NZB's being downloaded
@@ -859,8 +863,9 @@ function downloadMultiNZB(dltype) {
 
         if (dltype != 'display') {
             $.ajax({
-                type: "GET",
-                url: url,
+                type: "POST",
+                url: spotwebMultiNzb.endpoint,
+                data: spotwebMultiNzb.buildRequestBody(dltype, messageIds),
                 dataType: "json",
                 success: function(data) {
                     if (data.result == "success") {
@@ -869,8 +874,7 @@ function downloadMultiNZB(dltype) {
                         $(".sabnzbd-button").removeClass("loading").addClass("failure");
                     } // else
 
-                    $("table.spots input[type=checkbox]").attr("checked", false);
-                    multinzb();
+                    uncheckMultiNZB();
                     if (data.result == 'failure') {
                         alert('Error occured\n'+data.errors[0]);
                     }
@@ -878,16 +882,14 @@ function downloadMultiNZB(dltype) {
                 error: function (data, textStatus, errorThrown) {
                     alert(data.responseText);
                     $(".sabnzbd-button").removeClass("loading").addClass("failure");
-                    $("table.spots input[type=checkbox]").attr("checked", false);
-                    multinzb();
+                    uncheckMultiNZB();
                 }
         }); // ajax call om de form te submitten
         } else {
-            window.location.href = url;
+            spotwebMultiNzb.submitDisplay(dltype, messageIds);
 
             $(".sabnzbd-button").removeClass("loading").addClass("succes");
-            $("table.spots input[type=checkbox]").attr("checked", false);
-            multinzb();
+            uncheckMultiNZB();
         }
 
 
