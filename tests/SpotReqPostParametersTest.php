@@ -21,7 +21,7 @@ class SpotReqPostParametersTestSettings
 }
 
 /**
- * Regression coverage for POST-based bulk NZB routing parameters.
+ * Regression coverage for compact POST-based bulk NZB routing parameters.
  */
 class SpotReqPostParametersTest extends TestCase
 {
@@ -35,20 +35,20 @@ class SpotReqPostParametersTest extends TestCase
     }
 
     /**
-     * Bulk NZB can pass many message IDs through POST without URL expansion.
+     * Bulk NZB uses one JSON request value for many message IDs.
      */
-    public function testBulkGetNzbParametersCanComeFromPostBody()
+    public function testBulkGetNzbParametersDecodeFromPostBody()
     {
         $messageIds = [];
-        for ($i = 0; $i < 242; $i++) {
-            $messageIds[] = sprintf('<spot-%03d@example.invalid>', $i);
+        for ($i = 0; $i < 2000; $i++) {
+            $messageIds[] = sprintf('<spot-%04d@example.invalid>', $i);
         } // for
 
         $_GET = [];
         $_POST = [
             'page'      => 'getnzb',
             'action'    => 'push-sabnzbd',
-            'messageid' => $messageIds,
+            'messageids' => json_encode($messageIds),
         ];
 
         $req = new SpotReq();
@@ -56,6 +56,52 @@ class SpotReqPostParametersTest extends TestCase
 
         $this->assertSame('getnzb', $req->getDef('page', 'index'));
         $this->assertSame('push-sabnzbd', $req->getDef('action', 'display'));
-        $this->assertSame($messageIds, $req->getDef('messageid', []));
+        $this->assertCount(3, $_POST);
+        $this->assertSame($messageIds, Services_Actions_DownloadNzb::resolveMessageIds(
+            $req->getDef('messageid', ''),
+            $req->getDef('messageids', null)
+        ));
+    }
+
+    /**
+     * Legacy single-message callers retain their original scalar input.
+     */
+    public function testLegacyScalarMessageIdRemainsSupported()
+    {
+        $messageId = '<single@example.invalid>';
+
+        $this->assertSame($messageId, Services_Actions_DownloadNzb::resolveMessageIds($messageId, null));
+    }
+
+    /**
+     * Legacy messageid[] callers retain their original array input.
+     */
+    public function testLegacyMessageIdArrayRemainsSupported()
+    {
+        $messageIds = ['<first@example.invalid>', '<second@example.invalid>'];
+
+        $this->assertSame($messageIds, Services_Actions_DownloadNzb::resolveMessageIds($messageIds, null));
+    }
+
+    /**
+     * Invalid compact input fails in a controlled way before download handling.
+     */
+    public function testInvalidBulkMessageIdsAreRejected()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Invalid bulk NZB message ID list');
+
+        Services_Actions_DownloadNzb::resolveMessageIds('', '{"messageid":"not-an-array"}');
+    }
+
+    /**
+     * Malformed compact input fails in the same controlled way.
+     */
+    public function testMalformedBulkMessageIdsAreRejected()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Invalid bulk NZB message ID list');
+
+        Services_Actions_DownloadNzb::resolveMessageIds('', '["unterminated"');
     }
 }

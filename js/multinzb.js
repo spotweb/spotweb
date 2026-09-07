@@ -30,16 +30,11 @@
     };
 
     multiNzb.buildFields = function(dltype, messageIds) {
-        var fields = [
+        return [
             {name: 'page', value: 'getnzb'},
-            {name: 'action', value: multiNzb.normalizeAction(dltype)}
+            {name: 'action', value: multiNzb.normalizeAction(dltype)},
+            {name: 'messageids', value: JSON.stringify(messageIds)}
         ];
-
-        for (var i = 0; i < messageIds.length; i++) {
-            fields.push({name: 'messageid[]', value: messageIds[i]});
-        } // for
-
-        return fields;
     };
 
     multiNzb.encodeFields = function(fields) {

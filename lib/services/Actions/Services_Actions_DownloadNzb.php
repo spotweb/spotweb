@@ -14,6 +14,57 @@ class Services_Actions_DownloadNzb
     // ctor
 
     /*
+     * Convert the compact bulk request value used by the multi-NZB interface
+     * into the message-id list handled below. Existing single and array
+     * messageid request shapes deliberately remain unchanged.
+     */
+    public static function resolveMessageIds($messageId, $bulkMessageIds)
+    {
+        if ($bulkMessageIds === null) {
+            return $messageId;
+        } // if
+
+        if (!is_string($bulkMessageIds)) {
+            throw new Exception('Invalid bulk NZB message ID list');
+        } // if
+
+        $messageIds = json_decode($bulkMessageIds, true);
+        if (json_last_error() != JSON_ERROR_NONE || !self::isList($messageIds)) {
+            throw new Exception('Invalid bulk NZB message ID list');
+        } // if
+
+        foreach ($messageIds as $thisMessageId) {
+            if (!is_string($thisMessageId) || $thisMessageId === '') {
+                throw new Exception('Invalid bulk NZB message ID list');
+            } // if
+        } // foreach
+
+        return $messageIds;
+    }
+
+    // resolveMessageIds
+
+    private static function isList($values)
+    {
+        if (!is_array($values)) {
+            return false;
+        } // if
+
+        $expectedKey = 0;
+        foreach ($values as $key => $value) {
+            if ($key !== $expectedKey) {
+                return false;
+            } // if
+
+            $expectedKey++;
+        } // foreach
+
+        return true;
+    }
+
+    // isList
+
+    /*
      * Check whether the appropriate permissions are there, and if so actually run the code
      */
     public function handleNzbAction($messageIds, array $currentSession, $action, Services_Providers_FullSpot $svcProvSpot, Services_Providers_Nzb $svcProvNzb)
