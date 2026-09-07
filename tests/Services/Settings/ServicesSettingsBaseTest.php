@@ -1,9 +1,26 @@
 <?php
 
+require_once __DIR__.'/../../../lib/Bootstrap.php';
+
 use PHPUnit\Framework\TestCase;
 
 class ServicesSettingsBaseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        /*
+         * The settings container intentionally keeps application state in
+         * static properties. Reset it per test so schema sources cannot leak
+         * from one assertion to the next.
+         */
+        $container = new ReflectionClass(Services_Settings_Container::class);
+        foreach (['_instance' => null, '_settings' => [], '_sources' => []] as $propertyName => $value) {
+            $property = $container->getProperty($propertyName);
+            $property->setAccessible(true);
+            $property->setValue(null, $value);
+        }
+    }
+
     public function testSchemaVersionIsBumpedForSpotsfullColumnUpgrade()
     {
         $this->assertSame('0.70', SPOTDB_SCHEMA_VERSION);
