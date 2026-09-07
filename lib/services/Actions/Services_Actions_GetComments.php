@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__.'/../Nntp/Services_Nntp_ClientPool.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_SpotReader.php';
+
 class Services_Actions_GetComments
 {
     /**
@@ -50,7 +53,7 @@ class Services_Actions_GetComments
         // Check users' permissions
         $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_view_comments, '');
 
-        $svcNntpSpotReading = new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($this->_settings, 'hdr'));
+        $svcNntpSpotReading = new Services_Nntp_SpotReader(Services_Nntp_ClientPool::pool($this->_settings, 'hdr'));
         $svcProvComments = new Services_Providers_Comments($this->_daoFactory->getCommentDao(), $svcNntpSpotReading);
         $tryTranslate = (self::nativeLanguage !== $language);
 

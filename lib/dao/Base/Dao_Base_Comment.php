@@ -179,7 +179,8 @@ class Dao_Base_Comment implements Dao_Comment
              * Cut off the from header so we don't overflow the database field,
              * and prepare other fields for database storage
              */
-            $comment['fromhdr'] = substr($comment['fromhdr'], 0, 127);
+            $comment['fromhdr'] = mb_convert_encoding((string) $comment['fromhdr'], 'UTF-8', 'UTF-8');
+            $comment['fromhdr'] = mb_substr($comment['fromhdr'], 0, 127, 'UTF-8');
             $comment['user-key'] = serialize($comment['user-key']);
             $comment['body'] = substr($comment['body'], 0, 1024 * 10);
             $comment['verified'] = (int) $comment['verified'];

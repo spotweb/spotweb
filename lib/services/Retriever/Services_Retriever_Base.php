@@ -1,5 +1,13 @@
 <?php
 
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedArticleResult.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedFetchException.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedFetchOutcome.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedRecovery.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedTransport.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_ClientPool.php';
+
 abstract class Services_Retriever_Base
 {
     protected $_settings;
@@ -12,14 +20,22 @@ abstract class Services_Retriever_Base
     protected $_usenetStateDao;
 
     /**
-     * @var Services_Nntp_Engine
+     * @var Services_Nntp_PipelinedTransport
      */
     protected $_svcNntpText = null;
 
     /**
-     * @var Services_Nntp_Engine
+     * @var Services_Nntp_PipelinedTransport
      */
     protected $_svcNntpBin = null;
+
+    /**
+     * Backward-compatible alias for scheduled retriever code that was migrated
+     * before the full NNTP surface moved to the shared client pool.
+     *
+     * @var Services_Nntp_PipelinedTransport
+     */
+    protected $_svcNntpTextPipelined = null;
 
     protected $_textServer;
     protected $_binServer;
@@ -82,28 +98,19 @@ abstract class Services_Retriever_Base
         $this->_usenetStateDao = $daoFactory->getUsenetStateDao();
         $this->_usenetStateDao->initialize();
         /*
-         * Create the service objects for both the NNTP binary group and the
-         * textnews group. We only create a basic NNTP_Engine object, but we
-         * don't create any higher level objects
+         * Create the shared NNTP clients for both text and binary roles. All
+         * protocol operations go through Services_Nntp_ClientPool and
+         * Services_Nntp_PipelinedTransport.
          */
-        $this->_svcNntpText = Services_Nntp_EnginePool::pool($this->_settings, 'hdr');
-        $this->_svcNntpBin = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
+        $this->_svcNntpText = Services_Nntp_ClientPool::pool($this->_settings, 'hdr');
+        $this->_svcNntpBin = Services_Nntp_ClientPool::pool($this->_settings, 'bin');
+        $this->_svcNntpTextPipelined = $this->_svcNntpText;
     }
 
     // ctor
 
     public function connect(array $groupList)
     {
-        // if an retriever instance is already running, stop this one
-        if ((!$this->_force) && $this->_usenetStateDao->isRetrieverRunning()) {
-            throw new RetrieverRunningException();
-        } // if
-
-        /*
-         * and notify the system we are running
-         */
-        $this->_usenetStateDao->setRetrieverRunning(true);
-
         // and fireup the nntp connection
         if (!Services_Signing_Base::factory() instanceof Services_Signing_Openssl) {
             $this->displayStatus('slowphprsa', '');
@@ -116,7 +123,7 @@ abstract class Services_Retriever_Base
          * we use articleid's there. We do however want to select it, because
          * the sendNoop() call uses a selectgroup and some usenet servers require it.
          */
-        $this->_msgdata = $this->_svcNntpText->selectGroup($groupList['text']);
+        $this->_msgdata = $this->_svcNntpTextPipelined->selectGroup($groupList['text']);
         if (!empty($groupList['bin'])) {
             $this->_svcNntpBin->selectGroup($groupList['bin']);
         } // if
@@ -147,7 +154,7 @@ abstract class Services_Retriever_Base
          * if we get the same messageid back, we assume all is well and
          * we can just continue where we left off.
          */
-        if ($this->_svcNntpText->getMessageIdByArticleNumber($lastArticleNr) == $lastMessageId) {
+        if ($this->_svcNntpTextPipelined->getMessageIdByArticleNumber($lastArticleNr) == $lastMessageId) {
             return $lastArticleNr;
         } // if
 
@@ -165,7 +172,7 @@ abstract class Services_Retriever_Base
             $curArtNr = max($curArtNr - $decrement, $this->_msgdata['first'] - 1);
 
             // get the list of headers (XHDR) from the usenet server
-            $hdrList = $this->_svcNntpText->getMessageIdList($curArtNr - 1, $curArtNr + $decrement);
+            $hdrList = $this->_svcNntpTextPipelined->getMessageIdList($curArtNr - 1, $curArtNr + $decrement);
             SpotDebug::msg(SpotDebug::TRACE, 'getMessageIdList returned='.serialize($hdrList));
 
             // Show what we are doing
@@ -222,7 +229,7 @@ abstract class Services_Retriever_Base
 
             // get the list of headers (XOVER)
             SpotTiming::start(__CLASS__.'::'.__FUNCTION__.':getOverview');
-            $hdrList = $this->_svcNntpText->getOverview($curArticleNr, $curArticleNr + $increment);
+            $hdrList = $this->_svcNntpTextPipelined->getOverview($curArticleNr, $curArticleNr + $increment);
             SpotTiming::stop(__CLASS__.'::'.__FUNCTION__.':getOverview');
 
             $saveCurArtNr = $curArticleNr;
@@ -241,10 +248,6 @@ abstract class Services_Retriever_Base
             $processed += $processOutput['count'];
             $headersProcessed += $processOutput['headercount'];
             $highestMessageId = $processOutput['lastmsgid'];
-
-            // reset the start time to prevent a another retriever from starting
-            // during the intial retrieve which can take many hours
-            $this->_usenetStateDao->setRetrieverRunning(true);
 
             /*
              * Make sure if we run with timing on, we do not fetch too many
@@ -272,15 +275,12 @@ abstract class Services_Retriever_Base
 
     public function quit()
     {
-        // notify the system we are not running anymore
-        $this->_usenetStateDao->setRetrieverRunning(false);
-
         // and disconnect
-        if (!is_null($this->_svcNntpText)) {
-            $this->_svcNntpText->quit();
+        if (!is_null($this->_svcNntpTextPipelined)) {
+            $this->_svcNntpTextPipelined->quit();
         } // if
 
-        if (!is_null($this->_svcNntpBin)) {
+        if ((!is_null($this->_svcNntpBin)) && ($this->_svcNntpBin !== $this->_svcNntpTextPipelined)) {
             $this->_svcNntpBin->quit();
         } // if
 
@@ -288,6 +288,16 @@ abstract class Services_Retriever_Base
     }
 
     // quit()
+
+    protected function articlePipelineWindow()
+    {
+        return Services_Nntp_PipelineDepth::serverValue($this->_textServer);
+    }
+
+    protected function articlePipelineRecovery()
+    {
+        return new Services_Nntp_PipelinedRecovery($this->_svcNntpTextPipelined);
+    }
 
     public function perform()
     {

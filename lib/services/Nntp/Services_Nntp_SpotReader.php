@@ -1,17 +1,19 @@
 <?php
 
-class Services_Nntp_SpotReading
+require_once __DIR__.'/Services_Nntp_PipelinedTransport.php';
+
+class Services_Nntp_SpotReader
 {
-    private $_nntpEngine;
+    private $_nntpClient;
     private $_spotParseUtil;
 
     /*
      * constructor
      */
-    public function __construct(Services_Nntp_Engine $nntpEngine)
+    public function __construct(Services_Nntp_PipelinedTransport $nntpClient)
     {
         $this->_spotParseUtil = new Services_Format_Util();
-        $this->_nntpEngine = $nntpEngine;
+        $this->_nntpClient = $nntpClient;
     }
 
     // ctor
@@ -107,7 +109,7 @@ class Services_Nntp_SpotReading
                     'user-avatar'        => '', 'fullxml' => '', 'messageid' => $comment['messageid'], 'newsreader' => '', ];
 
                 SpotTiming::start('NntpSpotReading::readComments()->getArticle call');
-                $article = array_merge($commentTpl, $this->_nntpEngine->getArticle('<'.$comment['messageid'].'>'));
+                $article = array_merge($commentTpl, $this->_nntpClient->getArticle($comment['messageid']));
                 SpotTiming::stop('NntpSpotReading::readComments()->getArticle call');
                 $tmpAr = $this->parseHeader($article['header'], $article);
 
@@ -157,7 +159,7 @@ class Services_Nntp_SpotReading
         $bin = '';
 
         foreach ($segmentList as $seg) {
-            $bin .= implode('', $this->_nntpEngine->getBody('<'.$seg.'>'));
+            $bin .= implode('', $this->_nntpClient->getBody($seg));
         } // foreach
 
         if ($compressed) {
@@ -198,7 +200,7 @@ class Services_Nntp_SpotReading
         /*
          * Retrieve the header of the given spot
          */
-        $header = $this->_nntpEngine->getHeader('<'.$msgId.'>');
+        $header = $this->_nntpClient->getHeader($msgId);
         $spot = array_merge($spot, $this->parseHeader($header, $spot));
 
         /*
@@ -232,4 +234,8 @@ class Services_Nntp_SpotReading
     }
 
     // readFullSpot
-} // Services_Nntp_SpotReading
+    public function getComments($commentList)
+    {
+        return $this->readComments($commentList);
+    }
+} // Services_Nntp_SpotReader

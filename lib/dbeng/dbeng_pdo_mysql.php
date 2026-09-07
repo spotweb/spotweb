@@ -16,21 +16,27 @@ class dbeng_pdo_mysql extends dbeng_pdo
         $this->_batchInsertChunks = 100;
     }
 
+    protected function buildConnectionString($host, $db, $port)
+    {
+        if ($host[0] === '/') {
+            $db_conn = 'unix_socket='.$host;
+        } else {
+            $db_conn = 'host='.$host.':'.$port;
+        }
+
+        return 'mysql:'.$db_conn.';dbname='.$db.';charset=utf8mb4';
+    }
+
     public function connect($host, $user, $pass, $db, $port, $schema)
     {
         if (!$this->_conn instanceof PDO) {
-            if ($host[0] === '/') {
-                $db_conn = 'unix_socket='.$host;
-            } else {
-                $db_conn = 'host='.$host.':'.$port;
-            }
             $found_rows_attr = defined('\Pdo\Mysql::ATTR_FOUND_ROWS')
                 ? \Pdo\Mysql::ATTR_FOUND_ROWS
                 : \PDO::MYSQL_ATTR_FOUND_ROWS;
 
             try {
                 $this->_conn = new PDO(
-                    'mysql:'.$db_conn.';dbname='.$db.';charset=utf8',
+                    $this->buildConnectionString($host, $db, $port),
                     $user,
                     $pass,
                     [

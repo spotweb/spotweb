@@ -1,17 +1,19 @@
 <?php
 
-class Services_Nntp_SpotPosting
+require_once __DIR__.'/Services_Nntp_PipelinedTransport.php';
+
+class Services_Nntp_SpotPoster
 {
-    private $_nntpEngine;
+    private $_nntpClient;
     private $_spotParseUtil;
 
     /*
      * constructor
      */
-    public function __construct(Services_Nntp_Engine $nntpEngine)
+    public function __construct(Services_Nntp_PipelinedTransport $nntpClient)
     {
         $this->_spotParseUtil = new Services_Format_Util();
-        $this->_nntpEngine = $nntpEngine;
+        $this->_nntpClient = $nntpClient;
     }
 
     // ctor
@@ -28,7 +30,7 @@ class Services_Nntp_SpotPosting
         $header .= "X-No-Archive: yes\r\n";
         $header .= $additionalHeaders;
 
-        return $this->_nntpEngine->post([$header, $message['body']]);
+        return $this->_nntpClient->post([$header, $message['body']]);
     }
 
     // postPlainMessage
@@ -267,4 +269,4 @@ class Services_Nntp_SpotPosting
     }
 
     // safe_chunk
-} // Services_Nntp_SpotPosting
+} // Services_Nntp_SpotPoster
