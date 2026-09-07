@@ -104,4 +104,15 @@ class SpotReqPostParametersTest extends TestCase
 
         Services_Actions_DownloadNzb::resolveMessageIds('', '["unterminated"');
     }
+
+    /**
+     * An empty compact list cannot start a bulk download action.
+     */
+    public function testEmptyBulkMessageIdsAreRejected()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Invalid bulk NZB message ID list');
+
+        Services_Actions_DownloadNzb::resolveMessageIds('', '[]');
+    }
 }

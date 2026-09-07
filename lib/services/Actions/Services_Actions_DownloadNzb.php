@@ -29,7 +29,7 @@ class Services_Actions_DownloadNzb
         } // if
 
         $messageIds = json_decode($bulkMessageIds, true);
-        if (json_last_error() != JSON_ERROR_NONE || !self::isList($messageIds)) {
+        if (json_last_error() != JSON_ERROR_NONE || !self::isList($messageIds) || empty($messageIds)) {
             throw new Exception('Invalid bulk NZB message ID list');
         } // if
 
