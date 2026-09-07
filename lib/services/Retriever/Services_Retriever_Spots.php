@@ -715,6 +715,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
 
         if ($outcome->hasUnresolved()) {
             $this->displayStatus('pipelineddeferred', json_encode($outcome->toArray()));
+
             throw new PipelinedRetrieverDeferredException('spots', $outcome);
         }
 

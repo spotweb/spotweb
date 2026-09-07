@@ -15,7 +15,7 @@ class ServicesNntpPipelinedTransportLogCollector
     public function addRecord($level, $message, array $context = [])
     {
         $this->records[] = [
-            'level' => $level,
+            'level'   => $level,
             'message' => $message,
             'context' => $context,
         ];
@@ -464,12 +464,12 @@ class ServicesNntpPipelinedTransportTest extends TestCase
         $method->setAccessible(true);
         $context = $method->invoke($transport, [
             'operation' => 'auth',
-            'user' => 'secret-user',
-            'pass' => 'secret-pass',
-            'command' => 'AUTHINFO PASS secret-pass',
-            'body' => 'private article body',
-            'headers' => 'Subject: private',
-            'safe' => 'kept',
+            'user'      => 'secret-user',
+            'pass'      => 'secret-pass',
+            'command'   => 'AUTHINFO PASS secret-pass',
+            'body'      => 'private article body',
+            'headers'   => 'Subject: private',
+            'safe'      => 'kept',
         ]);
 
         $encoded = json_encode($context);
