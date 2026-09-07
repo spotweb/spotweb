@@ -4,6 +4,7 @@
     var multiNzb = {};
 
     multiNzb.endpoint = '?';
+    multiNzb.maxSelectionSize = root.spotweb_multinzb_max_items;
     multiNzb.selectedCheckboxSelector = 'td.multinzb input[type=checkbox]:checked, span.multi input[type=checkbox]:checked';
     multiNzb.allCheckboxSelector = 'td.multinzb input[type=checkbox], span.multi input[type=checkbox]';
 
@@ -29,6 +30,14 @@
         $(multiNzb.allCheckboxSelector).attr('checked', false);
     };
 
+    multiNzb.selectionLimitMessage = function() {
+        return 'Bulk NZB selections are limited to ' + multiNzb.maxSelectionSize + ' items';
+    };
+
+    multiNzb.isSelectionAllowed = function(messageIds) {
+        return messageIds.length <= multiNzb.maxSelectionSize;
+    };
+
     multiNzb.buildFields = function(dltype, messageIds) {
         return [
             {name: 'page', value: 'getnzb'},
@@ -52,6 +61,10 @@
     };
 
     multiNzb.submitDisplay = function(dltype, messageIds, documentRef) {
+        if (!multiNzb.isSelectionAllowed(messageIds)) {
+            return false;
+        } // if
+
         var documentObject = documentRef || root.document;
         var form = documentObject.createElement('form');
         var fields = multiNzb.buildFields(dltype, messageIds);
@@ -76,6 +89,8 @@
                 form.parentNode.removeChild(form);
             } // if
         }, 1000);
+
+        return true;
     };
 
     root.spotwebMultiNzb = multiNzb;

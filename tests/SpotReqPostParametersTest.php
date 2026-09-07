@@ -115,4 +115,20 @@ class SpotReqPostParametersTest extends TestCase
 
         Services_Actions_DownloadNzb::resolveMessageIds('', '[]');
     }
+
+    /**
+     * Compact requests cannot exceed the operational bulk selection limit.
+     */
+    public function testOversizedBulkMessageIdsAreRejected()
+    {
+        $messageIds = [];
+        for ($i = 0; $i < 2001; $i++) {
+            $messageIds[] = sprintf('<spot-%04d@example.invalid>', $i);
+        } // for
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Bulk NZB selections are limited to 2000 items');
+
+        Services_Actions_DownloadNzb::resolveMessageIds('', json_encode($messageIds));
+    }
 }

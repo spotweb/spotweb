@@ -845,6 +845,11 @@ function downloadMultiNZB(dltype) {
 	var messageIds = spotwebMultiNzb.collectMessageIds($);
 	var count = messageIds.length;
 	if(count > 0) {
+        if (!spotwebMultiNzb.isSelectionAllowed(messageIds)) {
+            alert(spotwebMultiNzb.selectionLimitMessage());
+            return;
+        } // if
+
         /*
          * with client-sabnzbd we override to display as we cannot send
          * multiple NZB files to the server just yet

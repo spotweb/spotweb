@@ -2,6 +2,13 @@
 
 class Services_Actions_DownloadNzb
 {
+    /*
+     * Bulk multi-NZB handling fetches all selected NZBs before one handler
+     * invocation. Keep this bounded until durable, handler-aware job support
+     * is available.
+     */
+    const MAX_BULK_MESSAGE_IDS = 2000;
+
     private $_settings;
     private $_daoFactory;
 
@@ -31,6 +38,10 @@ class Services_Actions_DownloadNzb
         $messageIds = json_decode($bulkMessageIds, true);
         if (json_last_error() != JSON_ERROR_NONE || !self::isList($messageIds) || empty($messageIds)) {
             throw new Exception('Invalid bulk NZB message ID list');
+        } // if
+
+        if (count($messageIds) > self::MAX_BULK_MESSAGE_IDS) {
+            throw new Exception('Bulk NZB selections are limited to '.self::MAX_BULK_MESSAGE_IDS.' items');
         } // if
 
         foreach ($messageIds as $thisMessageId) {

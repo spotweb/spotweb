@@ -6,6 +6,7 @@ const vm = require('vm');
 
 const source = fs.readFileSync(path.join(__dirname, '../../js/multinzb.js'), 'utf8');
 const sandbox = {
+    spotweb_multinzb_max_items: 2000,
     setTimeout: function(callback) {
         callback();
     },
@@ -16,6 +17,7 @@ vm.runInNewContext(source, sandbox);
 const helper = sandbox.spotwebMultiNzb;
 
 assert.strictEqual(helper.endpoint, '?');
+assert.strictEqual(helper.maxSelectionSize, 2000);
 
 function makeMessageIds(count) {
     const messageIds = [];
@@ -33,6 +35,7 @@ assert.strictEqual(helper.normalizeAction('client-sabnzbd'), 'display');
 assert.strictEqual(helper.normalizeAction('disable'), 'display');
 
 const messageIds = makeMessageIds(2000);
+assert.strictEqual(helper.isSelectionAllowed(messageIds), true);
 const fields = helper.buildFields('push-sabnzbd', messageIds);
 assert.strictEqual(fields.length, 3);
 assert.strictEqual(fields[0].name, 'page');
@@ -95,6 +98,13 @@ assert.strictEqual(submittedForms[0].children[1].value, 'display');
 assert.strictEqual(submittedForms[0].children.length, 3);
 assert.strictEqual(submittedForms[0].children[2].name, 'messageids');
 assert.deepStrictEqual(JSON.parse(submittedForms[0].children[2].value), messageIds);
+assert.strictEqual(documentStub.body.children.length, 0);
+
+const oversizedMessageIds = makeMessageIds(2001);
+assert.strictEqual(helper.isSelectionAllowed(oversizedMessageIds), false);
+assert.strictEqual(helper.selectionLimitMessage(), 'Bulk NZB selections are limited to 2000 items');
+assert.strictEqual(helper.submitDisplay('display', oversizedMessageIds, documentStub), false);
+assert.strictEqual(submittedForms.length, 1);
 assert.strictEqual(documentStub.body.children.length, 0);
 
 console.log('multinzb helper tests passed');

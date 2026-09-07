@@ -1278,6 +1278,17 @@ class SpotTemplateHelper
     // getThemeHeaderJsFiles
 
     /*
+     * The browser receives this server-owned bound before the merged JS bundle
+     * loads, so the multi-NZB user interface matches getnzb validation.
+     */
+    public function getMultiNzbMaximumSelectionSize()
+    {
+        return Services_Actions_DownloadNzb::MAX_BULK_MESSAGE_IDS;
+    }
+
+    // getMultiNzbMaximumSelectionSize
+
+    /*
      * Geeft een lijst van mogelijke smilies terug
      */
     public function getSmileyList()
