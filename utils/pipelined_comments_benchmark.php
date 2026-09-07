@@ -245,11 +245,11 @@ try {
     if (pcb_has('config-discovery-check')) {
         list($root, $files) = pcb_readable_spotweb_config_files(pcb_arg('spotweb-root', null));
         echo json_encode([
-            'mode' => 'config-discovery-check',
-            'ok' => true,
-            'spotweb_root' => $root,
+            'mode'               => 'config-discovery-check',
+            'ok'                 => true,
+            'spotweb_root'       => $root,
             'dbsettings_present' => is_readable($files['dbsettings']),
-            'settings_present' => is_readable($files['settings']),
+            'settings_present'   => is_readable($files['settings']),
         ]).PHP_EOL;
         exit(0);
     }
@@ -321,23 +321,23 @@ try {
         list($rangeFirst, $rangeLast) = pcb_range($first, $count, $randomRange);
         $started = microtime(true);
         $row = [
-            'ts' => gmdate('c'),
-            'mode' => $fixture ? 'fixture' : 'bootstrap',
-            'stream' => $stream,
-            'group_supplied' => pcb_arg('group', '') !== '',
-            'sample' => $job['sample'],
-            'window' => $job['window'],
-            'requested_range' => [$rangeFirst, $rangeLast],
-            'requested_count' => $count,
-            'header_count' => 0,
-            'terminal_count' => 0,
-            'unresolved_count' => 0,
-            'elapsed_seconds' => 0,
+            'ts'                       => gmdate('c'),
+            'mode'                     => $fixture ? 'fixture' : 'bootstrap',
+            'stream'                   => $stream,
+            'group_supplied'           => pcb_arg('group', '') !== '',
+            'sample'                   => $job['sample'],
+            'window'                   => $job['window'],
+            'requested_range'          => [$rangeFirst, $rangeLast],
+            'requested_count'          => $count,
+            'header_count'             => 0,
+            'terminal_count'           => 0,
+            'unresolved_count'         => 0,
+            'elapsed_seconds'          => 0,
             'terminal_rate_per_second' => 0,
-            'connections' => 0,
-            'retries' => 0,
-            'errors' => [],
-            'ok' => false,
+            'connections'              => 0,
+            'retries'                  => 0,
+            'errors'                   => [],
+            'ok'                       => false,
         ];
 
         try {
@@ -364,8 +364,8 @@ try {
             $elapsed = microtime(true) - $started;
             $row['elapsed_seconds'] = round($elapsed, 6);
             $row['errors'][] = [
-                'class' => get_class($x),
-                'code' => (int) $x->getCode(),
+                'class'   => get_class($x),
+                'code'    => (int) $x->getCode(),
                 'message' => $x->getMessage(),
             ];
         }

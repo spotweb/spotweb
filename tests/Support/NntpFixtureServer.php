@@ -68,6 +68,7 @@ class NntpFixtureServer
             } elseif (strpos($line, 'HEAD ') === 0) {
                 if (($mode === 'direct-head-disconnect-once') && ($connectionNumber === 1)) {
                     fclose($conn);
+
                     return true;
                 }
                 if ($mode === 'direct-read-430') {
@@ -78,6 +79,7 @@ class NntpFixtureServer
             } elseif (strpos($line, 'BODY ') === 0) {
                 if (($mode === 'direct-body-disconnect-once') && ($connectionNumber === 1)) {
                     fclose($conn);
+
                     return true;
                 }
                 if ($mode === 'direct-read-430') {
@@ -98,6 +100,7 @@ class NntpFixtureServer
             } elseif (strpos($line, 'ARTICLE ') === 0) {
                 if (($mode === 'direct-article-disconnect-once') && ($connectionNumber === 1)) {
                     fclose($conn);
+
                     return true;
                 }
                 if ($mode === 'direct-read-430') {
@@ -106,12 +109,14 @@ class NntpFixtureServer
                 }
                 if ($mode === 'disconnect-before-response') {
                     fclose($conn);
+
                     return false;
                 }
                 $articleCommands[] = $line;
                 if (($mode === 'unexpected-final-response') && (count($articleCommands) === 1)) {
                     fwrite($conn, "500 fixture protocol failure\r\n");
                     fclose($conn);
+
                     return false;
                 }
                 if ((($mode === 'single-commands') || ($mode === 'direct-article-disconnect-once')) && (count($articleCommands) === 1)) {
@@ -121,6 +126,7 @@ class NntpFixtureServer
                     if ($mode === 'unexpected-response') {
                         fwrite($conn, "423 no such article number\r\n");
                         fclose($conn);
+
                         return false;
                     }
                     if ($mode === 'disconnect-mid-body') {
@@ -128,6 +134,7 @@ class NntpFixtureServer
                         fwrite($conn, "From: Sender <s@example>\r\n");
                         fwrite($conn, "\r\npartial body");
                         fclose($conn);
+
                         return false;
                     }
                     fwrite($conn, "430 no such article\r\n");
@@ -136,6 +143,7 @@ class NntpFixtureServer
             } elseif ($line === 'QUIT') {
                 fwrite($conn, "205 goodbye\r\n");
                 fclose($conn);
+
                 return false;
             }
         }
@@ -161,11 +169,11 @@ class NntpFixtureServer
 
     private static function writeFixtureArticle($conn, $number)
     {
-        $payload = "220 ".$number." <comment.".$number.".1.1.1@example.invalid> article follows\r\n".
+        $payload = '220 '.$number.' <comment.'.$number.".1.1.1@example.invalid> article follows\r\n".
             "From: Sender <s@example>\r\n".
-            "Date: Tue, 18 Aug 2026 10:0".$number.":00 +0000\r\n".
+            'Date: Tue, 18 Aug 2026 10:0'.$number.":00 +0000\r\n".
             "\r\n".
-            "body ".$number."\r\n".
+            'body '.$number."\r\n".
             "..dot stuffed\r\n".
             ".\r\n";
 

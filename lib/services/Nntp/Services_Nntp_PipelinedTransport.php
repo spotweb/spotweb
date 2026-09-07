@@ -91,6 +91,7 @@ class Services_Nntp_PipelinedTransport
             $enabled = @stream_socket_enable_crypto($this->_stream, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
             if ($enabled !== true) {
                 $this->disconnect();
+
                 throw new NntpException('Unable to enable STARTTLS for NNTP connection', -1);
             }
         }
@@ -239,6 +240,7 @@ class Services_Nntp_PipelinedTransport
         }
 
         $started = microtime(true);
+
         try {
             $this->simpleCommandRaw('POST', [340]);
             $this->writeMultilinePayload($this->buildPostPayload($article[0], $article[1]));
@@ -246,6 +248,7 @@ class Services_Nntp_PipelinedTransport
             $this->log(SpotDebug::DEBUG, 'nntp.post', ['operation' => 'post', 'status' => $response['code'], 'elapsed_ms' => $this->elapsedMs($started)]);
         } catch (Exception $x) {
             $this->logFailure('post', $x, 0, $started, false);
+
             throw $x;
         }
 
@@ -279,8 +282,8 @@ class Services_Nntp_PipelinedTransport
                     $inFlight[] = $messageId;
                 }
 
-                $read = [ $this->_stream ];
-                $write = ($this->_writeBuffer !== '') ? [ $this->_stream ] : null;
+                $read = [$this->_stream];
+                $write = ($this->_writeBuffer !== '') ? [$this->_stream] : null;
                 $except = null;
 
                 $selected = @stream_select($read, $write, $except, $this->_timeout, 0);
@@ -415,9 +418,9 @@ class Services_Nntp_PipelinedTransport
             $response = $this->simpleCommandRaw($command, array_merge($expectedCodes, [430]));
             if ($response['code'] === 430) {
                 return [
-                    'code' => 430,
+                    'code'    => 430,
                     'message' => $response['message'],
-                    'lines' => [],
+                    'lines'   => [],
                 ];
             }
 
@@ -429,6 +432,7 @@ class Services_Nntp_PipelinedTransport
         if ($response['code'] === 430) {
             $x = new NntpException('NNTP article unavailable: '.$response['message'], 430);
             $this->logFailure($operation, $x, 0, microtime(true), true);
+
             throw $x;
         }
 
@@ -532,7 +536,7 @@ class Services_Nntp_PipelinedTransport
     {
         $this->_writeBuffer .= $line."\r\n";
         while ($this->_writeBuffer !== '') {
-            $write = [ $this->_stream ];
+            $write = [$this->_stream];
             $read = null;
             $except = null;
             $selected = @stream_select($read, $write, $except, $this->_timeout, 0);
@@ -583,7 +587,7 @@ class Services_Nntp_PipelinedTransport
         $this->connect();
 
         while (($line = $this->shiftLine()) === null) {
-            $read = [ $this->_stream ];
+            $read = [$this->_stream];
             $write = null;
             $except = null;
             $selected = @stream_select($read, $write, $except, $this->_timeout, 0);
@@ -716,7 +720,7 @@ class Services_Nntp_PipelinedTransport
     private function log($level, $message, array $context = [])
     {
         $context = $this->sanitizeLogContext(array_merge([
-            'role' => $this->_role,
+            'role'  => $this->_role,
             'group' => $this->_currentGroup,
         ], $context));
         SpotDebug::msg($level, $message, $context);
@@ -725,29 +729,29 @@ class Services_Nntp_PipelinedTransport
     private function logFailure($operation, Exception $exception, $attempt, $started, $terminal)
     {
         $this->log($terminal ? SpotDebug::DEBUG : SpotDebug::WARN, 'nntp.read.failure', [
-            'operation' => $operation,
-            'attempt' => (int) $attempt,
-            'terminal' => (bool) $terminal,
+            'operation'   => $operation,
+            'attempt'     => (int) $attempt,
+            'terminal'    => (bool) $terminal,
             'error_class' => Services_Nntp_PipelinedFetchException::classify($exception, 'transport'),
-            'code' => (int) $exception->getCode(),
-            'elapsed_ms' => $this->elapsedMs($started),
+            'code'        => (int) $exception->getCode(),
+            'elapsed_ms'  => $this->elapsedMs($started),
         ]);
     }
 
     private function logPipelineFailure(Exception $exception, $started, $window, $requested, $terminalCount, $unresolvedCount, $inFlightCount, $pendingCount, $activeArticle, $errorClass)
     {
         $this->log(SpotDebug::WARN, 'nntp.article.pipeline.failure', [
-            'operation' => 'article-pipeline',
-            'window' => (int) $window,
-            'requested' => (int) $requested,
-            'terminal_count' => (int) $terminalCount,
+            'operation'        => 'article-pipeline',
+            'window'           => (int) $window,
+            'requested'        => (int) $requested,
+            'terminal_count'   => (int) $terminalCount,
             'unresolved_count' => (int) $unresolvedCount,
-            'inflight_count' => (int) $inFlightCount,
-            'pending_count' => (int) $pendingCount,
-            'active_article' => (bool) $activeArticle,
-            'error_class' => $errorClass,
-            'code' => (int) $exception->getCode(),
-            'elapsed_ms' => $this->elapsedMs($started),
+            'inflight_count'   => (int) $inFlightCount,
+            'pending_count'    => (int) $pendingCount,
+            'active_article'   => (bool) $activeArticle,
+            'error_class'      => $errorClass,
+            'code'             => (int) $exception->getCode(),
+            'elapsed_ms'       => $this->elapsedMs($started),
         ]);
     }
 

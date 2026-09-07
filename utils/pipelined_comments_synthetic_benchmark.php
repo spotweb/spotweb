@@ -52,17 +52,17 @@ foreach ($windows as $window) {
     $transport->fetchArticlesPipelined($ids, $window);
     $elapsed = microtime(true) - $start;
     $rows[] = [
-        'window' => $window,
-        'items'  => $count,
-        'seconds' => round($elapsed, 4),
+        'window'           => $window,
+        'items'            => $count,
+        'seconds'          => round($elapsed, 4),
         'items_per_second' => round($count / max($elapsed, 0.000001), 2),
     ];
 }
 
 echo json_encode(
     [
-        'type' => 'synthetic-local-no-provider-no-db',
-        'caveat' => 'Models latency hiding only; real provider benchmark must be run later under user control.',
+        'type'    => 'synthetic-local-no-provider-no-db',
+        'caveat'  => 'Models latency hiding only; real provider benchmark must be run later under user control.',
         'results' => $rows,
     ],
     JSON_PRETTY_PRINT

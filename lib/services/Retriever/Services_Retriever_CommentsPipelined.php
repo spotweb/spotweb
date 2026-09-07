@@ -307,6 +307,7 @@ class Services_Retriever_CommentsPipelined
 
         if ($outcome->hasUnresolved()) {
             $this->displayStatus('pipelineddeferred', json_encode($outcome->toArray()));
+
             throw new PipelinedCommentsDeferredException($outcome);
         }
 
