@@ -22,12 +22,16 @@ class Services_Actions_DownloadNzb
 
     /*
      * Convert the compact bulk request value used by the multi-NZB interface
-     * into the message-id list handled below. Existing single and array
-     * messageid request shapes deliberately remain unchanged.
+     * into the message-id list handled below. Existing scalar messageid
+     * requests remain supported for single-NZB and API-compatible routes.
      */
     public static function resolveMessageIds($messageId, $bulkMessageIds)
     {
         if ($bulkMessageIds === null) {
+            if (is_array($messageId)) {
+                throw new Exception('Legacy bulk NZB message ID arrays are no longer supported');
+            } // if
+
             return $messageId;
         } // if
 

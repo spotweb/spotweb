@@ -242,7 +242,7 @@ if ($show_nzbhandler_button) { ?>
                 if ($show_multinzb_checkbox) {
                     $multispotid = htmlspecialchars($spot['messageid']);
                     echo "<td class='multinzb ".'hg1'.' '.$newSpotClass.' '.$tipTipClass."'>";
-                    echo "<input onclick='multinzb()' type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+                    echo "<input onclick='multinzb()' type='checkbox' value='".$multispotid."'>";
                     echo '</td>';
                 } // if
 
@@ -336,7 +336,7 @@ if ($show_nzbhandler_button) { ?>
                 if ($show_multinzb_checkbox) {
                     $multispotid = htmlspecialchars($spot['messageid']);
                     echo "<td class='multinzb'>";
-                    echo "<input onclick='multinzb()' type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+                    echo "<input onclick='multinzb()' type='checkbox' value='".$multispotid."'>";
                     echo '</td>';
                 } // if
 

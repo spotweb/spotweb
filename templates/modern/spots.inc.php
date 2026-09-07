@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             if ($show_multinzb_checkbox && $spot['stamp'] > 1290578400) {
                 $multispotid = htmlspecialchars($spot['messageid']);
-                echo '    <span class="multi"><input onclick="multinzb()" type="checkbox" name="'.htmlspecialchars('messageid[]').'" value="'.$multispotid.'"></span>';
+                echo '    <span class="multi"><input onclick="multinzb()" type="checkbox" value="'.$multispotid.'"></span>';
             }
             echo '  </div>';
 

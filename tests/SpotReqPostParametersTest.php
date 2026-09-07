@@ -74,13 +74,16 @@ class SpotReqPostParametersTest extends TestCase
     }
 
     /**
-     * Legacy messageid[] callers retain their original array input.
+     * The obsolete messageid[] bulk request shape is explicitly rejected.
      */
-    public function testLegacyMessageIdArrayRemainsSupported()
+    public function testLegacyMessageIdArrayIsRejected()
     {
         $messageIds = ['<first@example.invalid>', '<second@example.invalid>'];
 
-        $this->assertSame($messageIds, Services_Actions_DownloadNzb::resolveMessageIds($messageIds, null));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Legacy bulk NZB message ID arrays are no longer supported');
+
+        Services_Actions_DownloadNzb::resolveMessageIds($messageIds, null);
     }
 
     /**
