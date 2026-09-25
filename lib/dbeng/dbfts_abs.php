@@ -28,8 +28,12 @@ abstract class dbfts_abs
          *  \
          *  *
          *  '
+         *
+         * Each quoted phrase is a word of its own: '"a b" +"c d"' is
+         * '"a b"', '+' and '"c d"', not one phrase from the first quote to
+         * the last.
          */
-        if (preg_match_all('([\\\/\+-\\\*\'\w]+|".+")', $s, $matches)) {
+        if (preg_match_all('([\\\/\+-\\\*\'\w]+|".+?")', $s, $matches)) {
             $newList = [];
             foreach ($matches[0] as $word) {
                 $strippedWord = trim($word, "\r\n\t "); // removed + and - from trim

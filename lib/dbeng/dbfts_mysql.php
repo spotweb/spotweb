@@ -169,9 +169,11 @@ class dbfts_mysql extends dbfts_abs
                 /*
                  * + and - are only allowed at the beginning of the search to
                  * enforce it as an search operator. If they are in the
-                 * words themselves, we fall back to LIKE
+                 * words themselves, we fall back to LIKE. Inside a quoted
+                 * phrase MySQL reads them as word separators, so a phrase
+                 * like "Spider-Man" can still use the index.
                  */
-                if ((strpos($strippedTerm, '-') > 0) || (strpos($strippedTerm, '+') > 0) || (strpos($strippedTerm, '/') > 0)) {
+                if (($term[0] != '"') && ((strpos($strippedTerm, '-') > 0) || (strpos($strippedTerm, '+') > 0) || (strpos($strippedTerm, '/') > 0))) {
                     $hasSearchOpAsTerm = true;
                 } // if
 
@@ -209,9 +211,17 @@ class dbfts_mysql extends dbfts_abs
                 if ((!$hasPhraseWithOnlyInvalids) && ($term[0] == '"')) {
                     $tmpFoundValidTerms = false;
 
-                    $tmpTermList = explode(' ', $strippedTerm);
+                    /*
+                     * Split the phrase into words the way MySQL indexes it:
+                     * "X-Men" is the words X and Men, both too short to be in
+                     * the index, so it has to be found with LIKE.
+                     */
+                    $tmpTermList = preg_split('/[^\p{L}\p{N}_\']+/u', $strippedTerm, -1, PREG_SPLIT_NO_EMPTY);
+                    if ($tmpTermList === false) {
+                        $tmpTermList = [];
+                    } // if
                     foreach ($tmpTermList as $tmpTerm) {
-                        if (strlen($tmpTerm) >= $minWordLen) {
+                        if (mb_strlen($tmpTerm) >= $minWordLen) {
                             if (in_array(strtolower($tmpTerm), $this->stop_words) === false) {
                                 $tmpFoundValidTerms = true;
                             } // if
