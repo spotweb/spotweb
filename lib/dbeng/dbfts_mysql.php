@@ -85,8 +85,21 @@ class dbfts_mysql extends dbfts_abs
          * We query the server setting, and if this is the case, we fall back to a basic LIKE
          * search because it has no such limitation
          */
-        $serverSetting = $this->_db->arrayQuery("SHOW VARIABLES WHERE variable_name = 'ft_min_word_len'");
-        $minWordLen = $serverSetting[0]['Value'];
+        $minWordLen = 4;
+        $serverSettings = $this->_db->arrayQuery("SHOW VARIABLES WHERE variable_name IN ('ft_min_word_len', 'ft_stopword_file')");
+        foreach ($serverSettings as $serverSetting) {
+            if ($serverSetting['Variable_name'] == 'ft_min_word_len') {
+                $minWordLen = $serverSetting['Value'];
+            } elseif (($serverSetting['Variable_name'] == 'ft_stopword_file') && ($serverSetting['Value'] === '')) {
+                /*
+                 * An empty ft_stopword_file turns MySQL's stopwords off, so
+                 * words like 'the' are in the index as well and don't need a
+                 * LIKE. Without that, a title made of stopwords only, such as
+                 * "Everything Everywhere All at Once", scans every spot.
+                 */
+                $this->stop_words = [];
+            } // elseif
+        } // foreach
 
         //var_dump($searchFields);
 
