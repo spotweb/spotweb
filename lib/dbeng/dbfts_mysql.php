@@ -75,6 +75,7 @@ class dbfts_mysql extends dbfts_abs
         $filterValueSql = [];
         $sortFields = [];
         $addFields = [];
+        $booleanValues = [];
 
         /*
          * MySQL's fultxt search has a minimum length of words for indexes. Per default this is
@@ -311,6 +312,7 @@ class dbfts_mysql extends dbfts_abs
             if (($searchMode == 'match-boolean') || ($searchMode == 'both-match-boolean')) {
                 $matchPart = ' MATCH('.$field.') AGAINST ('.$this->_db->safe($searchValue).' IN BOOLEAN MODE)';
                 $queryPart[] = $matchPart;
+                $booleanValues[] = $searchValue;
             } // if
 
             /*
@@ -339,6 +341,27 @@ class dbfts_mysql extends dbfts_abs
             }  // if
         } // foreach
 
+        /*
+         * The query parser joins the text searches on a field with the operator
+         * of the first one, and the newznab API ORs them: a movie's title OR its
+         * original title, "Seizoen 1" OR "Season 1" OR "S01*" for a season.
+         * MySQL cannot use a FULLTEXT index for an OR of MATCH()es, so it
+         * evaluates them for every spot, which takes seconds on a large database.
+         *
+         * When every branch is a boolean MATCH, also require one MATCH which
+         * holds whenever any of them does: '(branch 1) (branch 2) ...'. The
+         * result stays the same, but MySQL can answer it from the index and
+         * only has to check the branches for the spots it finds.
+         */
+        if ((count($filterValueSql) > 1) &&
+            ($searchFields[0]['booloper'] == 'OR') &&
+            (count($booleanValues) == count($filterValueSql)) &&
+            ($this->isBalanced($booleanValues))) {
+            $anyBranch = '('.implode(') (', $booleanValues).')';
+            $filterValueSql = [' (MATCH('.$field.') AGAINST ('.$this->_db->safe($anyBranch).' IN BOOLEAN MODE)'.
+                              ' AND ('.implode(' OR ', $filterValueSql).')) ', ];
+        } // if
+
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$filterValueSql, $addFields, $sortFields]);
 
         //var_dump($filterValueSql);
@@ -353,4 +376,37 @@ class dbfts_mysql extends dbfts_abs
     }
 
     // createTextQuery()
+
+    /*
+     * True when every boolean search value has matching double quotes and
+     * parentheses, so wrapping each of them in parentheses cannot change how
+     * MySQL groups the terms.
+     */
+    private function isBalanced($values)
+    {
+        foreach ($values as $value) {
+            if ((substr_count($value, '"') % 2) != 0) {
+                return false;
+            } // if
+
+            // parentheses inside a quoted phrase are just text
+            $unquoted = preg_replace('/"[^"]*"/', '', $value);
+            $depth = 0;
+            for ($i = 0; $i < strlen($unquoted); $i++) {
+                if ($unquoted[$i] == '(') {
+                    $depth++;
+                } elseif (($unquoted[$i] == ')') && (--$depth < 0)) {
+                    return false;
+                } // elseif
+            } // for
+
+            if ($depth != 0) {
+                return false;
+            } // if
+        } // foreach
+
+        return true;
+    }
+
+    // isBalanced()
 } // dbfts_mysql
