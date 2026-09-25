@@ -81,6 +81,17 @@ class SpotPage_newznabapi extends SpotPage_Abs
         // Check users' permissions
         $this->_spotSec->fatalPermCheck(SpotSecurity::spotsec_perform_search, '');
 
+        /*
+         * Newznab clients send free text, often a release name such as
+         * Show.S01E02.2160p.WEB-DL.H.265-GRP. A '-', '+' or '/' inside a word
+         * makes the MySQL search scan every spot with LIKE, and of a dotted
+         * name only the first word is required, so search for its words.
+         * A tvsearch uses q as the exact show title, so it is left alone.
+         */
+        if (($this->_params['t'] != 't') && ($this->_params['t'] != 'tvsearch')) {
+            $this->_params['q'] = $this->queryWords($this->_params['q']);
+        } // if
+
         $searchParams = [];
         $tvInfo = new Dto_MediaInformation();
         $tvInfo->setTitle('');
@@ -385,6 +396,23 @@ class SpotPage_newznabapi extends SpotPage_Abs
     }
 
     // search
+
+    /*
+     * Returns the words of a free text query: dotted acronyms (S.W.A.T.)
+     * joined, because single letters are too short to search for, and all
+     * other punctuation turned into spaces. A query which would be left
+     * empty is returned unchanged.
+     */
+    private function queryWords($q)
+    {
+        $words = preg_replace('/(?<![\p{L}\p{N}])(\p{L})\.(?=\p{L}(?![\p{L}\p{N}]))/u', '$1', $q);
+        // preg_replace() returns null for invalid UTF-8, which ends up as ''
+        $words = trim((string) preg_replace('/[^\p{L}\p{M}\p{N}\']+/u', ' ', (string) $words));
+
+        return ($words === '') ? $q : $words;
+    }
+
+    // queryWords
 
     /*
      * Actually create the XML or JSON output from the search
