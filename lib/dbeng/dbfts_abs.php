@@ -29,7 +29,7 @@ abstract class dbfts_abs
          *  *
          *  '
          */
-        if (preg_match_all('([\\\/\+-\\\*\'\w]+|".+")', $s, $matches)) {
+        if (preg_match_all('([\\\/\+-\\\*\'\w]+|".+")u', $s, $matches)) {
             $newList = [];
             foreach ($matches[0] as $word) {
                 $strippedWord = trim($word, "\r\n\t "); // removed + and - from trim
