@@ -88,7 +88,14 @@ class Services_Nntp_PipelinedTransport
 
         if ($enc === 'tls') {
             $this->simpleCommandRaw('STARTTLS', [382]);
+            /* A non-blocking handshake can return 0 (not finished), not failure.
+             * Complete connection setup with a bounded blocking handshake;
+             * article I/O resumes in non-blocking mode immediately afterwards.
+             */
+            stream_set_timeout($this->_stream, $this->_timeout);
+            stream_set_blocking($this->_stream, true);
             $enabled = @stream_socket_enable_crypto($this->_stream, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            stream_set_blocking($this->_stream, false);
             if ($enabled !== true) {
                 $this->disconnect();
 

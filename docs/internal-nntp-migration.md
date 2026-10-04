@@ -111,22 +111,34 @@ without automatic replay.
   branch; only deterministic fixture POST framing is tested, and POST is not
   auto-retried because it is non-idempotent.
 
+Review follow-up on 2026-10-04 adds local authentication/TLS/certificate/role
+configuration regression tests and depth-32 read-only receive checks against
+three provider endpoints. See `benchmarks/nntp-provider-depth32-20261004.md`.
+The configuration tests exposed and fixed a STARTTLS handshake-completion issue
+and restored the existing role-specific defaults when `verifyname` is absent.
+No existing production image, database, cursor, or server settings were changed
+by these checks. A community tester with a posting workflow is welcome to
+provide the separate live POST validation.
+
 ## Safe test commands
 
 Run PHP lint/tests only through Docker because the host has no PHP:
 
+Run from the repository root and set `SPOTWEB_TEST_IMAGE` to a PHP/OpenSSL/pcntl
+test image before invoking these commands.
+
 ```sh
 docker run --rm \
-  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v "$PWD":/work:ro \
   -w /work \
-  --entrypoint sh spotweb:server01-fixes-20260816-r2 \
+  --entrypoint sh "$SPOTWEB_TEST_IMAGE" \
   -lc 'find lib/services/Nntp lib/services/Retriever lib/services/Posting lib/services/Providers lib/services/Actions lib/page bin tests/Services/Nntp tests/Support -name "*.php" -print | sort | xargs -r -n1 php -l'
 
 docker run --rm \
   -v /tmp/phpunit-11.phar:/tmp/phpunit.phar:ro \
-  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v "$PWD":/work:ro \
   -w /work \
-  --entrypoint php spotweb:server01-fixes-20260816-r2 \
+  --entrypoint php "$SPOTWEB_TEST_IMAGE" \
   /tmp/phpunit.phar --do-not-cache-result --bootstrap vendor/autoload.php tests
 ```
 

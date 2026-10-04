@@ -35,7 +35,7 @@ class Services_Nntp_ClientPool
                     self::$_instances[$role] = self::pool($settings, 'hdr');
                 } else {
                     self::$_instances[$role] = new Services_Nntp_PipelinedTransport(
-                        self::normalizeServer($settings_nntp_bin),
+                        self::normalizeServer($settings_nntp_bin, true),
                         Services_Nntp_PipelinedTransport::DEFAULT_TIMEOUT,
                         'bin'
                     );
@@ -48,7 +48,7 @@ class Services_Nntp_ClientPool
                     self::$_instances[$role] = self::pool($settings, 'hdr');
                 } else {
                     self::$_instances[$role] = new Services_Nntp_PipelinedTransport(
-                        self::normalizeServer($settings_nntp_post),
+                        self::normalizeServer($settings_nntp_post, true),
                         Services_Nntp_PipelinedTransport::DEFAULT_TIMEOUT,
                         'post'
                     );
@@ -62,10 +62,10 @@ class Services_Nntp_ClientPool
         return self::$_instances[$role];
     }
 
-    private static function normalizeServer(array $server)
+    private static function normalizeServer(array $server, $defaultVerifyName = false)
     {
         if (!isset($server['verifyname'])) {
-            $server['verifyname'] = false;
+            $server['verifyname'] = $defaultVerifyName;
         }
         if (!isset($server['article_pipeline_depth'])) {
             $server['article_pipeline_depth'] = Services_Nntp_PipelineDepth::DefaultDepth;

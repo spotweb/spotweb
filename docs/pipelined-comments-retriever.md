@@ -80,16 +80,17 @@ No third-party NNTP source is bundled. See `THIRD_PARTY_NOTICES.md`.
 
 ## Validation commands
 
-Host PHP is not installed on `server01`; these commands use the existing
-Spotweb image only as a disposable PHP runtime with this checkout mounted.
+These commands use a PHP/OpenSSL/pcntl Docker test image rather than host PHP. Set
+`SPOTWEB_TEST_IMAGE` to that image and run from the repository root. The image
+is used only as a disposable PHP runtime with this checkout mounted.
 
 Syntax check:
 
 ```sh
 docker run --rm \
-  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v "$PWD":/work:ro \
   -w /work \
-  --entrypoint sh spotweb:server01-fixes-20260816-r2 \
+  --entrypoint sh "$SPOTWEB_TEST_IMAGE" \
   -lc 'for f in lib/services/Nntp/Services_Nntp_PipelinedArticleResult.php lib/services/Nntp/Services_Nntp_PipelinedTransport.php lib/services/Retriever/Services_Retriever_PipelinedArticleBatch.php lib/services/Retriever/Services_Retriever_CommentsArticleParser.php lib/services/Retriever/Services_Retriever_SpotsArticleParser.php lib/services/Retriever/Services_Retriever_Comments.php utils/pipelined_comments_benchmark.php utils/pipelined_comments_synthetic_benchmark.php tests/Services/Nntp/ServicesNntpPipelinedTransportTest.php tests/Services/Nntp/ServicesNntpPipelinedRecoveryTest.php tests/Services/Retriever/ServicesRetrieverPipelinedArticleBatchTest.php tests/Services/Retriever/ServicesRetrieverCommentsPipelinedTest.php; do php -l "$f" || exit 1; done'
 ```
 
@@ -98,9 +99,9 @@ Focused tests:
 ```sh
 docker run --rm \
   -v /tmp/phpunit-11.phar:/tmp/phpunit.phar:ro \
-  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v "$PWD":/work:ro \
   -w /work \
-  --entrypoint php spotweb:server01-fixes-20260816-r2 \
+  --entrypoint php "$SPOTWEB_TEST_IMAGE" \
   /tmp/phpunit.phar --do-not-cache-result --bootstrap vendor/autoload.php \
   tests/Services/Nntp/ServicesNntpPipelinedTransportTest.php \
   tests/Services/Retriever/ServicesRetrieverCommentsPipelinedTest.php
@@ -110,9 +111,9 @@ Fixture benchmark, no provider and no DB:
 
 ```sh
 docker run --rm \
-  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v "$PWD":/work:ro \
   -w /work \
-  --entrypoint php spotweb:server01-fixes-20260816-r2 \
+  --entrypoint php "$SPOTWEB_TEST_IMAGE" \
   utils/pipelined_comments_benchmark.php --read-only --fixture --group free.pt \
   --first 100 --count 1000 --windows 1,4,8,16,32 --samples 2 --sweep --seed 123
 ```
@@ -122,10 +123,10 @@ Config discovery check for a read-only mounted Spotweb root:
 ```sh
 docker run --rm \
   --entrypoint php \
-  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v "$PWD":/work:ro \
   -v <host-spotweb-root-containing-dbsettings-and-settings>:/var/www/spotweb:ro \
   -w /work \
-  spotweb:server01-fixes-20260816-r2 \
+  "$SPOTWEB_TEST_IMAGE" \
   utils/pipelined_comments_benchmark.php --read-only --config-discovery-check \
   --spotweb-root /var/www/spotweb
 ```
@@ -141,10 +142,10 @@ written into `/work`.
 ```sh
 docker run --rm \
   --entrypoint php \
-  -v /home/bschlepe/codex_work/spotweb-pipelined-comments:/work:ro \
+  -v "$PWD":/work:ro \
   -v <host-spotweb-root-containing-dbsettings-and-settings>:/var/www/spotweb:ro \
   -w /work \
-  spotweb:server01-fixes-20260816-r2 \
+  "$SPOTWEB_TEST_IMAGE" \
   utils/pipelined_comments_benchmark.php --read-only --use-bootstrap-settings \
   --spotweb-root /var/www/spotweb \
   --group <comment-group> --first <first> --count 1000 \
@@ -165,14 +166,17 @@ checks do not prove full parser/DAO integration performance.
 The 2026-08-20 sanitized benchmark evidence and selected default are documented
 in `docs/benchmarks/pipelined-comments-20260820.md`.
 
-## Remaining risks before deployment
+## Current validation boundaries
 
-- Real-provider compatibility is untested by design in this branch.
-- The capture tests currently prove transport FIFO behaviour, 430 handling,
-  duplicate/cursor commit boundaries, and deterministic window parity on
-  synthetic data. A disposable-DB row-level parity run is still required before
-  production deployment.
-- STARTTLS is mapped and guarded but needs real/provider or TLS-fixture
-  validation.
-- Production rollout must wait until the current historic comments catch-up has
-  completed.
+The original staging gates above predate the subsequent production rollout.
+See `internal-nntp-migration.md` for the later integration checks and
+`benchmarks/nntp-provider-depth32-20261004.md` for the configuration-parity and
+three-provider receive validation added during review.
+
+- Deterministic fixtures cover recovery, cursor boundaries, terminal `430`,
+  authentication, implicit TLS, STARTTLS, and certificate/hostname validation.
+- Receive tests on three provider endpoints do not establish compatibility
+  with every provider or backend. Pipeline depth `1` disables pipelining.
+- Live posting remains untested; a posting-capable community tester is welcome.
+- The review follow-up fixes are confined to the PR branch; this validation
+  does not change an existing production image or configuration.

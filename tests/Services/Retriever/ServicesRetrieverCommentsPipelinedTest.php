@@ -212,6 +212,27 @@ class ServicesRetrieverCommentsPipelinedTest extends TestCase
         $this->assertCount(1, $result['batches'][0]['comments']);
     }
 
+    public function testBuggyServerOptionPreservesExtraCommentCleanupPolicy()
+    {
+        foreach ([false, true] as $buggy) {
+            $runner = $this->newRunner(new ServicesRetrieverCommentsPipelinedTransport(), new Services_Retriever_CommentsCaptureSink());
+            $serverProperty = new ReflectionProperty(Services_Retriever_CommentsPipelined::class, '_textServer');
+            $serverProperty->setAccessible(true);
+            $server = $serverProperty->getValue($runner);
+            $server['buggy'] = $buggy;
+            $serverProperty->setValue($runner, $server);
+
+            $dao = $this->createMock(Dao_Comment::class);
+            $dao->expects($buggy ? $this->never() : $this->once())
+                ->method('removeExtraComments')->with('fixture-highest@example.invalid');
+            $daoProperty = new ReflectionProperty(Services_Retriever_CommentsPipelined::class, '_commentDao');
+            $daoProperty->setAccessible(true);
+            $daoProperty->setValue($runner, $dao);
+
+            $runner->removeTooNewRecords('fixture-highest@example.invalid');
+        }
+    }
+
     private function newRunner(Services_Nntp_PipelinedTransport $transport, Services_Retriever_CommentsSink $sink)
     {
         $settings = new Services_Settings_Container();

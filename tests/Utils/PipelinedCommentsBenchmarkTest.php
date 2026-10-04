@@ -38,6 +38,16 @@ class PipelinedCommentsBenchmarkTest extends TestCase
         $this->assertSame(2, $exitCode);
     }
 
+    public function testProviderSmokeRefusesWithoutReadOnlyGuard()
+    {
+        $cmd = escapeshellarg(PHP_BINARY).' '.
+            escapeshellarg(__DIR__.'/../../utils/nntp_provider_smoke.php').' 2>/dev/null';
+        exec($cmd, $output, $exitCode);
+
+        $this->assertSame(2, $exitCode);
+        $this->assertSame([], $output);
+    }
+
     public function testSpotwebRootConfigDiscoveryUsesExplicitReadOnlyRoot()
     {
         $root = sys_get_temp_dir().'/spotweb-root-'.getmypid().'-'.bin2hex(random_bytes(4));
