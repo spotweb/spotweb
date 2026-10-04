@@ -44,6 +44,10 @@ class Services_MediaInformation_Imdb extends Services_MediaInformation_Abs
             CURLOPT_URL            => 'https://api.themoviedb.org/3/'.$endPoint,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING       => '',
+            // curl has no overall timeout and waits 300 s to connect by default,
+            // so an unreachable TMDB would hang the whole search
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT        => 15,
             CURLOPT_HTTPHEADER     => [
                 'Accept: application/json',
                 'Authorization: Bearer '.$token,

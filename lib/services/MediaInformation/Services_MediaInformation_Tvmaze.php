@@ -28,7 +28,12 @@ class Services_MediaInformation_Tvmaze extends Services_MediaInformation_Abs
                 return $mediaInfo;
         }
 
-        list($http_code, $tvmaze) = $this->_httpProvider->performCachedGet($url, false, 31 * 24 * 60 * 60);
+        /*
+         * TVMaze answers the lookup URLs with a redirect to /shows/<id>, so
+         * cache what the redirect leads to, or every search by rid or imdb
+         * id asks TVMaze again.
+         */
+        list($http_code, $tvmaze) = $this->_httpProvider->performCachedGet($url, true, 31 * 24 * 60 * 60);
 
         if (empty($tvmaze)) {
             return $mediaInfo;
