@@ -420,7 +420,7 @@ class Services_Providers_Http
         $content = $this->_cacheDao->getCachedHttp($url_md5);
 
         $stp = $content['stamp'] ?? 0; // Defaults to null if $content or 'stamp' doesn't exist
-        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'-> performCachedGet, content stamp='.$stp.' ttl='.$ttl.' time='.time().' diff='.time() - $stp);
+        SpotDebug::msg(SpotDebug::DEBUG, __CLASS__.'-> performCachedGet, content stamp='.$stp.' ttl='.$ttl.' time='.time().' diff='.(time() - $stp));
 
         if ((!$content) || ((time() - (int) $content['stamp']) > $ttl)) {
             if (!$content) {
