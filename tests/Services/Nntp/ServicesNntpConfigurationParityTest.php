@@ -81,6 +81,7 @@ class ServicesNntpConfigurationParityTest extends TestCase
     public function testAuthenticationRejectionIsReported()
     {
         $transport = $this->transport(false, false, 'password', 'wrong-fixture-password');
+
         try {
             $transport->connect();
             $this->fail('Authentication must not silently succeed');
@@ -115,6 +116,7 @@ class ServicesNntpConfigurationParityTest extends TestCase
     {
         foreach (['ssl', 'tls'] as $mode) {
             $transport = $this->transport($mode, true);
+
             try {
                 $transport->connect();
                 $this->fail('Self-signed fixture certificate must be rejected');
@@ -132,6 +134,7 @@ class ServicesNntpConfigurationParityTest extends TestCase
         $this->_pids[] = $fixture['pid'];
         $transport = new Services_Nntp_PipelinedTransport(['host' => $fixture['host'], 'port' => $fixture['port'], 'enc' => 'tls', 'verifyname' => false, 'user' => '', 'pass' => ''], 1);
         $started = microtime(true);
+
         try {
             $transport->connect();
             $this->fail('Stalled handshake must not succeed');

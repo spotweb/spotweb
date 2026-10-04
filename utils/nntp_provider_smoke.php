@@ -28,6 +28,7 @@ foreach ($servers as $server) {
         $transport = new Services_Nntp_PipelinedTransport($server, 15, 'validation');
         $start = microtime(true);
         $report = ['provider_host' => $server['host'], 'sample' => $sample, 'window' => 32, 'tls' => true, 'certificate_verification' => true];
+
         try {
             $group = $transport->selectGroup('free.usenet');
             $last = max($group['first'], $group['last'] - 5000 - ($sample * 1000));
