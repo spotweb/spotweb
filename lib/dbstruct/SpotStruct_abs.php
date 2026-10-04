@@ -411,9 +411,9 @@ abstract class SpotStruct_abs
         $this->createTable('spotsfull', 'utf8');
         $this->validateColumn('messageid', 'spotsfull', 'VARCHAR(128)', "''", true, 'ascii');
         $this->validateColumn('verified', 'spotsfull', 'BOOLEAN', null, false, '');
-        $this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(255)', null, false, 'ascii');
-        $this->validateColumn('userkey', 'spotsfull', 'VARCHAR(512)', null, false, 'ascii');
-        $this->validateColumn('xmlsignature', 'spotsfull', 'VARCHAR(255)', null, false, 'ascii');
+        $this->validateColumn('usersignature', 'spotsfull', 'VARCHAR(512)', null, false, 'ascii');
+        $this->validateColumn('userkey', 'spotsfull', 'VARCHAR(1024)', null, false, 'ascii');
+        $this->validateColumn('xmlsignature', 'spotsfull', 'VARCHAR(512)', null, false, 'ascii');
         $this->validateColumn('fullxml', 'spotsfull', 'TEXT', null, false, 'utf8');
         $this->alterStorageEngine('spotsfull', 'InnoDB');
 
