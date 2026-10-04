@@ -61,9 +61,7 @@
 <?php } ?>
 <?php if ($show_multinzb_checkbox && !count($spots) == 0) { ?>
 							<th class='multinzb'> 
-								<form action="" method="GET" id="checkboxget" name="checkboxget">
-									<input type='hidden' name='page' value='getnzb'>
-									<input type='checkbox' name='checkall' onclick='toggleAllMultiNzb();'>
+								<input type='checkbox' name='checkall' onclick='toggleAllMultiNzb();'>
 							</th>
 <?php } ?>						
 <?php $nzbHandlingTmp = $currentSession['user']['prefs']['nzbhandling'];
@@ -244,7 +242,7 @@ if ($show_nzbhandler_button) { ?>
                 if ($show_multinzb_checkbox) {
                     $multispotid = htmlspecialchars($spot['messageid']);
                     echo "<td class='multinzb ".'hg1'.' '.$newSpotClass.' '.$tipTipClass."'>";
-                    echo "<input onclick='multinzb()' type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+                    echo "<input onclick='multinzb()' type='checkbox' value='".$multispotid."'>";
                     echo '</td>';
                 } // if
 
@@ -338,7 +336,7 @@ if ($show_nzbhandler_button) { ?>
                 if ($show_multinzb_checkbox) {
                     $multispotid = htmlspecialchars($spot['messageid']);
                     echo "<td class='multinzb'>";
-                    echo "<input onclick='multinzb()' type='checkbox' name='".htmlspecialchars('messageid[]')."' value='".$multispotid."'>";
+                    echo "<input onclick='multinzb()' type='checkbox' value='".$multispotid."'>";
                     echo '</td>';
                 } // if
 
@@ -397,9 +395,6 @@ if ($show_nzbhandler_button) { ?>
 						</tr>
 					</tbody>
 				</table>
-			<?php if ($show_multinzb_checkbox) {
-    echo '</form>';
-} ?>
 				<input type="hidden" id="perPage" value="<?php echo $currentSession['user']['prefs']['perpage'] ?>">
 				<input type="hidden" id="nextPage" value="<?php echo $nextPage; ?>">
 				<input type="hidden" id="getURL" value="<?php echo $tplHelper->convertSortToQueryParams().$tplHelper->convertFilterToQueryParams(); ?>">

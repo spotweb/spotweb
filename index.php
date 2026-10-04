@@ -134,6 +134,7 @@ try {
                 $settings,
                 $currentSession,
                 ['messageid'   => $req->getDef('messageid', ''),
+                    'messageids'  => $req->getDef('messageids', null),
                     'action'   => $req->getDef('action', 'display'),
                     'username' => $req->getDef('username', ''),
                     'apikey'   => $req->getDef('apikey', ''), ]

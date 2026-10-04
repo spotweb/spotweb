@@ -3,12 +3,14 @@
 class SpotPage_getnzb extends SpotPage_Abs
 {
     private $_messageid;
+    private $_messageids;
     private $_action;
 
     public function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params)
     {
         parent::__construct($daoFactory, $settings, $currentSession);
         $this->_messageid = $params['messageid'];
+        $this->_messageids = isset($params['messageids']) ? $params['messageids'] : null;
         $this->_action = $params['action'];
     }
 
@@ -45,7 +47,7 @@ class SpotPage_getnzb extends SpotPage_Abs
 
             $svcActnNzb = new Services_Actions_DownloadNzb($this->_settings, $this->_daoFactory);
             $svcActnNzb->handleNzbAction(
-                $this->_messageid,
+                Services_Actions_DownloadNzb::resolveMessageIds($this->_messageid, $this->_messageids),
                 $this->_currentSession,
                 $this->_action,
                 $svcProvSpot,
