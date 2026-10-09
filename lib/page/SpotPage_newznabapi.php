@@ -169,10 +169,23 @@ class SpotPage_newznabapi extends SpotPage_Abs
             } // if
 
             /*
+             * A title looked up by id is TVMaze's canonical one, searched as an
+             * exact phrase. Spots routinely drop a leading article ("Legend of
+             * Korra" for The Legend of Korra), and a phrase that keeps it misses
+             * every one of them, while the phrase without it still matches the
+             * titles that have it. Only an id lookup is touched: a client's own
+             * q is searched as sent.
+             */
+            $title = $tvInfo->getTitle();
+            if ($this->_params['q'] == '' || $this->_params['q'] != $title) {
+                $title = preg_replace('/^(the|a|an|de|het|een)\s+/i', '', $title);
+                $tvInfo->setTitle($title);
+            }
+
+            /*
              * And try to add an episode parameter, basically the same set of rules
              * as for the season
              */
-            $title = $tvInfo->getTitle();
             if (preg_match('/^[eE][0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}$/', $this->_params['ep']) ||
                 preg_match('/^[0-9]{1,2}\/[0-9]{1,2}$/', $this->_params['ep'])) {
