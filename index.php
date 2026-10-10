@@ -133,11 +133,11 @@ try {
                 $daoFactory,
                 $settings,
                 $currentSession,
-                ['messageid'   => $req->getDef('messageid', ''),
+                ['messageid'      => $req->getDef('messageid', ''),
                     'messageids'  => $req->getDef('messageids', null),
-                    'action'   => $req->getDef('action', 'display'),
-                    'username' => $req->getDef('username', ''),
-                    'apikey'   => $req->getDef('apikey', ''), ]
+                    'action'      => $req->getDef('action', 'display'),
+                    'username'    => $req->getDef('username', ''),
+                    'apikey'      => $req->getDef('apikey', ''), ]
             );
             $page->render();
             break;
