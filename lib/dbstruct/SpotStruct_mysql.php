@@ -4,6 +4,36 @@
 
 class SpotStruct_mysql extends SpotStruct_abs
 {
+    private function columnCharacterSet($collation)
+    {
+        switch (strtolower($collation)) {
+            case 'utf8':
+            case 'utf8mb4': return 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+            case 'ascii': return 'CHARACTER SET ascii';
+            case 'ascii_bin': return 'CHARACTER SET ascii COLLATE ascii_bin';
+            case '': return '';
+            default: throw new Exception('Invalid collation setting');
+        } // switch
+    }
+
+    private function tableCharacterSet()
+    {
+        return 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+    }
+
+    private function validateTableCharacterSet($tablename)
+    {
+        $q = $this->_dbcon->singleQuery(
+            "SELECT TABLE_COLLATION
+               FROM information_schema.TABLES
+              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '".$tablename."'"
+        );
+
+        if (strtolower((string) $q) != 'utf8mb4_unicode_ci') {
+            $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' DEFAULT '.$this->tableCharacterSet());
+        } // if
+    }
+
     /*
      * Optimize / analyze (database specific) a number of hightraffic
      * tables.
@@ -260,19 +290,7 @@ class SpotStruct_mysql extends SpotStruct_abs
             $colType = $this->swDtToNative($colType);
 
             // change the collation to a MySQL type
-            switch (strtolower($collation)) {
-                case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-                    break;
-                case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci';
-                    break;
-                case 'ascii': $colSetting = 'CHARACTER SET ascii';
-                    break;
-                case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin';
-                    break;
-                case '': $colSetting = '';
-                    break;
-                default: throw new Exception('Invalid collation setting');
-            } // switch
+            $colSetting = $this->columnCharacterSet($collation);
 
             // and define the 'NOT NULL' part
             switch ($notNull) {
@@ -303,19 +321,7 @@ class SpotStruct_mysql extends SpotStruct_abs
         $colType = $this->swDtToNative($colType);
 
         // change the collation to a MySQL type
-        switch (strtolower($collation)) {
-            case 'utf8': $colSetting = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-                break;
-            case 'utf8mb4': $colSetting = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci';
-                break;
-            case 'ascii': $colSetting = 'CHARACTER SET ascii';
-                break;
-            case 'ascii_bin': $colSetting = 'CHARACTER SET ascii COLLATE ascii_bin';
-                break;
-            case '': $colSetting = '';
-                break;
-            default: throw new Exception('Invalid collation setting');
-        } // switch
+        $colSetting = $this->columnCharacterSet($collation);
 
         // and define the 'NOT NULL' part
         switch ($notNull) {
@@ -350,19 +356,21 @@ class SpotStruct_mysql extends SpotStruct_abs
 
     // tableExists
 
-    /* creates an empty table with only an ID field. Collation should be either UTF8 or ASCII */
+    /* creates an empty table with only an ID field */
     public function createTable($tablename, $collation)
     {
         if (!$this->tableExists($tablename)) {
             switch (strtolower($collation)) {
-                case 'utf8': $colSetting = 'CHARSET=utf8 COLLATE=utf8_unicode_ci';
-                    break;
-                case 'ascii': $colSetting = 'CHARSET=ascii';
+                case 'utf8':
+                case 'ascii':
+                case '': $colSetting = 'ENGINE=InnoDB DEFAULT '.$this->tableCharacterSet();
                     break;
                 default: throw new Exception('Invalid collation setting');
             } // switch
 
             $this->_dbcon->rawExec('CREATE TABLE '.$tablename.' (id INTEGER PRIMARY KEY AUTO_INCREMENT) '.$colSetting);
+        } else {
+            $this->validateTableCharacterSet($tablename);
         } // if
     }
 
@@ -484,11 +492,13 @@ class SpotStruct_mysql extends SpotStruct_abs
                         break;
                     case 'ascii_bin': $q['COLLATION_NAME'] = 'ascii_bin';
                         break;
+                    case 'utf8mb4_unicode_ci': $q['COLLATION_NAME'] = 'utf8';
+                        break;
+                    case 'utf8mb4_general_ci': $q['COLLATION_NAME'] = 'utf8mb4_general';
+                        break;
                     case 'utf8_unicode_ci':
                     case 'utf8mb3_unicode_ci':
-                    case 'utf8_general_ci': $q['COLLATION_NAME'] = 'utf8';
-                        break;
-                    case 'utf8mb4_general_ci': $q['COLLATION_NAME'] = 'utf8mb4';
+                    case 'utf8_general_ci': $q['COLLATION_NAME'] = 'utf8mb3';
                         break;
 
                     default: throw new Exception('Invalid collation setting for varchar: '.$q['COLLATION_NAME']);
