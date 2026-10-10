@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__.'/../services/Nntp/Services_Nntp_ClientPool.php';
+require_once __DIR__.'/../services/Nntp/Services_Nntp_SpotReader.php';
+
 class SpotPage_getimage extends SpotPage_Abs
 {
     private $_messageid;
@@ -47,7 +50,7 @@ class SpotPage_getimage extends SpotPage_Abs
             $providerSpotImage = new Services_Providers_CommentImage(new Services_Providers_Http($this->_daoFactory->getCacheDao()));
             $data = $providerSpotImage->fetchGravatarImage($this->_image);
         } else {
-            $svc_nntpnzb_engine = Services_Nntp_EnginePool::pool($this->_settings, 'bin');
+            $svc_nntpnzb_engine = Services_Nntp_ClientPool::pool($this->_settings, 'bin');
 
             /*
              * Retrieve the full spot, we need it to be able to retrieve the image
@@ -60,7 +63,7 @@ class SpotPage_getimage extends SpotPage_Abs
              */
             $providerSpotImage = new Services_Providers_SpotImage(
                 new Services_Providers_Http($this->_daoFactory->getCacheDao()),
-                new Services_Nntp_SpotReading($svc_nntpnzb_engine),
+                new Services_Nntp_SpotReader($svc_nntpnzb_engine),
                 $this->_daoFactory->getCacheDao()
             );
             $data = $providerSpotImage->fetchSpotImage($fullSpot);

@@ -21,11 +21,20 @@ if ($result->isSubmitted()) {
     if (!isset($nntp_nzb['verifyname'])) {
         $nntp_nzb['verifyname'] = true;
     }
+    if (!isset($nntp_nzb['article_pipeline_depth'])) {
+        $nntp_nzb['article_pipeline_depth'] = 32;
+    }
     if (!isset($nntp_hdr['verifyname'])) {
-        $nntp_nzb['verifyname'] = true;
+        $nntp_hdr['verifyname'] = true;
+    }
+    if (!isset($nntp_hdr['article_pipeline_depth'])) {
+        $nntp_hdr['article_pipeline_depth'] = 32;
     }
     if (!isset($nntp_post['verifyname'])) {
-        $nntp_nzb['verifyname'] = true;
+        $nntp_post['verifyname'] = true;
+    }
+    if (!isset($nntp_post['article_pipeline_depth'])) {
+        $nntp_post['article_pipeline_depth'] = 32;
     }
 
     $tmpArDiff = strcmp(serialize($nntp_hdr), serialize($nntp_nzb));
@@ -152,6 +161,9 @@ if ($result->isSubmitted()) {
 					<dt><label for="editsettingsform[nntp_nzb][port]"><?php echo _('Port'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[nntp_nzb][port]" value="<?php echo htmlspecialchars($nntp_nzb['port'], ENT_QUOTES); ?>"></dd>
 
+					<dt><label for="editsettingsform[nntp_nzb][article_pipeline_depth]"><?php echo _('Article pipeline depth'); ?><br /><?php echo _('Used by scheduled bulk retrieval. Use 1 to disable pipelining. Valid range: 1-128.'); ?></label></dt>
+					<dd><input type="text" name="editsettingsform[nntp_nzb][article_pipeline_depth]" value="<?php echo htmlspecialchars($nntp_nzb['article_pipeline_depth'], ENT_QUOTES); ?>"></dd>
+
 					<dt><label for="editsettingsform[nntp_nzb][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_nzb][buggy]" <?php if ($nntp_nzb['buggy']) {
     echo 'checked="checked"';
@@ -199,6 +211,9 @@ if ($result->isSubmitted()) {
 					<dt><label for="editsettingsform[nntp_hdr][port]"><?php echo _('Port'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[nntp_hdr][port]" value="<?php echo htmlspecialchars($nntp_hdr['port'], ENT_QUOTES); ?>"></dd>
 
+					<dt><label for="editsettingsform[nntp_hdr][article_pipeline_depth]"><?php echo _('Article pipeline depth'); ?><br /><?php echo _('Used by scheduled bulk retrieval. Use 1 to disable pipelining. Valid range: 1-128.'); ?></label></dt>
+					<dd><input type="text" name="editsettingsform[nntp_hdr][article_pipeline_depth]" value="<?php echo htmlspecialchars($nntp_hdr['article_pipeline_depth'], ENT_QUOTES); ?>"></dd>
+
 					<dt><label for="editsettingsform[nntp_hdr][buggy]"><?php echo _('Buggy (Some newsservers lose messages once in a while)'); ?></label></dt>
 					<dd><input type="checkbox" name="editsettingsform[nntp_hdr][buggy]" <?php if ($nntp_hdr['buggy']) {
     echo 'checked="checked"';
@@ -244,6 +259,9 @@ if ($result->isSubmitted()) {
                      </dd>
 					<dt><label for="editsettingsform[nntp_post][port]"><?php echo _('Port'); ?></label></dt>
 					<dd><input type="text" name="editsettingsform[nntp_post][port]" value="<?php echo htmlspecialchars($nntp_post['port'], ENT_QUOTES); ?>"></dd>
+
+					<dt><label for="editsettingsform[nntp_post][article_pipeline_depth]"><?php echo _('Article pipeline depth'); ?><br /><?php echo _('Reserved for future scheduled retrieval paths. Use 1 to disable pipelining. Valid range: 1-128.'); ?></label></dt>
+					<dd><input type="text" name="editsettingsform[nntp_post][article_pipeline_depth]" value="<?php echo htmlspecialchars($nntp_post['article_pipeline_depth'], ENT_QUOTES); ?>"></dd>
 
 					<input type="hidden" name="editsettingsform[nntp_post][buggy]" value="">
 				</dl>

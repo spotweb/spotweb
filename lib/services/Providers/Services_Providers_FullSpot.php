@@ -8,7 +8,7 @@ class Services_Providers_FullSpot
     /*
      * constructor
      */
-    public function __construct(Dao_Spot $spotDao, Services_Nntp_SpotReading $nntpSpotReading)
+    public function __construct(Dao_Spot $spotDao, Services_Nntp_SpotReader $nntpSpotReading)
     {
         $this->_spotDao = $spotDao;
         $this->_nntpSpotReading = $nntpSpotReading;

@@ -1,0 +1,116 @@
+PHPUnit 11.5.56 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.5.4
+Configuration: /work/phpunit.xml.dist
+
+...........DDDDDDDDDD.........DD........D........DDDDDD....DDDDDD 65 / 76 ( 85%)
+...........                                                       76 / 76 (100%)
+
+Time: 00:05.006, Memory: 29.46 MB
+
+Dao Base Comment
+ ✔ Add full comments normalizes from header before insert
+
+Dbeng Pdo Mysql
+ ✔ Tcp connection string uses utf 8mb 4
+ ✔ Socket connection string uses utf 8mb 4
+
+Pipelined Comments Benchmark
+ ✔ Fixture benchmark emits json lines without database
+ ✔ Benchmark refuses without read only guard
+ ✔ Provider smoke refuses without read only guard
+ ✔ Spotweb root config discovery uses explicit read only root
+
+Services Nntp Architecture
+ ✔ Legacy nntp stack does not return to runtime code
+ ✔ Protocol primitives stay in central transport
+
+Services Nntp Configuration Parity
+ ⚠ Plain connection and both authentication success responses
+ ⚠ Authentication rejection is reported
+ ⚠ Plain connection without credentials
+ ⚠ Implicit tls and start tls with verification explicitly disabled
+ ⚠ Verification enabled rejects untrusted certificate
+ ⚠ Start tls handshake has a bounded timeout
+ ⚠ Trusted certificate and hostname verification for both tls modes
+ ⚠ Role specific defaults match existing pool behaviour
+ ⚠ Explicit verification and pipeline values are preserved
+ ⚠ Unconfigured binary and posting servers reuse header connection
+
+Services Nntp Pipelined Recovery
+ ✔ Disconnect before response retries all ids
+ ✔ Disconnect mid multiline body retries only unresolved tail
+ ✔ Timeout falls back to window one after configured retry
+ ✔ No such article is terminal and not retried
+ ✔ Final article failure is deferred after retry budget
+ ✔ Reconnect failure preserves completed and unresolved tail
+ ✔ Unexpected article protocol failure retries dequeued id and following tail
+
+Services Nntp Pipelined Transport
+ ✔ Overview header lookup and pipelined articles
+ ✔ Disconnect before response reports unresolved tail
+ ⚠ Initial pipeline connection failure is converted and logged safely
+ ⚠ Pipeline article failure emits safe operational failure event
+ ✔ Disconnect during multiline body preserves completed and unresolved tail
+ ✔ Unexpected article response reports dequeued id and following tail
+ ✔ Unexpected final article response reports dequeued final id
+ ✔ Single article head body and post use shared fixture
+ ✔ Direct header reconnects after disconnect and reselects group
+ ✔ Direct body reconnects after disconnect and reselects group
+ ✔ Direct article reconnects after disconnect and reselects group
+ ✔ Direct article 430 is terminal and not retried
+ ⚠ Sensitive diagnostic context is redacted
+ ✔ Invalid encryption configuration is rejected
+
+Services Retriever Command Lock
+ ✔ Acquire and release use mysql advisory lock
+ ✔ Failed acquire does not release lock
+ ✔ Release failure does not mask primary retriever failure
+ ✔ Acquire and release use postgresql advisory lock
+ ✔ Postgresql failed acquire does not release lock
+ ✔ Sqlite uses non blocking file lock
+ ✔ Retriever base does not contain phase level locking
+
+Services Retriever Comments Pipelined
+ ⚠ Capture sink parity is identical across pipeline windows
+ ⚠ Duplicate headers are inserted and fetched once
+ ⚠ Commit failure does not produce capture checkpoint
+ ⚠ Malformed article payload is terminal and non fatal
+ ⚠ Cursor stops before unresolved earlier article
+ ⚠ Buggy server option preserves extra comment cleanup policy
+
+Services Retriever Pipelined Article Batch
+ ✔ Missing article is terminal for scheduled comments stream
+ ✔ Malformed article is terminal for scheduled spots stream
+ ✔ Unresolved tail stops cursor before later scheduled reports success
+ ✔ Reconnect failure does not advance cursor past unresolved tail
+
+Services Settings Base
+ ✔ Schema version is bumped for inno db conversion
+ ✔ Schema version gate requires current schema
+ ✔ Schema version gate accepts bumped schema
+ ✔ Nntp pipeline depth defaults when missing
+ ✔ Nntp pipeline depth accepts safe bounded integer
+ ✔ Nntp pipeline depth rejects invalid values
+
+Spot Req Post Parameters
+ ✔ Bulk get nzb parameters decode from post body
+ ✔ Legacy scalar message id remains supported
+ ✔ Legacy message id array is rejected
+ ✔ Invalid bulk message ids are rejected
+ ✔ Malformed bulk message ids are rejected
+ ✔ Empty bulk message ids are rejected
+ ✔ Oversized bulk message ids are rejected
+
+Spot Struct Mysql
+ ✔ Create table uses inno db and canonical utf 8mb 4 default
+ ✔ Existing table default converges to canonical utf 8mb 4
+ ✔ Utf 8 columns use canonical utf 8mb 4 collation
+ ✔ Schema declarations do not request my isam
+
+Spot Struct Spotsfull Schema
+ ✔ Spotsfull external signature columns are widened
+ ✔ Spotsfull external signature columns no longer use legacy limits
+
+OK, but there were issues!
+Tests: 76, Assertions: 426, Deprecations: 9, PHPUnit Deprecations: 7.

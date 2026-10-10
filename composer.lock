@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "453d56fd9fe8934f54b0812176d63d78",
+    "content-hash": "ecf6d7e28ea5f186de6ecb803532f707",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -1449,65 +1449,6 @@
                 "source": "https://github.com/mesa57/fts-parser/tree/1.0.0"
             },
             "time": "2022-02-17T14:55:01+00:00"
-        },
-        {
-            "name": "spotweb/nntp",
-            "version": "1.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mesa57/NNTP-Protocol.git",
-                "reference": "fa69f973588be43cb5e24db518d24a844aea0ae8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mesa57/NNTP-Protocol/zipball/fa69f973588be43cb5e24db518d24a844aea0ae8",
-                "reference": "fa69f973588be43cb5e24db518d24a844aea0ae8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/Protocol/Responsecode.php",
-                    "src/Protocol/Client.php",
-                    "src/Client.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Heino H. Gehlsen",
-                    "email": "heino@gehlsen.dk",
-                    "role": "Lead (abandoned)"
-                },
-                {
-                    "name": "Jan-Pascal van Best",
-                    "email": "janpascal@vanbest.org",
-                    "role": "Lead (abandoned)"
-                },
-                {
-                    "name": "Geoffrey Dijkstra",
-                    "email": "info@gdwebs.nl",
-                    "homepage": "http://www.gdwebs.nl",
-                    "role": "Developer"
-                },
-                {
-                    "name": "mesa57",
-                    "email": "mesa57@hotmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A package that adds support for the NNTP protocol in PHP.",
-            "homepage": "https://github.com/mesa57/NNTP-Protocol",
-            "support": {
-                "source": "https://github.com/mesa57/NNTP-Protocol/tree/1.0.4"
-            },
-            "time": "2026-05-10T16:27:26+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

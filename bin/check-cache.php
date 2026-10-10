@@ -5,6 +5,8 @@ error_reporting(2147483647);
 
 try {
     require_once __DIR__.'/../vendor/autoload.php';
+    require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_ClientPool.php';
+    require_once __DIR__.'/../lib/services/Nntp/Services_Nntp_SpotReader.php';
 
     /*
      * Create a DAO factory. We cannot use the bootstrapper here,
@@ -40,12 +42,12 @@ try {
     /*
      * Initialize the NZB retrieval provider
      */
-    $svcFullSpot = new Services_Providers_FullSpot($daoFactory->getSpotDao(), new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'hdr')));
-    $svcNzb = new Services_Providers_Nzb($cacheDao, new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'bin')));
+    $svcFullSpot = new Services_Providers_FullSpot($daoFactory->getSpotDao(), new Services_Nntp_SpotReader(Services_Nntp_ClientPool::pool($settings, 'hdr')));
+    $svcNzb = new Services_Providers_Nzb($cacheDao, new Services_Nntp_SpotReader(Services_Nntp_ClientPool::pool($settings, 'bin')));
     $svcPrvHttp = new Services_Providers_Http($cacheDao);
     $svcImage = new Services_Providers_SpotImage(
         $svcPrvHttp,
-        new Services_Nntp_SpotReading(Services_Nntp_EnginePool::pool($settings, 'bin')),
+        new Services_Nntp_SpotReader(Services_Nntp_ClientPool::pool($settings, 'bin')),
         $cacheDao
     );
 

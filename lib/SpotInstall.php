@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/services/Nntp/Services_Nntp_PipelinedTransport.php';
+
 /**
  * Created by PhpStorm.
  * User: root
@@ -235,7 +237,7 @@ class SpotInstall
 
                 // Try to connect to the usenet server.
                 if ($form['submit'] === 'Verify usenet server') {
-                    $nntp = new Services_Nntp_Engine($form['hdr']);
+                    $nntp = new Services_Nntp_PipelinedTransport($form['hdr'], Services_Nntp_PipelinedTransport::DEFAULT_TIMEOUT, 'config-test');
                     $nntp->validateServer();
                 }
 

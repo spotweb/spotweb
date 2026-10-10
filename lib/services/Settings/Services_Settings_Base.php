@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
+
 /*
  * Class to storage all settings in. Contains both 'ownsettings.php' settings as database settings
  */
@@ -51,6 +53,16 @@ class Services_Settings_Base
         $settings['nntp_nzb']['host'] = trim($settings['nntp_nzb']['host']);
         $settings['nntp_hdr']['host'] = trim($settings['nntp_hdr']['host']);
         $settings['nntp_post']['host'] = trim($settings['nntp_post']['host']);
+
+        foreach (['nntp_nzb', 'nntp_hdr', 'nntp_post'] as $serverSetting) {
+            if (!isset($settings[$serverSetting][Services_Nntp_PipelineDepth::SettingName])) {
+                $settings[$serverSetting][Services_Nntp_PipelineDepth::SettingName] = Services_Nntp_PipelineDepth::DefaultDepth;
+            }
+            if (!Services_Nntp_PipelineDepth::validate($settings[$serverSetting][Services_Nntp_PipelineDepth::SettingName])) {
+                $result->addError(_('NNTP article pipeline depth must be an integer between 1 and 128'));
+            }
+            $settings[$serverSetting][Services_Nntp_PipelineDepth::SettingName] = Services_Nntp_PipelineDepth::normalize($settings[$serverSetting][Services_Nntp_PipelineDepth::SettingName]);
+        }
 
         // Verify settings with the previous declared arrays
         if (in_array($settings['nntp_nzb']['enc'], $validNntpEnc) === false || in_array($settings['nntp_hdr']['enc'], $validNntpEnc) === false || in_array($settings['nntp_post']['enc'], $validNntpEnc) === false) {
@@ -163,7 +175,8 @@ class Services_Settings_Base
                 'enc'                       => false,
                 'port'                      => 119,
                 'buggy'                     => false,
-                'verifyname'                => true, ];
+                'verifyname'                => true,
+                'article_pipeline_depth'    => Services_Nntp_PipelineDepth::DefaultDepth, ];
         } // if
 
         if (!isset($settings['nntp_post']['use'])) {
@@ -173,7 +186,8 @@ class Services_Settings_Base
                 'enc'                        => false,
                 'port'                       => 119,
                 'buggy'                      => false,
-                'verifyname'                 => true, ];
+                'verifyname'                 => true,
+                'article_pipeline_depth'     => Services_Nntp_PipelineDepth::DefaultDepth, ];
         } // if
 
         /*

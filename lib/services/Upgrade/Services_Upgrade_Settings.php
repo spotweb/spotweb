@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
+
 class Services_Upgrade_Settings
 {
     private $_settings;
@@ -53,9 +55,12 @@ class Services_Upgrade_Settings
         $this->setIfNot('retention', 0);
         $this->setIfNot('retentiontype', 'fullonly');
         $this->setIfNot('deny_robots', true);
-        $this->setIfNot('nntp_nzb', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true]);
-        $this->setIfNot('nntp_hdr', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true]);
-        $this->setIfNot('nntp_post', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true]);
+        $this->setIfNot('nntp_nzb', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true, 'article_pipeline_depth' => Services_Nntp_PipelineDepth::DefaultDepth]);
+        $this->setIfNot('nntp_hdr', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true, 'article_pipeline_depth' => Services_Nntp_PipelineDepth::DefaultDepth]);
+        $this->setIfNot('nntp_post', ['host' => '', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true, 'article_pipeline_depth' => Services_Nntp_PipelineDepth::DefaultDepth]);
+        $this->normalizeNntpServerSetting('nntp_nzb');
+        $this->normalizeNntpServerSetting('nntp_hdr');
+        $this->normalizeNntpServerSetting('nntp_post');
         $this->setIfNot('smtp', ['use' => false, 'host' => '', 'user' => '', 'pass' => '', 'port' => 587]);
         $this->setIfNot('retrieve_newer_than', 0);
         $this->setIfNot('retrieve_full', false);
@@ -134,6 +139,20 @@ class Services_Upgrade_Settings
     }
 
     // remove
+
+    private function normalizeNntpServerSetting($name)
+    {
+        if (!$this->_settings->exists($name)) {
+            return;
+        }
+
+        $server = $this->_settings->get($name);
+        if (!is_array($server)) {
+            return;
+        }
+
+        $this->_settings->set($name, Services_Nntp_PipelineDepth::normalizeServer($server));
+    }
 
     /*
      * Update the current settingsversion number

@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__.'/SpotThemes.php';
+require_once __DIR__.'/services/Nntp/Services_Nntp_PipelinedTransport.php';
 
 // Utility class voor template functies, kan eventueel
 // door custom templates extended worden
@@ -172,7 +173,7 @@ class SpotTemplateHelper
         $result = '';
 
         try {
-            $testNntp = new Services_Nntp_Engine($server);
+            $testNntp = new Services_Nntp_PipelinedTransport($server, Services_Nntp_PipelinedTransport::DEFAULT_TIMEOUT, 'config-test');
             $testNntp->validateServer();
         } // try
         catch (Exception $x) {
