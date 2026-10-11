@@ -46,8 +46,8 @@ class SpotReqPostParametersTest extends TestCase
 
         $_GET = [];
         $_POST = [
-            'page'      => 'getnzb',
-            'action'    => 'push-sabnzbd',
+            'page'       => 'getnzb',
+            'action'     => 'push-sabnzbd',
             'messageids' => json_encode($messageIds),
         ];
 
