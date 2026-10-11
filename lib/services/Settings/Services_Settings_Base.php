@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
+require_once __DIR__.'/../Nntp/Services_Nntp_Encryption.php';
 
 /*
  * Class to storage all settings in. Contains both 'ownsettings.php' settings as database settings
@@ -35,7 +36,6 @@ class Services_Settings_Base
         $result = new Dto_FormResult();
 
         // Define arrays with valid settings
-        $validNntpEnc = [false, 'ssl', 'tls'];
         $validModerationAction = ['disable', 'act', 'markspot'];
         $validRetentionTypes = ['fullonly', 'everything'];
 
@@ -65,7 +65,7 @@ class Services_Settings_Base
         }
 
         // Verify settings with the previous declared arrays
-        if (in_array($settings['nntp_nzb']['enc'], $validNntpEnc) === false || in_array($settings['nntp_hdr']['enc'], $validNntpEnc) === false || in_array($settings['nntp_post']['enc'], $validNntpEnc) === false) {
+        if (!Services_Nntp_Encryption::isValid($settings['nntp_nzb']['enc']) || !Services_Nntp_Encryption::isValid($settings['nntp_hdr']['enc']) || !Services_Nntp_Encryption::isValid($settings['nntp_post']['enc'])) {
             $result->addError(_('Invalid encryption setting'));
         } // if
         if (in_array($settings['spot_moderation'], $validModerationAction) === false) {

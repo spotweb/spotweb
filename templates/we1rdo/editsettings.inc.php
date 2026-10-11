@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../lib/services/Nntp/Services_Nntp_Encryption.php';
+
 require __DIR__.'/includes/header.inc.php';
 require __DIR__.'/includes/form-messages.inc.php';
 
@@ -139,20 +141,20 @@ if ($result->isSubmitted()) {
 					<dt><label for="editsettingsform[nntp_nzb][pass]"><?php echo _('Password'); ?></label></dt>
 					<dd><input type="password" name="editsettingsform[nntp_nzb][pass]" value="<?php echo htmlspecialchars($nntp_nzb['pass'], ENT_QUOTES); ?>"></dd>
 
-					<dt><label for="use_encryption_nzb"><?php echo _('Encryption'); ?></label></dt>
+					<dt><label for="use_encryption_nzb"><?php echo _('Encryption (recommended; disabling sends credentials and articles unencrypted)'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_nzb][enc][switch]" id="use_encryption_nzb" <?php if ($nntp_nzb['enc']) {
     echo 'checked="checked"';
 } ?>>
 					<fieldset id="content_use_encryption_nzb">
 						<select name="editsettingsform[nntp_nzb][enc][select]">
-							<option <?php if ($nntp_nzb['enc'] == 'ssl') {
+							<option <?php if (Services_Nntp_Encryption::normalize($nntp_nzb['enc']) === Services_Nntp_Encryption::ImplicitTls) {
     echo 'selected="selected"';
-} ?> value="ssl">SSL</option>
-							<option <?php if ($nntp_nzb['enc'] == 'tls') {
+} ?> value="tls"><?php echo _('TLS (implicit encryption, usually port 563)'); ?></option>
+							<option <?php if (Services_Nntp_Encryption::normalize($nntp_nzb['enc']) === Services_Nntp_Encryption::StartTls) {
     echo 'selected="selected"';
-} ?> value="tls">TLS</option>
+} ?> value="starttls"><?php echo _('STARTTLS (explicit upgrade, usually port 119)'); ?></option>
 						</select>					
-     					<label for="editsettingsform[nntp_nzb][verifyname]"><?php echo '&nbsp;&nbsp;&nbsp'; echo _('Verify name (CN) on certificate'); ?></label>
+					<label for="editsettingsform[nntp_nzb][verifyname]"><?php echo '&nbsp;&nbsp;&nbsp'; echo _('Verify certificate and hostname (recommended)'); ?></label>
                         <input type="checkbox" name="editsettingsform[nntp_nzb][verifyname][switch]" style="vertical-align:bottom" id="use_verifyname_nzb" <?php if ($nntp_nzb['verifyname']) {
     echo 'checked="checked"';
 } ?>>
@@ -188,20 +190,20 @@ if ($result->isSubmitted()) {
 					<dt><label for="editsettingsform[nntp_hdr][pass]"><?php echo _('Password'); ?></label></dt>
 					<dd><input type="password" name="editsettingsform[nntp_hdr][pass]" value="<?php echo htmlspecialchars($nntp_hdr['pass'], ENT_QUOTES); ?>"></dd>
 
-					<dt><label for="use_encryption_hdr"><?php echo _('Encryption'); ?></label></dt>
+					<dt><label for="use_encryption_hdr"><?php echo _('Encryption (recommended; disabling sends credentials and articles unencrypted)'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_hdr][enc][switch]" id="use_encryption_hdr" <?php if ($nntp_hdr['enc']) {
     echo 'checked="checked"';
 } ?>>
 					<fieldset id="content_use_encryption_hdr">
 						<select name="editsettingsform[nntp_hdr][enc][select]">
-							<option <?php if ($nntp_hdr['enc'] == 'ssl') {
+							<option <?php if (Services_Nntp_Encryption::normalize($nntp_hdr['enc']) === Services_Nntp_Encryption::ImplicitTls) {
     echo 'selected="selected"';
-} ?> value="ssl">SSL</option>
-							<option <?php if ($nntp_hdr['enc'] == 'tls') {
+} ?> value="tls"><?php echo _('TLS (implicit encryption, usually port 563)'); ?></option>
+							<option <?php if (Services_Nntp_Encryption::normalize($nntp_hdr['enc']) === Services_Nntp_Encryption::StartTls) {
     echo 'selected="selected"';
-} ?> value="tls">TLS</option>
+} ?> value="starttls"><?php echo _('STARTTLS (explicit upgrade, usually port 119)'); ?></option>
 						</select>					
-     					<label for="editsettingsform[nntp_hdr][verifyname]"><?php echo '&nbsp;&nbsp;&nbsp'; echo _('Verify name (CN) on certificate'); ?></label>
+					<label for="editsettingsform[nntp_hdr][verifyname]"><?php echo '&nbsp;&nbsp;&nbsp'; echo _('Verify certificate and hostname (recommended)'); ?></label>
                         <input type="checkbox" name="editsettingsform[nntp_hdr][verifyname][switch]" style="vertical-align:bottom" id="use_verifyname_hdr" <?php if ($nntp_hdr['verifyname']) {
     echo 'checked="checked"';
 } ?>>
@@ -238,20 +240,20 @@ if ($result->isSubmitted()) {
 					<dt><label for="editsettingsform[nntp_post][pass]"><?php echo _('Password'); ?></label></dt>
 					<dd><input type="password" name="editsettingsform[nntp_post][pass]" value="<?php echo htmlspecialchars($nntp_post['pass'], ENT_QUOTES); ?>"></dd>
 
-					<dt><label for="use_encryption_post"><?php echo _('Encryption'); ?></label></dt>
+					<dt><label for="use_encryption_post"><?php echo _('Encryption (recommended; disabling sends credentials and articles unencrypted)'); ?></label></dt>
 					<dd><input type="checkbox" class="enabler" name="editsettingsform[nntp_post][enc][switch]" id="use_encryption_post" <?php if ($nntp_post['enc']) {
     echo 'checked="checked"';
 } ?>>
 					<fieldset id="content_use_encryption_post">
 						<select name="editsettingsform[nntp_post][enc][select]">
-							<option <?php if ($nntp_post['enc'] == 'ssl') {
+							<option <?php if (Services_Nntp_Encryption::normalize($nntp_post['enc']) === Services_Nntp_Encryption::ImplicitTls) {
     echo 'selected="selected"';
-} ?> value="ssl">SSL</option>
-							<option <?php if ($nntp_post['enc'] == 'tls') {
+} ?> value="tls"><?php echo _('TLS (implicit encryption, usually port 563)'); ?></option>
+							<option <?php if (Services_Nntp_Encryption::normalize($nntp_post['enc']) === Services_Nntp_Encryption::StartTls) {
     echo 'selected="selected"';
-} ?> value="tls">TLS</option>
+} ?> value="starttls"><?php echo _('STARTTLS (explicit upgrade, usually port 119)'); ?></option>
 						</select>					
-     					<label for="editsettingsform[nntp_post][verifyname]"><?php echo '&nbsp;&nbsp;&nbsp'; echo _('Verify name (CN) on certificate'); ?></label>
+					<label for="editsettingsform[nntp_post][verifyname]"><?php echo '&nbsp;&nbsp;&nbsp'; echo _('Verify certificate and hostname (recommended)'); ?></label>
                         <input type="checkbox" name="editsettingsform[nntp_post][verifyname][switch]" style="vertical-align:bottom" id="use_verifyname_post" <?php if ($nntp_post['verifyname']) {
     echo 'checked="checked"';
 } ?>>

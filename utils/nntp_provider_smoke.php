@@ -21,7 +21,7 @@ if (!is_array($servers) || empty($servers)) {
 }
 $failed = false;
 foreach ($servers as $server) {
-    if (!is_array($server) || empty($server['host']) || $server['enc'] !== 'ssl' || empty($server['verifyname'])) {
+    if (!is_array($server) || empty($server['host']) || Services_Nntp_Encryption::normalize(isset($server['enc']) ? $server['enc'] : false) !== Services_Nntp_Encryption::ImplicitTls || empty($server['verifyname'])) {
         exit(2);
     }
     for ($sample = 1; $sample <= 3; $sample++) {

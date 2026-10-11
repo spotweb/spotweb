@@ -4,6 +4,37 @@ This branch replaces the remaining PEAR-derived NNTP stack with a single
 internal Spotweb NNTP layer. It is structured for upstream review and keeps
 all protocol handling in one reusable implementation.
 
+## Encryption modes
+
+- `tls`: implicit TLS, normally on port 563. Encryption is established before
+  reading the NNTP greeting or sending authentication.
+- `ssl`: retained as an alias for implicit TLS for existing configurations. It
+  does not enable obsolete SSL protocols. Both labels allow TLS 1.2 and TLS 1.3
+  where the PHP/OpenSSL runtime supports TLS 1.3.
+- `starttls`: explicit STARTTLS, normally on port 119. The upgrade must succeed
+  before authentication; a rejected or failed upgrade closes the connection
+  and never falls back to plaintext.
+- `false`: unencrypted NNTP. Credentials and article data are sent unencrypted.
+
+Keep certificate and hostname verification enabled. Existing explicit
+verification choices and role-specific defaults are preserved by this fix.
+The settings UI shows one implicit-TLS option for both historical labels and
+a separate STARTTLS option; saving an old `ssl` selection uses the `tls` label.
+Ports are not rewritten or used to guess the connection method.
+
+Issue #1008 exposed a configuration regression: the initial replacement treated
+the existing `tls` value as STARTTLS, while the old implementation used `tls://`
+for immediate encryption. The configuration fixtures now verify implicit TLS
+for both historical values, explicit STARTTLS, TLS 1.2/1.3 negotiation,
+certificate/hostname verification, and failure without plaintext fallback.
+Users who explicitly intended STARTTLS with the replacement should select
+`starttls`; no database migration or schema downgrade is needed.
+
+`Services_Nntp_Encryption` is the shared class for mode normalization,
+validation, and the minimum TLS policy. The transport uses native PHP
+streams/OpenSSL and remains the only owner of handshake, authentication,
+and NNTP wire operations; no second NNTP package or protocol stack is added.
+
 ## Dependency map
 
 ```text

@@ -103,7 +103,7 @@ class ServicesNntpConfigurationParityTest extends TestCase
 
     public function testImplicitTlsAndStartTlsWithVerificationExplicitlyDisabled()
     {
-        foreach (['ssl', 'tls'] as $mode) {
+        foreach (['ssl', 'tls', 'starttls'] as $mode) {
             $transport = $this->transport($mode, false);
             $transport->connect();
             $transport->sendNoop();
@@ -114,7 +114,7 @@ class ServicesNntpConfigurationParityTest extends TestCase
 
     public function testVerificationEnabledRejectsUntrustedCertificate()
     {
-        foreach (['ssl', 'tls'] as $mode) {
+        foreach (['ssl', 'tls', 'starttls'] as $mode) {
             $transport = $this->transport($mode, true);
 
             try {
@@ -132,7 +132,7 @@ class ServicesNntpConfigurationParityTest extends TestCase
     {
         $fixture = NntpConfigurationFixtureServer::start('tls-stall', $this->_certificate, 'password');
         $this->_pids[] = $fixture['pid'];
-        $transport = new Services_Nntp_PipelinedTransport(['host' => $fixture['host'], 'port' => $fixture['port'], 'enc' => 'tls', 'verifyname' => false, 'user' => '', 'pass' => ''], 1);
+        $transport = new Services_Nntp_PipelinedTransport(['host' => $fixture['host'], 'port' => $fixture['port'], 'enc' => 'starttls', 'verifyname' => false, 'user' => '', 'pass' => ''], 1);
         $started = microtime(true);
 
         try {
@@ -147,7 +147,7 @@ class ServicesNntpConfigurationParityTest extends TestCase
 
     public function testTrustedCertificateAndHostnameVerificationForBothTlsModes()
     {
-        foreach (['ssl', 'tls'] as $mode) {
+        foreach (['ssl', 'tls', 'starttls'] as $mode) {
             foreach (['localhost' => 0, '127.0.0.1' => 1] as $host => $expectedExit) {
                 $fixture = NntpConfigurationFixtureServer::start($mode, $this->_certificate, 'password');
                 $this->_pids[] = $fixture['pid'];
@@ -166,6 +166,59 @@ class ServicesNntpConfigurationParityTest extends TestCase
                 }
                 $this->assertSame($expectedExit, proc_close($process), $mode.' hostname '.$host);
             }
+        }
+    }
+
+    public function testBothLegacyLabelsAndExplicitStartTlsNegotiateModernTls()
+    {
+        $versions = ['TLSv1.2' => STREAM_CRYPTO_METHOD_TLSv1_2_SERVER];
+        if (defined('STREAM_CRYPTO_METHOD_TLSv1_3_SERVER')) {
+            $versions['TLSv1.3'] = constant('STREAM_CRYPTO_METHOD_TLSv1_3_SERVER');
+        }
+        foreach ($versions as $protocol => $cryptoMethod) {
+            foreach (['ssl', 'tls', 'starttls'] as $mode) {
+                $fixture = NntpConfigurationFixtureServer::start($mode, $this->_certificate, 'password', $cryptoMethod);
+                $this->_pids[] = $fixture['pid'];
+                $transport = new Services_Nntp_PipelinedTransport(['host' => $fixture['host'], 'port' => $fixture['port'], 'enc' => $mode, 'verifyname' => false, 'user' => 'fixture-user', 'pass' => 'fixture-password'], 3);
+
+                try {
+                    $transport->connect();
+                    $transport->sendNoop();
+                    $property = new ReflectionProperty(Services_Nntp_PipelinedTransport::class, '_stream');
+                    $property->setAccessible(true);
+                    $metadata = stream_get_meta_data($property->getValue($transport));
+                    $this->assertSame($protocol, $metadata['crypto']['protocol'], $mode.' negotiates '.$protocol);
+                    $this->assertSame(1, $transport->getOpenedConnectionCount());
+                } finally {
+                    $transport->disconnect();
+                }
+            }
+        }
+    }
+
+    public function testRejectedStartTlsNeverSendsCredentialsOrFallsBackToPlaintext()
+    {
+        $log = tempnam(sys_get_temp_dir(), 'spotweb-starttls-commands-');
+        $fixture = NntpConfigurationFixtureServer::start('starttls-reject', $this->_certificate, 'password', STREAM_CRYPTO_METHOD_TLS_SERVER, $log);
+        $this->_pids[] = $fixture['pid'];
+        $transport = new Services_Nntp_PipelinedTransport(['host' => $fixture['host'], 'port' => $fixture['port'], 'enc' => 'starttls', 'verifyname' => false, 'user' => 'fixture-user', 'pass' => 'fixture-password'], 3);
+
+        try {
+            try {
+                $transport->connect();
+                $this->fail('Rejected STARTTLS must fail closed');
+            } catch (NntpException $exception) {
+                $this->assertSame(502, $exception->getCode());
+                $property = new ReflectionProperty(Services_Nntp_PipelinedTransport::class, '_stream');
+                $property->setAccessible(true);
+                $this->assertNull($property->getValue($transport), 'Failed upgrades must not leave a reusable plaintext connection');
+            } finally {
+                $transport->disconnect();
+            }
+            pcntl_waitpid($fixture['pid'], $status);
+            $this->assertSame("STARTTLS\n", file_get_contents($log));
+        } finally {
+            unlink($log);
         }
     }
 

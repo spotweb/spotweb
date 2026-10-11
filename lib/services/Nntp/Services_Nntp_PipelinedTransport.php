@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/Services_Nntp_Encryption.php';
+
 /*
  * Internal Spotweb NNTP pipeline transport.
  *
@@ -50,10 +52,12 @@ class Services_Nntp_PipelinedTransport
             throw new NntpException('A server portnumber has to be entered', -1);
         }
 
-        $enc = isset($this->_server['enc']) ? strtolower((string) $this->_server['enc']) : '';
-        if (($enc !== '') && ($enc !== '0') && ($enc !== 'false') && ($enc !== 'ssl') && ($enc !== 'tls')) {
-            throw new NntpException('Invalid encryption method specified ('.$enc.')', -1);
+        $enc = Services_Nntp_Encryption::normalize(isset($this->_server['enc']) ? $this->_server['enc'] : false);
+        if ($enc === null) {
+            throw new NntpException('Invalid encryption method specified', -1);
         }
+
+        $cryptoMethod = Services_Nntp_Encryption::cryptoMethod();
 
         $verifyName = true;
         if (array_key_exists('verifyname', $this->_server)) {
@@ -65,10 +69,11 @@ class Services_Nntp_PipelinedTransport
                 'verify_peer'      => $verifyName,
                 'verify_peer_name' => $verifyName,
                 'peer_name'        => $this->_server['host'],
+                'crypto_method'    => $cryptoMethod,
             ],
         ]);
 
-        $scheme = ($enc === 'ssl') ? 'ssl' : 'tcp';
+        $scheme = ($enc === Services_Nntp_Encryption::ImplicitTls) ? 'tls' : 'tcp';
         $target = $scheme.'://'.$this->_server['host'].':'.(int) $this->_server['port'];
         $errno = 0;
         $errstr = '';
@@ -84,9 +89,20 @@ class Services_Nntp_PipelinedTransport
         $this->_openedConnections++;
         $this->log(SpotDebug::DEBUG, 'nntp.connect', ['operation' => 'connect']);
 
+        try {
+            $this->initializeConnection($enc, $cryptoMethod);
+        } catch (Exception $exception) {
+            $this->disconnect();
+
+            throw $exception;
+        }
+    }
+
+    private function initializeConnection($enc, $cryptoMethod)
+    {
         $this->readStatusLine([200, 201]);
 
-        if ($enc === 'tls') {
+        if ($enc === Services_Nntp_Encryption::StartTls) {
             $this->simpleCommandRaw('STARTTLS', [382]);
             /* A non-blocking handshake can return 0 (not finished), not failure.
              * Complete connection setup with a bounded blocking handshake;
@@ -94,7 +110,7 @@ class Services_Nntp_PipelinedTransport
              */
             stream_set_timeout($this->_stream, $this->_timeout);
             stream_set_blocking($this->_stream, true);
-            $enabled = @stream_socket_enable_crypto($this->_stream, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            $enabled = @stream_socket_enable_crypto($this->_stream, true, $cryptoMethod);
             stream_set_blocking($this->_stream, false);
             if ($enabled !== true) {
                 $this->disconnect();
