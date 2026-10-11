@@ -1,7 +1,7 @@
 # Spotweb
 Spotweb is a decentralized usenet community based on the [Spotnet](https://github.com/spotnet/spotnet/wiki) protocol.
 
-Spotweb requires an operational webserver with PHP7.2 installed, it uses either an MySQL or an PostgreSQL database to store it's contents in. 
+Spotweb requires an operational web server running PHP. It uses MySQL, PostgreSQL or SQLite to store its contents. 
 <table align="center"><tr><td align="center" width="9999">
  
 [![Travis-CI Status](https://travis-ci.org/spotweb/spotweb.svg?branch=develop)](https://travis-ci.org/spotweb/spotweb)
@@ -16,7 +16,7 @@ Spotweb requires an operational webserver with PHP7.2 installed, it uses either 
 [![Maintainability](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/maintainability)](https://codeclimate.com/github/spotweb/spotweb/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/c31daabe77475f15e11d/test_coverage)](https://codeclimate.com/github/spotweb/spotweb/test_coverage)
 
-[![Tested on:](https://img.shields.io/badge/tested%20on-PHP%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20-brightgreen.svg?maxAge=2419200)](https://img.shields.io/badge/tested%20on-PHP%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20-brightgreen.svg?maxAge=2419200)
+[![PHP versions checked by Scrutinizer](https://img.shields.io/badge/PHP%20analysis-8.1%20%7C%208.2%20%7C%208.3%20%7C%208.4%20%7C%208.5-blue.svg)](https://scrutinizer-ci.com/g/spotweb/spotweb/build-status/develop)
 </td></tr></table>
 
 ## Features
@@ -45,11 +45,12 @@ Spotweb is one of the most-featured Spotnet clients currently available, featuri
 (*) Unique feature among all known Spotnet clients.
 
 ## Installation requirements
-Spotweb has been regulary tested on several different systems. Spotweb is mostly used on:
+
+Spotweb has been tested on several different systems. It is commonly used on:
 
 * Unix-based (Linux, FreeBSD) operating systems or small NAS systems like Synology and QNAP.
 * Apache Webserver.
-* PHP v5.6 or higher, with at least these modules:
+* PHP with at least the following modules:
   * curl
   * dom
   * gettext
@@ -61,32 +62,32 @@ Spotweb has been regulary tested on several different systems. Spotweb is mostly
   * openssl
 * MySQL, PostgreSQL and SQLite, where SQLite is the least supported and tested database engine.
 
-Please run 'http://yourdomain.com/install.php' from within your browser before attempting anything further with Spotweb and make sure
-all items are checked 'OK'.
+Refer to the current Spotweb compatibility and CI results for information about PHP version compatibility.
 
-## Installation Master branch:
-Installation is the toughest part of Spotweb. Depending on your platform you should look at the different tutorials available on the [Spotweb wiki](https://github.com/spotweb/spotweb/wiki), but the basic steps are:
+Before using Spotweb, open `install.php` in your browser and ensure all installation checks show `OK`.
 
-1. Ensure you have an database server installed (MySQL, PostgreSQL or SQLite).
+## Installation — Master branch
+Installation can vary by platform. Consult the tutorials available on the [Spotweb wiki](https://github.com/spotweb/spotweb/wiki). The basic steps are:
+
+1. Ensure you have a database server installed (MySQL, PostgreSQL or SQLite).
 2. Create an empty 'spotweb' database.
-3. Ensure you have a webserver running and PHP is configured for this webserver.
-4. [Download the Spotweb zip file.](https://github.com/spotweb/spotweb/archive/master.zip) or from within your public www folder: "git clone -b master https://github.com/spotweb/spotweb.git ."
-5. Unpack the zip file to a directory of choice.
-6. Open 'install.php' in your browser until everything is 'OK'. Fix the parts which aren't OK.
+3. Ensure you have a web server running and PHP is configured for this web server.
+4. [Download the Spotweb ZIP file](https://github.com/spotweb/spotweb/archive/master.zip), or run `git clone -b master https://github.com/spotweb/spotweb.git .` from your public web directory.
+5. Unpack the ZIP file into a directory of your choice, if applicable.
+6. Open `install.php` in your browser and resolve any checks that are not marked `OK`.
 7. Follow the wizard and perform the instructions as given by the wizard.
 
-## Installation Development branch:
+## Installation — Development branch
 
-1. Ensure you have an database server installed (MySQL, PostgreSQL or SQLite).
+1. Ensure you have a database server installed (MySQL, PostgreSQL or SQLite).
 2. Create an empty 'spotweb' database.
-3. Ensure you have a webserver running and PHP is configured for this webserver.
-4. [Download the Spotweb zip file.](https://github.com/spotweb/spotweb/archive/develop.zip) or from within your public www folder: "git clone -b develop https://github.com/spotweb/spotweb.git ."
-5. Unpack the zip file to a directory of choice.
-6. Open 'install.php' in your browser until everything is 'OK'. Fix the parts which aren't OK.
+3. Ensure you have a web server running and PHP is configured for this web server.
+4. [Download the Spotweb development ZIP file](https://github.com/spotweb/spotweb/archive/develop.zip), or run `git clone -b develop https://github.com/spotweb/spotweb.git .` from your public web directory.
+5. Unpack the ZIP file into a directory of your choice, if applicable.
+6. Open `install.php` in your browser and resolve any checks that are not marked `OK`.
 7. Follow the wizard and perform the instructions as given by the wizard.
 
 ## Troubleshooting
-When a white page appears instead of your Spotweb installation, this usually indicates an typing error in either
-your ownsettings.php, dbsettings.inc.php or a configuration error in your webserver.
+When a blank page appears instead of your Spotweb installation, this usually indicates a syntax error in `ownsettings.php` or `dbsettings.inc.php`, or a configuration error in the web server.
 
-Please consult your Apache's errorlog for the exact error and fix it.
+Consult your web server's error log to identify the exact error and resolve it.
