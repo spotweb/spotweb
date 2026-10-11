@@ -3,7 +3,7 @@
 /* Local-only TLS/authentication fixture; never connects to an NNTP provider. */
 class NntpConfigurationFixtureServer
 {
-    public static function start($mode, $certificate, $auth)
+    public static function start($mode, $certificate, $auth, $cryptoMethod = STREAM_CRYPTO_METHOD_TLS_SERVER, $commandLog = null)
     {
         $context = stream_context_create(['ssl' => ['local_cert' => $certificate]]);
         $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $error, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, $context);
@@ -21,19 +21,26 @@ class NntpConfigurationFixtureServer
                 exit(1);
             }
             stream_set_timeout($connection, 3);
-            if ($mode === 'ssl' && @stream_socket_enable_crypto($connection, true, STREAM_CRYPTO_METHOD_TLS_SERVER) !== true) {
+            if (in_array($mode, ['ssl', 'tls'], true) && @stream_socket_enable_crypto($connection, true, $cryptoMethod) !== true) {
                 exit(0);
             }
             fwrite($connection, "200 local fixture ready\r\n");
             while (($line = fgets($connection)) !== false) {
                 $line = rtrim($line, "\r\n");
+                if ($commandLog !== null) {
+                    file_put_contents($commandLog, $line."\n", FILE_APPEND);
+                }
                 if ($line === 'STARTTLS') {
+                    if ($mode === 'starttls-reject') {
+                        fwrite($connection, "502 TLS upgrade rejected\r\n");
+                        continue;
+                    }
                     fwrite($connection, "382 begin TLS\r\n");
                     if ($mode === 'tls-stall') {
                         usleep(2000000);
                         break;
                     }
-                    if (@stream_socket_enable_crypto($connection, true, STREAM_CRYPTO_METHOD_TLS_SERVER) !== true) {
+                    if (@stream_socket_enable_crypto($connection, true, $cryptoMethod) !== true) {
                         break;
                     }
                 } elseif ($line === 'AUTHINFO USER fixture-user') {

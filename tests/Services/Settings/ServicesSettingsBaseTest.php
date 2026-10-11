@@ -92,6 +92,33 @@ class ServicesSettingsBaseTest extends TestCase
         $this->assertFalse($result->isSuccess());
     }
 
+    public function testNntpEncryptionModesAreAcceptedForAllServerRoles()
+    {
+        $service = new Services_Settings_Base(new Services_Settings_Container(), new ServicesSettingsBaseTestBlackWhiteListDao());
+        foreach (['ssl', 'tls', 'starttls'] as $mode) {
+            $form = $this->validSettingsWithoutPipelineDepth();
+            foreach (['nntp_nzb', 'nntp_hdr', 'nntp_post'] as $role) {
+                $form[$role]['enc'] = ['switch' => 'on', 'select' => $mode];
+                $form[$role]['verifyname'] = ['switch' => 'on'];
+            }
+            $result = $service->validateSettings($form);
+            $this->assertTrue($result->isSuccess());
+            $validated = $result->getData('settings');
+            foreach (['nntp_nzb', 'nntp_hdr', 'nntp_post'] as $role) {
+                $this->assertSame($mode, $validated[$role]['enc']);
+                $this->assertTrue($validated[$role]['verifyname']);
+            }
+        }
+    }
+
+    public function testUnknownNntpEncryptionModeIsRejected()
+    {
+        $service = new Services_Settings_Base(new Services_Settings_Container(), new ServicesSettingsBaseTestBlackWhiteListDao());
+        $form = $this->validSettingsWithoutPipelineDepth();
+        $form['nntp_hdr']['enc'] = ['switch' => 'on', 'select' => 'automatic'];
+        $this->assertFalse($service->validateSettings($form)->isSuccess());
+    }
+
     private function validSettingsWithoutPipelineDepth()
     {
         $server = ['host' => 'news.example', 'user' => '', 'pass' => '', 'enc' => false, 'port' => 119, 'buggy' => false, 'verifyname' => true];
