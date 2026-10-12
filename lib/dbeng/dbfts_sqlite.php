@@ -150,9 +150,18 @@ class dbfts_sqlite extends dbfts_abs
             $matchList[] = $field.':'.$searchValue;
         } // foreach
 
-        // add one WHERE MATCH conditions with all conditions
+        /*
+         * Add one WHERE MATCH condition with all conditions. The caller joins
+         * the engines' results with the search's boolean operator, but SQLite
+         * collapses every search into this single MATCH, where a bare space
+         * means AND. An OR search (a season search also tries "Seizoen N" and
+         * "Season N") therefore has to be joined with OR inside the MATCH
+         * itself, or it demands every alternative at once and matches nothing.
+         */
+        $boolOper = strtoupper(trim($searchFields[0]['booloper'] ?? 'AND'));
+        $glue = ($boolOper === 'OR') ? ' OR ' : ' ';
 
-        $filterValueSql[] = '(idx_fts_spots_'.$idxnum.'.rowid = s.rowid) AND '.' (idx_fts_spots_'.$idxnum.'.'.$columnField." MATCH '".implode(' ', $matchList)."') ";
+        $filterValueSql[] = '(idx_fts_spots_'.$idxnum.'.rowid = s.rowid) AND '.' (idx_fts_spots_'.$idxnum.'.'.$columnField." MATCH '".implode($glue, $matchList)."') ";
 
         SpotTiming::stop(__CLASS__.'::'.__FUNCTION__, [$filterValueSql, $additionalTables]);
 
