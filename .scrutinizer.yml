@@ -38,21 +38,23 @@ build:
         php8.3:
             environment:
                 php:
-                    version: 8.3
+                    version: '8.3.4'
             tests:
                 override:
                     - command: 'php-scrutinizer-run'
         php8.4:
+            image: default-jammy
             environment:
                 php:
-                    version: 8.4
+                    version: '8.4.12'
             tests:
                 override:
                     - command: 'php-scrutinizer-run'
         php8.5:
+            image: default-jammy
             environment:
                 php:
-                    version: 8.5
+                    version: '8.5.11'
             tests:
                 override:
                     - command: 'php-scrutinizer-run'
