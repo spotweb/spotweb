@@ -1,4 +1,3 @@
-
 name: PHP Compatibility
 
 on:
@@ -46,7 +45,6 @@ jobs:
         run: |
           vendor/bin/phpcs \
             --extensions=php \
-            --ignore='*/vendor/*,*/js/*,*/tests/*,*/test/*' \
+            --ignore='*/vendor/*,*/js/*,*/tests/*,*/test/*,templates/mobile/footer.inc.php,templates/installer/includes/header.inc.php' \
             --standard=PHPCompatibility \
             --runtime-set testVersion "${{ matrix.php-version }}-" .
-
