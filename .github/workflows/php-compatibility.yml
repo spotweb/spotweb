@@ -1,3 +1,4 @@
+
 name: PHP Compatibility
 
 on:
@@ -12,10 +13,10 @@ jobs:
       fail-fast: false
       matrix:
         php-version: ['8.2', '8.3', '8.4', '8.5']
-        
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -32,11 +33,20 @@ jobs:
 
       - name: Check PHP syntax
         run: |
-          find . -path './vendor' -prune -o -path './.git' -prune -o -type f -name '*.php' -print0 |
+          find . \
+            -path './vendor' -prune -o \
+            -path './.git' -prune -o \
+            -type f -name '*.php' -print0 |
           xargs -0 -n1 php -l
 
       - name: Configure PHPCompatibility
         run: vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
 
       - name: Check PHP compatibility
-        run: vendor/bin/phpcs --extensions=php --ignore='*/vendor/*,*/js/*,*\.inc*,*/tests/*' --standard=PHPCompatibility --runtime-set testVersion "${{ matrix.php-version }}-" .
+        run: |
+          vendor/bin/phpcs \
+            --extensions=php \
+            --ignore='*/vendor/*,*/js/*,*/tests/*,*/test/*' \
+            --standard=PHPCompatibility \
+            --runtime-set testVersion "${{ matrix.php-version }}-" .
+
