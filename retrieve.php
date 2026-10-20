@@ -223,9 +223,12 @@ try {
         $daoFactory->getSpotStateListDao()->cleanSpotStateList();
 
         try {
+            if ($settings->get('external_blacklist') || $settings->get('external_whitelist')) {
+                $svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
+            }
+
             //# External blacklist
             if ($settings->get('external_blacklist')) {
-                $svcBwListRetriever = new Services_BWList_Retriever($daoFactory->getBlackWhiteListDao(), $daoFactory->getCacheDao());
                 $bwResult = $svcBwListRetriever->retrieveBlackList($settings->get('blacklist_url'));
                 if ($bwResult === false) {
                     echo 'Blacklist not modified, no need to update'.PHP_EOL;
