@@ -9,6 +9,7 @@ require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelineDepth.ph
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedTransport.php';
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedRecovery.php';
 require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_PipelinedArticleBatch.php';
+require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_CommentsArticleParser.php';
 
 class ServicesRetrieverPipelinedArticleBatchTransport extends Services_Nntp_PipelinedTransport
 {
@@ -103,6 +104,29 @@ class ServicesRetrieverPipelinedArticleBatchTest extends TestCase
         $this->assertFalse($outcome->hasUnresolved());
         $this->assertSame([$items[0]], $batch->contiguousPrefix($items));
         $this->assertSame(['code' => 0, 'message' => 'malformed spot payload'], $items[0]['article_status']);
+    }
+
+    public function testMalformedCommentLinesDoNotAbortFollowingComments()
+    {
+        $items = [$this->item('comment-bad'), $this->item('comment-good')];
+        $batch = new Services_Retriever_PipelinedArticleBatch(new Services_Nntp_PipelinedRecovery(
+            new ServicesRetrieverPipelinedArticleBatchTransport([
+                ['type' => 'return', 'results' => [
+                    new Services_Nntp_PipelinedArticleResult('comment-bad', 220, 'article follows', [], [['not a line']]),
+                    new Services_Nntp_PipelinedArticleResult('comment-good', 220, 'article follows', [], ['Valid comment']),
+                ]],
+            ])
+        ));
+
+        $outcome = $batch->apply($items, 32, new Services_Retriever_CommentsArticleParser(), 'payload', 'malformed comment payload');
+
+        $this->assertFalse($outcome->hasUnresolved());
+        $this->assertSame($items, $batch->contiguousPrefix($items));
+        $this->assertSame(['code' => 0, 'message' => 'malformed comment payload'], $items[0]['article_status']);
+        $this->assertNull($items[0]['payload']);
+        $this->assertSame(220, $items[1]['article_status']['code']);
+        $this->assertSame('Valid comment', $items[1]['payload']['body']);
+        $this->assertFalse($items[1]['payload']['verified']);
     }
 
     public function testUnresolvedTailStopsCursorBeforeLaterScheduledReportsSuccess()

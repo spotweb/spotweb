@@ -13,6 +13,17 @@ class Services_Retriever_CommentsArticleParser
 
     public function parse($messageId, array $article)
     {
+        foreach (['header', 'body'] as $section) {
+            if (!isset($article[$section]) || !is_array($article[$section])) {
+                throw new UnexpectedValueException('NNTP comment '.$section.' must be an array of lines');
+            }
+            foreach ($article[$section] as $line) {
+                if (!is_string($line)) {
+                    throw new UnexpectedValueException('NNTP comment '.$section.' lines must be strings');
+                }
+            }
+        }
+
         $comment = [
             'fromhdr'        => '',
             'stamp'          => 0,
@@ -24,15 +35,17 @@ class Services_Retriever_CommentsArticleParser
             'fullxml'        => '',
             'messageid'      => $messageId,
             'newsreader'     => '',
+            'body'           => $article['body'],
         ];
 
         $comment = $this->parseHeader($article['header'], $comment);
+        // Verify the original lines before storage conversion or truncation changes signed content.
         $comment['verified'] = $this->_spotSigning->verifyComment($comment);
         if ($comment['verified']) {
             $comment['spotterid'] = $this->_spotParseUtil->calculateSpotterId($comment['user-key']['modulo']);
         }
 
-        $comment['body'] = mb_convert_encoding(implode("\r\n", $article['body']), 'ISO-8859-1', 'UTF-8');
+        $comment['body'] = mb_convert_encoding(implode("\r\n", $comment['body']), 'ISO-8859-1', 'UTF-8');
         if (strlen($comment['body']) > (1024 * 10)) {
             $comment['body'] = substr($comment['body'], 0, 1024 * 10);
         }
