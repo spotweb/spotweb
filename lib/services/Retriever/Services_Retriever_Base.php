@@ -7,6 +7,7 @@ require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedRecovery.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedTransport.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_ClientPool.php';
+require_once __DIR__.'/Services_Retriever_StartArticleLocator.php';
 
 abstract class Services_Retriever_Base
 {
@@ -203,6 +204,26 @@ abstract class Services_Retriever_Base
     // searchMessageId
 
     /*
+     * When we have no position to continue from, look up the first article
+     * posted around the 'retrieve_newer_than' date instead of reading the
+     * whole group from the very first article on the server.
+     */
+    public function searchStartArticle()
+    {
+        $newerThan = (int) $this->_settings->get('retrieve_newer_than');
+        $this->displayStatus('searchstartdate', date('Y-m-d', $newerThan));
+
+        $locator = new Services_Retriever_StartArticleLocator($this->_svcNntpTextPipelined);
+        $curArtNr = $locator->locate($this->_msgdata['first'], $this->_msgdata['last'], $newerThan);
+
+        $this->displayStatus('searchstartdatefound', $curArtNr);
+
+        return $curArtNr;
+    }
+
+    // searchStartArticle
+
+    /*
      * Process all headers in $increment pieces and call the corresponding
      * actual implementation
      */
@@ -341,6 +362,14 @@ abstract class Services_Retriever_Base
             if ($this->_textServer['buggy']) {
                 $curArtNr = max(1, $curArtNr - 15000);
             } // if
+        } // if
+
+        /*
+         * Nothing retrieved yet (or a retro run), so skip everything posted
+         * before the date the user wants to retrieve from
+         */
+        if ($curArtNr == 0) {
+            $curArtNr = $this->searchStartArticle();
         } // if
 
         /*

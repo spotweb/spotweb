@@ -70,6 +70,10 @@ class Services_Retriever_Comments extends Services_Retriever_Base
                 break;
             case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
                 break;
+            case 'searchstartdate': echo 'Looking for the first article posted after '.$txt.PHP_EOL;
+                break;
+            case 'searchstartdatefound': echo 'Starting at article number '.$txt.PHP_EOL;
+                break;
             case 'pipelinedfallback': echo 'WARNING: '.$txt.PHP_EOL;
                 break;
             case 'pipelineddeferred': echo 'WARNING: Pipelined comments deferred unresolved ARTICLE tail: '.$txt.PHP_EOL;

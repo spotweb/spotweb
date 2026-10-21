@@ -51,6 +51,10 @@ class Services_Retriever_Reports extends Services_Retriever_Base
                 break;
             case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
                 break;
+            case 'searchstartdate': echo 'Looking for the first article posted after '.$txt.PHP_EOL;
+                break;
+            case 'searchstartdatefound': echo 'Starting at article number '.$txt.PHP_EOL;
+                break;
             case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable OpenSSL whenever possible';
                 break;
             case '': echo PHP_EOL;
