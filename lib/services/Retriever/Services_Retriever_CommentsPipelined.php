@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/Services_Retriever_StartArticleLocator.php';
+
 class Services_Retriever_CommentsPipelined
 {
     private $_settings;
@@ -63,6 +65,16 @@ class Services_Retriever_CommentsPipelined
             if ($this->_textServer['buggy']) {
                 $curArtNr = max(1, $curArtNr - 15000);
             }
+        }
+
+        if ($curArtNr == 0) {
+            $newerThan = (int) $this->_settings->get('retrieve_newer_than');
+            $this->displayStatus('searchstartdate', date('Y-m-d', $newerThan));
+
+            $locator = new Services_Retriever_StartArticleLocator($this->_transport);
+            $curArtNr = $locator->locate($this->_msgdata['first'], $this->_msgdata['last'], $newerThan);
+
+            $this->displayStatus('searchstartdatefound', $curArtNr);
         }
 
         SpotTiming::start(__CLASS__.'::loopTillEnd()');
