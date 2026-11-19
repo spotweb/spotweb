@@ -54,7 +54,10 @@ class Services_Image_BmpConverter
             ob_start();
             imagejpeg($tmpImg);
             $imageString = ob_get_clean();
-            imagedestroy($tmpImg);
+            if (PHP_MAJOR_VERSION < 8) {
+                // no-op since PHP 8.0, deprecated since PHP 8.5
+                imagedestroy($tmpImg);
+            }
         } // if
 
         return $imageString;
