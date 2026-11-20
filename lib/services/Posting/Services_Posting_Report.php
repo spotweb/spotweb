@@ -93,7 +93,7 @@ class Services_Posting_Report
          * the database and for the system
          */
         $dbReport = $report;
-        $report['body'] = utf8_decode($report['body']);
+        $report['body'] = (string) mb_convert_encoding($report['body'], 'ISO-8859-1', 'UTF-8');
         $report['title'] = 'REPORT <'.$report['inreplyto'].'> '.$fullSpot['title'];
 
         // en post daadwerkelijk de report

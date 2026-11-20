@@ -63,7 +63,10 @@ class Services_Image_Error
         ob_start();
         imagejpeg($img['resource']);
         $imageString = ob_get_clean();
-        imagedestroy($img['resource']);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            imagedestroy($img['resource']);
+        }
 
         $dimensions = $this->_svcImageUtil->getImageDimensions($imageString);
 

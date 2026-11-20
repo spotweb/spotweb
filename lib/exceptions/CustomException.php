@@ -20,7 +20,7 @@ set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line) {
         case E_USER_ERROR:          throw new UserErrorException($err_msg, $err_no);
         case E_USER_WARNING:        throw new UserWarningException($err_msg, $err_no);
         case E_USER_NOTICE:         throw new UserNoticeException($err_msg, $err_no);
-        case E_STRICT:              throw new StrictException($err_msg, $err_no);
+        case 2048:                  throw new StrictException($err_msg, $err_no); // E_STRICT, constant deprecated since PHP 8.4
         case E_RECOVERABLE_ERROR:   throw new RecoverableErrorException($err_msg, $err_no);
         case E_DEPRECATED:          throw new DeprecatedException($err_msg, $err_no);
         case E_USER_DEPRECATED:     throw new UserDeprecatedException($err_msg, $err_no);

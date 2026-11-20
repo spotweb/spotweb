@@ -16,7 +16,7 @@
 
         public function __construct($app_name = 'PHP Growl')
         {
-            $this->appName = utf8_encode($app_name);
+            $this->appName = (string) mb_convert_encoding($app_name, 'UTF-8', 'ISO-8859-1');
             $this->address = null;
             $this->notifications = [];
             $this->password = null;
@@ -25,7 +25,7 @@
 
         public function addNotification($name, $enabled = true)
         {
-            $this->notifications[] = ['name' => utf8_encode($name), 'enabled' => $enabled];
+            $this->notifications[] = ['name' => (string) mb_convert_encoding($name, 'UTF-8', 'ISO-8859-1'), 'enabled' => $enabled];
         }
 
         public function register($connection)
@@ -55,9 +55,9 @@
         {
             $this->setConnectionData($connection);
 
-            $name = utf8_encode($name);
-            $title = utf8_encode($title);
-            $message = utf8_encode($message);
+            $name = (string) mb_convert_encoding($name, 'UTF-8', 'ISO-8859-1');
+            $title = (string) mb_convert_encoding($title, 'UTF-8', 'ISO-8859-1');
+            $message = (string) mb_convert_encoding($message, 'UTF-8', 'ISO-8859-1');
             $priority = intval($priority);
 
             $flags = ($priority & 7) * 2;
