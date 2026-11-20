@@ -144,8 +144,8 @@ class Services_Signing_Openssl extends Services_Signing_Base
          *
          * Dit willen we nabootsen met deze encoding
          */
-        $publicExponent = $pubKey['e'];
-        $modulus = $pubKey['n'];
+        $publicExponent = $this->_encodeUnsignedInteger($pubKey['e']);
+        $modulus = $this->_encodeUnsignedInteger($pubKey['n']);
         $components = [
             'modulus'        => pack('Ca*a*', RSA::ASN1_INTEGER, $this->_encodeLength(strlen($modulus)), $modulus),
             'publicExponent' => pack('Ca*a*', RSA::ASN1_INTEGER, $this->_encodeLength(strlen($publicExponent)), $publicExponent),
@@ -216,6 +216,20 @@ class Services_Signing_Openssl extends Services_Signing_Base
     }
 
     // seclibToOpenSsl
+
+    // DER integers need a leading 0x00 when the high bit is set, OpenSSL 4 rejects them otherwise
+    public function _encodeUnsignedInteger($value)
+    {
+        $value = ltrim($value, "\0");
+
+        if ($value === '' || (ord($value[0]) & 0x80)) {
+            $value = "\0".$value;
+        }
+
+        return $value;
+    }
+
+    // _encodeUnsignedInteger
 
     /**
      * From phpSeclib library.
