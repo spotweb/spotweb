@@ -102,7 +102,7 @@ class Services_Posting_Comment
          * the database and for the system
          */
         $dbComment = $comment;
-        $comment['body'] = mb_convert_encoding($comment['body'], 'ISO-8859-1', 'UTF-8');
+        $comment['body'] = (string) mb_convert_encoding($comment['body'], 'ISO-8859-1', 'UTF-8');
 
         // and actually post the comment
         if ($result->isSuccess()) {
