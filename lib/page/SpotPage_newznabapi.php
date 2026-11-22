@@ -4,6 +4,32 @@ class SpotPage_newznabapi extends SpotPage_Abs
 {
     private $_params;
 
+    /*
+     * A season pack is often spotted as its first and last file name joined
+     * by "tm" (Dutch "t/m", up to and including):
+     *
+     *   Een.Huis.Vol.S22E01.DUTCH.1080p.WEB.h264-KIJKDOOS tm Een.Huis.Vol.S22E10.DUTCH.1080p.WEB.h264-TRIPEL
+     *
+     * A newznab client parses the first SxxEyy and takes the spot for a single
+     * episode: it never answers a search for any other episode in the pack,
+     * and grabbed for that one episode it imports only that file. Answered as
+     *
+     *   Een.Huis.Vol.S22E01-E10.DUTCH.1080p.WEB.h264-KIJKDOOS
+     *
+     * the same spot is the multi-episode release it is. Rewritten only when
+     * both halves name the same season and the range runs upward; any other
+     * title is returned as it is. The stored spot is not touched.
+     */
+    private function packTitle($title)
+    {
+        $re = '/^(.*?\bS(\d{1,2})E)(\d{1,4})(\b.*?)\s+t(?:m|\/m|\.m\.)\s+.*\bS\2E(\d{1,4})\b.*$/i';
+        if (preg_match($re, $title, $m) && (int) $m[5] > (int) $m[3]) {
+            return $m[1].$m[3].'-E'.$m[5].$m[4];
+        } // if
+
+        return $title;
+    } // packTitle
+
     public function __construct(Dao_Factory $daoFactory, Services_Settings_Container $settings, array $currentSession, array $params)
     {
         parent::__construct($daoFactory, $settings, $currentSession);
@@ -397,6 +423,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
         if ($outputtype == 'json') {
             $doc = [];
             foreach ($spots['list'] as $spot) {
+                $spot['title'] = $this->packTitle($spot['title']);
                 $data = [];
                 $data['ID'] = $spot['messageid'];
                 $data['name'] = html_entity_decode($spot['title'], ENT_QUOTES, 'UTF-8');
@@ -468,6 +495,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
 
             foreach ($spots['list'] as $spot) {
                 $spot = $this->_tplHelper->formatSpotHeader($spot);
+                $spot['title'] = $this->packTitle($spot['title']);
                 $nzbUrl = $this->_tplHelper->makeBaseUrl('full').'api?t=g&amp;id='.$spot['messageid'].$this->_tplHelper->makeApiRequestString();
                 if ($this->_params['del'] == '1' && $this->_spotSec->allowed(SpotSecurity::spotsec_keep_own_watchlist, '')) {
                     $nzbUrl .= '&amp;del=1';
@@ -598,6 +626,7 @@ class SpotPage_newznabapi extends SpotPage_Abs
          * Ugly @ operator, but we cannot reliably fix the library for the moment
          */
         $spot = @$this->_tplHelper->formatSpot($fullSpot);
+        $spot['title'] = $this->packTitle($spot['title']);
 
         if ($outputtype == 'json') {
             $doc = [];
