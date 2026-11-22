@@ -241,6 +241,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
         $skipCount = 0;
         $lastProcessedId = '';
         $lastProcessedArtNr = 0;
+        $lastProcessedIdIsNew = false;
         $fullSpotDbList = [];
         $spotDbList = [];
         $moderationList = [];
@@ -282,6 +283,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
         foreach ($hdrList as $msgheader) {
             SpotTiming::start(__CLASS__.'::'.__FUNCTION__.':forEach-to-ParseHeader');
             $msgCounter++;
+            $lastProcessedIdIsNew = false;
             SpotDebug::msg(SpotDebug::DEBUG, 'foreach-loop, start. msgId= '.$msgCounter);
 
             /*
@@ -405,6 +407,7 @@ class Services_Retriever_Spots extends Services_Retriever_Base
                             $header_isInDb = true;
                             $lastProcessedId = $msgId;
                             $lastProcessedArtNr = $artNr;
+                            $lastProcessedIdIsNew = true;
                             $didFetchHeader = true;
 
                             if ($spot['wassigned']) {
@@ -688,7 +691,11 @@ class Services_Retriever_Spots extends Services_Retriever_Base
 
         $this->displayStatus('timer', round(microtime(true) - $timer, 2));
 
-        return ['count' => count($hdrList), 'headercount' => $hdrsParsed, 'lastmsgid' => $lastProcessedId];
+        return [
+            'count'       => count($hdrList),
+            'headercount' => $hdrsParsed,
+            'lastmsgid'   => $lastProcessedIdIsNew ? $lastProcessedId : '',
+        ];
     }
 
     // process()
