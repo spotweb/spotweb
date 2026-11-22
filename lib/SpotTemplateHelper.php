@@ -1585,10 +1585,41 @@ class SpotTemplateHelper
      */
     public function redirect($url)
     {
-        header('Location: '.$url);
+        header('Location: '.$this->getSafeRedirectUrl($url));
     }
 
     // redirect()
+
+    protected function getSafeRedirectUrl($url)
+    {
+        $fallback = $this->_settings->get('spotweburl');
+        if (!is_string($url) || $url === '' || preg_match('/[\x00-\x20\x7f\\\\]/', $url)) {
+            return $fallback;
+        }
+
+        $target = parse_url($url);
+        if ($target === false || isset($target['user']) || isset($target['pass'])) {
+            return $fallback;
+        }
+
+        if (!isset($target['scheme']) && !isset($target['host'])) {
+            return substr($url, 0, 2) === '//' ? $fallback : $url;
+        }
+
+        $base = parse_url($fallback);
+        if (!isset($target['scheme'], $target['host'], $base['scheme'], $base['host'])
+            || !in_array(strtolower($target['scheme']), ['http', 'https'], true)
+            || strcasecmp($target['scheme'], $base['scheme']) !== 0
+            || strcasecmp($target['host'], $base['host']) !== 0) {
+            return $fallback;
+        }
+
+        $defaultPort = strtolower($base['scheme']) === 'https' ? 443 : 80;
+        $targetPort = isset($target['port']) ? $target['port'] : $defaultPort;
+        $basePort = isset($base['port']) ? $base['port'] : $defaultPort;
+
+        return $targetPort === $basePort ? $url : $fallback;
+    }
 
     /*
      * Get users' filter list
