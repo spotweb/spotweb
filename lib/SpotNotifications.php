@@ -326,7 +326,7 @@ class SpotNotifications
 
                 // Now the message really is sent.
                 foreach ($this->_notificationServices as $notificationService) {
-                    $notificationService->sendMessage($newMessage['type'], utf8_decode($newMessage['title']), utf8_decode($newMessage['body']), $spotweburl, $this->_settings->get('smtp'));
+                    $notificationService->sendMessage($newMessage['type'], (string) mb_convert_encoding($newMessage['title'], 'ISO-8859-1', 'UTF-8'), (string) mb_convert_encoding($newMessage['body'], 'ISO-8859-1', 'UTF-8'), $spotweburl, $this->_settings->get('smtp'));
                 } // foreach
 
                 // Reset all service these cannot be re-used.

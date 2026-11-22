@@ -199,7 +199,10 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         } elseif ($code == 403) {
             $result = 'ERROR403';
         }
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            curl_close($ch);
+        }
         //fclose($fp);
 
         return $result;
@@ -226,7 +229,10 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         } elseif ($code == 403) {
             $result = 'ERROR403';
         }
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            curl_close($ch);
+        }
 
         return $result;
     }
@@ -249,7 +255,10 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         } elseif ($code == 403) {
             $result = 'ERROR403';
         }
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            curl_close($ch);
+        }
 
         return $result;
     }
@@ -273,7 +282,10 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         } elseif ($code == 403) {
             $result = 'ERROR403';
         }
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            curl_close($ch);
+        }
 
         return $result;
     }
@@ -291,7 +303,10 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         } elseif ($code == 403) {
             $result = 'ERROR403';
         }
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            curl_close($ch);
+        }
 
         return $result;
     }
@@ -333,7 +348,10 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         } elseif ($code == 403) {
             $result = 'ERROR403';
         }
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            curl_close($ch);
+        }
         // 'Cleanup' temporary file
         if (!unlink($tmpfile)) {
             $myfile = fopen($tmpfile, 'w') or exit('Unable to open file!');
@@ -362,7 +380,10 @@ class Services_NzbHandler_NZBVortex extends Services_NzbHandler_abs
         } elseif ($code == 403) {
             $result = 'ERROR403';
         }
-        curl_close($ch);
+        if (PHP_MAJOR_VERSION < 8) {
+            // no-op since PHP 8.0, deprecated since PHP 8.5
+            curl_close($ch);
+        }
 
         return $result;
     }

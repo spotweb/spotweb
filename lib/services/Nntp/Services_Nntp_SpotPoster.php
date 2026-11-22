@@ -23,7 +23,7 @@ class Services_Nntp_SpotPoster
      */
     private function postPlainMessage($newsgroup, $message, $additionalHeaders)
     {
-        $header = 'Subject: '.utf8_decode($message['title'])."\r\n";
+        $header = 'Subject: '.(string) mb_convert_encoding($message['title'], 'ISO-8859-1', 'UTF-8')."\r\n";
         $header .= 'Newsgroups: '.$newsgroup."\r\n";
         $header .= 'Message-ID: <'.$message['newmessageid'].">\r\n";
         $header .= 'X-Newsreader: SpotWeb v'.SPOTWEB_VERSION."\r\n";
