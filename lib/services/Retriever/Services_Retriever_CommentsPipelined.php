@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/Services_Retriever_StartArticleLocator.php';
+
 class Services_Retriever_CommentsPipelined
 {
     private $_settings;
@@ -49,8 +51,10 @@ class Services_Retriever_CommentsPipelined
 
         if ($this->_retro) {
             $curArtNr = 0;
+            $freshStart = false;
         } else {
             $curArtNr = $this->getLastArticleNumber();
+            $freshStart = ($curArtNr == 0);
         }
 
         if ($curArtNr != 0) {
@@ -63,6 +67,10 @@ class Services_Retriever_CommentsPipelined
             if ($this->_textServer['buggy']) {
                 $curArtNr = max(1, $curArtNr - 15000);
             }
+        }
+
+        if ($freshStart) {
+            $curArtNr = $this->locateStartArticle();
         }
 
         SpotTiming::start(__CLASS__.'::loopTillEnd()');
@@ -133,6 +141,32 @@ class Services_Retriever_CommentsPipelined
         if (!$found) {
             throw new NntpException('Could not find any recently retrieved messageid in the group, aborting instead of re-reading the whole group (use --retro to force a full retrieve)');
         }
+
+        return $curArtNr;
+    }
+
+    /*
+     * Comments are filtered on retrieve_newer_than, so a first retrieve can skip older articles
+     */
+    public function locateStartArticle()
+    {
+        $newerThan = (int) $this->_settings->get('retrieve_newer_than');
+        if ($newerThan <= 0) {
+            return 0;
+        }
+
+        $this->displayStatus('searchstartdate', date('Y-m-d', $newerThan));
+
+        $locator = new Services_Retriever_StartArticleLocator(
+            $this->_transport,
+            function ($curArtNr, $lastArtNr) {
+                $this->displayStatus('searchstartprogress', $curArtNr.' / '.$lastArtNr);
+            }
+        );
+        $searchStart = microtime(true);
+        $curArtNr = $locator->locate($this->_msgdata['first'], $this->_msgdata['last'], $newerThan);
+
+        $this->displayStatus('searchstartdatefound', $curArtNr.' (skipping '.($curArtNr - $this->_msgdata['first']).' articles, search took '.round(microtime(true) - $searchStart, 1).' seconds)');
 
         return $curArtNr;
     }

@@ -189,6 +189,12 @@ class Services_Retriever_Spots extends Services_Retriever_Base
                 break;
             case 'searchmsgidstatus': echo 'Searching from '.$txt.PHP_EOL;
                 break;
+            case 'searchstartdate': echo 'Looking for the first article posted after '.$txt.PHP_EOL;
+                break;
+            case 'searchstartprogress': echo 'Scanning article '.$txt.PHP_EOL;
+                break;
+            case 'searchstartdatefound': echo 'Starting at article number '.$txt.PHP_EOL;
+                break;
             case 'slowphprsa': echo 'WARNING: Using slow PHP based RSA, please enable the PHP OpenSSL extension whenever possible'.PHP_EOL;
                 break;
             case 'pipelineddeferred': echo 'WARNING: Pipelined spots deferred unresolved ARTICLE tail: '.$txt.PHP_EOL;
@@ -769,6 +775,16 @@ class Services_Retriever_Spots extends Services_Retriever_Base
     }
 
     // getGroupName
+
+    /*
+     * Spots are filtered on retrieve_newer_than, so a first retrieve can skip older articles
+     */
+    protected function getInitialArticleNr()
+    {
+        return $this->locateStartArticle();
+    }
+
+    // getInitialArticleNr
 
     /*
      * Last retrieved articlenumber as stored in the database
