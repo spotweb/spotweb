@@ -38,6 +38,17 @@ class Dao_Base_Cache implements Dao_Cache
             ]
         );
 
+        // Images and NZB's of spots which are no longer in the database (retention, moderation)
+        $orphanedList = $this->_conn->arrayQuery(
+            'SELECT c.id, c.resourceid, c.cachetype, c.metadata FROM cache c
+                    LEFT JOIN spots s ON s.messageid = c.resourceid
+                    WHERE c.cachetype IN (:cachetype1, :cachetype2) AND s.messageid IS NULL',
+            [':cachetype1'    => [Dao_Cache::SpotImage, PDO::PARAM_INT],
+                ':cachetype2' => [Dao_Cache::SpotNzb, PDO::PARAM_INT],
+            ]
+        );
+
+        $expiredList = array_column(array_merge($expiredList, $orphanedList), null, 'id');
         foreach ($expiredList as $cacheItem) {
             if (!empty($cacheItem)) {
                 $cacheItem['metadata'] = unserialize($cacheItem['metadata']);

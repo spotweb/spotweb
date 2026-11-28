@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 class DaoBaseCacheTtlTestDb extends dbeng_abs
 {
     public $rows = [];
+    public $spots = [];
     public $deletedIds = [];
 
     public function arrayQuery($sql, $params = [])
@@ -20,7 +21,11 @@ class DaoBaseCacheTtlTestDb extends dbeng_abs
             $isPermanent = ($row['ttl'] == 0);
             $isTtlExpired = ($row['ttl'] + $row['stamp']) < $now;
 
-            if (strpos($sql, 'stamp < :stamp1') !== false) {
+            if (strpos($sql, 'LEFT JOIN spots') !== false) {
+                // expireCache(), spot images and nzb's without a spot
+                $isSpotResource = in_array($row['cachetype'], [$params[':cachetype1'][0], $params[':cachetype2'][0]]);
+                $match = $isSpotResource && !in_array($row['resourceid'], $this->spots);
+            } elseif (strpos($sql, 'stamp < :stamp1') !== false) {
                 // expireCache()
                 $this->assertTtlCondition($sql, '((ttl > 0) AND ((ttl + stamp) < :stamp2))');
                 $match = ($row['stamp'] < $params[':stamp1'][0]) || (!$isPermanent && $isTtlExpired);
@@ -114,6 +119,23 @@ class DaoBaseCacheTtlTest extends TestCase
         $this->assertSame([2, 4], $db->deletedIds);
     }
 
+    public function testExpireCacheRemovesImagesAndNzbsOfDeletedSpots()
+    {
+        $now = time();
+        $db = $this->newDb();
+        $db->rows[] = ['id' => 5, 'resourceid' => 'gone', 'cachetype' => Dao_Cache::SpotImage, 'stamp' => $now, 'ttl' => 0, 'metadata' => self::Metadata];
+        $db->rows[] = ['id' => 6, 'resourceid' => 'gone', 'cachetype' => Dao_Cache::SpotNzb, 'stamp' => $now, 'ttl' => 0, 'metadata' => 'b:0;'];
+        // not related to a spot
+        $db->rows[] = ['id' => 7, 'resourceid' => 'http://example.invalid', 'cachetype' => Dao_Cache::Web, 'stamp' => $now, 'ttl' => 0, 'metadata' => 'b:0;'];
+        // spot is gone and beyond retention: removed only once
+        $db->spots = ['a', 'b', 'c'];
+        $dao = new Dao_Base_Cache($db, self::CachePath);
+
+        $dao->expireCache(30);
+
+        $this->assertSame([2, 4, 5, 6], $db->deletedIds);
+    }
+
     public function testUnexpiredItemIsCached()
     {
         $db = new DaoBaseCacheTtlTestDb();
@@ -157,6 +179,7 @@ class DaoBaseCacheTtlTest extends TestCase
             // permanent, but not used for longer than the retention
             ['id' => 4, 'resourceid' => 'd', 'cachetype' => Dao_Cache::SpotImage, 'stamp' => $now - 40 * 86400, 'ttl' => 0, 'metadata' => self::Metadata],
         ];
+        $db->spots = ['a', 'b', 'c', 'd'];
 
         return $db;
     }
