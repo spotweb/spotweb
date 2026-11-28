@@ -300,7 +300,7 @@ class SpotStruct_mysql extends SpotStruct_abs
             } // switch
 
             $this->_dbcon->rawExec('ALTER TABLE '.$tablename.
-                        ' ADD COLUMN('.$colName.' '.$colType.' '.$colSetting.' '.$colDefault.' '.$nullStr.')');
+                        ' ADD COLUMN(`'.$colName.'` '.$colType.' '.$colSetting.' '.$colDefault.' '.$nullStr.')');
         } // if
     }
 
@@ -331,7 +331,7 @@ class SpotStruct_mysql extends SpotStruct_abs
         } // switch
 
         $this->_dbcon->rawExec('ALTER TABLE '.$tablename.
-                    ' MODIFY COLUMN '.$colName.' '.$colType.' '.$colSetting.' '.$colDefault.' '.$nullStr);
+                    ' MODIFY COLUMN `'.$colName.'` '.$colType.' '.$colSetting.' '.$colDefault.' '.$nullStr);
     }
 
     // modifyColumn
@@ -340,7 +340,7 @@ class SpotStruct_mysql extends SpotStruct_abs
     public function dropColumn($colName, $tablename)
     {
         if ($this->columnExists($tablename, $colName)) {
-            $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' DROP COLUMN '.$colName);
+            $this->_dbcon->rawExec('ALTER TABLE '.$tablename.' DROP COLUMN `'.$colName.'`');
         } // if
     }
 

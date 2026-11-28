@@ -16,6 +16,15 @@ class Dao_Base_User implements Dao_User
     // ctor
 
     /*
+     * 'deny' is a reserved word in MariaDB 13.1+, so the column has to be quoted.
+     * Backticks are MySQL/MariaDB only, other engines use ANSI double quotes.
+     */
+    protected function denyColumn()
+    {
+        return '"deny"';
+    }
+
+    /*
      * Returns the user id for a given username
      */
     public function findUserIdForName($username)
@@ -396,7 +405,7 @@ class Dao_Base_User implements Dao_User
     public function getGroupPerms($groupId)
     {
         return $this->_conn->arrayQuery(
-            'SELECT permissionid, objectid, deny FROM grouppermissions WHERE groupid = :groupid',
+            'SELECT permissionid, objectid, '.$this->denyColumn().' FROM grouppermissions WHERE groupid = :groupid',
             [
                 ':groupid' => [$groupId, PDO::PARAM_INT],
             ]
@@ -413,7 +422,7 @@ class Dao_Base_User implements Dao_User
     {
         $permList = [];
         $tmpList = $this->_conn->arrayQuery(
-            'SELECT permissionid, objectid, deny FROM grouppermissions 
+            'SELECT permissionid, objectid, '.$this->denyColumn().' FROM grouppermissions 
 												WHERE groupid IN 
 													(SELECT groupid FROM usergroups WHERE userid = :userid ORDER BY prio)',
             [
@@ -483,7 +492,7 @@ class Dao_Base_User implements Dao_User
     {
         $this->_conn->modify(
             'UPDATE grouppermissions
-		                        SET deny = :isdenied
+		                        SET '.$this->denyColumn().' = :isdenied
 		                        WHERE (groupid = :groupid) AND (permissionid = :permissionid) AND (objectid = :objectid)',
             [
                 ':isdenied'     => [$perm['deny'], PDO::PARAM_BOOL],
