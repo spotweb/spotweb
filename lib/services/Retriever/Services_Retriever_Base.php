@@ -7,6 +7,7 @@ require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedRecovery.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_PipelinedTransport.php';
 require_once __DIR__.'/../Nntp/Services_Nntp_ClientPool.php';
+require_once __DIR__.'/Services_Retriever_StartArticleLocator.php';
 
 abstract class Services_Retriever_Base
 {
@@ -212,6 +213,44 @@ abstract class Services_Retriever_Base
     // searchMessageId
 
     /*
+     * Article number to start from when nothing has been retrieved yet. By default
+     * this is the start of the group, retrievers which filter on retrieve_newer_than
+     * can use locateStartArticle() to skip articles which are too old anyway.
+     */
+    protected function getInitialArticleNr()
+    {
+        return 0;
+    }
+
+    /*
+     * Find the first article posted around the 'retrieve_newer_than' date
+     */
+    protected function locateStartArticle()
+    {
+        $newerThan = (int) $this->_settings->get('retrieve_newer_than');
+        if ($newerThan <= 0) {
+            return 0;
+        } // if
+
+        $this->displayStatus('searchstartdate', date('Y-m-d', $newerThan));
+
+        $locator = new Services_Retriever_StartArticleLocator(
+            $this->_svcNntpTextPipelined,
+            function ($curArtNr, $lastArtNr) {
+                $this->displayStatus('searchstartprogress', $curArtNr.' / '.$lastArtNr);
+            }
+        );
+        $searchStart = microtime(true);
+        $curArtNr = $locator->locate($this->_msgdata['first'], $this->_msgdata['last'], $newerThan);
+
+        $this->displayStatus('searchstartdatefound', $curArtNr.' (skipping '.($curArtNr - $this->_msgdata['first']).' articles, search took '.round(microtime(true) - $searchStart, 1).' seconds)');
+
+        return $curArtNr;
+    }
+
+    // locateStartArticle
+
+    /*
      * Process all headers in $increment pieces and call the corresponding
      * actual implementation
      */
@@ -324,12 +363,14 @@ abstract class Services_Retriever_Base
          */
         if ($this->_retro) {
             $curArtNr = 0;
+            $freshStart = false;
         } else {
             /*
              * Ask the implementation class for the highest articleid
              * found on the system
              */
             $curArtNr = $this->getLastArticleNumber();
+            $freshStart = ($curArtNr == 0);
         } // if
 
         /*
@@ -350,6 +391,14 @@ abstract class Services_Retriever_Base
             if ($this->_textServer['buggy']) {
                 $curArtNr = max(1, $curArtNr - 15000);
             } // if
+        } // if
+
+        /*
+         * A regular first retrieve (empty database, no --retro) does not have to
+         * start at the very first article of the group
+         */
+        if ($freshStart) {
+            $curArtNr = $this->getInitialArticleNr();
         } // if
 
         /*
