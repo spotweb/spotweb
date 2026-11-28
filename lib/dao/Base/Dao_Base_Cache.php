@@ -32,12 +32,23 @@ class Dao_Base_Cache implements Dao_Cache
          * anything about it anyway.
          */
         $expiredList = $this->_conn->arrayQuery(
-            'SELECT id, resourceid, cachetype, metadata FROM cache WHERE stamp < :stamp1 OR ((ttl + stamp) < :stamp2)',
+            'SELECT id, resourceid, cachetype, metadata FROM cache WHERE stamp < :stamp1 OR ((ttl > 0) AND ((ttl + stamp) < :stamp2))',
             [':stamp1'    => [time() - ($expireDays * 24 * 60 * 60), PDO::PARAM_INT],
                 ':stamp2' => [time(), PDO::PARAM_INT],
             ]
         );
 
+        // Images and NZB's of spots which are no longer in the database (retention, moderation)
+        $orphanedList = $this->_conn->arrayQuery(
+            'SELECT c.id, c.resourceid, c.cachetype, c.metadata FROM cache c
+                    LEFT JOIN spots s ON s.messageid = c.resourceid
+                    WHERE c.cachetype IN (:cachetype1, :cachetype2) AND s.messageid IS NULL',
+            [':cachetype1'    => [Dao_Cache::SpotImage, PDO::PARAM_INT],
+                ':cachetype2' => [Dao_Cache::SpotNzb, PDO::PARAM_INT],
+            ]
+        );
+
+        $expiredList = array_column(array_merge($expiredList, $orphanedList), null, 'id');
         foreach ($expiredList as $cacheItem) {
             if (!empty($cacheItem)) {
                 $cacheItem['metadata'] = unserialize($cacheItem['metadata']);
@@ -54,12 +65,13 @@ class Dao_Base_Cache implements Dao_Cache
     // expireCache
 
     /*
-     * Retrieves wether a specific resourceid is cached
+     * Retrieves wether a specific resourceid is cached and not expired,
+     * a ttl of 0 never expires
      */
     protected function isCached($resourceid, $cachetype)
     {
         $tmpResult = $this->_conn->arrayQuery(
-            'SELECT 1 FROM cache WHERE resourceid = :resourceid AND cachetype = :cachetype AND (ttl + stamp) < :expirestamp',
+            'SELECT 1 FROM cache WHERE resourceid = :resourceid AND cachetype = :cachetype AND ((ttl = 0) OR ((ttl + stamp) >= :expirestamp))',
             [':resourceid'     => [$resourceid, PDO::PARAM_STR],
                 ':cachetype'   => [$cachetype, PDO::PARAM_INT],
                 ':expirestamp' => [time(), PDO::PARAM_INT],
@@ -783,7 +795,7 @@ class Dao_Base_Cache implements Dao_Cache
             'SELECT resourceid, cachetype
                                             FROM cache
                                             WHERE resourceid IN ('.$msgIdList.')
-                                            AND (ttl + stamp) < :stamp',
+                                            AND ((ttl = 0) OR ((ttl + stamp) >= :stamp))',
             [
                 ':stamp' => [time(), PDO::PARAM_INT],
             ]
