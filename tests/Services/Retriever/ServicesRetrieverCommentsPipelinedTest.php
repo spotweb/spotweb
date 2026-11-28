@@ -9,6 +9,7 @@ require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedRecover
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelineDepth.php';
 require_once __DIR__.'/../../../lib/services/Nntp/Services_Nntp_PipelinedTransport.php';
 require_once __DIR__.'/../../../lib/exceptions/PipelinedCommentsDeferredException.php';
+require_once __DIR__.'/../../../lib/exceptions/NntpException.php';
 require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_CommentsArticleParser.php';
 require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_CommentsSink.php';
 require_once __DIR__.'/../../../lib/services/Retriever/Services_Retriever_CommentsCaptureSink.php';
@@ -231,6 +232,39 @@ class ServicesRetrieverCommentsPipelinedTest extends TestCase
 
             $runner->removeTooNewRecords('fixture-highest@example.invalid');
         }
+    }
+
+    public function testSearchMessageIdThrowsInsteadOfRestartingWhenNothingMatches()
+    {
+        $transport = $this->getMockBuilder(ServicesRetrieverCommentsPipelinedTransport::class)
+            ->onlyMethods(['getMessageIdByArticleNumber', 'getMessageIdList'])
+            ->getMock();
+        $transport->method('getMessageIdByArticleNumber')->willReturn(false);
+        $transport->method('getMessageIdList')->willReturn([]);
+
+        $runner = $this->newRunner($transport, new Services_Retriever_CommentsCaptureSink());
+        $msgdata = new ReflectionProperty(Services_Retriever_CommentsPipelined::class, '_msgdata');
+        $msgdata->setAccessible(true);
+        $msgdata->setValue($runner, ['first' => 1, 'last' => 12000]);
+
+        $this->expectException(NntpException::class);
+        $runner->searchMessageId(11000, 'saved@example.invalid', ['saved@example.invalid' => true]);
+    }
+
+    public function testSearchMessageIdReturnsArticleNumberOfRecentMessageId()
+    {
+        $transport = $this->getMockBuilder(ServicesRetrieverCommentsPipelinedTransport::class)
+            ->onlyMethods(['getMessageIdByArticleNumber', 'getMessageIdList'])
+            ->getMock();
+        $transport->method('getMessageIdByArticleNumber')->willReturn(false);
+        $transport->method('getMessageIdList')->willReturn([7000 => 'saved@example.invalid']);
+
+        $runner = $this->newRunner($transport, new Services_Retriever_CommentsCaptureSink());
+        $msgdata = new ReflectionProperty(Services_Retriever_CommentsPipelined::class, '_msgdata');
+        $msgdata->setAccessible(true);
+        $msgdata->setValue($runner, ['first' => 1, 'last' => 12000]);
+
+        $this->assertSame(7000, $runner->searchMessageId(11000, 'saved@example.invalid', ['saved@example.invalid' => true]));
     }
 
     private function newRunner(Services_Nntp_PipelinedTransport $transport, Services_Retriever_CommentsSink $sink)

@@ -197,6 +197,15 @@ abstract class Services_Retriever_Base
         SpotDebug::msg(SpotDebug::DEBUG, 'getMessageIdList loop finished, found = '.$found);
         SpotDebug::msg(SpotDebug::DEBUG, 'getMessageIdList loop finished, curArtNr = '.$curArtNr);
 
+        /*
+         * Never silently restart from the beginning of the group: that would
+         * re-read everything we already stored. Abort this run so the next one
+         * retries from the saved position; use --retro to deliberately start over.
+         */
+        if (!$found) {
+            throw new NntpException('Could not find any recently retrieved messageid in the group, aborting instead of re-reading the whole group (use --retro to force a full retrieve)');
+        } // if
+
         return $curArtNr;
     }
 
