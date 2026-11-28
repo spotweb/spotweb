@@ -141,6 +141,11 @@ class Services_Retriever_CommentsPipelined
         SpotDebug::msg(SpotDebug::DEBUG, 'pipelined getMessageIdList loop finished, found = '.$found);
         SpotDebug::msg(SpotDebug::DEBUG, 'pipelined getMessageIdList loop finished, curArtNr = '.$curArtNr);
 
+        // Do not silently re-read the whole group; the next run retries, --retro starts over
+        if (!$found) {
+            throw new NntpException('Could not find any recently retrieved messageid in the group, aborting instead of re-reading the whole group (use --retro to force a full retrieve)');
+        }
+
         return $curArtNr;
     }
 

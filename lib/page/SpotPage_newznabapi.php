@@ -847,26 +847,16 @@ class SpotPage_newznabapi extends SpotPage_Abs
         if (!empty($cat[0])) {
             switch ($cat[0]) {
                 case 'a':
+                    $newznabcat = $this->spotAcat2nabcat();
+
                     if ($hcat == 0 or $hcat == 1) {
-                        $newznabcat = $this->spotAcat2nabcat();
-                        $r = @$newznabcat[$hcat][$znr][$nr];
-                        if ($r == null) {
-                            $r = '';
-                        }
-
-                        return $r;
-                    } else {
-                        $newznabcat = $this->spotAcat2nabcat();
-                        $r = @$newznabcat[$hcat][$znr][$nr];
-                        if ($r = null) {
-                            $r = '';
-                        }
-
-                        return $r;
+                        return isset($newznabcat[$hcat][$znr][$nr]) ? $newznabcat[$hcat][$znr][$nr] : '';
                     }
+
+                    return isset($newznabcat[$hcat][$nr]) ? $newznabcat[$hcat][$nr] : '';
                 case 'b': $newznabcat = $this->spotBcat2nabcat();
 
-                    return @$newznabcat[$nr];
+                    return isset($newznabcat[$nr]) ? $newznabcat[$nr] : '';
                     break;
             } // switch
         } // if

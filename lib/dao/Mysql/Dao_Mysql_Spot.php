@@ -192,6 +192,18 @@ class Dao_Mysql_Spot extends Dao_Base_Spot
 
     public function getQuerystr($extendedFieldList, $additionalTableList, $additionalJoinList, $ourUserId, $criteriaFilter, $sortList, $limit, $offset)
     {
+        $userId = $this->_conn->safe((int) $ourUserId);
+        $watchlistQuery = stripos($criteriaFilter, 'l.watch IS NOT NULL') !== false;
+
+        if ($watchlistQuery) {
+            // Start with the selective per-user watchlist rows, not the spots table.
+            $spotFrom = 'spotstatelist AS l STRAIGHT_JOIN spots AS s ON ((s.messageid = l.messageid) AND (l.ouruserid = '.$userId.')) ';
+            $spotStateJoin = '';
+        } else {
+            $spotFrom = 'spots AS s ';
+            $spotStateJoin = ' LEFT JOIN spotstatelist AS l FORCE INDEX FOR JOIN (idx_spotstatelist_1) ON ((s.messageid = l.messageid) AND (l.ouruserid = '.$userId.')) ';
+        } // else
+
         /*
          * Run the query with a limit always increased by one. this allows us to
          * check whether any more results are available
@@ -222,13 +234,13 @@ class Dao_Mysql_Spot extends Dao_Base_Spot
 												f.verified AS verified,
 												COALESCE(bl.idtype, wl.idtype, gwl.idtype) AS idtype
 												'.$extendedFieldList.'
-									 FROM spots AS s '.
+									 FROM '.$spotFrom.
                                     $additionalTableList.
                                     $additionalJoinList.
-                                  ' LEFT JOIN spotstatelist AS l FORCE INDEX FOR JOIN (idx_spotstatelist_1) ON ((s.messageid = l.messageid) AND (l.ouruserid = '.$this->_conn->safe((int) $ourUserId).')) 
-									 LEFT JOIN spotsfull AS f FORCE INDEX FOR JOIN (idx_spotsfull_1) ON (s.messageid = f.messageid)  
-									 LEFT JOIN spotteridblacklist as bl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = '.$this->_conn->safe((int) $ourUserId).') OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
-									 LEFT JOIN spotteridblacklist AS wl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = '.$this->_conn->safe((int) $ourUserId).") AND (wl.idtype = 2)))
+                                    $spotStateJoin.
+                                  'LEFT JOIN spotsfull AS f FORCE INDEX FOR JOIN (idx_spotsfull_1) ON (s.messageid = f.messageid)
+									 LEFT JOIN spotteridblacklist as bl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((bl.spotterid = s.spotterid) AND ((bl.ouruserid = '.$userId.') OR (bl.ouruserid = -1)) AND (bl.idtype = 1))
+									 LEFT JOIN spotteridblacklist AS wl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((wl.spotterid = s.spotterid) AND ((wl.ouruserid = '.$userId.") AND (wl.idtype = 2)))
 									 LEFT JOIN spotteridblacklist AS gwl FORCE INDEX FOR JOIN (idx_spotteridblacklist_1) ON ((gwl.spotterid = s.spotterid) AND ((gwl.ouruserid = -1) AND (gwl.idtype = 2))) \n ".
                                     $criteriaFilter.'
 									 ORDER BY '.$sortList.
